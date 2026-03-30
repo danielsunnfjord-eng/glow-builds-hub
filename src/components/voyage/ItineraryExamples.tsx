@@ -32,7 +32,7 @@ const ItineraryExamples = () => {
       </ScrollReveal>
       <ScrollReveal>
         <p className="text-[0.92rem] text-voyage-muted max-w-[520px] leading-relaxed mb-14">
-          Every trip is custom — but here's a taste of what we've crafted for past travellers.
+          Every trip is custom — but here's a taste of what I've crafted for past travellers.
         </p>
       </ScrollReveal>
 

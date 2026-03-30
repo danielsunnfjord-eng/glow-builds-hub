@@ -28,14 +28,14 @@ const Hero = () => {
       <div className="relative z-10 max-w-[700px]">
         <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-8 animate-fade-up">
           <div className="w-[30px] h-px bg-gold" />
-          Independent Travel Agency
+          Travel Advisor · Fora Travel · IATA Accredited
         </div>
         <h1 className="font-serif text-[clamp(3.2rem,7vw,6rem)] font-bold leading-[0.95] text-voyage-white mb-8 tracking-tight animate-fade-up-1">
           Where do you
           <em className="block italic font-normal text-gold-2">want to go?</em>
         </h1>
         <p className="text-base font-light text-voyage-white/60 max-w-[460px] leading-relaxed mb-12 animate-fade-up-2">
-          Tell us your dream destination and we'll craft a journey tailored entirely to you — from flights and hotels to hidden-gem experiences.
+          Tell me your dream destination and I'll craft a journey tailored entirely to you — from flights and hotels to hidden-gem experiences.
         </p>
         <div className="flex gap-4 flex-wrap animate-fade-up-3">
           <button

@@ -1,9 +1,9 @@
 import ScrollReveal from "./ScrollReveal";
 
 const perks = [
-  { icon: "🏨", title: "Hotel perks you can't book yourself", desc: "We access exclusive rates and perks — room upgrades, breakfast, early check-in — not available when booking direct." },
-  { icon: "🗺️", title: "Experiences that make the trip", desc: "We source the private tours, local dinners and off-the-beaten-path adventures that make your trip unforgettable." },
-  { icon: "📞", title: "A real person, always reachable", desc: "Before, during and after your trip. If anything changes or goes wrong, we handle it — not a call centre." },
+  { icon: "🏨", title: "Hotel perks you can't book yourself", desc: "I access exclusive rates and perks — room upgrades, breakfast, early check-in — not available when booking direct." },
+  { icon: "🗺️", title: "Experiences that make the trip", desc: "I source the private tours, local dinners and off-the-beaten-path adventures that make your trip unforgettable." },
+  { icon: "📞", title: "A real person, always reachable", desc: "Before, during and after your trip. If anything changes or goes wrong, I handle it — not a call centre." },
 ];
 
 const CuratedSection = () => {
@@ -18,7 +18,7 @@ const CuratedSection = () => {
         </h2>
       </ScrollReveal>
       <ScrollReveal>
-        <p className="text-[0.92rem] text-voyage-white/50 max-w-[480px] leading-relaxed">No two trips we plan are the same. We take the time to understand exactly what you want — then make it happen.</p>
+        <p className="text-[0.92rem] text-voyage-white/50 max-w-[480px] leading-relaxed">No two trips I plan are the same. I take the time to understand exactly what you want — then make it happen.</p>
       </ScrollReveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mt-16 items-start">
@@ -26,10 +26,10 @@ const CuratedSection = () => {
           <div className="border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] p-6">
             <h3 className="font-serif text-[1.15rem] font-bold text-voyage-white mb-3">What does your travel advisor do?</h3>
             <p className="text-[0.82rem] text-voyage-white/50 leading-relaxed mb-3">
-              Your advisor works with you to understand your vacation needs and handles all the travel arrangements — from booking a hotel for a long weekend to planning a honeymoon.
+              I work with you to understand your vacation needs and handle all the travel arrangements — from booking a hotel for a long weekend to planning a honeymoon.
             </p>
             <p className="text-[0.82rem] text-voyage-white/50 leading-relaxed">
-              They take the time to learn your preferences and narrow down your destination and accommodation options to find the best fit. Our warm, diverse community of travel advisors are just as travel-obsessed as you are — their job is to make sure your next trip is precisely tailored to your taste, vacation style and budget.
+              I take the time to learn your preferences and narrow down your destination and accommodation options to find the best fit. As a Fora Travel advisor, IATA accredited, my job is to make sure your next trip is precisely tailored to your taste, vacation style and budget.
             </p>
           </div>
         </ScrollReveal>
