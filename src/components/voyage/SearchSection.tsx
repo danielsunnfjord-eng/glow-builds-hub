@@ -85,11 +85,8 @@ const SearchSection = () => {
         </div>
 
         {activeTab === "fl" && (
-          <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end max-md:grid-cols-2">
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>From</label><input className={inputClass} placeholder="City or airport" /></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>To</label><input className={inputClass} placeholder="City or airport" /></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Dates</label><input className={inputClass} placeholder="Depart — Return" /></div>
-            <button onClick={() => goSearch("Travelpayouts flight search")} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
+          <div className="min-h-[120px]">
+            <div ref={tpWidgetRef} className="w-full [&_iframe]:!border-none [&_iframe]:!rounded-lg" />
           </div>
         )}
         {activeTab === "ho" && (
