@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
 
