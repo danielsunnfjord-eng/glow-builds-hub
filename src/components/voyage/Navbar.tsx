@@ -9,7 +9,7 @@ const Navbar = () => {
         className="font-serif text-xl font-bold text-ink cursor-pointer tracking-tight"
         onClick={() => window.scrollTo(0, 0)}
       >
-        Voyage<span className="text-gold italic">&</span>Co.
+        Fjord <span className="text-gold italic">&</span> Waves Tours
       </span>
       <div className="hidden md:flex gap-10 items-center">
         <button onClick={() => scrollToId("curated")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">

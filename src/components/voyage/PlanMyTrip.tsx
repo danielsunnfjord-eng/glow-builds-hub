@@ -44,7 +44,7 @@ const PlanMyTrip = () => {
           </ScrollReveal>
           <ScrollReveal>
             <p className="text-[0.92rem] text-muted-foreground leading-relaxed mb-10 text-center">
-              Tell us what you're dreaming of. We'll be in touch within 24 hours.
+              Tell me what you're dreaming of. I'll be in touch within 24 hours.
             </p>
           </ScrollReveal>
           <ScrollReveal>
@@ -70,7 +70,7 @@ const PlanMyTrip = () => {
               </div>
               <div className="p-5">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Click to fill out our quick intake form and a travel advisor will craft a personalised itinerary just for you.
+                  Click to fill out our quick intake form and I'll craft a personalised itinerary just for you.
                 </p>
               </div>
             </button>
@@ -83,7 +83,7 @@ const PlanMyTrip = () => {
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Plan my trip</DialogTitle>
             <DialogDescription>
-              Fill out the form below and we'll be in touch within 24 hours.
+              Fill out the form below and I'll be in touch within 24 hours.
             </DialogDescription>
           </DialogHeader>
           <div ref={formCallback} className="w-full min-h-[400px]" />
