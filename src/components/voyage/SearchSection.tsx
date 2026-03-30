@@ -69,7 +69,7 @@ const SearchSection = () => {
 
         {activeTab === "fl" && (
           <div className="min-h-[400px]">
-            <div ref={tpWidgetRef} className="w-full" />
+            <div ref={tpWidgetCallback} className="w-full" />
           </div>
         )}
         {activeTab === "ho" && (
