@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
 
@@ -12,13 +12,25 @@ const perks = [
 const travelStyles = ["Luxury", "Adventure", "Cultural", "Relaxation", "Foodie", "Off the beaten path", "Honeymoon", "Family-friendly"];
 
 const CuratedSection = () => {
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const formCallback = useCallback((node: HTMLDivElement | null) => {
+    if (!node || node.querySelector('iframe')) return;
 
-  const toggleStyle = (style: string) => {
-    setSelectedStyles((prev) =>
-      prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style]
-    );
-  };
+    const iframe = document.createElement('iframe');
+    iframe.style.border = 'none';
+    iframe.style.width = '100%';
+    iframe.id = 'client-intake-form-fh1ldh';
+    iframe.src = 'https://opnform.com/forms/client-intake-form-fh1ldh';
+    node.appendChild(iframe);
+
+    const script = document.createElement('script');
+    script.src = 'https://opnform.com/widgets/iframe.min.js';
+    script.onload = () => {
+      if (typeof (window as any).initEmbed === 'function') {
+        (window as any).initEmbed('client-intake-form-fh1ldh', { autoResize: true });
+      }
+    };
+    node.appendChild(script);
+  }, []);
 
   return (
     <section className="py-28 px-16 bg-ink text-voyage-white max-md:px-6 max-md:py-16" id="curated">
@@ -53,70 +65,7 @@ const CuratedSection = () => {
           <div className="bg-parchment rounded-lg p-10 text-ink" id="enquiry">
             <h3 className="font-serif text-[1.4rem] font-bold mb-1.5">Plan my trip</h3>
             <p className="text-[0.82rem] text-voyage-muted mb-7 leading-relaxed">Tell us what you're dreaming of. We'll be in touch within 24 hours.</p>
-            <div className="flex flex-col gap-3.5">
-              <div className="grid grid-cols-2 gap-3.5 max-md:grid-cols-1">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Name</label>
-                  <input className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors placeholder:text-parchment-3" placeholder="Your name" />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Email</label>
-                  <input type="email" className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors placeholder:text-parchment-3" placeholder="your@email.com" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3.5 max-md:grid-cols-1">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Destination</label>
-                  <input className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors placeholder:text-parchment-3" placeholder="Where to? Or describe a vibe" />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">When</label>
-                  <input className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors placeholder:text-parchment-3" placeholder="Dates or month, flexible?" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3.5 max-md:grid-cols-1">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Travellers</label>
-                  <select className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors appearance-none">
-                    <option>Just me</option><option>Couple</option><option>Family with kids</option><option>Group of friends</option><option>Other</option>
-                  </select>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Budget (approx.)</label>
-                  <select className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors appearance-none">
-                    <option>Under £2,000</option><option>£2,000 – £5,000</option><option>£5,000 – £10,000</option><option>£10,000+</option><option>Flexible</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Travel style</label>
-                <div className="flex gap-1.5 flex-wrap">
-                  {travelStyles.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => toggleStyle(s)}
-                      className={`px-3.5 py-1.5 rounded-full border text-[0.7rem] font-medium transition-all ${
-                        selectedStyles.includes(s)
-                          ? "border-gold text-gold bg-gold/[0.08]"
-                          : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold hover:bg-gold/[0.08]"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">Tell us more</label>
-                <textarea className="px-4 py-3 bg-voyage-white border-[1.5px] border-parchment-3 rounded-lg font-sans text-[0.85rem] text-ink outline-none focus:border-gold transition-colors placeholder:text-parchment-3 h-[100px] resize-y" placeholder="Dream destinations, must-haves, special occasions, anything at all..." />
-              </div>
-              <button
-                onClick={() => toast.success("✦ Enquiry sent! We'll reply within 24 hours.")}
-                className="py-4 bg-gold text-ink font-bold text-[0.75rem] tracking-[0.12em] uppercase rounded-lg hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(184,135,42,0.25)] transition-all"
-              >
-                Send my enquiry — we'll reply within 24 hrs
-              </button>
-            </div>
+            <div ref={formCallback} className="w-full min-h-[400px]" />
           </div>
         </ScrollReveal>
       </div>
