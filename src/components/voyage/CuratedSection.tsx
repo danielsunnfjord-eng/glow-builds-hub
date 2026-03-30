@@ -3,7 +3,7 @@ import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
 
 const perks = [
-  { icon: "🏨", title: "Hotels you won't find on Google", desc: "We access exclusive rates and perks — room upgrades, breakfast, early check-in — not available when booking direct." },
+  { icon: "🏨", title: "Hotel perks you can't book yourself", desc: "We access exclusive rates and perks — room upgrades, breakfast, early check-in — not available when booking direct." },
   { icon: "📉", title: "We watch your prices for you", desc: "If a hotel rate drops after you book, we catch it and rebook you at the lower price. Automatically." },
   { icon: "🗺️", title: "Experiences that make the trip", desc: "We source the private tours, local dinners and off-the-beaten-path adventures that make your trip unforgettable." },
   { icon: "📞", title: "A real person, always reachable", desc: "Before, during and after your trip. If anything changes or goes wrong, we handle it — not a call centre." },
