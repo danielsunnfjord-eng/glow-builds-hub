@@ -21,7 +21,7 @@ const SearchSection = () => {
     if (tpWidgetRef.current.querySelector('iframe')) return; // already loaded
 
     const iframe = document.createElement('iframe');
-    iframe.src = `https://tp.media/content?promo_id=4132&shmarker=${TRAVELPAYOUTS_MARKER}&campaign_id=100&trs=373498&locale=en&currency=usd&powered_by=true&one_way=false&only_direct=false&open_in_new_tab=true&marker=${TRAVELPAYOUTS_MARKER}&width=100%25&border_radius=12&plain=true`;
+    iframe.src = `https://tp.media/content?promo_id=4114&shmarker=${TRAVELPAYOUTS_MARKER}&locale=en&currency=usd&powered_by=true&searchUrl=www.aviasales.com%2Fsearch&plain=true`;
     iframe.width = '100%';
     iframe.height = '400';
     iframe.frameBorder = '0';
