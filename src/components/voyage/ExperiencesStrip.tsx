@@ -1,7 +1,7 @@
 import ScrollReveal from "./ScrollReveal";
 
 const experiences = [
-  { icon: "✈️", title: "Flights", desc: "Economy to first class. One-way, return, multi-city. I find the route that works." },
+  { icon: "✈️", title: "Flights", desc: "For economy class, I recommend booking directly with the airline. For premium cabins, business, first class, or group bookings (10+ tickets), I can often secure better rates and exclusive perks." },
   { icon: "🏨", title: "Accommodation", desc: "Boutique hotels, villas, safari lodges, city apartments. Matched to your style." },
   { icon: "🎭", title: "Activities", desc: "Private tours, cooking classes, local guides, sunset cruises. The experiences that make a trip." },
   { icon: "🚗", title: "Transfers", desc: "Airport pickups, private drivers, car hire. Seamlessly built into your itinerary." },
