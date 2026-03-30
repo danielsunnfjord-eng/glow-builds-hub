@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 
 const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
