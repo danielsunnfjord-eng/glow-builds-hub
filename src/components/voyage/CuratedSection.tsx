@@ -49,16 +49,28 @@ const CuratedSection = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-20 mt-16 items-start">
         <ScrollReveal>
-          <div className="flex flex-col gap-5">
-            {perks.map((p) => (
-              <div key={p.title} className="flex gap-4 items-start p-5 border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] hover:border-gold/30 transition-colors">
-                <span className="text-[1.4rem] shrink-0 mt-0.5">{p.icon}</span>
-                <div>
-                  <h4 className="text-[0.85rem] font-semibold text-voyage-white mb-1">{p.title}</h4>
-                  <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{p.desc}</p>
+          <div className="flex flex-col gap-8">
+            <div className="border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] p-6">
+              <h3 className="font-serif text-[1.15rem] font-bold text-voyage-white mb-3">What does your travel advisor do?</h3>
+              <p className="text-[0.82rem] text-voyage-white/50 leading-relaxed mb-3">
+                Your advisor works with you to understand your vacation needs and handles all the travel arrangements — from booking a hotel for a long weekend to planning a honeymoon.
+              </p>
+              <p className="text-[0.82rem] text-voyage-white/50 leading-relaxed">
+                They take the time to learn your preferences and narrow down your destination and accommodation options to find the best fit. Our warm, diverse community of travel advisors are just as travel-obsessed as you are — their job is to make sure your next trip is precisely tailored to your taste, vacation style and budget.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              {perks.map((p) => (
+                <div key={p.title} className="flex gap-4 items-start p-5 border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] hover:border-gold/30 transition-colors">
+                  <span className="text-[1.4rem] shrink-0 mt-0.5">{p.icon}</span>
+                  <div>
+                    <h4 className="text-[0.85rem] font-semibold text-voyage-white mb-1">{p.title}</h4>
+                    <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{p.desc}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
