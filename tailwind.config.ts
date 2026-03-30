@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        serif: ['"Libre Baskerville"', 'serif'],
+        sans: ['"Jost"', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,6 +51,24 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        ink: {
+          DEFAULT: "hsl(var(--ink))",
+          2: "hsl(var(--ink2))",
+          3: "hsl(var(--ink3))",
+        },
+        parchment: {
+          DEFAULT: "hsl(var(--parchment))",
+          2: "hsl(var(--parchment2))",
+          3: "hsl(var(--parchment3))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          2: "hsl(var(--gold2))",
+          light: "hsl(var(--gold-light))",
+        },
+        sage: "hsl(var(--sage))",
+        "voyage-muted": "hsl(var(--voyage-muted))",
+        "voyage-white": "hsl(var(--voyage-white))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,20 +87,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
