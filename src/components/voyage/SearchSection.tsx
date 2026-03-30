@@ -11,8 +11,11 @@ const tabs = [
   { id: "ca", label: "🚗 Car Hire" },
 ];
 
+const VIATOR_AFFILIATE = "https://www.viator.com/search?pid=P00058688&uid=U00778967&mcid=58086&currency=USD";
+
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
+  const [activityDest, setActivityDest] = useState("");
 
   // Use callback ref to inject the Travelpayouts script widget when the div mounts
   const tpWidgetCallback = useCallback((node: HTMLDivElement | null) => {
