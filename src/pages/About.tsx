@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
+import danielProfile from "@/assets/daniel-profile.jpg";
 
 const About = () => {
   const navigate = useNavigate();
