@@ -5,7 +5,6 @@ const scrollToId = (id: string) => {
 const Hero = () => {
   return (
     <section className="min-h-screen flex flex-col justify-end px-16 pb-24 relative overflow-hidden bg-ink max-md:px-6 max-md:pb-20">
-      {/* Background */}
       <div
         className="absolute inset-0"
         style={{
@@ -16,7 +15,6 @@ const Hero = () => {
           `,
         }}
       />
-      {/* Dots */}
       <div
         className="absolute inset-0"
         style={{
@@ -37,20 +35,20 @@ const Hero = () => {
           <em className="block italic font-normal text-gold-2">want to go?</em>
         </h1>
         <p className="text-base font-light text-voyage-white/60 max-w-[460px] leading-relaxed mb-12 animate-fade-up-2">
-          Search and book yourself, or let us craft a journey tailored entirely to you. Two ways to travel — one trusted agency.
+          Tell us your dream destination and we'll craft a journey tailored entirely to you — from flights and hotels to hidden-gem experiences.
         </p>
         <div className="flex gap-4 flex-wrap animate-fade-up-3">
           <button
-            onClick={() => scrollToId("self-book")}
+            onClick={() => scrollToId("enquiry")}
             className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
           >
-            Search Flights & Hotels
+            Plan My Trip
           </button>
           <button
             onClick={() => scrollToId("curated")}
             className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
           >
-            Tell Us Your Dream Trip
+            How It Works
           </button>
         </div>
       </div>
