@@ -20,18 +20,23 @@ const About = () => {
               "radial-gradient(ellipse 60% 70% at 80% 30%, rgba(184,135,42,0.10) 0%, transparent 60%), linear-gradient(170deg, #0a0906 0%, #1a1510 40%, #13110e 100%)",
           }}
         />
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-6">
-            <div className="w-[30px] h-px bg-gold" />
-            Founder &amp; Travel Advisor
+        <div className="relative z-10 flex items-center gap-12 max-md:flex-col max-md:gap-8">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-6">
+              <div className="w-[30px] h-px bg-gold" />
+              Founder &amp; Travel Advisor
+            </div>
+            <h1 className="font-serif text-[clamp(2.6rem,5vw,4.5rem)] font-bold leading-[1] text-voyage-white mb-6 tracking-tight">
+              Daniel Lira<br />
+              <em className="italic font-normal text-gold-2">Figueiredo</em>
+            </h1>
+            <p className="text-sm text-voyage-white/50 tracking-[0.12em] uppercase">
+              Fora Travel Advisor · IATA Accredited · 20+ Countries Explored
+            </p>
           </div>
-          <h1 className="font-serif text-[clamp(2.6rem,5vw,4.5rem)] font-bold leading-[1] text-voyage-white mb-6 tracking-tight">
-            Daniel Lira<br />
-            <em className="italic font-normal text-gold-2">Figueiredo</em>
-          </h1>
-          <p className="text-sm text-voyage-white/50 tracking-[0.12em] uppercase">
-            Fora Travel Advisor · IATA Accredited · 20+ Countries Explored
-          </p>
+          <div className="w-56 h-56 rounded-full overflow-hidden border-2 border-gold/30 shadow-[0_10px_40px_rgba(184,135,42,0.2)] flex-shrink-0 max-md:w-44 max-md:h-44">
+            <img src={danielProfile} alt="Daniel Lira Figueiredo" className="w-full h-full object-cover" />
+          </div>
         </div>
       </section>
 
