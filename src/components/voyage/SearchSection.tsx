@@ -15,7 +15,6 @@ const VIATOR_AFFILIATE = "https://www.viator.com/search?pid=P00058688&uid=U00778
 
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
-  const [activityDest, setActivityDest] = useState("");
 
   // Use callback ref to inject the Travelpayouts script widget when the div mounts
   const tpWidgetCallback = useCallback((node: HTMLDivElement | null) => {
@@ -23,6 +22,20 @@ const SearchSection = () => {
     const script = document.createElement('script');
     script.src = `https://tpembd.com/content?currency=usd&trs=513164&shmarker=${TRAVELPAYOUTS_MARKER}&show_hotels=true&powered_by=true&locale=en&searchUrl=www.aviasales.com%2Fsearch&primary_override=%2332a8dd&color_button=%2332a8dd&color_icons=%2332a8dd&dark=%23262626&light=%23FFFFFF&secondary=%23FFFFFF&special=%23C4C4C4&color_focused=%2332a8dd&border_radius=0&plain=false&promo_id=7879&campaign_id=100`;
     script.charset = 'utf-8';
+    script.async = true;
+    node.appendChild(script);
+  }, []);
+
+  // Viator widget callback ref
+  const viatorWidgetCallback = useCallback((node: HTMLDivElement | null) => {
+    if (!node || node.querySelector('[data-vi-partner-id]')) return;
+    const widgetDiv = document.createElement('div');
+    widgetDiv.setAttribute('data-vi-partner-id', 'U00778967');
+    widgetDiv.setAttribute('data-vi-widget-ref', 'W-1752ed63-f59b-4719-b6b8-e2cc8ef51021');
+    node.appendChild(widgetDiv);
+
+    const script = document.createElement('script');
+    script.src = 'https://www.viator.com/orion/partner/widget.js';
     script.async = true;
     node.appendChild(script);
   }, []);
@@ -80,16 +93,8 @@ const SearchSection = () => {
           </div>
         )}
         {activeTab === "ac" && (
-          <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end max-md:grid-cols-2">
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Destination</label><input className={inputClass} placeholder="City or region" value={activityDest} onChange={(e) => setActivityDest(e.target.value)} /></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Category</label><select className={selectClass}><option>All experiences</option><option>Tours & Sightseeing</option><option>Food & Drink</option><option>Adventure</option><option>Culture & Art</option><option>Wellness</option></select></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Date</label><input className={inputClass} placeholder="Any date" /></div>
-            <button onClick={() => {
-              const url = activityDest
-                ? `${VIATOR_AFFILIATE}&q=${encodeURIComponent(activityDest)}`
-                : VIATOR_AFFILIATE;
-              window.open(url, '_blank', 'noopener,noreferrer');
-            }} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
+          <div className="min-h-[400px]">
+            <div ref={viatorWidgetCallback} className="w-full" />
           </div>
         )}
         {activeTab === "ca" && (
