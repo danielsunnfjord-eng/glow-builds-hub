@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
 
@@ -13,13 +13,10 @@ const tabs = [
 
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
-  const tpWidgetRef = useRef<HTMLDivElement>(null);
 
-  // Mount Travelpayouts flight search widget via iframe
-  useEffect(() => {
-    if (activeTab !== "fl" || !tpWidgetRef.current) return;
-    if (tpWidgetRef.current.querySelector('iframe')) return; // already loaded
-
+  // Use callback ref to inject iframe when the div mounts
+  const tpWidgetCallback = useCallback((node: HTMLDivElement | null) => {
+    if (!node || node.querySelector('iframe')) return;
     const iframe = document.createElement('iframe');
     iframe.src = `https://tp.media/content?promo_id=4114&shmarker=${TRAVELPAYOUTS_MARKER}&locale=en&currency=usd&powered_by=true&searchUrl=www.aviasales.com%2Fsearch&plain=true`;
     iframe.width = '100%';
@@ -28,9 +25,8 @@ const SearchSection = () => {
     iframe.style.border = 'none';
     iframe.style.borderRadius = '12px';
     iframe.loading = 'lazy';
-    tpWidgetRef.current.innerHTML = '';
-    tpWidgetRef.current.appendChild(iframe);
-  }, [activeTab]);
+    node.appendChild(iframe);
+  }, []);
 
   const goSearch = (provider: string) => {
     toast.info(`🔗 This connects to: ${provider}. Replace with your affiliate tracking URL.`);
