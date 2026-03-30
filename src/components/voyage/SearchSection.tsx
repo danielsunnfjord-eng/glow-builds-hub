@@ -11,8 +11,11 @@ const tabs = [
   { id: "ca", label: "🚗 Car Hire" },
 ];
 
+const VIATOR_AFFILIATE = "https://www.viator.com/search?pid=P00058688&uid=U00778967&mcid=58086&currency=USD";
+
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
+  const [activityDest, setActivityDest] = useState("");
 
   // Use callback ref to inject the Travelpayouts script widget when the div mounts
   const tpWidgetCallback = useCallback((node: HTMLDivElement | null) => {
@@ -78,10 +81,15 @@ const SearchSection = () => {
         )}
         {activeTab === "ac" && (
           <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end max-md:grid-cols-2">
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Destination</label><input className={inputClass} placeholder="City or region" /></div>
+            <div className="flex flex-col gap-1.5"><label className={labelClass}>Destination</label><input className={inputClass} placeholder="City or region" value={activityDest} onChange={(e) => setActivityDest(e.target.value)} /></div>
             <div className="flex flex-col gap-1.5"><label className={labelClass}>Category</label><select className={selectClass}><option>All experiences</option><option>Tours & Sightseeing</option><option>Food & Drink</option><option>Adventure</option><option>Culture & Art</option><option>Wellness</option></select></div>
             <div className="flex flex-col gap-1.5"><label className={labelClass}>Date</label><input className={inputClass} placeholder="Any date" /></div>
-            <button onClick={() => goSearch("Viator activities search")} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
+            <button onClick={() => {
+              const url = activityDest
+                ? `${VIATOR_AFFILIATE}&q=${encodeURIComponent(activityDest)}`
+                : VIATOR_AFFILIATE;
+              window.open(url, '_blank', 'noopener,noreferrer');
+            }} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
           </div>
         )}
         {activeTab === "ca" && (
