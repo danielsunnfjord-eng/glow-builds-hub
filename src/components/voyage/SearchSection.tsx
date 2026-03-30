@@ -72,8 +72,8 @@ const SearchSection = () => {
         </div>
 
         {activeTab === "fl" && (
-          <div className="min-h-[120px]">
-            <div ref={tpWidgetRef} className="w-full [&_iframe]:!border-none [&_iframe]:!rounded-lg" />
+          <div className="min-h-[400px]">
+            <div ref={tpWidgetRef} className="w-full" />
           </div>
         )}
         {activeTab === "ho" && (
