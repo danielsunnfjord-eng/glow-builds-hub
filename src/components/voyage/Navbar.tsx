@@ -12,14 +12,11 @@ const Navbar = () => {
         Voyage<span className="text-gold italic">&</span>Co.
       </span>
       <div className="hidden md:flex gap-10 items-center">
-        <button onClick={() => scrollToId("self-book")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-          Book Yourself
-        </button>
         <button onClick={() => scrollToId("curated")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-          Curated Trips
+          How It Works
         </button>
         <button onClick={() => scrollToId("experiences")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-          Experiences
+          What We Arrange
         </button>
         <button
           onClick={() => scrollToId("enquiry")}
