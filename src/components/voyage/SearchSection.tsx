@@ -84,7 +84,12 @@ const SearchSection = () => {
             <div className="flex flex-col gap-1.5"><label className={labelClass}>Destination</label><input className={inputClass} placeholder="City or region" /></div>
             <div className="flex flex-col gap-1.5"><label className={labelClass}>Category</label><select className={selectClass}><option>All experiences</option><option>Tours & Sightseeing</option><option>Food & Drink</option><option>Adventure</option><option>Culture & Art</option><option>Wellness</option></select></div>
             <div className="flex flex-col gap-1.5"><label className={labelClass}>Date</label><input className={inputClass} placeholder="Any date" /></div>
-            <button onClick={() => goSearch("Viator activities search")} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
+            <button onClick={() => {
+              const url = activityDest
+                ? `${VIATOR_AFFILIATE}&q=${encodeURIComponent(activityDest)}`
+                : VIATOR_AFFILIATE;
+              window.open(url, '_blank', 'noopener,noreferrer');
+            }} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
           </div>
         )}
         {activeTab === "ca" && (
