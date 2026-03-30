@@ -14,35 +14,22 @@ const tabs = [
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
   const tpWidgetRef = useRef<HTMLDivElement>(null);
-  const tpLoaded = useRef(false);
 
-  // Load Travelpayouts flight search widget
+  // Mount Travelpayouts flight search widget via iframe
   useEffect(() => {
-    if (activeTab !== "fl" || tpLoaded.current) return;
+    if (activeTab !== "fl" || !tpWidgetRef.current) return;
+    if (tpWidgetRef.current.querySelector('iframe')) return; // already loaded
 
-    const loadWidget = () => {
-      if (!tpWidgetRef.current) return;
-
-      // Clear previous content
-      tpWidgetRef.current.innerHTML = '';
-
-      // Create the widget container div
-      const widgetDiv = document.createElement('div');
-      widgetDiv.id = 'tp-widget-container';
-      tpWidgetRef.current.appendChild(widgetDiv);
-
-      // Load the Travelpayouts search form script
-      const script = document.createElement('script');
-      script.src = `https://tp.media/content?promo_id=4132&shmarker=${TRAVELPAYOUTS_MARKER}&campaign_id=100&trs=373498&search_host=jet.turisto.com%2Fflights&locale=en&currency=usd&powered_by=true&one_way=false&only_direct=false&disable_hotel_powerful=false&open_in_new_tab=true&marker=${TRAVELPAYOUTS_MARKER}&width=100%25&border_radius=12&plain=true`;
-      script.charset = 'utf-8';
-      script.async = true;
-      tpWidgetRef.current.appendChild(script);
-      tpLoaded.current = true;
-    };
-
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(loadWidget, 100);
-    return () => clearTimeout(timer);
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://tp.media/content?promo_id=4132&shmarker=${TRAVELPAYOUTS_MARKER}&campaign_id=100&trs=373498&locale=en&currency=usd&powered_by=true&one_way=false&only_direct=false&open_in_new_tab=true&marker=${TRAVELPAYOUTS_MARKER}&width=100%25&border_radius=12&plain=true`;
+    iframe.width = '100%';
+    iframe.height = '400';
+    iframe.frameBorder = '0';
+    iframe.style.border = 'none';
+    iframe.style.borderRadius = '12px';
+    iframe.loading = 'lazy';
+    tpWidgetRef.current.innerHTML = '';
+    tpWidgetRef.current.appendChild(iframe);
   }, [activeTab]);
 
   const goSearch = (provider: string) => {
@@ -85,8 +72,8 @@ const SearchSection = () => {
         </div>
 
         {activeTab === "fl" && (
-          <div className="min-h-[120px]">
-            <div ref={tpWidgetRef} className="w-full [&_iframe]:!border-none [&_iframe]:!rounded-lg" />
+          <div className="min-h-[400px]">
+            <div ref={tpWidgetRef} className="w-full" />
           </div>
         )}
         {activeTab === "ho" && (
