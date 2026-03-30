@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
 
+const TRAVELPAYOUTS_MARKER = "714834";
+
 const tabs = [
   { id: "fl", label: "✈ Flights" },
   { id: "ho", label: "🏨 Hotels" },
