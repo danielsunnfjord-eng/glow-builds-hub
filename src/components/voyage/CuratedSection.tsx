@@ -18,6 +18,7 @@ const CuratedSection = () => {
     const iframe = document.createElement('iframe');
     iframe.style.border = 'none';
     iframe.style.width = '100%';
+    iframe.style.minHeight = '1200px';
     iframe.id = 'client-intake-form-fh1ldh';
     iframe.src = 'https://opnform.com/forms/client-intake-form-fh1ldh';
     node.appendChild(iframe);
