@@ -1,0 +1,35 @@
+const scrollToId = (id: string) => {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+};
+
+const Navbar = () => {
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-16 py-5 bg-parchment/90 backdrop-blur-lg border-b border-gold/15 transition-all max-md:px-6 max-md:py-4">
+      <span
+        className="font-serif text-xl font-bold text-ink cursor-pointer tracking-tight"
+        onClick={() => window.scrollTo(0, 0)}
+      >
+        Voyage<span className="text-gold italic">&</span>Co.
+      </span>
+      <div className="hidden md:flex gap-10 items-center">
+        <button onClick={() => scrollToId("self-book")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+          Book Yourself
+        </button>
+        <button onClick={() => scrollToId("curated")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+          Curated Trips
+        </button>
+        <button onClick={() => scrollToId("experiences")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+          Experiences
+        </button>
+        <button
+          onClick={() => scrollToId("enquiry")}
+          className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+        >
+          Plan My Trip
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
