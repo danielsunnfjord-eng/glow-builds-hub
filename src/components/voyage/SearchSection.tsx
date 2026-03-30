@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { toast } from "sonner";
+
+const TRAVELPAYOUTS_MARKER = "714834";
 
 const tabs = [
   { id: "fl", label: "✈ Flights" },
@@ -11,6 +13,37 @@ const tabs = [
 
 const SearchSection = () => {
   const [activeTab, setActiveTab] = useState("fl");
+  const tpWidgetRef = useRef<HTMLDivElement>(null);
+  const tpLoaded = useRef(false);
+
+  // Load Travelpayouts flight search widget
+  useEffect(() => {
+    if (activeTab !== "fl" || tpLoaded.current) return;
+
+    const loadWidget = () => {
+      if (!tpWidgetRef.current) return;
+
+      // Clear previous content
+      tpWidgetRef.current.innerHTML = '';
+
+      // Create the widget container div
+      const widgetDiv = document.createElement('div');
+      widgetDiv.id = 'tp-widget-container';
+      tpWidgetRef.current.appendChild(widgetDiv);
+
+      // Load the Travelpayouts search form script
+      const script = document.createElement('script');
+      script.src = `https://tp.media/content?promo_id=4132&shmarker=${TRAVELPAYOUTS_MARKER}&campaign_id=100&trs=373498&search_host=jet.turisto.com%2Fflights&locale=en&currency=usd&powered_by=true&one_way=false&only_direct=false&disable_hotel_powerful=false&open_in_new_tab=true&marker=${TRAVELPAYOUTS_MARKER}&width=100%25&border_radius=12&plain=true`;
+      script.charset = 'utf-8';
+      script.async = true;
+      tpWidgetRef.current.appendChild(script);
+      tpLoaded.current = true;
+    };
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(loadWidget, 100);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
 
   const goSearch = (provider: string) => {
     toast.info(`🔗 This connects to: ${provider}. Replace with your affiliate tracking URL.`);
@@ -52,11 +85,8 @@ const SearchSection = () => {
         </div>
 
         {activeTab === "fl" && (
-          <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-end max-md:grid-cols-2">
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>From</label><input className={inputClass} placeholder="City or airport" /></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>To</label><input className={inputClass} placeholder="City or airport" /></div>
-            <div className="flex flex-col gap-1.5"><label className={labelClass}>Dates</label><input className={inputClass} placeholder="Depart — Return" /></div>
-            <button onClick={() => goSearch("Travelpayouts flight search")} className="px-7 py-3.5 bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.1em] uppercase rounded-lg hover:bg-gold hover:text-ink hover:-translate-y-0.5 transition-all whitespace-nowrap">Search →</button>
+          <div className="min-h-[120px]">
+            <div ref={tpWidgetRef} className="w-full [&_iframe]:!border-none [&_iframe]:!rounded-lg" />
           </div>
         )}
         {activeTab === "ho" && (
