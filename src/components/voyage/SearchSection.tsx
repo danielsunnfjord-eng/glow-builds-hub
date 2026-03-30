@@ -26,6 +26,20 @@ const SearchSection = () => {
     node.appendChild(script);
   }, []);
 
+  // Viator widget callback ref
+  const viatorWidgetCallback = useCallback((node: HTMLDivElement | null) => {
+    if (!node || node.querySelector('[data-vi-partner-id]')) return;
+    const widgetDiv = document.createElement('div');
+    widgetDiv.setAttribute('data-vi-partner-id', 'U00778967');
+    widgetDiv.setAttribute('data-vi-widget-ref', 'W-1752ed63-f59b-4719-b6b8-e2cc8ef51021');
+    node.appendChild(widgetDiv);
+
+    const script = document.createElement('script');
+    script.src = 'https://www.viator.com/orion/partner/widget.js';
+    script.async = true;
+    node.appendChild(script);
+  }, []);
+
   const goSearch = (provider: string) => {
     toast.info(`🔗 This connects to: ${provider}. Replace with your affiliate tracking URL.`);
   };
