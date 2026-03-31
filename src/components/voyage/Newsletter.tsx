@@ -1,22 +1,43 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    setSubmitted(true);
-    toast({
-      title: "You're in!",
-      description: "Thanks for subscribing — travel inspiration is on its way.",
-    });
-    setEmail("");
+    if (!email || loading) return;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('subscribe-newsletter', {
+        body: { email },
+      });
+
+      if (error) throw error;
+
+      setSubmitted(true);
+      toast({
+        title: "You're in!",
+        description: "Thanks for subscribing — travel inspiration is on its way.",
+      });
+      setEmail("");
+    } catch (err) {
+      console.error('Subscription error:', err);
+      toast({
+        title: "Something went wrong",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,10 +76,11 @@ const Newsletter = () => {
               />
               <button
                 type="submit"
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.8rem] tracking-[0.08em] uppercase hover:bg-gold/90 transition-colors"
+                disabled={loading}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.8rem] tracking-[0.08em] uppercase hover:bg-gold/90 transition-colors disabled:opacity-60"
               >
-                <Send size={14} />
-                Subscribe
+                {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                {loading ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
           )}
