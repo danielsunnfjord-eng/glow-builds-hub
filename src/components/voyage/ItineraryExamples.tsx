@@ -16,9 +16,9 @@ const itineraries = [
     url: "https://trips.foratravel.com/i/Ui0sRK66Lf",
   },
   {
-    title: "Fjord & Waves — Norway's Hidden Gems",
+    title: "Norway's Hidden Gems",
     location: "Western Norway",
-    duration: "11 Days",
+    duration: "10 Attractions",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/1d567416-cca5-4a8d-bba2-589cc915b4b8?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/uopAhms8vz",
   },
