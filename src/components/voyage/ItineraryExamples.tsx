@@ -43,7 +43,7 @@ const ItineraryExamples = () => {
         </p>
       </ScrollReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
         {itineraries.map((trip) => (
           <ScrollReveal key={trip.url}>
             <a
