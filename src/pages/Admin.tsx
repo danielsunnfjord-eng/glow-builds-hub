@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +26,7 @@ interface ClientProject {
   itinerary_status: ItineraryStatus;
   payment_status: PaymentStatus;
   notes: string | null;
+  itinerary_pdf_path: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -42,6 +43,12 @@ const PAYMENT_LABELS: Record<PaymentStatus, string> = {
   paid: "Paid",
   refunded: "Refunded",
 };
+
+const EMAIL_TEMPLATES = [
+  { id: "welcome", label: "Welcome — First Itinerary", description: "Friendly intro with the first draft of the itinerary." },
+  { id: "final", label: "Final — Ready to Go", description: "Confirmed & finalised itinerary, ready for travel." },
+  { id: "revision", label: "Revision — Updated Itinerary", description: "Revised version based on client feedback." },
+];
 
 const statusStyle: Record<ItineraryStatus, string> = {
   new: "bg-gold/10 text-gold border-gold/30",
@@ -83,6 +90,17 @@ const AdminDashboard = () => {
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
 
+  // Send email dialog
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [sendProject, setSendProject] = useState<ClientProject | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState("welcome");
+  const [isSending, setIsSending] = useState(false);
+
+  // PDF upload
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingUploadProjectId, setPendingUploadProjectId] = useState<string | null>(null);
+
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["client_projects"],
     queryFn: async () => {
@@ -91,7 +109,10 @@ const AdminDashboard = () => {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as ClientProject[];
+      return (data as any[]).map((d) => ({
+        ...d,
+        itinerary_pdf_path: d.itinerary_pdf_path ?? null,
+      })) as ClientProject[];
     },
   });
 
@@ -144,6 +165,90 @@ const AdminDashboard = () => {
     },
   });
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !pendingUploadProjectId) return;
+
+    if (file.type !== "application/pdf") {
+      toast({ title: "Only PDF files are allowed", variant: "destructive" });
+      return;
+    }
+
+    setUploadingId(pendingUploadProjectId);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const filePath = `${user.id}/${pendingUploadProjectId}/${file.name}`;
+
+      // Remove old file if exists
+      const project = projects.find((p) => p.id === pendingUploadProjectId);
+      if (project?.itinerary_pdf_path) {
+        await supabase.storage.from("itineraries").remove([project.itinerary_pdf_path]);
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from("itineraries")
+        .upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { error: updateError } = await supabase
+        .from("client_projects")
+        .update({ itinerary_pdf_path: filePath } as any)
+        .eq("id", pendingUploadProjectId);
+      if (updateError) throw updateError;
+
+      queryClient.invalidateQueries({ queryKey: ["client_projects"] });
+      toast({ title: "Itinerary PDF uploaded" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingId(null);
+      setPendingUploadProjectId(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const triggerUpload = (projectId: string) => {
+    setPendingUploadProjectId(projectId);
+    fileInputRef.current?.click();
+  };
+
+  const getPdfUrl = (path: string) => {
+    const { data } = supabase.storage.from("itineraries").getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  const handleSendEmail = async () => {
+    if (!sendProject || !sendProject.client_email || !sendProject.itinerary_pdf_path) return;
+    setIsSending(true);
+    try {
+      const pdfUrl = getPdfUrl(sendProject.itinerary_pdf_path);
+      const { data, error } = await supabase.functions.invoke("send-itinerary-email", {
+        body: {
+          recipientEmail: sendProject.client_email,
+          clientName: sendProject.client_name,
+          destination: sendProject.destination || "",
+          templateName: selectedTemplate,
+          pdfUrl,
+        },
+      });
+      if (error) throw error;
+      toast({ title: "Email sent!", description: `Itinerary sent to ${sendProject.client_email}` });
+      setSendDialogOpen(false);
+    } catch (err: any) {
+      toast({ title: "Failed to send", description: err.message, variant: "destructive" });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const openSendDialog = (p: ClientProject) => {
+    setSendProject(p);
+    setSelectedTemplate("welcome");
+    setSendDialogOpen(true);
+  };
+
   const openNew = () => {
     setEditingId(null);
     setForm(emptyProject);
@@ -181,6 +286,15 @@ const AdminDashboard = () => {
   return (
     <>
       <div className="min-h-screen bg-parchment">
+        {/* Hidden file input */}
+        <input
+          type="file"
+          accept=".pdf"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+
         {/* Nav */}
         <nav className="bg-ink px-10 py-4 flex justify-between items-center border-b border-voyage-white/[0.08] max-md:px-6 max-md:flex-wrap max-md:gap-3">
           <div>
@@ -253,7 +367,7 @@ const AdminDashboard = () => {
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    {["Client", "Destination", "Group", "Duration", "Price", "Itinerary", "Payment", "Actions"].map((h) => (
+                    {["Client", "Destination", "Group", "Price", "Itinerary", "Payment", "PDF", "Actions"].map((h) => (
                       <th key={h} className="px-4 py-3 text-left text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted bg-parchment border-b border-parchment-3">{h}</th>
                     ))}
                   </tr>
@@ -267,13 +381,51 @@ const AdminDashboard = () => {
                       </td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.destination || "—"}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.group_size}</td>
-                      <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.trip_duration || "—"}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] font-semibold text-ink">{p.price ? `€${p.price}` : "—"}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={STATUS_LABELS[p.itinerary_status]} style={statusStyle[p.itinerary_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={PAYMENT_LABELS[p.payment_status]} style={paymentStyle[p.payment_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3">
+                        <div className="flex items-center gap-2">
+                          {p.itinerary_pdf_path ? (
+                            <>
+                              <a
+                                href={getPdfUrl(p.itinerary_pdf_path)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[0.68rem] text-gold hover:text-gold-2 underline"
+                              >
+                                View
+                              </a>
+                              <button
+                                onClick={() => triggerUpload(p.id)}
+                                disabled={uploadingId === p.id}
+                                className="text-[0.68rem] text-voyage-muted hover:text-ink transition-colors"
+                              >
+                                {uploadingId === p.id ? "..." : "Replace"}
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => triggerUpload(p.id)}
+                              disabled={uploadingId === p.id}
+                              className="px-2.5 py-1 rounded-sm border border-dashed border-gold/40 text-[0.68rem] font-medium text-gold hover:border-gold hover:bg-gold/5 transition-all"
+                            >
+                              {uploadingId === p.id ? "Uploading..." : "📄 Upload"}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 border-b border-parchment-3">
                         <div className="flex gap-2">
                           <button onClick={() => openEdit(p)} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-gold hover:text-gold transition-all">Edit</button>
+                          {p.itinerary_pdf_path && p.client_email && (
+                            <button
+                              onClick={() => openSendDialog(p)}
+                              className="px-2.5 py-1 rounded-sm border border-sage/30 text-[0.68rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all"
+                            >
+                              ✉ Send
+                            </button>
+                          )}
                           <button onClick={() => { if (confirm("Delete this project?")) deleteMutation.mutate(p.id); }} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">Delete</button>
                         </div>
                       </td>
@@ -347,6 +499,67 @@ const AdminDashboard = () => {
               {saveMutation.isPending ? "Saving..." : editingId ? "Update Project" : "Create Project"}
             </button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Email Dialog */}
+      <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-xl">Send Itinerary</DialogTitle>
+            <DialogDescription>
+              Send the itinerary PDF to <strong>{sendProject?.client_name}</strong> at{" "}
+              <strong>{sendProject?.client_email}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-2">
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-2 block">
+                Choose Email Template
+              </label>
+              <div className="flex flex-col gap-2">
+                {EMAIL_TEMPLATES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setSelectedTemplate(t.id)}
+                    className={`text-left p-3 rounded-sm border transition-all ${
+                      selectedTemplate === t.id
+                        ? "border-gold bg-gold/5"
+                        : "border-parchment-3 hover:border-gold/40"
+                    }`}
+                  >
+                    <div className="text-[0.82rem] font-medium text-ink">{t.label}</div>
+                    <div className="text-[0.72rem] text-voyage-muted mt-0.5">{t.description}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {sendProject?.itinerary_pdf_path && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-parchment rounded-sm border border-parchment-3">
+                <span className="text-[0.78rem]">📎</span>
+                <span className="text-[0.78rem] text-ink truncate">
+                  {sendProject.itinerary_pdf_path.split("/").pop()}
+                </span>
+                <a
+                  href={getPdfUrl(sendProject.itinerary_pdf_path)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline"
+                >
+                  Preview
+                </a>
+              </div>
+            )}
+
+            <button
+              onClick={handleSendEmail}
+              disabled={isSending}
+              className="px-6 py-3 rounded-sm bg-sage text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-sage/90 transition-colors disabled:opacity-60"
+            >
+              {isSending ? "Sending..." : "Send Email"}
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
     </>
