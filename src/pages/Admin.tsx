@@ -331,7 +331,43 @@ const AdminDashboard = () => {
           </div>
         </nav>
 
+        {/* Tab Navigation */}
+        <div className="bg-voyage-white border-b border-parchment-3 px-10 max-md:px-6">
+          <div className="max-w-[1200px] mx-auto flex gap-1">
+            <button
+              onClick={() => setActiveTab("projects")}
+              className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${
+                activeTab === "projects"
+                  ? "border-gold text-ink"
+                  : "border-transparent text-voyage-muted hover:text-ink"
+              }`}
+            >
+              📋 Projects
+            </button>
+            <button
+              onClick={() => setActiveTab("assistant")}
+              className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${
+                activeTab === "assistant"
+                  ? "border-gold text-ink"
+                  : "border-transparent text-voyage-muted hover:text-ink"
+              }`}
+            >
+              🤖 Advisor Assistant
+            </button>
+          </div>
+        </div>
+
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
+          {activeTab === "assistant" ? (
+            <div>
+              <div className="mb-8">
+                <h1 className="font-serif text-3xl font-bold mb-1">Advisor Assistant</h1>
+                <p className="text-[0.85rem] text-voyage-muted">AI-powered itinerary builder — create, refine and export personalised travel plans.</p>
+              </div>
+              <AdvisorAssistant projects={projects as any} />
+            </div>
+          ) : (
+          <>
           {/* Header */}
           <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
             <div>
