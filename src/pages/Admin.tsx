@@ -357,7 +357,23 @@ const AdminDashboard = () => {
             ))}
           </div>
 
-          {/* Filters */}
+          {/* Earnings Overview */}
+          <div className="mb-8">
+            <h2 className="text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted mb-3">Earnings Overview (Paid)</h2>
+            <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4">
+              {[
+                { label: "This Week", val: earningsWeek },
+                { label: "This Month", val: earningsMonth },
+                { label: `Year ${now.getFullYear()}`, val: earningsYear },
+                { label: "All Time", val: earningsTotal },
+              ].map((e) => (
+                <div key={e.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
+                  <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{e.label}</div>
+                  <div className="font-serif text-2xl font-bold text-sage">€{e.val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="flex gap-2 mb-6 flex-wrap">
             {(["all", "new", "in_progress", "delivered", "revision"] as const).map((f) => (
               <button
