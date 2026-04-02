@@ -8,7 +8,7 @@ import ItineraryExamples from "@/components/voyage/ItineraryExamples";
 
 import Newsletter from "@/components/voyage/Newsletter";
 import PlanMyTrip from "@/components/voyage/PlanMyTrip";
-import Pricing from "@/components/voyage/Pricing";
+
 import Footer from "@/components/voyage/Footer";
 
 const Index = () => {
@@ -28,7 +28,7 @@ const Index = () => {
       <CuratedSection />
       <ItineraryExamples />
       <ExperiencesStrip />
-      <Pricing />
+      
       <PlanMyTrip />
       <Newsletter />
       <Footer />
