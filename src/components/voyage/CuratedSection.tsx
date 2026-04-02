@@ -63,7 +63,7 @@ const CuratedSection = () => {
         </ScrollReveal>
         <ScrollReveal>
           <p className="text-[0.88rem] text-voyage-white/50 max-w-[560px] mx-auto leading-relaxed text-center mb-10">
-            In a one-to-one call, we listen first. Then we design a clear, day-by-day plan that fits you. We make sure the journey flows, makes sense, and comes with the right tips, tools, and local insight to travel well. Our pricing depends on group size and trip length.
+            Every trip starts with a conversation. We get to know how you travel, then craft a detailed, day-by-day itinerary — complete with insider recommendations, practical tips, and local knowledge so everything runs smoothly. Pricing varies by group size and trip length.
           </p>
         </ScrollReveal>
 
