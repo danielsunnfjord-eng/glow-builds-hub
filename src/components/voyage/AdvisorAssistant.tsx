@@ -16,6 +16,7 @@ interface ClientProject {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  fileName?: string;
 }
 
 interface AdvisorAssistantProps {
@@ -40,8 +41,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
+  const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
@@ -120,11 +123,62 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     [selectedProject]
   );
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast({ title: "File too large", description: "Max 5MB allowed.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      if (file.type === "application/pdf") {
+        // Extract text from PDF using edge function
+        const formData = new FormData();
+        formData.append("file", file);
+        const resp = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-form-upload`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+            body: formData,
+          }
+        );
+        if (!resp.ok) throw new Error("Failed to parse PDF");
+        const { text } = await resp.json();
+        setAttachedFile({ name: file.name, content: text });
+      } else {
+        // Plain text / csv / etc
+        const text = await file.text();
+        setAttachedFile({ name: file.name, content: text });
+      }
+      toast({ title: `📎 ${file.name} attached`, description: "The file content will be sent with your next message." });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSend = async (text?: string) => {
     const msg = text || input.trim();
-    if (!msg || isLoading) return;
+    if ((!msg && !attachedFile) || isLoading) return;
 
-    const userMsg: Message = { role: "user", content: msg };
+    let userContent = msg;
+    let fileName: string | undefined;
+
+    if (attachedFile) {
+      const fileBlock = `\n\n---\n📎 Uploaded form: **${attachedFile.name}**\n\`\`\`\n${attachedFile.content.slice(0, 8000)}\n\`\`\``;
+      userContent = (msg || "Here is the client's inquiry form. Please use this information to help create the itinerary.") + fileBlock;
+      fileName = attachedFile.name;
+      setAttachedFile(null);
+    }
+
+    if (!userContent) return;
+
+    const userMsg: Message = { role: "user", content: userContent, fileName };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setInput("");
@@ -286,7 +340,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
-                    msg.content
+                    <div>
+                      {msg.fileName && (
+                        <span className="inline-block mb-1.5 px-2 py-0.5 bg-voyage-white/20 rounded text-[0.68rem]">📎 {msg.fileName}</span>
+                      )}
+                      <p className="whitespace-pre-wrap">{msg.content.replace(/\n\n---\n📎 Uploaded form:[\s\S]*$/, "").trim() || `Uploaded ${msg.fileName}`}</p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -319,7 +378,28 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
           {/* Input */}
           <div className="p-3 border-t border-parchment-3">
+            {attachedFile && (
+              <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-gold/10 border border-gold/20 rounded-sm text-[0.72rem] text-gold">
+                <span>📎 {attachedFile.name}</span>
+                <button onClick={() => setAttachedFile(null)} className="ml-auto text-destructive hover:text-destructive/80 text-xs">✕</button>
+              </div>
+            )}
             <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.txt,.csv,.doc,.docx,.rtf,.md"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                title="Upload client form"
+                className="px-3 py-2 rounded-sm border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-40 self-end text-lg"
+              >
+                📎
+              </button>
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -336,7 +416,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               />
               <button
                 onClick={() => handleSend()}
-                disabled={isLoading || !input.trim()}
+                disabled={isLoading || (!input.trim() && !attachedFile)}
                 className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40 self-end"
               >
                 Send
