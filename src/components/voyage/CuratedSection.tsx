@@ -6,6 +6,13 @@ const perks = [
   { icon: "📞", title: "A real person, always reachable", desc: "Before, during and after your trip. If anything changes or goes wrong, I handle it — not a call centre." },
 ];
 
+const pricingData = [
+  { group: "1–2 people", duration: "Up to 7 days", price: "€225" },
+  { group: "1–2 people", duration: "8–14 days", price: "€275" },
+  { group: "3–5 people", duration: "Any duration", price: "€225" },
+  { group: "6+ people", duration: "Any duration", price: "€425" },
+];
+
 const CuratedSection = () => {
   return (
     <section className="py-28 px-16 bg-ink text-voyage-white max-md:px-6 max-md:py-16" id="curated">
@@ -46,6 +53,51 @@ const CuratedSection = () => {
               </div>
             ))}
           </div>
+        </ScrollReveal>
+      </div>
+
+      {/* Pricing subsection */}
+      <div className="mt-24 max-w-3xl mx-auto" id="pricing">
+        <ScrollReveal>
+          <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3 text-center">Pricing</div>
+        </ScrollReveal>
+        <ScrollReveal>
+          <p className="text-[0.88rem] text-voyage-white/50 max-w-[560px] mx-auto leading-relaxed text-center mb-10">
+            In a one-to-one call, we listen first. Then we design a clear, day-by-day plan that fits you. We make sure the journey flows, makes sense, and comes with the right tips, tools, and local insight to travel well. Our pricing depends on group size and trip length.
+          </p>
+        </ScrollReveal>
+
+        <ScrollReveal>
+          <div className="overflow-hidden rounded-lg border border-voyage-white/[0.06]">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-voyage-white/[0.05]">
+                  <th className="text-left py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">Group Size</th>
+                  <th className="text-left py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">Duration</th>
+                  <th className="text-right py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pricingData.map((row, i) => (
+                  <tr
+                    key={i}
+                    className="border-t border-voyage-white/[0.06] hover:bg-voyage-white/[0.03] transition-colors"
+                  >
+                    <td className="py-3.5 px-5 text-voyage-white text-[0.85rem]">{row.group}</td>
+                    <td className="py-3.5 px-5 text-voyage-white/50 text-[0.85rem]">{row.duration}</td>
+                    <td className="py-3.5 px-5 text-right font-semibold text-gold text-[0.85rem]">{row.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal>
+          <p className="text-[0.78rem] text-voyage-white/40 mt-5 text-center leading-relaxed">
+            The price includes the consultation and delivery of the itinerary.<br />
+            We do not make bookings for you in this service, but we can do it by request and for an additional fee.
+          </p>
         </ScrollReveal>
       </div>
     </section>
