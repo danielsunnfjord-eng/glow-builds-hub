@@ -280,6 +280,23 @@ const AdminDashboard = () => {
     pending_payment: projects.filter((p) => p.payment_status === "pending").length,
   };
 
+  // Earnings calculations
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1)); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const sumPrices = (list: ClientProject[]) =>
+    list.reduce((sum, p) => sum + (p.price || 0), 0);
+
+  const paidProjects = projects.filter((p) => p.payment_status === "paid");
+  const earningsTotal = sumPrices(paidProjects);
+  const earningsYear = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
+  const earningsMonth = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
+  const earningsWeek = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
   const selectClass = inputClass;
 
