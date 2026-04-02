@@ -123,11 +123,62 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     [selectedProject]
   );
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast({ title: "File too large", description: "Max 5MB allowed.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      if (file.type === "application/pdf") {
+        // Extract text from PDF using edge function
+        const formData = new FormData();
+        formData.append("file", file);
+        const resp = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/parse-form-upload`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+            body: formData,
+          }
+        );
+        if (!resp.ok) throw new Error("Failed to parse PDF");
+        const { text } = await resp.json();
+        setAttachedFile({ name: file.name, content: text });
+      } else {
+        // Plain text / csv / etc
+        const text = await file.text();
+        setAttachedFile({ name: file.name, content: text });
+      }
+      toast({ title: `📎 ${file.name} attached`, description: "The file content will be sent with your next message." });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+    // Reset file input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSend = async (text?: string) => {
     const msg = text || input.trim();
-    if (!msg || isLoading) return;
+    if ((!msg && !attachedFile) || isLoading) return;
 
-    const userMsg: Message = { role: "user", content: msg };
+    let userContent = msg;
+    let fileName: string | undefined;
+
+    if (attachedFile) {
+      const fileBlock = `\n\n---\n📎 Uploaded form: **${attachedFile.name}**\n\`\`\`\n${attachedFile.content.slice(0, 8000)}\n\`\`\``;
+      userContent = (msg || "Here is the client's inquiry form. Please use this information to help create the itinerary.") + fileBlock;
+      fileName = attachedFile.name;
+      setAttachedFile(null);
+    }
+
+    if (!userContent) return;
+
+    const userMsg: Message = { role: "user", content: userContent, fileName };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setInput("");
