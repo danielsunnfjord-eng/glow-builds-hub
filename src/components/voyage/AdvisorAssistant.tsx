@@ -373,7 +373,28 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
           {/* Input */}
           <div className="p-3 border-t border-parchment-3">
+            {attachedFile && (
+              <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-gold/10 border border-gold/20 rounded-sm text-[0.72rem] text-gold">
+                <span>📎 {attachedFile.name}</span>
+                <button onClick={() => setAttachedFile(null)} className="ml-auto text-destructive hover:text-destructive/80 text-xs">✕</button>
+              </div>
+            )}
             <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.txt,.csv,.doc,.docx,.rtf,.md"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                title="Upload client form"
+                className="px-3 py-2 rounded-sm border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-40 self-end text-lg"
+              >
+                📎
+              </button>
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -390,7 +411,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               />
               <button
                 onClick={() => handleSend()}
-                disabled={isLoading || !input.trim()}
+                disabled={isLoading || (!input.trim() && !attachedFile)}
                 className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40 self-end"
               >
                 Send
