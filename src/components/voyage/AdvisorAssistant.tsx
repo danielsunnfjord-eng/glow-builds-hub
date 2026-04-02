@@ -340,7 +340,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
-                    msg.content
+                    <div>
+                      {msg.fileName && (
+                        <span className="inline-block mb-1.5 px-2 py-0.5 bg-voyage-white/20 rounded text-[0.68rem]">📎 {msg.fileName}</span>
+                      )}
+                      <p className="whitespace-pre-wrap">{msg.content.replace(/\n\n---\n📎 Uploaded form:[\s\S]*$/, "").trim() || `Uploaded ${msg.fileName}`}</p>
+                    </div>
                   )}
                 </div>
               </div>
