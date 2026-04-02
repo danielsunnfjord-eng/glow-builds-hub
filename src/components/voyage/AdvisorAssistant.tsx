@@ -41,8 +41,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
+  const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
