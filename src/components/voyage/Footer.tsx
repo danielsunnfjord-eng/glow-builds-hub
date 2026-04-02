@@ -38,7 +38,7 @@ const Footer = () => {
       </footer>
       <div className="bg-ink-2 px-16 py-5 flex justify-between items-center border-t border-voyage-white/[0.06] max-md:px-6 max-md:flex-col max-md:gap-2">
         <p className="text-[0.72rem] text-voyage-white/25">© 2026 Fjord & Waves Tours. All rights reserved. · Org.nr: 928804860</p>
-        <button onClick={() => navigate("/admin")} className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">Admin ·</button>
+        <button onClick={() => navigate("/login")} className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">Admin ·</button>
       </div>
     </>
   );
