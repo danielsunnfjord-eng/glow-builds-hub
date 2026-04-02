@@ -42,6 +42,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
+  const [isEditingPreview, setIsEditingPreview] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -429,34 +430,57 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
             <h3 className="font-serif text-sm font-bold text-ink">Itinerary Preview</h3>
-            {itineraryContent && (
-              <button
-                onClick={handleExportPdf}
-                className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
-              >
-                📄 Export PDF
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {itineraryContent && (
+                <>
+                  <button
+                    onClick={() => setIsEditingPreview(!isEditingPreview)}
+                    className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
+                      isEditingPreview
+                        ? "bg-sage text-voyage-white hover:bg-sage/80"
+                        : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+                    }`}
+                  >
+                    {isEditingPreview ? "✓ Done" : "✏️ Edit"}
+                  </button>
+                  <button
+                    onClick={handleExportPdf}
+                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                  >
+                    📄 Export PDF
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 max-h-[500px]">
             {itineraryContent ? (
-              <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3">
-                {selectedProject && (
-                  <div className="text-center mb-6 pb-4 border-b border-parchment-3">
-                    <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Tours</p>
-                    <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
-                      {selectedProject.destination || "Travel"} Itinerary
-                    </h1>
-                    <p className="text-[0.75rem] text-voyage-muted">
-                      Prepared for <strong>{selectedProject.client_name}</strong>
-                      {selectedProject.trip_duration && ` · ${selectedProject.trip_duration}`}
-                      {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} travellers`}
-                    </p>
-                  </div>
-                )}
-                <ReactMarkdown>{itineraryContent}</ReactMarkdown>
-              </div>
+              isEditingPreview ? (
+                <textarea
+                  value={itineraryContent}
+                  onChange={(e) => setItineraryContent(e.target.value)}
+                  className="w-full h-full min-h-[400px] p-3 bg-parchment border border-parchment-3 rounded-sm text-ink text-[0.82rem] font-mono leading-relaxed focus:outline-none focus:border-gold transition-colors resize-none"
+                  placeholder="Edit the itinerary markdown here..."
+                />
+              ) : (
+                <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3">
+                  {selectedProject && (
+                    <div className="text-center mb-6 pb-4 border-b border-parchment-3">
+                      <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Tours</p>
+                      <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
+                        {selectedProject.destination || "Travel"} Itinerary
+                      </h1>
+                      <p className="text-[0.75rem] text-voyage-muted">
+                        Prepared for <strong>{selectedProject.client_name}</strong>
+                        {selectedProject.trip_duration && ` · ${selectedProject.trip_duration}`}
+                        {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} travellers`}
+                      </p>
+                    </div>
+                  )}
+                  <ReactMarkdown>{itineraryContent}</ReactMarkdown>
+                </div>
+              )
             ) : (
               <div className="flex items-center justify-center h-full text-center">
                 <div>
