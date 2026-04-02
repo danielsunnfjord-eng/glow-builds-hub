@@ -42,6 +42,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
+  const [isEditingPreview, setIsEditingPreview] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
