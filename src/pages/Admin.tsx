@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
@@ -89,7 +90,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
-
+  const [activeTab, setActiveTab] = useState<"projects" | "assistant">("projects");
   // Send email dialog
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendProject, setSendProject] = useState<ClientProject | null>(null);
@@ -330,7 +331,43 @@ const AdminDashboard = () => {
           </div>
         </nav>
 
+        {/* Tab Navigation */}
+        <div className="bg-voyage-white border-b border-parchment-3 px-10 max-md:px-6">
+          <div className="max-w-[1200px] mx-auto flex gap-1">
+            <button
+              onClick={() => setActiveTab("projects")}
+              className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${
+                activeTab === "projects"
+                  ? "border-gold text-ink"
+                  : "border-transparent text-voyage-muted hover:text-ink"
+              }`}
+            >
+              📋 Projects
+            </button>
+            <button
+              onClick={() => setActiveTab("assistant")}
+              className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${
+                activeTab === "assistant"
+                  ? "border-gold text-ink"
+                  : "border-transparent text-voyage-muted hover:text-ink"
+              }`}
+            >
+              🤖 Advisor Assistant
+            </button>
+          </div>
+        </div>
+
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
+          {activeTab === "assistant" ? (
+            <div>
+              <div className="mb-8">
+                <h1 className="font-serif text-3xl font-bold mb-1">Advisor Assistant</h1>
+                <p className="text-[0.85rem] text-voyage-muted">AI-powered itinerary builder — create, refine and export personalised travel plans.</p>
+              </div>
+              <AdvisorAssistant projects={projects as any} />
+            </div>
+          ) : (
+          <>
           {/* Header */}
           <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
             <div>
@@ -467,6 +504,8 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+          )}
+          </>
           )}
         </div>
       </div>
