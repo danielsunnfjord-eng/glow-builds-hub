@@ -33,7 +33,6 @@ const Navbar = () => {
         <button onClick={() => goToSection("pricing")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
           Pricing
         </button>
-        </button>
         <button
           onClick={() => goToSection("enquiry")}
           className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
