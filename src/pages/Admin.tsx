@@ -280,6 +280,23 @@ const AdminDashboard = () => {
     pending_payment: projects.filter((p) => p.payment_status === "pending").length,
   };
 
+  // Earnings calculations
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1)); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const sumPrices = (list: ClientProject[]) =>
+    list.reduce((sum, p) => sum + (p.price || 0), 0);
+
+  const paidProjects = projects.filter((p) => p.payment_status === "paid");
+  const earningsTotal = sumPrices(paidProjects);
+  const earningsYear = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
+  const earningsMonth = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
+  const earningsWeek = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
   const selectClass = inputClass;
 
@@ -340,7 +357,23 @@ const AdminDashboard = () => {
             ))}
           </div>
 
-          {/* Filters */}
+          {/* Earnings Overview */}
+          <div className="mb-8">
+            <h2 className="text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted mb-3">Earnings Overview (Paid)</h2>
+            <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4">
+              {[
+                { label: "This Week", val: earningsWeek },
+                { label: "This Month", val: earningsMonth },
+                { label: `Year ${now.getFullYear()}`, val: earningsYear },
+                { label: "All Time", val: earningsTotal },
+              ].map((e) => (
+                <div key={e.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
+                  <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{e.label}</div>
+                  <div className="font-serif text-2xl font-bold text-sage">€{e.val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="flex gap-2 mb-6 flex-wrap">
             {(["all", "new", "in_progress", "delivered", "revision"] as const).map((f) => (
               <button
