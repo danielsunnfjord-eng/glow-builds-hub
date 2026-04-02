@@ -16,6 +16,7 @@ interface ClientProject {
 interface Message {
   role: "user" | "assistant";
   content: string;
+  fileName?: string;
 }
 
 interface AdvisorAssistantProps {
