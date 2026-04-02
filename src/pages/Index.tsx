@@ -26,8 +26,8 @@ const Index = () => {
       <Navbar />
       <Hero />
       <CuratedSection />
-      <ItineraryExamples />
       <ExperiencesStrip />
+      <ItineraryExamples />
       
       <PlanMyTrip />
       <Newsletter />
