@@ -22,6 +22,7 @@ export type Database = {
           destination: string | null
           group_size: number
           id: string
+          itinerary_pdf_path: string | null
           itinerary_status: string
           notes: string | null
           payment_status: string
@@ -37,6 +38,7 @@ export type Database = {
           destination?: string | null
           group_size?: number
           id?: string
+          itinerary_pdf_path?: string | null
           itinerary_status?: string
           notes?: string | null
           payment_status?: string
@@ -52,6 +54,7 @@ export type Database = {
           destination?: string | null
           group_size?: number
           id?: string
+          itinerary_pdf_path?: string | null
           itinerary_status?: string
           notes?: string | null
           payment_status?: string
