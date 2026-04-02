@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const AdminDashboard = () => {
@@ -34,6 +35,12 @@ const AdminDashboard = () => {
             className="px-4 py-2 rounded-sm border border-voyage-white/10 text-voyage-white/45 text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:border-voyage-white/30 hover:text-voyage-white transition-all ml-2"
           >
             ← Back to site
+          </button>
+          <button
+            onClick={async () => { await supabase.auth.signOut(); navigate("/login"); }}
+            className="px-4 py-2 rounded-sm border border-destructive/30 text-destructive text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:bg-destructive/10 transition-all"
+          >
+            Logout
           </button>
         </div>
       </nav>
