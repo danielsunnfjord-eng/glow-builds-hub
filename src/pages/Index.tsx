@@ -28,7 +28,7 @@ const Index = () => {
       <CuratedSection />
       <ItineraryExamples />
       <ExperiencesStrip />
-      <Pricing />
+      
       <PlanMyTrip />
       <Newsletter />
       <Footer />
