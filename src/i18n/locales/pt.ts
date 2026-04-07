@@ -34,7 +34,9 @@ export default {
     groupSize: "Tamanho do Grupo",
     duration: "Duração",
     price: "Preço",
-    pricingNote: "O preço inclui a consultoria e entrega do roteiro.\nNão fazemos reservas neste serviço, mas podemos fazer sob solicitação e por uma taxa adicional.",
+    bookingFee: "Taxa de Reserva",
+    bookingFeeValue: "+7% do total das reservas",
+    pricingNote: "O preço inclui a consultoria e entrega do roteiro.\nA taxa de 7% se aplica a todas as reservas feitas através dos nossos serviços (hospedagem, atividades, transfers, etc.).",
   },
   pricingData: {
     r1group: "1–2 pessoas", r1dur: "Até 7 dias",

@@ -34,7 +34,9 @@ export default {
     groupSize: "Gruppestørrelse",
     duration: "Varighet",
     price: "Pris",
-    pricingNote: "Prisen inkluderer konsultasjon og levering av reiseprogrammet.\nVi gjør ikke bestillinger i denne tjenesten, men kan gjøre det på forespørsel mot et tilleggsgebyr.",
+    bookingFee: "Bestillingsgebyr",
+    bookingFeeValue: "+7 % av totale bestillinger",
+    pricingNote: "Prisen inkluderer konsultasjon og levering av reiseprogrammet.\n7 % bestillingsgebyr gjelder for alle reservasjoner gjort gjennom våre tjenester (overnatting, aktiviteter, transport, osv.).",
   },
   pricingData: {
     r1group: "1–2 personer", r1dur: "Opptil 7 dager",

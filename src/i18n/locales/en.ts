@@ -37,7 +37,9 @@ export default {
     groupSize: "Group Size",
     duration: "Duration",
     price: "Price",
-    pricingNote: "The price includes the consultation and delivery of the itinerary.\nWe do not make bookings for you in this service, but we can do it by request and for an additional fee.",
+    bookingFee: "Booking Fee",
+    bookingFeeValue: "+7% of total bookings",
+    pricingNote: "The price includes the consultation and delivery of the itinerary.\nThe 7% booking fee applies to all reservations made through our services (accommodation, activities, transfers, etc.).",
   },
   // Pricing data
   pricingData: {
