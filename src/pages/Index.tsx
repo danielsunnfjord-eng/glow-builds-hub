@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
 import Hero from "@/components/voyage/Hero";
 import CuratedSection from "@/components/voyage/CuratedSection";
-import ExperiencesStrip from "@/components/voyage/ExperiencesStrip";
+
 import ItineraryExamples from "@/components/voyage/ItineraryExamples";
 
 import Newsletter from "@/components/voyage/Newsletter";
