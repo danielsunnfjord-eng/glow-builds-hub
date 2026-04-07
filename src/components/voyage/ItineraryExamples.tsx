@@ -56,9 +56,22 @@ const ItineraryExamples = () => {
               <div className="aspect-[16/10] overflow-hidden">
                 <img src={trip.image} alt={trip.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               </div>
-              <div className="p-6">
-                <h3 className="font-serif text-[1.1rem] font-bold text-ink mb-1.5 group-hover:text-gold transition-colors">{trip.title}</h3>
-                <p className="text-[0.8rem] text-voyage-muted">{trip.location} · {trip.duration}</p>
+              <div className="p-6 flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-[1.1rem] font-bold text-ink mb-1.5 group-hover:text-gold transition-colors">{trip.title}</h3>
+                  <p className="text-[0.8rem] text-voyage-muted">{trip.location} · {trip.duration}</p>
+                </div>
+                {langFlags[trip.lang] && (
+                  <img
+                    src={langFlags[trip.lang].src}
+                    alt={langFlags[trip.lang].alt}
+                    width={24}
+                    height={16}
+                    loading="lazy"
+                    className="w-6 h-4 rounded-[2px] object-cover shrink-0 mt-1"
+                    title={langFlags[trip.lang].alt}
+                  />
+                )}
               </div>
             </a>
           </ScrollReveal>
