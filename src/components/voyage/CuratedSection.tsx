@@ -2,7 +2,7 @@ import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
 
 const CuratedSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const perks = [
     { icon: "🏨", title: t("curated.perk1Title"), desc: t("curated.perk1Desc") },
@@ -10,11 +10,20 @@ const CuratedSection = () => {
     { icon: "📞", title: t("curated.perk3Title"), desc: t("curated.perk3Desc") },
   ];
 
+  const isNok = i18n.language === "no";
+  const fmt = (eur: number) => {
+    if (isNok) {
+      const nok = Math.round(eur * 11.5);
+      return `kr ${nok.toLocaleString("nb-NO")}`;
+    }
+    return `€${eur}`;
+  };
+
   const pricingData = [
-    { group: t("pricingData.r1group"), duration: t("pricingData.r1dur"), price: "€225" },
-    { group: t("pricingData.r2group"), duration: t("pricingData.r2dur"), price: "€275" },
-    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: "€225" },
-    { group: t("pricingData.r4group"), duration: t("pricingData.r4dur"), price: "€425" },
+    { group: t("pricingData.r1group"), duration: t("pricingData.r1dur"), price: fmt(225) },
+    { group: t("pricingData.r2group"), duration: t("pricingData.r2dur"), price: fmt(275) },
+    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: fmt(225) },
+    { group: t("pricingData.r4group"), duration: t("pricingData.r4dur"), price: fmt(425) },
   ];
 
   return (
