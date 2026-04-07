@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
+import flagGb from "@/assets/flag-gb.png";
+import flagBr from "@/assets/flag-br.png";
+import flagNo from "@/assets/flag-no.png";
 
-const flags: Record<string, string> = { en: "🇬🇧", pt: "🇧🇷", no: "🇳🇴" };
+const flagImages: Record<string, string> = { en: flagGb, pt: flagBr, no: flagNo };
 
 interface LanguageSelectorProps {
   variant?: "light" | "dark";
@@ -11,23 +14,28 @@ const LanguageSelector = ({ variant = "light" }: LanguageSelectorProps) => {
   const langs = ["en", "pt", "no"] as const;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       {langs.map((lng) => (
         <button
           key={lng}
           onClick={() => i18n.changeLanguage(lng)}
           title={t(`lang.${lng}`)}
-          className={`px-1.5 py-0.5 rounded text-sm transition-all ${
+          className={`p-1 rounded transition-all ${
             i18n.language === lng
               ? variant === "dark"
-                ? "bg-voyage-white/20 text-voyage-white"
-                : "bg-ink/10 text-ink"
-              : variant === "dark"
-                ? "text-voyage-white/40 hover:text-voyage-white/70"
-                : "text-voyage-muted hover:text-ink"
+                ? "bg-voyage-white/20 ring-1 ring-voyage-white/30"
+                : "bg-ink/10 ring-1 ring-ink/20"
+              : "opacity-50 hover:opacity-80"
           }`}
         >
-          {flags[lng]}
+          <img
+            src={flagImages[lng]}
+            alt={t(`lang.${lng}`)}
+            width={24}
+            height={24}
+            loading="lazy"
+            className="w-6 h-6 rounded-sm object-cover"
+          />
         </button>
       ))}
     </div>
