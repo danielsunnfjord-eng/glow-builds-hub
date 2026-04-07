@@ -348,6 +348,88 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   // --- Drag-and-drop image reorder ---
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
+  // --- Undo/Redo ---
+  const [undoStack, setUndoStack] = useState<string[]>([]);
+  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const lastContentRef = useRef(itineraryContent);
+
+  const pushUndo = useCallback((prev: string) => {
+    setUndoStack((s) => [...s.slice(-49), prev]);
+    setRedoStack([]);
+  }, []);
+
+  // Wrap setItineraryContent to track undo
+  const updateContent = useCallback((updater: string | ((prev: string) => string)) => {
+    setItineraryContent((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      if (next !== prev) {
+        pushUndo(prev);
+      }
+      return next;
+    });
+  }, [pushUndo]);
+
+  const handleUndo = useCallback(() => {
+    setUndoStack((stack) => {
+      if (stack.length === 0) return stack;
+      const prev = stack[stack.length - 1];
+      setRedoStack((r) => [...r, itineraryContent]);
+      setItineraryContent(prev);
+      return stack.slice(0, -1);
+    });
+  }, [itineraryContent]);
+
+  const handleRedo = useCallback(() => {
+    setRedoStack((stack) => {
+      if (stack.length === 0) return stack;
+      const next = stack[stack.length - 1];
+      setUndoStack((u) => [...u, itineraryContent]);
+      setItineraryContent(next);
+      return stack.slice(0, -1);
+    });
+  }, [itineraryContent]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleUndo, handleRedo]);
+
+  // Inline image insert at cursor position in textarea
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
+    const md = credit
+      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
+      : `\n\n![${alt}](${url})\n`;
+    const editor = editorRef.current;
+    if (editor && isEditingPreview) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const before = itineraryContent.slice(0, start);
+      const after = itineraryContent.slice(end);
+      updateContent(before + md + after);
+      setTimeout(() => {
+        editor.focus();
+        const newPos = start + md.length;
+        editor.setSelectionRange(newPos, newPos);
+      }, 0);
+    } else {
+      updateContent((prev) => prev + md);
+    }
+    toast({ title: "Image inserted" });
+  }, [isEditingPreview, itineraryContent, updateContent, toast]);
+
   const extractImages = (md: string) => {
     const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
     const imgs: { full: string; alt: string; url: string; credit: string }[] = [];
