@@ -88,16 +88,21 @@ const CuratedSection = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { icon: "🎯", key: "step1" },
-                { icon: "✨", key: "step2" },
-                { icon: "🗺️", key: "step3" },
-                { icon: "🏨", key: "step4" },
-                { icon: "⭐", key: "step5" },
-                { icon: "🤝", key: "step6" },
+                { icon: "✈️", title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
+                { icon: "🏨", title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
+                { icon: "🎭", title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
+                { icon: "🚗", title: t("experiences.transfers"), desc: t("experiences.transfersDesc") },
+                { icon: "🛳️", title: t("experiences.cruises"), desc: t("experiences.cruisesDesc") },
+                { icon: "🛡️", title: t("experiences.insurance"), desc: t("experiences.insuranceDesc") },
+                { icon: "🍷", title: t("experiences.dining"), desc: t("experiences.diningDesc") },
+                { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
               ].map((s) => (
-                <div key={s.key} className="flex items-start gap-3 p-3 rounded-md bg-voyage-white/[0.03] border border-voyage-white/[0.06]">
+                <div key={s.title} className="flex items-start gap-3 p-3 rounded-md bg-voyage-white/[0.03] border border-voyage-white/[0.06]">
                   <span className="text-lg shrink-0">{s.icon}</span>
-                  <p className="text-[0.82rem] text-voyage-white/70 leading-relaxed">{t(`curated.${s.key}`)}</p>
+                  <div>
+                    <p className="text-[0.82rem] text-voyage-white font-semibold mb-0.5">{s.title}</p>
+                    <p className="text-[0.75rem] text-voyage-white/50 leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
