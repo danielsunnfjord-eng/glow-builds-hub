@@ -29,7 +29,7 @@ const CuratedSection = () => {
   const pricingData = [
     { group: t("pricingData.r1group"), duration: t("pricingData.r1dur"), price: fmt(225, 0) },
     { group: t("pricingData.r2group"), duration: t("pricingData.r2dur"), price: fmt(275, 1) },
-    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: fmt(225, 2) },
+    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: fmt(300, 2) },
     { group: t("pricingData.r4group"), duration: t("pricingData.r4dur"), price: fmt(425, 3) },
   ];
 
