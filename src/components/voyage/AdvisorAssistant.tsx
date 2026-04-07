@@ -345,6 +345,45 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     printWindow.document.close();
   };
 
+  // --- Drag-and-drop image reorder ---
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  const extractImages = (md: string) => {
+    const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
+    const imgs: { full: string; alt: string; url: string; credit: string }[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = regex.exec(md)) !== null) {
+      imgs.push({ full: m[0], alt: m[1], url: m[2], credit: (m[3] || "").trim() });
+    }
+    return imgs;
+  };
+
+  const reorderImages = (fromIdx: number, toIdx: number) => {
+    const imgs = extractImages(itineraryContent);
+    if (fromIdx === toIdx || !imgs[fromIdx] || !imgs[toIdx]) return;
+
+    // Remove all image blocks, then re-insert in new order
+    let stripped = itineraryContent;
+    const placeholders = imgs.map((img, i) => {
+      const placeholder = `__IMG_PLACEHOLDER_${i}__`;
+      stripped = stripped.replace(img.full, placeholder);
+      return placeholder;
+    });
+
+    // Reorder
+    const reordered = [...imgs];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+
+    // Replace placeholders with reordered images
+    placeholders.forEach((ph, i) => {
+      stripped = stripped.replace(ph, reordered[i].full);
+    });
+
+    setItineraryContent(stripped);
+    toast({ title: "Image reordered" });
+  };
+
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
 
   return (
