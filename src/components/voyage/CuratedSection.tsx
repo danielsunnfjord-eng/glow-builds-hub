@@ -11,19 +11,26 @@ const CuratedSection = () => {
   ];
 
   const isNok = i18n.language === "no";
-  const fmt = (eur: number) => {
+  const isPt = i18n.language === "pt";
+
+  const brlPrices = [200, 300, 500, 750];
+
+  const fmt = (eur: number, idx: number) => {
     if (isNok) {
       const nok = Math.round(eur * 11.5 / 50) * 50;
       return `kr ${nok.toLocaleString("nb-NO")}`;
+    }
+    if (isPt) {
+      return `R$ ${brlPrices[idx]}`;
     }
     return `€${eur}`;
   };
 
   const pricingData = [
-    { group: t("pricingData.r1group"), duration: t("pricingData.r1dur"), price: fmt(225) },
-    { group: t("pricingData.r2group"), duration: t("pricingData.r2dur"), price: fmt(275) },
-    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: fmt(225) },
-    { group: t("pricingData.r4group"), duration: t("pricingData.r4dur"), price: fmt(425) },
+    { group: t("pricingData.r1group"), duration: t("pricingData.r1dur"), price: fmt(225, 0) },
+    { group: t("pricingData.r2group"), duration: t("pricingData.r2dur"), price: fmt(275, 1) },
+    { group: t("pricingData.r3group"), duration: t("pricingData.r3dur"), price: fmt(225, 2) },
+    { group: t("pricingData.r4group"), duration: t("pricingData.r4dur"), price: fmt(425, 3) },
   ];
 
   return (
