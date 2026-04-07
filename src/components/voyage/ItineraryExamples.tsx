@@ -8,7 +8,7 @@ const itineraries = [
     duration: "10 Days",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/64947bea-5a0e-49a2-a2c4-63b4562dabb4?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/0mksXRyeML",
-    lang: "pt",
+    lang: "en",
   },
   {
     title: "Fjord & Waves — Norway Surf & Fjord Experience",
