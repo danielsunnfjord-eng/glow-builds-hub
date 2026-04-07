@@ -40,6 +40,15 @@ export default {
     bookingFee: "Booking Fee",
     bookingFeeValue: "+7% of total bookings",
     pricingNote: "The price includes the consultation and delivery of the itinerary.\nThe 7% booking fee applies to all reservations made through our services (accommodation, activities, transfers, etc.).",
+    noPackages: "We do not sell travel packages.",
+    noPackagesDesc: "Our work is to understand each client's preferences, needs and expectations in order to create a fully personalised trip — taking care of every detail, from choosing the destination to bookings and exclusive recommendations.",
+    howServiceWorks: "How our service works",
+    step1: "Understanding your profile and expectations",
+    step2: "Personalised curation of destinations, hotels and experiences",
+    step3: "Optimised itinerary suggestion",
+    step4: "Booking support (hotels, transfers, tours, experiences, etc.)",
+    step5: "Access to exclusive benefits (when available), such as upgrades, credits and amenities",
+    step6: "Support throughout the entire planning process",
   },
   // Pricing data
   pricingData: {
