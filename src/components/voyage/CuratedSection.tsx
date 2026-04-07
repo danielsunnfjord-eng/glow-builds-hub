@@ -131,7 +131,8 @@ const CuratedSection = () => {
           <ScrollReveal>
             {isPt && (
               <div className="mb-4 text-center">
-                <span className="inline-block px-4 py-2 rounded-full bg-gold/15 border border-gold/30 text-gold text-[0.82rem] font-semibold">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30 text-gold text-[0.82rem] font-semibold">
+                  <img src={flagBr} alt="Brazil" width={20} height={20} loading="lazy" className="w-5 h-5 rounded-sm object-cover" />
                   {t("curated.pricingDomestic")}
                 </span>
               </div>
