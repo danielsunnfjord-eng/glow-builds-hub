@@ -8,6 +8,7 @@ const itineraries = [
     duration: "10 Days",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/64947bea-5a0e-49a2-a2c4-63b4562dabb4?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/0mksXRyeML",
+    lang: "pt",
   },
   {
     title: "Fjord & Waves — Norway Surf & Fjord Experience",
@@ -15,6 +16,7 @@ const itineraries = [
     duration: "6 Days",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/736dbd04-9878-47d8-92b7-ca0f931a2e3e?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/Ui0sRK66Lf",
+    lang: "en",
   },
   {
     title: "Norway's Hidden Gems",
@@ -22,8 +24,15 @@ const itineraries = [
     duration: "10 Attractions",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/1d567416-cca5-4a8d-bba2-589cc915b4b8?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/uopAhms8vz",
+    lang: "en",
   },
 ];
+
+const langFlags: Record<string, { src: string; alt: string }> = {
+  en: { src: "https://flagcdn.com/w40/gb.png", alt: "English" },
+  pt: { src: "https://flagcdn.com/w40/br.png", alt: "Português" },
+  no: { src: "https://flagcdn.com/w40/no.png", alt: "Norsk" },
+};
 
 const ItineraryExamples = () => {
   const { t } = useTranslation();
@@ -47,9 +56,22 @@ const ItineraryExamples = () => {
               <div className="aspect-[16/10] overflow-hidden">
                 <img src={trip.image} alt={trip.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               </div>
-              <div className="p-6">
-                <h3 className="font-serif text-[1.1rem] font-bold text-ink mb-1.5 group-hover:text-gold transition-colors">{trip.title}</h3>
-                <p className="text-[0.8rem] text-voyage-muted">{trip.location} · {trip.duration}</p>
+              <div className="p-6 flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-serif text-[1.1rem] font-bold text-ink mb-1.5 group-hover:text-gold transition-colors">{trip.title}</h3>
+                  <p className="text-[0.8rem] text-voyage-muted">{trip.location} · {trip.duration}</p>
+                </div>
+                {langFlags[trip.lang] && (
+                  <img
+                    src={langFlags[trip.lang].src}
+                    alt={langFlags[trip.lang].alt}
+                    width={24}
+                    height={16}
+                    loading="lazy"
+                    className="w-6 h-4 rounded-[2px] object-cover shrink-0 mt-1"
+                    title={langFlags[trip.lang].alt}
+                  />
+                )}
               </div>
             </a>
           </ScrollReveal>
