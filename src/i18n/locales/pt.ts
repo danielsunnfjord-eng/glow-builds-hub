@@ -36,7 +36,9 @@ export default {
     price: "Preço",
     bookingFee: "Taxa de Reserva",
     bookingFeeValue: "+7% do total das reservas",
-    pricingNote: "O preço inclui a consultoria e entrega do roteiro.\nA taxa de 7% se aplica a todas as reservas feitas através dos nossos serviços (hospedagem, atividades, transfers, etc.).",
+    pricingNote: "Os valores acima são para brasileiros em viagens domésticas.\nPara viagens internacionais, o valor é sob consulta.\nA taxa de 7% se aplica a todas as reservas feitas através dos nossos serviços (hospedagem, atividades, transfers, etc.).",
+    pricingDomestic: "🇧🇷 Valores para viagens domésticas no Brasil",
+    pricingInternational: "Para viagens internacionais, entre em contato para valores sob consulta.",
   },
   pricingData: {
     r1group: "1–2 pessoas", r1dur: "Até 7 dias",
