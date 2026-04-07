@@ -41,6 +41,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const { t, i18n } = useTranslation();
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedPrompts, setSelectedPrompts] = useState<Set<number>>(new Set());
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
@@ -525,16 +526,38 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     : t("aa.selectOrChat")}
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {QUICK_PROMPTS.slice(0, 3).map((p) => (
+                  {QUICK_PROMPTS.map((p, idx) => (
                     <button
                       key={p}
-                      onClick={() => handleSend(p)}
-                      className="px-3 py-1.5 rounded-full border border-gold/30 text-[0.72rem] text-gold hover:bg-gold/5 hover:border-gold transition-all"
+                      onClick={() => {
+                        setSelectedPrompts((prev) => {
+                          const next = new Set(prev);
+                          next.has(idx) ? next.delete(idx) : next.add(idx);
+                          return next;
+                        });
+                      }}
+                      className={`px-3 py-1.5 rounded-full border text-[0.72rem] transition-all ${
+                        selectedPrompts.has(idx)
+                          ? "bg-gold/20 text-gold border-gold font-semibold"
+                          : "border-gold/30 text-gold hover:bg-gold/5 hover:border-gold"
+                      }`}
                     >
-                      {p}
+                      {selectedPrompts.has(idx) ? "✓ " : ""}{p}
                     </button>
                   ))}
                 </div>
+                {selectedPrompts.size > 0 && (
+                  <button
+                    onClick={() => {
+                      const combined = Array.from(selectedPrompts).sort().map((i) => QUICK_PROMPTS[i]).join(". ");
+                      setSelectedPrompts(new Set());
+                      handleSend(combined);
+                    }}
+                    className="mt-3 px-5 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                  >
+                    {t("aa.sendSelected")} ({selectedPrompts.size})
+                  </button>
+                )}
               </div>
             )}
 
@@ -575,16 +598,40 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
           {/* Quick prompts */}
           {messages.length > 0 && !isLoading && (
-            <div className="px-4 pb-2 flex flex-wrap gap-1.5">
-              {QUICK_PROMPTS.map((p) => (
+            <div className="px-4 pb-2">
+              <div className="flex flex-wrap gap-1.5">
+                {QUICK_PROMPTS.map((p, idx) => (
+                  <button
+                    key={p}
+                    onClick={() => {
+                      setSelectedPrompts((prev) => {
+                        const next = new Set(prev);
+                        next.has(idx) ? next.delete(idx) : next.add(idx);
+                        return next;
+                      });
+                    }}
+                    className={`px-2.5 py-1 rounded-full border text-[0.65rem] transition-all ${
+                      selectedPrompts.has(idx)
+                        ? "bg-gold/20 text-gold border-gold font-semibold"
+                        : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+                    }`}
+                  >
+                    {selectedPrompts.has(idx) ? "✓ " : ""}{p}
+                  </button>
+                ))}
+              </div>
+              {selectedPrompts.size > 0 && (
                 <button
-                  key={p}
-                  onClick={() => handleSend(p)}
-                  className="px-2.5 py-1 rounded-full border border-parchment-3 text-[0.65rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
+                  onClick={() => {
+                    const combined = Array.from(selectedPrompts).sort().map((i) => QUICK_PROMPTS[i]).join(". ");
+                    setSelectedPrompts(new Set());
+                    handleSend(combined);
+                  }}
+                  className="mt-1.5 px-4 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                 >
-                  {p}
+                  {t("aa.sendSelected")} ({selectedPrompts.size})
                 </button>
-              ))}
+              )}
             </div>
           )}
 
