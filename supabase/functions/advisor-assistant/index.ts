@@ -33,7 +33,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, projectContext } = await req.json();
+    const { messages, projectContext, language } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -52,6 +52,11 @@ serve(async (req) => {
 
     // Build system prompt with project context if provided
     let systemContent = SYSTEM_PROMPT;
+
+    if (language && language !== "English") {
+      systemContent += `\n\nIMPORTANT: You MUST respond entirely in ${language}. All headings, descriptions, tips, and recommendations must be written in ${language}.`;
+    }
+
     if (projectContext) {
       systemContent += `\n\nCurrent client project context:
 - Client: ${projectContext.clientName || "Not specified"}
