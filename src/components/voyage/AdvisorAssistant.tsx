@@ -739,7 +739,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     {imageResults.map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => insertImageMarkdown(img.url, "Travel photo", img.credit)}
+                        onClick={() => insertImageAtCursor(img.url, "Travel photo", img.credit)}
                         className="group relative rounded-md overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
                       >
                         <img
