@@ -59,7 +59,11 @@ const langFlags: Record<string, { src: string; alt: string }> = {
 };
 
 const ItineraryExamples = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const currentLang = i18n.language?.startsWith("pt") ? "pt" : i18n.language?.startsWith("no") ? "no" : "en";
+  const filtered = itineraries.filter((trip) => trip.lang === currentLang);
+  const displayItems = filtered.length > 0 ? filtered : itineraries;
 
   return (
     <section className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16" id="itineraries">
@@ -74,7 +78,7 @@ const ItineraryExamples = () => {
       </ScrollReveal>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
-        {itineraries.map((trip) => (
+        {displayItems.map((trip) => (
           <ScrollReveal key={trip.url}>
             <a href={trip.url} target="_blank" rel="noopener noreferrer" className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer">
               <div className="aspect-[16/10] overflow-hidden">
