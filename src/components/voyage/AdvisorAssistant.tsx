@@ -69,20 +69,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   }, [messages]);
 
   // --- Image functions ---
-
-  const insertImageMarkdown = (url: string, alt: string, credit?: string) => {
-    const md = credit
-      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
-      : `\n\n![${alt}](${url})\n`;
-
-    if (isEditingPreview) {
-      setItineraryContent((prev) => prev + md);
-    } else {
-      setItineraryContent((prev) => prev + md);
-      setIsEditingPreview(false);
-    }
-    toast({ title: "Image added to itinerary" });
-  };
+  // insertImageMarkdown is now replaced by insertImageAtCursor (defined below with undo support)
 
   const handleAiImageGenerate = async () => {
     if (!aiImagePrompt.trim() || isGeneratingImage) return;
