@@ -42,6 +42,14 @@ const itineraries = [
     url: "https://trips.foratravel.com/i/vM5gVsy5yP",
     lang: "pt",
   },
+  {
+    title: "Sul da Itália — Experiência Premium",
+    location: "Italy",
+    duration: "10 Days",
+    image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/21f7e340-795e-40d0-9619-fe60374a329b?_a=BAVAZGID0",
+    url: "https://trips.foratravel.com/i/D7NaPKgMr2",
+    lang: "pt",
+  },
 ];
 
 const langFlags: Record<string, { src: string; alt: string }> = {
