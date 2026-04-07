@@ -87,6 +87,7 @@ const CuratedSection = () => {
                   <th className="text-left py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">{t("curated.groupSize")}</th>
                   <th className="text-left py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">{t("curated.duration")}</th>
                   <th className="text-right py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">{t("curated.price")}</th>
+                  <th className="text-right py-3.5 px-5 font-semibold text-voyage-white text-[0.82rem]">{t("curated.bookingFee")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -95,6 +96,7 @@ const CuratedSection = () => {
                     <td className="py-3.5 px-5 text-voyage-white text-[0.85rem]">{row.group}</td>
                     <td className="py-3.5 px-5 text-voyage-white/50 text-[0.85rem]">{row.duration}</td>
                     <td className="py-3.5 px-5 text-right font-semibold text-gold text-[0.85rem]">{row.price}</td>
+                    <td className="py-3.5 px-5 text-right text-voyage-white/50 text-[0.82rem]">{t("curated.bookingFeeValue")}</td>
                   </tr>
                 ))}
               </tbody>
