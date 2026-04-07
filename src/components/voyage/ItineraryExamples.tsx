@@ -54,9 +54,9 @@ const itineraries = [
 ];
 
 const langFilters = [
-  { key: "all", label: "All", flag: null },
-  { key: "en", label: "English", flag: "https://flagcdn.com/w40/gb.png" },
-  { key: "pt", label: "Português", flag: "https://flagcdn.com/w40/br.png" },
+  { key: "all", labelKey: "itineraryExamples.filterAll", flag: null },
+  { key: "en", labelKey: "itineraryExamples.filterEn", flag: "https://flagcdn.com/w40/gb.png" },
+  { key: "pt", labelKey: "itineraryExamples.filterPt", flag: "https://flagcdn.com/w40/br.png" },
 ];
 
 const langFlags: Record<string, { src: string; alt: string }> = {
@@ -95,9 +95,9 @@ const ItineraryExamples = () => {
             }`}
           >
             {f.flag && (
-              <img src={f.flag} alt={f.label} className="w-5 h-3.5 rounded-[2px] object-cover" />
+              <img src={f.flag} alt={t(f.labelKey)} className="w-5 h-3.5 rounded-[2px] object-cover" />
             )}
-            {f.label}
+            {t(f.labelKey)}
           </button>
         ))}
       </div>

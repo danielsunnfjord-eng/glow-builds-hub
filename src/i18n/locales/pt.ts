@@ -80,6 +80,9 @@ export default {
     badge: "Inspiração",
     title: "Roteiros exemplo",
     subtitle: "Cada viagem é única — mas aqui está uma amostra do que já criei para outros viajantes.",
+    filterAll: "Todos",
+    filterEn: "Inglês",
+    filterPt: "Português",
   },
   planTrip: {
     title: "Planeje sua viagem",

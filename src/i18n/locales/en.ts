@@ -84,6 +84,9 @@ export default {
     badge: "Inspiration",
     title: "Sample itineraries",
     subtitle: "Every trip is custom — but here's a taste of what I've crafted for past travellers.",
+    filterAll: "All",
+    filterEn: "English",
+    filterPt: "Portuguese",
   },
   // Plan My Trip
   planTrip: {

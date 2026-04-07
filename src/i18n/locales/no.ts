@@ -78,6 +78,9 @@ export default {
     badge: "Inspirasjon",
     title: "Eksempel-reiseprogrammer",
     subtitle: "Hver reise er unik — men her er en smakebit av hva jeg har laget for tidligere reisende.",
+    filterAll: "Alle",
+    filterEn: "Engelsk",
+    filterPt: "Portugisisk",
   },
   planTrip: {
     title: "Planlegg min reise",
