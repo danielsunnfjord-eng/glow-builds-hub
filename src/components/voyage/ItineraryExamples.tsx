@@ -26,6 +26,14 @@ const itineraries = [
     url: "https://trips.foratravel.com/i/uopAhms8vz",
     lang: "en",
   },
+  {
+    title: "Verão na Noruega — Condado de Vestland",
+    location: "Vestland, Norway",
+    duration: "Itinerário Base",
+    image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/44024830-0b55-4ade-9055-9a7ab4d2acfd?_a=BAVAZGID0",
+    url: "https://trips.foratravel.com/i/UqWIpF4Vw7",
+    lang: "pt",
+  },
 ];
 
 const langFlags: Record<string, { src: string; alt: string }> = {
