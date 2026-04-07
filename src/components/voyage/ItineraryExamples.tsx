@@ -8,6 +8,7 @@ const itineraries = [
     duration: "10 Days",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/64947bea-5a0e-49a2-a2c4-63b4562dabb4?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/0mksXRyeML",
+    lang: "pt",
   },
   {
     title: "Fjord & Waves — Norway Surf & Fjord Experience",
@@ -15,6 +16,7 @@ const itineraries = [
     duration: "6 Days",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/736dbd04-9878-47d8-92b7-ca0f931a2e3e?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/Ui0sRK66Lf",
+    lang: "en",
   },
   {
     title: "Norway's Hidden Gems",
@@ -22,8 +24,15 @@ const itineraries = [
     duration: "10 Attractions",
     image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/1d567416-cca5-4a8d-bba2-589cc915b4b8?_a=BAVAZGID0",
     url: "https://trips.foratravel.com/i/uopAhms8vz",
+    lang: "en",
   },
 ];
+
+const langFlags: Record<string, { src: string; alt: string }> = {
+  en: { src: "https://flagcdn.com/w40/gb.png", alt: "English" },
+  pt: { src: "https://flagcdn.com/w40/br.png", alt: "Português" },
+  no: { src: "https://flagcdn.com/w40/no.png", alt: "Norsk" },
+};
 
 const ItineraryExamples = () => {
   const { t } = useTranslation();
