@@ -1,6 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
-import flagBr from "@/assets/flag-br.png";
+const FLAG_BR = "https://flagcdn.com/w80/br.png";
 
 const CuratedSection = () => {
   const { t, i18n } = useTranslation();
@@ -132,7 +132,7 @@ const CuratedSection = () => {
             {isPt && (
               <div className="mb-4 text-center">
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 border border-gold/30 text-gold text-[0.82rem] font-semibold">
-                  <img src={flagBr} alt="Brazil" width={20} height={20} loading="lazy" className="w-5 h-5 rounded-sm object-cover" />
+                  <img src={FLAG_BR} alt="Brazil" width={20} height={14} loading="lazy" className="w-5 h-3.5 rounded-[2px] object-cover" />
                   {t("curated.pricingDomestic")}
                 </span>
               </div>
