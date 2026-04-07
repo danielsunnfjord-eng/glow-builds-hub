@@ -1,6 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
-import flagBr from "@/assets/flag-br.png";
+const FLAG_BR = "https://flagcdn.com/w80/br.png";
 
 const CuratedSection = () => {
   const { t, i18n } = useTranslation();
