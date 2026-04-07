@@ -37,7 +37,7 @@ export default {
     bookingFee: "Taxa de Reserva",
     bookingFeeValue: "+7% do total das reservas",
     pricingNote: "Os valores acima são para brasileiros em viagens domésticas.\nPara viagens internacionais, o valor é sob consulta.\nA taxa de 7% se aplica a todas as reservas feitas através dos nossos serviços (hospedagem, atividades, transfers, etc.).",
-    pricingDomestic: "🇧🇷 Valores para viagens domésticas no Brasil",
+    pricingDomestic: "Valores para viagens domésticas no Brasil",
     pricingInternational: "Para viagens internacionais, entre em contato para valores sob consulta.",
     noPackages: "Não vendemos pacotes de viagens.",
     noPackagesDesc: "Nosso trabalho é entender as preferências, necessidades e expectativas de cada cliente a fim de criar uma viagem totalmente personalizada — cuidando de cada detalhe, desde a escolha do destino até reservas e recomendações exclusivas.",
