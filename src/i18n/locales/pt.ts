@@ -270,5 +270,6 @@ export default {
     qpAdventure: "Incluir atividades de aventura",
     qpTips: "Adicionar dicas práticas de viagem",
     qpRomantic: "Tornar mais romântico / estilo lua de mel",
+    sendSelected: "Enviar selecionados",
   },
 };

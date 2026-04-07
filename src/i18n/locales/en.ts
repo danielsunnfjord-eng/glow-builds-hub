@@ -285,5 +285,6 @@ export default {
     qpAdventure: "Include adventure activities",
     qpTips: "Add practical travel tips",
     qpRomantic: "Make it more romantic / honeymoon style",
+    sendSelected: "Send selected",
   },
 };
