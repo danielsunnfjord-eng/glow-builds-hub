@@ -34,6 +34,14 @@ const itineraries = [
     url: "https://trips.foratravel.com/i/UqWIpF4Vw7",
     lang: "pt",
   },
+  {
+    title: "Norte da Itália — Experiência Premium",
+    location: "Italy",
+    duration: "10 Days",
+    image: "https://media.fora.travel/foratravelportal/image/upload/c_limit,w_1600/f_auto/q_auto/v1/30fb1b96-88fb-4189-9801-55c4e975b70e?_a=BAVAZGID0",
+    url: "https://trips.foratravel.com/i/vM5gVsy5yP",
+    lang: "pt",
+  },
 ];
 
 const langFlags: Record<string, { src: string; alt: string }> = {
