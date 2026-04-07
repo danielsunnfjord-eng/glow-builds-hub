@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 
 interface ClientProject {
@@ -23,18 +24,6 @@ interface AdvisorAssistantProps {
   projects: ClientProject[];
 }
 
-const QUICK_PROMPTS = [
-  "Create a full day-by-day itinerary",
-  "Suggest luxury accommodations",
-  "Add restaurant recommendations",
-  "Include adventure activities",
-  "Add practical travel tips",
-  "Make it more romantic / honeymoon style",
-];
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/advisor-assistant`;
-const IMAGE_GEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-itinerary-image`;
-
 const PICSUM_CATEGORIES = [
   { label: "Landscape", seed: "landscape" },
   { label: "Mountain", seed: "mountain" },
@@ -44,8 +33,12 @@ const PICSUM_CATEGORIES = [
   { label: "Forest", seed: "forest" },
 ];
 
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/advisor-assistant`;
+const IMAGE_GEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-itinerary-image`;
+
 const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -64,13 +57,20 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
+  const QUICK_PROMPTS = [
+    t("aa.qpItinerary"),
+    t("aa.qpAccommodation"),
+    t("aa.qpRestaurant"),
+    t("aa.qpAdventure"),
+    t("aa.qpTips"),
+    t("aa.qpRomantic"),
+  ];
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // --- Image functions ---
-  // insertImageMarkdown is now replaced by insertImageAtCursor (defined below with undo support)
-
   const handleAiImageGenerate = async () => {
     if (!aiImagePrompt.trim() || isGeneratingImage) return;
     setIsGeneratingImage(true);
@@ -83,15 +83,15 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         },
         body: JSON.stringify({ prompt: aiImagePrompt }),
       });
-      if (!resp.ok) throw new Error("Image generation failed");
+      if (!resp.ok) throw new Error(t("aa.genFailed"));
       const { imageUrl } = await resp.json();
       setImageResults((prev) => [
         { url: imageUrl, credit: "AI Generated — Fjord & Waves Tours" },
         ...prev,
       ]);
-      toast({ title: "✨ AI image generated!" });
+      toast({ title: `✨ ${t("aa.aiImageGenerated")}` });
     } catch (err: any) {
-      toast({ title: "Generation failed", description: err.message, variant: "destructive" });
+      toast({ title: t("aa.genFailed"), description: err.message, variant: "destructive" });
     } finally {
       setIsGeneratingImage(false);
     }
@@ -111,11 +111,11 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast({ title: "Please select an image file", variant: "destructive" });
+      toast({ title: t("aa.selectImage"), variant: "destructive" });
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "Image too large (max 10MB)", variant: "destructive" });
+      toast({ title: t("aa.imageTooLarge"), variant: "destructive" });
       return;
     }
 
@@ -134,15 +134,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         { url: data.publicUrl, credit: "Uploaded by advisor" },
         ...prev,
       ]);
-      toast({ title: `📷 ${file.name} uploaded!` });
+      toast({ title: `📷 ${file.name} ${t("aa.uploaded")}` });
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
     }
     if (imageUploadRef.current) imageUploadRef.current.value = "";
   };
 
-  // --- Chat functions (unchanged) ---
-
+  // --- Chat functions ---
   const streamChat = useCallback(
     async (userMessages: Message[]) => {
       const projectContext = selectedProject
@@ -155,13 +154,23 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           }
         : undefined;
 
+      const langMap: Record<string, string> = {
+        en: "English",
+        pt: "Brazilian Portuguese",
+        no: "Norwegian",
+      };
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: userMessages, projectContext }),
+        body: JSON.stringify({
+          messages: userMessages,
+          projectContext,
+          language: langMap[i18n.language] || "English",
+        }),
       });
 
       if (!resp.ok) {
@@ -211,7 +220,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       }
       return assistantContent;
     },
-    [selectedProject]
+    [selectedProject, i18n.language]
   );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -220,7 +229,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      toast({ title: "File too large", description: "Max 5MB allowed.", variant: "destructive" });
+      toast({ title: t("aa.fileTooLarge"), description: t("aa.fileTooLargeDesc"), variant: "destructive" });
       return;
     }
 
@@ -243,9 +252,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         const text = await file.text();
         setAttachedFile({ name: file.name, content: text });
       }
-      toast({ title: `📎 ${file.name} attached`, description: "The file content will be sent with your next message." });
+      toast({ title: `📎 ${file.name} ${t("aa.attached")}`, description: t("aa.attachedDesc") });
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -285,14 +294,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const handleExportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      toast({ title: "Please allow popups to export PDF", variant: "destructive" });
+      toast({ title: t("aa.popupBlocked"), variant: "destructive" });
       return;
     }
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Itinerary — ${selectedProject?.client_name || "Client"}</title>
+        <title>${t("aa.itinerary")} — ${selectedProject?.client_name || "Client"}</title>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap');
           body { font-family: 'Inter', sans-serif; color: #1a1a2e; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.7; }
@@ -316,8 +325,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       <body>
         <div class="header">
           <div class="brand">Fjord & Waves Tours</div>
-          <h1>${selectedProject?.destination ? `${selectedProject.destination} Itinerary` : "Travel Itinerary"}</h1>
-          <p style="font-size:13px;color:#777;">Prepared for <strong>${selectedProject?.client_name || "Our Valued Client"}</strong>${selectedProject?.trip_duration ? ` · ${selectedProject.trip_duration}` : ""}${selectedProject?.group_size ? ` · ${selectedProject.group_size} traveller${selectedProject.group_size > 1 ? "s" : ""}` : ""}</p>
+          <h1>${selectedProject?.destination ? `${selectedProject.destination} ${t("aa.itinerary")}` : t("aa.itinerary")}</h1>
+          <p style="font-size:13px;color:#777;">${t("aa.preparedFor")} <strong>${selectedProject?.client_name || ""}</strong>${selectedProject?.trip_duration ? ` · ${selectedProject.trip_duration}` : ""}${selectedProject?.group_size && selectedProject.group_size > 1 ? ` · ${selectedProject.group_size} ${t("aa.travellers")}` : ""}</p>
         </div>
         <div id="content"></div>
         <div class="footer">© ${new Date().getFullYear()} Fjord & Waves Tours · Org.nr: 928804860</div>
@@ -338,14 +347,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   // --- Undo/Redo ---
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
-  const lastContentRef = useRef(itineraryContent);
 
   const pushUndo = useCallback((prev: string) => {
     setUndoStack((s) => [...s.slice(-49), prev]);
     setRedoStack([]);
   }, []);
 
-  // Wrap setItineraryContent to track undo
   const updateContent = useCallback((updater: string | ((prev: string) => string)) => {
     setItineraryContent((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
@@ -376,7 +383,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     });
   }, [itineraryContent]);
 
-  // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
@@ -392,7 +398,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     return () => window.removeEventListener("keydown", handler);
   }, [handleUndo, handleRedo]);
 
-  // Inline image insert at cursor position in textarea
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
@@ -414,8 +419,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     } else {
       updateContent((prev) => prev + md);
     }
-    toast({ title: "Image inserted" });
-  }, [isEditingPreview, itineraryContent, updateContent, toast]);
+    toast({ title: t("aa.imageInserted") });
+  }, [isEditingPreview, itineraryContent, updateContent, toast, t]);
 
   const extractImages = (md: string) => {
     const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
@@ -431,7 +436,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     const imgs = extractImages(itineraryContent);
     if (fromIdx === toIdx || !imgs[fromIdx] || !imgs[toIdx]) return;
 
-    // Remove all image blocks, then re-insert in new order
     let stripped = itineraryContent;
     const placeholders = imgs.map((img, i) => {
       const placeholder = `__IMG_PLACEHOLDER_${i}__`;
@@ -439,18 +443,16 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       return placeholder;
     });
 
-    // Reorder
     const reordered = [...imgs];
     const [moved] = reordered.splice(fromIdx, 1);
     reordered.splice(toIdx, 0, moved);
 
-    // Replace placeholders with reordered images
     placeholders.forEach((ph, i) => {
       stripped = stripped.replace(ph, reordered[i].full);
     });
 
     updateContent(stripped);
-    toast({ title: "Image reordered" });
+    toast({ title: t("aa.imageReordered") });
   };
 
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
@@ -460,14 +462,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       {/* Project Selector */}
       <div className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
         <label className="text-[0.7rem] font-semibold text-voyage-muted uppercase tracking-[0.12em] mb-2 block">
-          Link to Client Project
+          {t("aa.linkProject")}
         </label>
         <select
           value={selectedProjectId}
           onChange={(e) => setSelectedProjectId(e.target.value)}
           className={inputClass}
         >
-          <option value="">— Select a project —</option>
+          <option value="">{t("aa.selectProject")}</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
               {p.client_name} {p.destination ? `— ${p.destination}` : ""} {p.trip_duration ? `(${p.trip_duration})` : ""}
@@ -486,7 +488,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               </span>
             )}
             <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
-              👥 {selectedProject.group_size} traveller{selectedProject.group_size > 1 ? "s" : ""}
+              👥 {selectedProject.group_size} {selectedProject.group_size > 1 ? t("aa.travellers") : "traveller"}
             </span>
             {selectedProject.trip_duration && (
               <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
@@ -502,13 +504,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         {/* Chat Panel */}
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
-            <h3 className="font-serif text-sm font-bold text-ink">Chat with AI</h3>
+            <h3 className="font-serif text-sm font-bold text-ink">{t("aa.chatTitle")}</h3>
             {messages.length > 0 && (
               <button
                 onClick={() => { setMessages([]); setItineraryContent(""); }}
                 className="text-[0.68rem] text-voyage-muted hover:text-destructive transition-colors"
               >
-                Clear chat
+                {t("aa.clearChat")}
               </button>
             )}
           </div>
@@ -519,8 +521,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               <div className="text-center py-8">
                 <p className="text-voyage-muted text-[0.85rem] mb-4">
                   {selectedProject
-                    ? `Ready to create an itinerary for ${selectedProject.client_name}!`
-                    : "Select a project above, or start chatting to create an itinerary."}
+                    ? t("aa.readyFor", { name: selectedProject.client_name })
+                    : t("aa.selectOrChat")}
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {QUICK_PROMPTS.slice(0, 3).map((p) => (
@@ -564,7 +566,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
               <div className="flex justify-start">
                 <div className="bg-parchment border border-parchment-3 rounded-lg px-4 py-3 text-[0.82rem] text-voyage-muted">
-                  <span className="animate-pulse">Thinking...</span>
+                  <span className="animate-pulse">{t("aa.thinking")}</span>
                 </div>
               </div>
             )}
@@ -605,7 +607,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
-                title="Upload client form"
+                title={t("aa.uploadForm")}
                 className="px-3 py-2 rounded-sm border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-40 self-end text-lg"
               >
                 📎
@@ -620,7 +622,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     handleSend();
                   }
                 }}
-                placeholder={selectedProject ? `Describe the itinerary for ${selectedProject.client_name}...` : "Describe the trip you want to plan..."}
+                placeholder={selectedProject ? t("aa.placeholder", { name: selectedProject.client_name }) : t("aa.placeholderGeneric")}
                 rows={2}
                 className="flex-1 px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold transition-colors resize-none"
               />
@@ -629,7 +631,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 disabled={isLoading || (!input.trim() && !attachedFile)}
                 className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40 self-end"
               >
-                Send
+                {t("aa.sendBtn")}
               </button>
             </div>
           </div>
@@ -638,7 +640,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         {/* Itinerary Preview Panel */}
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
-            <h3 className="font-serif text-sm font-bold text-ink">Itinerary Preview</h3>
+            <h3 className="font-serif text-sm font-bold text-ink">{t("aa.previewTitle")}</h3>
             <div className="flex items-center gap-2">
               {itineraryContent && (
                 <>
@@ -650,7 +652,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                         : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
                     }`}
                   >
-                    🖼️ Images
+                    🖼️ {t("aa.images")}
                   </button>
                   <button
                     onClick={() => setIsEditingPreview(!isEditingPreview)}
@@ -660,13 +662,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                         : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
                     }`}
                   >
-                    {isEditingPreview ? "✓ Done" : "✏️ Edit"}
+                    {isEditingPreview ? `✓ ${t("aa.done")}` : `✏️ ${t("aa.edit")}`}
                   </button>
                   <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
-                    📄 Export PDF
+                    📄 {t("aa.exportPdf")}
                   </button>
                 </>
               )}
@@ -676,15 +678,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           {/* Image Panel */}
           {showImagePanel && itineraryContent && (
             <div className="px-4 py-3 border-b border-parchment-3 bg-parchment/50 space-y-3">
-              {/* AI Generate */}
               <div>
-                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">✨ AI Generate</p>
+                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">✨ {t("aa.aiGenerate")}</p>
                 <div className="flex gap-2">
                   <input
                     value={aiImagePrompt}
                     onChange={(e) => setAiImagePrompt(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") handleAiImageGenerate(); }}
-                    placeholder="e.g. Northern Lights over Tromsø fjord..."
+                    placeholder={t("aa.aiPlaceholder")}
                     className="flex-1 px-2.5 py-1.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.78rem] focus:outline-none focus:border-gold transition-colors"
                   />
                   <button
@@ -692,14 +693,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     disabled={isGeneratingImage || !aiImagePrompt.trim()}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
                   >
-                    {isGeneratingImage ? "⏳" : "Generate"}
+                    {isGeneratingImage ? "⏳" : t("aa.generate")}
                   </button>
                 </div>
               </div>
 
-              {/* Stock Photos (Lorem Picsum) */}
               <div>
-                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">📸 Stock Photos (Free)</p>
+                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">📸 {t("aa.stockPhotos")}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {PICSUM_CATEGORIES.map((cat) => (
                     <button
@@ -713,9 +713,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 </div>
               </div>
 
-              {/* Upload from PC */}
               <div>
-                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">📤 Upload from PC</p>
+                <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">📤 {t("aa.uploadPc")}</p>
                 <input
                   ref={imageUploadRef}
                   type="file"
@@ -727,14 +726,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   onClick={() => imageUploadRef.current?.click()}
                   className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
                 >
-                  Choose image...
+                  {t("aa.chooseImage")}
                 </button>
               </div>
 
-              {/* Results gallery */}
               {imageResults.length > 0 && (
                 <div>
-                  <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">Click to insert into itinerary</p>
+                  <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">{t("aa.clickInsert")}</p>
                   <div className="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto">
                     {imageResults.map((img, i) => (
                       <button
@@ -742,14 +740,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                         onClick={() => insertImageAtCursor(img.url, "Travel photo", img.credit)}
                         className="group relative rounded-md overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
                       >
-                        <img
-                          src={img.url}
-                          alt="Travel"
-                          className="w-full h-20 object-cover"
-                          loading="lazy"
-                        />
+                        <img src={img.url} alt="Travel" className="w-full h-20 object-cover" loading="lazy" />
                         <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center">
-                          <span className="text-voyage-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">+ Insert</span>
+                          <span className="text-voyage-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">{t("aa.insertImg")}</span>
                         </div>
                       </button>
                     ))}
@@ -757,13 +750,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 </div>
               )}
 
-              {/* Reorder images */}
               {(() => {
                 const imgs = extractImages(itineraryContent);
                 if (imgs.length < 2) return null;
                 return (
                   <div>
-                    <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">↕️ Reorder Images (drag & drop)</p>
+                    <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">↕️ {t("aa.reorderImages")}</p>
                     <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
                       {imgs.map((img, i) => (
                         <div
@@ -801,29 +793,28 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             {itineraryContent ? (
               isEditingPreview ? (
                 <div className="flex flex-col h-full">
-                  {/* Editor toolbar */}
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <button
                       onClick={handleUndo}
                       disabled={undoStack.length === 0}
-                      title="Undo (Ctrl+Z)"
+                      title={`${t("aa.undo")} (Ctrl+Z)`}
                       className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
                     >
-                      ↩ Undo
+                      ↩ {t("aa.undo")}
                     </button>
                     <button
                       onClick={handleRedo}
                       disabled={redoStack.length === 0}
-                      title="Redo (Ctrl+Y)"
+                      title={`${t("aa.redo")} (Ctrl+Y)`}
                       className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
                     >
-                      ↪ Redo
+                      ↪ {t("aa.redo")}
                     </button>
                     <span className="text-[0.6rem] text-voyage-muted">
-                      {undoStack.length > 0 && `${undoStack.length} undo${undoStack.length > 1 ? "s" : ""}`}
+                      {undoStack.length > 0 && `${undoStack.length} ${t("aa.undo").toLowerCase()}${undoStack.length > 1 ? "s" : ""}`}
                     </span>
                     <div className="ml-auto flex items-center gap-1.5">
-                      <span className="text-[0.65rem] text-voyage-muted">Insert:</span>
+                      <span className="text-[0.65rem] text-voyage-muted">{t("aa.insert")}</span>
                       {PICSUM_CATEGORIES.slice(0, 4).map((cat) => (
                         <button
                           key={cat.seed}
@@ -839,10 +830,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                       ))}
                       <button
                         onClick={() => imageUploadRef.current?.click()}
-                        title="Upload image from PC"
+                        title={t("aa.uploadPc")}
                         className="px-2 py-0.5 rounded-full border border-parchment-3 text-[0.6rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
                       >
-                        📤 Upload
+                        📤 {t("aa.upload")}
                       </button>
                     </div>
                   </div>
@@ -851,7 +842,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     value={itineraryContent}
                     onChange={(e) => updateContent(e.target.value)}
                     className="w-full flex-1 min-h-[360px] p-3 bg-parchment border border-parchment-3 rounded-sm text-ink text-[0.82rem] font-mono leading-relaxed focus:outline-none focus:border-gold transition-colors resize-none"
-                    placeholder="Edit the itinerary markdown here..."
+                    placeholder={t("aa.editPlaceholder")}
                   />
                 </div>
               ) : (
@@ -860,12 +851,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     <div className="text-center mb-6 pb-4 border-b border-parchment-3">
                       <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Tours</p>
                       <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
-                        {selectedProject.destination || "Travel"} Itinerary
+                        {selectedProject.destination || t("aa.travel")} {t("aa.itinerary")}
                       </h1>
                       <p className="text-[0.75rem] text-voyage-muted">
-                        Prepared for <strong>{selectedProject.client_name}</strong>
+                        {t("aa.preparedFor")} <strong>{selectedProject.client_name}</strong>
                         {selectedProject.trip_duration && ` · ${selectedProject.trip_duration}`}
-                        {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} travellers`}
+                        {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} ${t("aa.travellers")}`}
                       </p>
                     </div>
                   )}
@@ -885,10 +876,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <div>
                   <div className="text-4xl mb-3 opacity-30">🗺️</div>
                   <p className="text-voyage-muted text-[0.82rem]">
-                    Your itinerary preview will appear here
+                    {t("aa.previewEmpty")}
                   </p>
                   <p className="text-voyage-muted text-[0.72rem] mt-1">
-                    Start chatting to generate content
+                    {t("aa.previewStart")}
                   </p>
                 </div>
               </div>
