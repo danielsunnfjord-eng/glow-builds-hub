@@ -95,9 +95,9 @@ const ItineraryExamples = () => {
             }`}
           >
             {f.flag && (
-              <img src={f.flag} alt={f.label} className="w-5 h-3.5 rounded-[2px] object-cover" />
+              <img src={f.flag} alt={t(f.labelKey)} className="w-5 h-3.5 rounded-[2px] object-cover" />
             )}
-            {f.label}
+            {t(f.labelKey)}
           </button>
         ))}
       </div>
