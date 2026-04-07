@@ -71,6 +71,40 @@ const CuratedSection = () => {
         </ScrollReveal>
       </div>
 
+      {/* How our service works */}
+      <div className="mt-24 max-w-3xl mx-auto">
+        <ScrollReveal>
+          <div className="border border-gold/20 rounded-lg bg-voyage-white/[0.03] p-8">
+            <div className="text-center mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-destructive/10 border border-destructive/25 text-destructive text-[0.78rem] font-semibold tracking-[0.06em] uppercase mb-4">
+                ⚠️ {t("curated.noPackages")}
+              </span>
+              <p className="text-[0.88rem] text-voyage-white/60 leading-relaxed max-w-[560px] mx-auto">
+                {t("curated.noPackagesDesc")}
+              </p>
+            </div>
+
+            <h3 className="font-serif text-[1.1rem] font-bold text-gold text-center mb-5">{t("curated.howServiceWorks")}</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { icon: "🎯", key: "step1" },
+                { icon: "✨", key: "step2" },
+                { icon: "🗺️", key: "step3" },
+                { icon: "🏨", key: "step4" },
+                { icon: "⭐", key: "step5" },
+                { icon: "🤝", key: "step6" },
+              ].map((s) => (
+                <div key={s.key} className="flex items-start gap-3 p-3 rounded-md bg-voyage-white/[0.03] border border-voyage-white/[0.06]">
+                  <span className="text-lg shrink-0">{s.icon}</span>
+                  <p className="text-[0.82rem] text-voyage-white/70 leading-relaxed">{t(`curated.${s.key}`)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      </div>
+
       <div className="mt-24 max-w-3xl mx-auto" id="pricing">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3 text-center">{t("curated.pricingBadge")}</div>
