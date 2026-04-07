@@ -69,20 +69,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   }, [messages]);
 
   // --- Image functions ---
-
-  const insertImageMarkdown = (url: string, alt: string, credit?: string) => {
-    const md = credit
-      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
-      : `\n\n![${alt}](${url})\n`;
-
-    if (isEditingPreview) {
-      setItineraryContent((prev) => prev + md);
-    } else {
-      setItineraryContent((prev) => prev + md);
-      setIsEditingPreview(false);
-    }
-    toast({ title: "Image added to itinerary" });
-  };
+  // insertImageMarkdown is now replaced by insertImageAtCursor (defined below with undo support)
 
   const handleAiImageGenerate = async () => {
     if (!aiImagePrompt.trim() || isGeneratingImage) return;
@@ -348,6 +335,88 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   // --- Drag-and-drop image reorder ---
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
+  // --- Undo/Redo ---
+  const [undoStack, setUndoStack] = useState<string[]>([]);
+  const [redoStack, setRedoStack] = useState<string[]>([]);
+  const lastContentRef = useRef(itineraryContent);
+
+  const pushUndo = useCallback((prev: string) => {
+    setUndoStack((s) => [...s.slice(-49), prev]);
+    setRedoStack([]);
+  }, []);
+
+  // Wrap setItineraryContent to track undo
+  const updateContent = useCallback((updater: string | ((prev: string) => string)) => {
+    setItineraryContent((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      if (next !== prev) {
+        pushUndo(prev);
+      }
+      return next;
+    });
+  }, [pushUndo]);
+
+  const handleUndo = useCallback(() => {
+    setUndoStack((stack) => {
+      if (stack.length === 0) return stack;
+      const prev = stack[stack.length - 1];
+      setRedoStack((r) => [...r, itineraryContent]);
+      setItineraryContent(prev);
+      return stack.slice(0, -1);
+    });
+  }, [itineraryContent]);
+
+  const handleRedo = useCallback(() => {
+    setRedoStack((stack) => {
+      if (stack.length === 0) return stack;
+      const next = stack[stack.length - 1];
+      setUndoStack((u) => [...u, itineraryContent]);
+      setItineraryContent(next);
+      return stack.slice(0, -1);
+    });
+  }, [itineraryContent]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.key === "z" && e.shiftKey))) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleUndo, handleRedo]);
+
+  // Inline image insert at cursor position in textarea
+  const editorRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
+    const md = credit
+      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
+      : `\n\n![${alt}](${url})\n`;
+    const editor = editorRef.current;
+    if (editor && isEditingPreview) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const before = itineraryContent.slice(0, start);
+      const after = itineraryContent.slice(end);
+      updateContent(before + md + after);
+      setTimeout(() => {
+        editor.focus();
+        const newPos = start + md.length;
+        editor.setSelectionRange(newPos, newPos);
+      }, 0);
+    } else {
+      updateContent((prev) => prev + md);
+    }
+    toast({ title: "Image inserted" });
+  }, [isEditingPreview, itineraryContent, updateContent, toast]);
+
   const extractImages = (md: string) => {
     const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
     const imgs: { full: string; alt: string; url: string; credit: string }[] = [];
@@ -380,7 +449,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       stripped = stripped.replace(ph, reordered[i].full);
     });
 
-    setItineraryContent(stripped);
+    updateContent(stripped);
     toast({ title: "Image reordered" });
   };
 
@@ -670,7 +739,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     {imageResults.map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => insertImageMarkdown(img.url, "Travel photo", img.credit)}
+                        onClick={() => insertImageAtCursor(img.url, "Travel photo", img.credit)}
                         className="group relative rounded-md overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
                       >
                         <img
@@ -731,12 +800,60 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           <div className="flex-1 overflow-y-auto p-6 max-h-[500px]">
             {itineraryContent ? (
               isEditingPreview ? (
-                <textarea
-                  value={itineraryContent}
-                  onChange={(e) => setItineraryContent(e.target.value)}
-                  className="w-full h-full min-h-[400px] p-3 bg-parchment border border-parchment-3 rounded-sm text-ink text-[0.82rem] font-mono leading-relaxed focus:outline-none focus:border-gold transition-colors resize-none"
-                  placeholder="Edit the itinerary markdown here..."
-                />
+                <div className="flex flex-col h-full">
+                  {/* Editor toolbar */}
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <button
+                      onClick={handleUndo}
+                      disabled={undoStack.length === 0}
+                      title="Undo (Ctrl+Z)"
+                      className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
+                    >
+                      ↩ Undo
+                    </button>
+                    <button
+                      onClick={handleRedo}
+                      disabled={redoStack.length === 0}
+                      title="Redo (Ctrl+Y)"
+                      className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
+                    >
+                      ↪ Redo
+                    </button>
+                    <span className="text-[0.6rem] text-voyage-muted">
+                      {undoStack.length > 0 && `${undoStack.length} undo${undoStack.length > 1 ? "s" : ""}`}
+                    </span>
+                    <div className="ml-auto flex items-center gap-1.5">
+                      <span className="text-[0.65rem] text-voyage-muted">Insert:</span>
+                      {PICSUM_CATEGORIES.slice(0, 4).map((cat) => (
+                        <button
+                          key={cat.seed}
+                          onClick={() => {
+                            const url = `https://picsum.photos/seed/${cat.seed}-${Date.now()}/800/500`;
+                            insertImageAtCursor(url, cat.label, "Lorem Picsum (picsum.photos) — Free license");
+                          }}
+                          title={`Insert ${cat.label} photo`}
+                          className="px-2 py-0.5 rounded-full border border-parchment-3 text-[0.6rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
+                        >
+                          📷 {cat.label}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => imageUploadRef.current?.click()}
+                        title="Upload image from PC"
+                        className="px-2 py-0.5 rounded-full border border-parchment-3 text-[0.6rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
+                      >
+                        📤 Upload
+                      </button>
+                    </div>
+                  </div>
+                  <textarea
+                    ref={editorRef}
+                    value={itineraryContent}
+                    onChange={(e) => updateContent(e.target.value)}
+                    className="w-full flex-1 min-h-[360px] p-3 bg-parchment border border-parchment-3 rounded-sm text-ink text-[0.82rem] font-mono leading-relaxed focus:outline-none focus:border-gold transition-colors resize-none"
+                    placeholder="Edit the itinerary markdown here..."
+                  />
+                </div>
               ) : (
                 <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3 prose-img:rounded-lg prose-img:shadow-md">
                   {selectedProject && (
