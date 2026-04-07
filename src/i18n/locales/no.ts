@@ -270,5 +270,6 @@ export default {
     qpAdventure: "Inkluder eventyr­aktiviteter",
     qpTips: "Legg til praktiske reisetips",
     qpRomantic: "Gjør det mer romantisk / bryllupsreise-stil",
+    sendSelected: "Send valgte",
   },
 };
