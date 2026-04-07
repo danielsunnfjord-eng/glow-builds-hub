@@ -14,11 +14,11 @@ const CuratedSection = () => {
   const isPt = i18n.language === "pt";
 
   const brlPrices = [200, 300, 500, 750];
+  const nokPrices = [2600, 3150, 4000, 4900];
 
   const fmt = (eur: number, idx: number) => {
     if (isNok) {
-      const nok = Math.round(eur * 11.5 / 50) * 50;
-      return `kr ${nok.toLocaleString("nb-NO")}`;
+      return `kr ${nokPrices[idx].toLocaleString("nb-NO")}`;
     }
     if (isPt) {
       return `R$ ${brlPrices[idx]}`;
