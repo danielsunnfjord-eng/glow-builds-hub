@@ -13,7 +13,7 @@ const CuratedSection = () => {
   const isNok = i18n.language === "no";
   const fmt = (eur: number) => {
     if (isNok) {
-      const nok = Math.round(eur * 11.5);
+      const nok = Math.round(eur * 11.5 / 50) * 50;
       return `kr ${nok.toLocaleString("nb-NO")}`;
     }
     return `€${eur}`;
