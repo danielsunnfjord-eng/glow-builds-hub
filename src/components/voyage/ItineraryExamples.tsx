@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
 
@@ -52,6 +53,12 @@ const itineraries = [
   },
 ];
 
+const langFilters = [
+  { key: "all", label: "All", flag: null },
+  { key: "en", label: "English", flag: "https://flagcdn.com/w40/gb.png" },
+  { key: "pt", label: "Português", flag: "https://flagcdn.com/w40/br.png" },
+];
+
 const langFlags: Record<string, { src: string; alt: string }> = {
   en: { src: "https://flagcdn.com/w40/gb.png", alt: "English" },
   pt: { src: "https://flagcdn.com/w40/br.png", alt: "Português" },
@@ -59,11 +66,10 @@ const langFlags: Record<string, { src: string; alt: string }> = {
 };
 
 const ItineraryExamples = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const [activeLang, setActiveLang] = useState<string>("all");
 
-  const currentLang = i18n.language?.startsWith("pt") ? "pt" : i18n.language?.startsWith("no") ? "no" : "en";
-  const filtered = itineraries.filter((trip) => trip.lang === currentLang);
-  const displayItems = filtered.length > 0 ? filtered : itineraries;
+  const displayItems = activeLang === "all" ? itineraries : itineraries.filter((trip) => trip.lang === activeLang);
 
   return (
     <section className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16" id="itineraries">
@@ -74,8 +80,27 @@ const ItineraryExamples = () => {
         <h2 className="font-serif text-[clamp(2rem,3.5vw,3rem)] font-bold leading-[1.05] tracking-tight mb-4 text-ink">{t("itineraryExamples.title")}</h2>
       </ScrollReveal>
       <ScrollReveal>
-        <p className="text-[0.92rem] text-voyage-muted max-w-[520px] leading-relaxed mb-14">{t("itineraryExamples.subtitle")}</p>
+        <p className="text-[0.92rem] text-voyage-muted max-w-[520px] leading-relaxed mb-8">{t("itineraryExamples.subtitle")}</p>
       </ScrollReveal>
+
+      <div className="flex items-center gap-2 mb-10">
+        {langFilters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setActiveLang(f.key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-[0.8rem] font-medium border transition-all ${
+              activeLang === f.key
+                ? "bg-ink text-parchment border-ink"
+                : "bg-transparent text-ink border-ink/20 hover:border-ink/40"
+            }`}
+          >
+            {f.flag && (
+              <img src={f.flag} alt={f.label} className="w-5 h-3.5 rounded-[2px] object-cover" />
+            )}
+            {f.label}
+          </button>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
         {displayItems.map((trip) => (
