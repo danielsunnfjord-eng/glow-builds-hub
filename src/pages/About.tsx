@@ -4,36 +4,28 @@ import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import danielProfile from "@/assets/daniel-profile.jpg";
+import { useTranslation } from "react-i18next";
 
 const About = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div>
       <Navbar />
 
-      {/* Hero */}
       <section className="pt-32 pb-20 px-16 bg-ink relative overflow-hidden max-md:px-6 max-md:pt-28 max-md:pb-14">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 70% at 80% 30%, rgba(184,135,42,0.10) 0%, transparent 60%), linear-gradient(170deg, #0a0906 0%, #1a1510 40%, #13110e 100%)",
-          }}
-        />
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 30%, rgba(184,135,42,0.10) 0%, transparent 60%), linear-gradient(170deg, #0a0906 0%, #1a1510 40%, #13110e 100%)" }} />
         <div className="relative z-10 flex items-center gap-12 max-md:flex-col max-md:gap-8">
           <div className="flex-1">
             <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-6">
               <div className="w-[30px] h-px bg-gold" />
-              Founder &amp; Travel Advisor
+              {t("about.badge")}
             </div>
             <h1 className="font-serif text-[clamp(2.6rem,5vw,4.5rem)] font-bold leading-[1] text-voyage-white mb-6 tracking-tight">
-              Daniel Lira<br />
-              <em className="italic font-normal text-gold-2">Figueiredo</em>
+              Daniel Lira<br /><em className="italic font-normal text-gold-2">Figueiredo</em>
             </h1>
-            <p className="text-sm text-voyage-white/50 tracking-[0.12em] uppercase">
-              Fora Travel Advisor · IATA Accredited · 20+ Countries Explored
-            </p>
+            <p className="text-sm text-voyage-white/50 tracking-[0.12em] uppercase">{t("about.foraLine")}</p>
             <div className="flex gap-4 mt-4">
               <a href="mailto:daniel.lirafigueiredo@fora.travel" target="_blank" rel="noopener noreferrer" className="text-voyage-white/40 hover:text-gold transition-colors"><Mail size={18} /></a>
               <a href="https://www.foratravel.com/advisor/daniel-lira-figueiredo" target="_blank" rel="noopener noreferrer" className="text-voyage-white/40 hover:text-gold transition-colors"><Globe size={18} /></a>
@@ -47,35 +39,21 @@ const About = () => {
         </div>
       </section>
 
-      {/* Bio */}
       <section className="py-20 px-16 bg-parchment max-md:px-6 max-md:py-14">
         <div className="max-w-3xl mx-auto">
-          <ScrollReveal>
-            <p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">
-              Daniel Lira Figueiredo founded Fjord &amp; Waves Tours with a singular vision: to bridge two extraordinary worlds through the art of travel. With years of experience planning international group journeys and a personal passion that spans over 20 countries, he brings a rare combination of precision and warmth to every itinerary.
-            </p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">
-              Born in Brazil and rooted in Norway since 2010, Daniel understands both cultures from the inside. This bi-continental perspective is the foundation of Fjord &amp; Waves Tours — enabling us to design journeys that feel authentically local, whether amid the dramatic fjords of western Norway or along the sun-drenched coastline of Brazil.
-            </p>
-          </ScrollReveal>
-          <ScrollReveal>
-            <p className="text-lg leading-relaxed text-voyage-muted font-light">
-              As a Fora Travel Advisor, Daniel combines industry-leading tools with deeply personal service. Every journey we design reflects his belief that great travel is not about checking boxes — it's about creating moments that stay with you long after you return home.
-            </p>
-          </ScrollReveal>
+          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">{t("about.bio1")}</p></ScrollReveal>
+          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">{t("about.bio2")}</p></ScrollReveal>
+          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted font-light">{t("about.bio3")}</p></ScrollReveal>
         </div>
       </section>
 
-      {/* Highlights */}
       <section className="py-20 px-16 bg-parchment-2 max-md:px-6 max-md:py-14">
         <div className="max-w-3xl mx-auto grid grid-cols-2 gap-8 max-md:grid-cols-1">
           {[
-            { icon: "🇧🇷", text: "Brazilian-born, living in Norway since 2010" },
-            { icon: "🌍", text: "Fora Travel Advisor — 20+ countries explored" },
-            { icon: "🗣️", text: "Fluent in Portuguese, Norwegian & English" },
-            { icon: "🏔️", text: "Norway and Brazil specialist" },
+            { icon: "🇧🇷", text: t("about.h1") },
+            { icon: "🌍", text: t("about.h2") },
+            { icon: "🗣️", text: t("about.h3") },
+            { icon: "🏔️", text: t("about.h4") },
           ].map((item) => (
             <ScrollReveal key={item.text}>
               <div className="flex items-start gap-4 p-6 rounded-sm bg-parchment border border-gold/10">
@@ -87,18 +65,12 @@ const About = () => {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="py-20 px-16 bg-ink text-center max-md:px-6 max-md:py-14">
         <ScrollReveal>
-          <h2 className="font-serif text-3xl text-voyage-white mb-4">Ready to start planning?</h2>
-          <p className="text-voyage-white/50 mb-8 max-w-md mx-auto text-sm leading-relaxed">
-            Let me design a journey tailored entirely to you.
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
-          >
-            Plan My Trip
+          <h2 className="font-serif text-3xl text-voyage-white mb-4">{t("about.ctaTitle")}</h2>
+          <p className="text-voyage-white/50 mb-8 max-w-md mx-auto text-sm leading-relaxed">{t("about.ctaSubtitle")}</p>
+          <button onClick={() => navigate("/")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all">
+            {t("about.ctaBtn")}
           </button>
         </ScrollReveal>
       </section>
