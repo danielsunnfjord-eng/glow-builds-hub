@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 const ExperiencesStrip = () => {
   const { t } = useTranslation();
 
-  const experiences = [
+  const services = [
     { icon: "✈️", title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
     { icon: "🏨", title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
     { icon: "🎭", title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
@@ -25,13 +25,30 @@ const ExperiencesStrip = () => {
           {t("experiences.title1")}<br /><em className="italic font-normal">{t("experiences.title2")}</em>
         </h2>
       </ScrollReveal>
+
+      {/* No packages disclaimer */}
       <ScrollReveal>
-        <div className="grid grid-cols-4 max-md:grid-cols-1 gap-px bg-parchment-3 mt-16 rounded-lg overflow-hidden">
-          {experiences.map((e) => (
-            <div key={e.title} className="bg-voyage-white p-8 max-md:p-6 hover:bg-parchment hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)] transition-all cursor-default relative z-0 hover:z-10">
-              <span className="text-[2rem] mb-4 block">{e.icon}</span>
-              <h4 className="font-serif text-base font-bold mb-1.5">{e.title}</h4>
-              <p className="text-[0.78rem] text-voyage-muted leading-relaxed">{e.desc}</p>
+        <div className="mt-10 mb-12 max-w-2xl">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-destructive/10 border border-destructive/25 text-destructive text-[0.78rem] font-semibold tracking-[0.06em] uppercase mb-4">
+            ⚠️ {t("curated.noPackages")}
+          </span>
+          <p className="text-[0.88rem] text-voyage-muted leading-relaxed">
+            {t("curated.noPackagesDesc")}
+          </p>
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal>
+        <h3 className="font-serif text-xl font-bold mb-6">{t("curated.howServiceWorks")}</h3>
+      </ScrollReveal>
+
+      <ScrollReveal>
+        <div className="grid grid-cols-4 max-md:grid-cols-1 gap-px bg-parchment-3 rounded-lg overflow-hidden">
+          {services.map((s) => (
+            <div key={s.title} className="bg-voyage-white p-8 max-md:p-6 hover:bg-parchment hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)] transition-all cursor-default relative z-0 hover:z-10">
+              <span className="text-[2rem] mb-4 block">{s.icon}</span>
+              <h4 className="font-serif text-base font-bold mb-1.5">{s.title}</h4>
+              <p className="text-[0.78rem] text-voyage-muted leading-relaxed">{s.desc}</p>
             </div>
           ))}
         </div>
