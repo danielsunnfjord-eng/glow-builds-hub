@@ -80,6 +80,13 @@ const CuratedSection = () => {
         </ScrollReveal>
 
         <ScrollReveal>
+          {isPt && (
+            <div className="mb-4 text-center">
+              <span className="inline-block px-4 py-2 rounded-full bg-gold/15 border border-gold/30 text-gold text-[0.82rem] font-semibold">
+                {t("curated.pricingDomestic")}
+              </span>
+            </div>
+          )}
           <div className="overflow-hidden rounded-lg border border-voyage-white/[0.06]">
             <table className="w-full text-sm">
               <thead>
@@ -102,6 +109,11 @@ const CuratedSection = () => {
               </tbody>
             </table>
           </div>
+          {isPt && (
+            <p className="text-[0.85rem] text-gold/80 mt-4 text-center font-medium">
+              ✈️ {t("curated.pricingInternational")}
+            </p>
+          )}
         </ScrollReveal>
 
         <ScrollReveal>
