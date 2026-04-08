@@ -43,6 +43,15 @@ const PICSUM_CATEGORIES = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/advisor-assistant`;
 const IMAGE_GEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-itinerary-image`;
 
+interface Draft {
+  id: string;
+  title: string;
+  content: string;
+  chat_history: Message[];
+  project_id: string | null;
+  updated_at: string;
+}
+
 const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
@@ -66,7 +75,110 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
 
+  // Draft state
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [draftTitle, setDraftTitle] = useState("");
+
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
+
+  // --- Draft functions ---
+  const fetchDrafts = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("itinerary_drafts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false });
+    if (!error && data) {
+      setDrafts(data.map((d: any) => ({
+        id: d.id,
+        title: d.title,
+        content: d.content,
+        chat_history: (d.chat_history as Message[]) || [],
+        project_id: d.project_id,
+        updated_at: d.updated_at,
+      })));
+    }
+  }, []);
+
+  useEffect(() => { fetchDrafts(); }, [fetchDrafts]);
+
+  const handleSaveDraft = async () => {
+    if (!itineraryContent && messages.length === 0) return;
+    setIsSavingDraft(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const title = draftTitle.trim() || selectedProject?.client_name
+        ? `${selectedProject?.client_name || ""} — ${selectedProject?.destination || t("aa.untitled")}`
+        : t("aa.untitled");
+
+      const draftData = {
+        user_id: user.id,
+        project_id: selectedProjectId || null,
+        title,
+        content: itineraryContent,
+        chat_history: messages as any,
+      };
+
+      if (currentDraftId) {
+        const { error } = await supabase
+          .from("itinerary_drafts")
+          .update(draftData)
+          .eq("id", currentDraftId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("itinerary_drafts")
+          .insert(draftData)
+          .select("id")
+          .single();
+        if (error) throw error;
+        setCurrentDraftId(data.id);
+      }
+      toast({ title: `💾 ${t("aa.draftSaved")}` });
+      fetchDrafts();
+    } catch (err: any) {
+      toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleLoadDraft = (draft: Draft) => {
+    if ((itineraryContent || messages.length > 0) && !window.confirm(t("aa.loadDraftConfirm"))) return;
+    setCurrentDraftId(draft.id);
+    setItineraryContent(draft.content);
+    setMessages(draft.chat_history);
+    setDraftTitle(draft.title);
+    if (draft.project_id) setSelectedProjectId(draft.project_id);
+    setShowDrafts(false);
+    toast({ title: `📂 "${draft.title}"` });
+  };
+
+  const handleDeleteDraft = async (draftId: string) => {
+    const { error } = await supabase.from("itinerary_drafts").delete().eq("id", draftId);
+    if (!error) {
+      if (currentDraftId === draftId) setCurrentDraftId(null);
+      setDrafts((prev) => prev.filter((d) => d.id !== draftId));
+      toast({ title: t("aa.draftDeleted") });
+    }
+  };
+
+  const handleNewDraft = () => {
+    setCurrentDraftId(null);
+    setItineraryContent("");
+    setMessages([]);
+    setDraftTitle("");
+    setSelectedPrompts(new Set());
+    setSelectedCustom(new Set());
+    setCustomItems([]);
+  };
 
   const QUICK_PROMPTS = [
     t("aa.qpItinerary"),
@@ -554,6 +666,81 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full max-w-xs truncate">
                 📝 {selectedProject.notes}
               </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Drafts Bar */}
+      <div className="bg-voyage-white border border-parchment-3 rounded-lg p-4">
+        <div className="flex items-center gap-3 flex-wrap">
+          <input
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+            placeholder={t("aa.draftTitle")}
+            className="px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold transition-colors flex-1 min-w-[200px]"
+          />
+          <button
+            onClick={handleSaveDraft}
+            disabled={isSavingDraft || (!itineraryContent && messages.length === 0)}
+            className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
+          >
+            💾 {isSavingDraft ? t("aa.savingDraft") : t("aa.saveDraft")}
+          </button>
+          <button
+            onClick={() => setShowDrafts(!showDrafts)}
+            className={`px-4 py-2 rounded-sm text-[0.72rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
+              showDrafts
+                ? "bg-gold/20 text-gold border border-gold/30"
+                : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+            }`}
+          >
+            📂 {t("aa.drafts")} ({drafts.length})
+          </button>
+          <button
+            onClick={handleNewDraft}
+            className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold transition-colors"
+          >
+            ✨ {t("aa.newDraft")}
+          </button>
+          {currentDraftId && (
+            <span className="text-[0.65rem] text-sage">
+              ✓ {t("aa.lastSaved")}: {new Date(drafts.find(d => d.id === currentDraftId)?.updated_at || "").toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {showDrafts && (
+          <div className="mt-3 border-t border-parchment-3 pt-3 space-y-2 max-h-[300px] overflow-y-auto">
+            {drafts.length === 0 ? (
+              <p className="text-voyage-muted text-[0.8rem] text-center py-4">{t("aa.noDrafts")}</p>
+            ) : (
+              drafts.map((draft) => (
+                <div
+                  key={draft.id}
+                  className={`flex items-center gap-3 p-3 rounded-md border transition-colors cursor-pointer hover:border-gold/50 ${
+                    currentDraftId === draft.id
+                      ? "border-gold bg-gold/5"
+                      : "border-parchment-3 bg-parchment/30"
+                  }`}
+                  onClick={() => handleLoadDraft(draft)}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[0.82rem] font-medium text-ink truncate">{draft.title}</p>
+                    <p className="text-[0.68rem] text-voyage-muted">
+                      {new Date(draft.updated_at).toLocaleString()}
+                      {draft.content && ` · ${draft.content.length} chars`}
+                      {draft.chat_history.length > 0 && ` · ${draft.chat_history.length} msgs`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteDraft(draft.id); }}
+                    className="px-2 py-1 text-[0.65rem] text-destructive/60 hover:text-destructive transition-colors"
+                  >
+                    🗑 {t("aa.deleteDraft")}
+                  </button>
+                </div>
+              ))
             )}
           </div>
         )}

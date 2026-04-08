@@ -77,6 +77,47 @@ export type Database = {
         }
         Relationships: []
       }
+      itinerary_drafts: {
+        Row: {
+          chat_history: Json | null
+          content: string
+          created_at: string
+          id: string
+          project_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chat_history?: Json | null
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chat_history?: Json | null
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_drafts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
