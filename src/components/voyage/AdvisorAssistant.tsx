@@ -10,8 +10,15 @@ interface ClientProject {
   client_email: string | null;
   group_size: number;
   destination: string | null;
+  departure: string | null;
   trip_duration: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  estimated_budget: string | null;
+  price: number | null;
   notes: string | null;
+  itinerary_status: string;
+  payment_status: string;
 }
 
 interface Message {
@@ -148,9 +155,15 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       const projectContext = selectedProject
         ? {
             clientName: selectedProject.client_name,
+            clientEmail: selectedProject.client_email,
             destination: selectedProject.destination,
+            departure: selectedProject.departure,
             groupSize: selectedProject.group_size,
             tripDuration: selectedProject.trip_duration,
+            startDate: selectedProject.start_date,
+            endDate: selectedProject.end_date,
+            estimatedBudget: selectedProject.estimated_budget,
+            price: selectedProject.price,
             notes: selectedProject.notes,
           }
         : undefined;
@@ -483,6 +496,16 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             <span className="px-2.5 py-1 bg-gold/10 text-gold border border-gold/20 rounded-full">
               👤 {selectedProject.client_name}
             </span>
+            {selectedProject.client_email && (
+              <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
+                ✉ {selectedProject.client_email}
+              </span>
+            )}
+            {selectedProject.departure && (
+              <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
+                🛫 {selectedProject.departure}
+              </span>
+            )}
             {selectedProject.destination && (
               <span className="px-2.5 py-1 bg-sage/10 text-sage border border-sage/20 rounded-full">
                 📍 {selectedProject.destination}
@@ -493,7 +516,22 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             </span>
             {selectedProject.trip_duration && (
               <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
-                📅 {selectedProject.trip_duration}
+                ⏱ {selectedProject.trip_duration}
+              </span>
+            )}
+            {selectedProject.start_date && (
+              <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full">
+                📅 {selectedProject.start_date}{selectedProject.end_date ? ` → ${selectedProject.end_date}` : ""}
+              </span>
+            )}
+            {selectedProject.estimated_budget && (
+              <span className="px-2.5 py-1 bg-gold/10 text-gold border border-gold/20 rounded-full">
+                💰 {selectedProject.estimated_budget}
+              </span>
+            )}
+            {selectedProject.notes && (
+              <span className="px-2.5 py-1 bg-ink/[0.06] text-ink border border-parchment-3 rounded-full max-w-xs truncate">
+                📝 {selectedProject.notes}
               </span>
             )}
           </div>
