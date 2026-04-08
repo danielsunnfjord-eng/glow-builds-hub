@@ -671,6 +671,80 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         )}
       </div>
 
+      {/* Drafts Bar */}
+      <div className="bg-voyage-white border border-parchment-3 rounded-lg p-4">
+        <div className="flex items-center gap-3 flex-wrap">
+          <input
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+            placeholder={t("aa.draftTitle")}
+            className="px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold transition-colors flex-1 min-w-[200px]"
+          />
+          <button
+            onClick={handleSaveDraft}
+            disabled={isSavingDraft || (!itineraryContent && messages.length === 0)}
+            className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
+          >
+            💾 {isSavingDraft ? t("aa.savingDraft") : t("aa.saveDraft")}
+          </button>
+          <button
+            onClick={() => setShowDrafts(!showDrafts)}
+            className={`px-4 py-2 rounded-sm text-[0.72rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
+              showDrafts
+                ? "bg-gold/20 text-gold border border-gold/30"
+                : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+            }`}
+          >
+            📂 {t("aa.drafts")} ({drafts.length})
+          </button>
+          <button
+            onClick={handleNewDraft}
+            className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold transition-colors"
+          >
+            ✨ {t("aa.newDraft")}
+          </button>
+          {currentDraftId && (
+            <span className="text-[0.65rem] text-sage">
+              ✓ {t("aa.lastSaved")}: {new Date(drafts.find(d => d.id === currentDraftId)?.updated_at || "").toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {showDrafts && (
+          <div className="mt-3 border-t border-parchment-3 pt-3 space-y-2 max-h-[300px] overflow-y-auto">
+            {drafts.length === 0 ? (
+              <p className="text-voyage-muted text-[0.8rem] text-center py-4">{t("aa.noDrafts")}</p>
+            ) : (
+              drafts.map((draft) => (
+                <div
+                  key={draft.id}
+                  className={`flex items-center gap-3 p-3 rounded-md border transition-colors cursor-pointer hover:border-gold/50 ${
+                    currentDraftId === draft.id
+                      ? "border-gold bg-gold/5"
+                      : "border-parchment-3 bg-parchment/30"
+                  }`}
+                  onClick={() => handleLoadDraft(draft)}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[0.82rem] font-medium text-ink truncate">{draft.title}</p>
+                    <p className="text-[0.68rem] text-voyage-muted">
+                      {new Date(draft.updated_at).toLocaleString()}
+                      {draft.content && ` · ${draft.content.length} chars`}
+                      {draft.chat_history.length > 0 && ` · ${draft.chat_history.length} msgs`}
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteDraft(draft.id); }}
+                    className="px-2 py-1 text-[0.65rem] text-destructive/60 hover:text-destructive transition-colors"
+                  >
+                    🗑 {t("aa.deleteDraft")}
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
       {/* Main Layout: Chat + Preview */}
       <div className="grid grid-cols-1 gap-6">
         {/* Chat Panel */}
