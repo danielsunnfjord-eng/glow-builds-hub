@@ -577,15 +577,14 @@ const AdminDashboard = () => {
             <div>
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
               {(() => {
-                const lang = i18n.language;
-                const isPt = lang === "pt";
-                const isNo = lang === "no";
-                const sym = isPt ? "R$" : isNo ? "kr" : "€";
-                const presets = isPt
-                  ? [200, 300, 500, 750]
-                  : isNo
-                  ? [2600, 3150, 4000, 4900]
-                  : [225, 275, 300, 425];
+                const CURRENCY_PRESETS: Record<string, number[]> = {
+                  EUR: [225, 275, 300, 425],
+                  NOK: [2600, 3150, 4000, 4900],
+                  BRL: [200, 300, 500, 750],
+                };
+                const CURRENCY_SYM: Record<string, string> = { EUR: "€", NOK: "kr ", BRL: "R$ " };
+                const presets = CURRENCY_PRESETS[form.currency] || CURRENCY_PRESETS.EUR;
+                const sym = CURRENCY_SYM[form.currency] || "€";
                 const labels = [
                   t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
                   t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
@@ -594,6 +593,22 @@ const AdminDashboard = () => {
                 ];
                 return (
                   <div className="space-y-1.5">
+                    <div className="flex gap-2 mb-1.5">
+                      {["EUR", "NOK", "BRL"].map((cur) => (
+                        <button
+                          key={cur}
+                          type="button"
+                          onClick={() => setForm({ ...form, currency: cur, price: "" })}
+                          className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.06em] border transition-all ${
+                            form.currency === cur
+                              ? "bg-gold text-ink border-gold"
+                              : "bg-parchment text-voyage-muted border-parchment-3 hover:border-gold"
+                          }`}
+                        >
+                          {CURRENCY_SYM[cur]}{cur}
+                        </button>
+                      ))}
+                    </div>
                     <select
                       value={presets.includes(Number(form.price)) ? form.price : "custom"}
                       onChange={(e) => {
@@ -608,7 +623,7 @@ const AdminDashboard = () => {
                       <option value="">{t("admin.selectPrice")}</option>
                       {presets.map((p, i) => (
                         <option key={p} value={p}>
-                          {sym} {p.toLocaleString()} — {labels[i]}
+                          {sym}{p.toLocaleString()} — {labels[i]}
                         </option>
                       ))}
                       <option value="custom">{t("admin.customPrice")}</option>
