@@ -60,7 +60,7 @@ export default {
     title1: "Tudo, de",
     title2: "voos a experiências",
     flights: "Voos",
-    flightsDesc: "Para classe econômica, recomendo reservar direto com a companhia aérea. Para cabines premium, executiva, primeira classe ou reservas de grupo (10+ passagens), posso conseguir tarifas melhores e benefícios exclusivos.",
+    flightsDesc: "Colaboramos com parceiros de confiança para encontrar as melhores opções. Especialmente para cabines premium, executiva, primeira classe ou reservas de grupo (10+ passagens), é possível, quando disponível, conseguir tarifas melhores e benefícios exclusivos.",
     accommodation: "Hospedagem",
     accommodationDesc: "Hotéis boutique, villas, lodges de safari, apartamentos. De acordo com seu estilo.",
     activities: "Atividades",

@@ -58,7 +58,7 @@ export default {
     title1: "Alt fra",
     title2: "fly til opplevelser",
     flights: "Fly",
-    flightsDesc: "For økonomiklasse anbefaler jeg å booke direkte hos flyselskapet. For premium, business, førsteklasse eller gruppebookinger (10+ billetter) kan jeg ofte sikre bedre priser og eksklusive fordeler.",
+    flightsDesc: "Vi samarbeider med pålitelige partnere for å finne de beste alternativene. Spesielt for premium, business, førsteklasse eller gruppebookinger (10+ billetter) kan vi ofte sikre bedre priser og eksklusive fordeler når tilgjengelig.",
     accommodation: "Overnatting",
     accommodationDesc: "Boutiquehoteller, villaer, safarilodger, byleiligheter. Tilpasset din stil.",
     activities: "Aktiviteter",
