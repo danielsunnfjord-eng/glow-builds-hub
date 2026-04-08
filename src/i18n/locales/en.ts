@@ -83,7 +83,7 @@ export default {
   itineraryExamples: {
     badge: "Inspiration",
     title: "Sample itineraries",
-    subtitle: "Every trip is custom — but here's a taste of what I've crafted for past travellers.",
+    subtitle: "Every trip is unique — but here's a sample of itineraries that can be created, from simple to more elaborate, to fit your preferences, time and budget.",
     filterAll: "All",
     filterEn: "English",
     filterPt: "Portuguese",

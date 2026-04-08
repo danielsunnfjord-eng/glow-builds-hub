@@ -77,7 +77,7 @@ export default {
   itineraryExamples: {
     badge: "Inspirasjon",
     title: "Eksempel-reiseprogrammer",
-    subtitle: "Hver reise er unik — men her er en smakebit av hva jeg har laget for tidligere reisende.",
+    subtitle: "Hver reise er unik — men her er et utvalg reiseruter som kan lages, fra enkle til mer detaljerte, tilpasset dine preferanser, tid og budsjett.",
     filterAll: "Alle",
     filterEn: "Engelsk",
     filterPt: "Portugisisk",
