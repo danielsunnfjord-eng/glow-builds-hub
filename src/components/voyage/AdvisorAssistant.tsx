@@ -1024,6 +1024,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     🖼️ {t("aa.images")}
                   </button>
                   <button
+                    onClick={() => setShowPdfPreview(true)}
+                    className="px-3 py-1.5 rounded-sm border border-gold text-gold text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold/10 transition-colors"
+                  >
+                    👁️ {t("aa.pdfPreview", "Preview")}
+                  </button>
+                  <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
