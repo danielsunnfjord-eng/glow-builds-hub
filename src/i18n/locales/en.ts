@@ -303,7 +303,6 @@ export default {
     caption: "Caption",
     addCaption: "Add caption...",
     removeImage: "Remove",
-    done: "Done",
     aiImageGenerated: "AI image generated!",
     genFailed: "Generation failed",
     uploadFailed: "Upload failed",
