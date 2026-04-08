@@ -63,7 +63,7 @@ export default {
     title1: "Everything from",
     title2: "flights to experiences",
     flights: "Flights",
-    flightsDesc: "For economy class, I recommend booking directly with the airline. For premium cabins, business, first class, or group bookings (10+ tickets), I can often secure better rates and exclusive perks.",
+    flightsDesc: "We collaborate with trusted partners to find the best options for you. Especially for premium cabins, business, first class, or group bookings (10+ tickets), we can often secure better rates and exclusive perks when available.",
     accommodation: "Accommodation",
     accommodationDesc: "Boutique hotels, villas, safari lodges, city apartments. Matched to your style.",
     activities: "Activities",
