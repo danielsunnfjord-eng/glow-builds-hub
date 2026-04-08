@@ -1209,6 +1209,19 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           onCancel={() => setCropTarget(null)}
         />
       )}
+      {showPdfPreview && (
+        <PdfPreview
+          content={itineraryContent}
+          project={selectedProject ? {
+            client_name: selectedProject.client_name,
+            destination: selectedProject.destination,
+            trip_duration: selectedProject.trip_duration,
+            group_size: selectedProject.group_size,
+          } : null}
+          onClose={() => setShowPdfPreview(false)}
+          onExport={() => { setShowPdfPreview(false); handleExportPdf(); }}
+        />
+      )}
     </div>
   );
 };
