@@ -560,7 +560,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       </div>
 
       {/* Main Layout: Chat + Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Chat Panel */}
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
