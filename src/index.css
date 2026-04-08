@@ -120,3 +120,30 @@
     animation: pulse-bar 2s infinite;
   }
 }
+
+/* TipTap image resize */
+.image-resizer {
+  display: inline-flex;
+  position: relative;
+  cursor: default;
+}
+.image-resizer img {
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.image-resizer .resize-trigger {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--primary));
+  border: 2px solid hsl(var(--background));
+  border-radius: 2px;
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.image-resizer:hover .resize-trigger {
+  opacity: 1;
+}
