@@ -309,7 +309,7 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
     if (content !== lastExternalContent.current) {
       lastExternalContent.current = content;
       const html = markdownToHtml(content);
-      editor.commands.setContent(html, false);
+      editor.commands.setContent(html, { emitUpdate: false });
     }
   }, [content, editor]);
 
