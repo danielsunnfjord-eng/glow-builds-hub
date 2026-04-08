@@ -1,0 +1,1 @@
+ALTER TABLE public.client_projects ADD COLUMN currency text NOT NULL DEFAULT 'EUR';
