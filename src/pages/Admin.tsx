@@ -58,8 +58,12 @@ const emptyProject = {
   client_email: "",
   group_size: 1,
   destination: "",
+  departure: "",
   trip_duration: "",
+  start_date: "",
+  end_date: "",
   price: "",
+  estimated_budget: "",
   itinerary_status: "new" as ItineraryStatus,
   payment_status: "pending" as PaymentStatus,
   notes: "",
@@ -121,13 +125,17 @@ const AdminDashboard = () => {
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const payload = {
+      const payload: any = {
         client_name: form.client_name,
         client_email: form.client_email || null,
         group_size: form.group_size,
         destination: form.destination || null,
+        departure: form.departure || null,
         trip_duration: form.trip_duration || null,
+        start_date: form.start_date || null,
+        end_date: form.end_date || null,
         price: form.price ? Number(form.price) : null,
+        estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
         notes: form.notes || null,
@@ -243,8 +251,12 @@ const AdminDashboard = () => {
       client_email: p.client_email || "",
       group_size: p.group_size,
       destination: p.destination || "",
+      departure: (p as any).departure || "",
       trip_duration: p.trip_duration || "",
+      start_date: (p as any).start_date || "",
+      end_date: (p as any).end_date || "",
       price: p.price?.toString() || "",
+      estimated_budget: (p as any).estimated_budget || "",
       itinerary_status: p.itinerary_status,
       payment_status: p.payment_status,
       notes: p.notes || "",
@@ -458,7 +470,7 @@ const AdminDashboard = () => {
                 <input type="email" value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} className={inputClass} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.groupSize")}</label>
                 <input type="number" min={1} value={form.group_size} onChange={(e) => setForm({ ...form, group_size: Number(e.target.value) })} className={inputClass} />
@@ -467,64 +479,82 @@ const AdminDashboard = () => {
                 <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.duration")}</label>
                 <input value={form.trip_duration} onChange={(e) => setForm({ ...form, trip_duration: e.target.value })} placeholder="e.g. 7 days" className={inputClass} />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
-                {(() => {
-                  const lang = i18n.language;
-                  const isPt = lang === "pt";
-                  const isNo = lang === "no";
-                  const sym = isPt ? "R$" : isNo ? "kr" : "€";
-                  const presets = isPt
-                    ? [200, 300, 500, 750]
-                    : isNo
-                    ? [2600, 3150, 4000, 4900]
-                    : [225, 275, 300, 425];
-                  const labels = [
-                    t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
-                    t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
-                    t("pricingData.r3group") + " / " + t("pricingData.r3dur"),
-                    t("pricingData.r4group") + " / " + t("pricingData.r4dur"),
-                  ];
-                  return (
-                    <div className="space-y-1.5">
-                      <select
-                        value={presets.includes(Number(form.price)) ? form.price : "custom"}
-                        onChange={(e) => {
-                          if (e.target.value === "custom") {
-                            setForm({ ...form, price: "" });
-                          } else {
-                            setForm({ ...form, price: e.target.value });
-                          }
-                        }}
-                        className={inputClass}
-                      >
-                        <option value="">{t("admin.selectPrice")}</option>
-                        {presets.map((p, i) => (
-                          <option key={p} value={p}>
-                            {sym} {p.toLocaleString()} — {labels[i]}
-                          </option>
-                        ))}
-                        <option value="custom">{t("admin.customPrice")}</option>
-                      </select>
-                      {(!presets.includes(Number(form.price)) || form.price === "") && (
-                        <input
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          value={presets.includes(Number(form.price)) ? "" : form.price}
-                          onChange={(e) => setForm({ ...form, price: e.target.value })}
-                          placeholder={t("admin.customPricePlaceholder")}
-                          className={inputClass}
-                        />
-                      )}
-                    </div>
-                  );
-                })()}
+                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.startDate")}</label>
+                <input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={inputClass} />
               </div>
+              <div>
+                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.endDate")}</label>
+                <input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.departureLabel")}</label>
+              <input value={form.departure} onChange={(e) => setForm({ ...form, departure: e.target.value })} placeholder={t("admin.departurePlaceholder")} className={inputClass} />
             </div>
             <div>
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.destinationLabel")}</label>
               <input value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.estimatedBudget")}</label>
+              <input value={form.estimated_budget} onChange={(e) => setForm({ ...form, estimated_budget: e.target.value })} placeholder={t("admin.estimatedBudgetPlaceholder")} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
+              {(() => {
+                const lang = i18n.language;
+                const isPt = lang === "pt";
+                const isNo = lang === "no";
+                const sym = isPt ? "R$" : isNo ? "kr" : "€";
+                const presets = isPt
+                  ? [200, 300, 500, 750]
+                  : isNo
+                  ? [2600, 3150, 4000, 4900]
+                  : [225, 275, 300, 425];
+                const labels = [
+                  t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
+                  t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
+                  t("pricingData.r3group") + " / " + t("pricingData.r3dur"),
+                  t("pricingData.r4group") + " / " + t("pricingData.r4dur"),
+                ];
+                return (
+                  <div className="space-y-1.5">
+                    <select
+                      value={presets.includes(Number(form.price)) ? form.price : "custom"}
+                      onChange={(e) => {
+                        if (e.target.value === "custom") {
+                          setForm({ ...form, price: "" });
+                        } else {
+                          setForm({ ...form, price: e.target.value });
+                        }
+                      }}
+                      className={inputClass}
+                    >
+                      <option value="">{t("admin.selectPrice")}</option>
+                      {presets.map((p, i) => (
+                        <option key={p} value={p}>
+                          {sym} {p.toLocaleString()} — {labels[i]}
+                        </option>
+                      ))}
+                      <option value="custom">{t("admin.customPrice")}</option>
+                    </select>
+                    {(!presets.includes(Number(form.price)) || form.price === "") && (
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={presets.includes(Number(form.price)) ? "" : form.price}
+                        onChange={(e) => setForm({ ...form, price: e.target.value })}
+                        placeholder={t("admin.customPricePlaceholder")}
+                        className={inputClass}
+                      />
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>

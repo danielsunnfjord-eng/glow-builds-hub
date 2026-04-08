@@ -19,7 +19,10 @@ export type Database = {
           client_email: string | null
           client_name: string
           created_at: string
+          departure: string | null
           destination: string | null
+          end_date: string | null
+          estimated_budget: string | null
           group_size: number
           id: string
           itinerary_pdf_path: string | null
@@ -27,6 +30,7 @@ export type Database = {
           notes: string | null
           payment_status: string
           price: number | null
+          start_date: string | null
           trip_duration: string | null
           updated_at: string
           user_id: string
@@ -35,7 +39,10 @@ export type Database = {
           client_email?: string | null
           client_name: string
           created_at?: string
+          departure?: string | null
           destination?: string | null
+          end_date?: string | null
+          estimated_budget?: string | null
           group_size?: number
           id?: string
           itinerary_pdf_path?: string | null
@@ -43,6 +50,7 @@ export type Database = {
           notes?: string | null
           payment_status?: string
           price?: number | null
+          start_date?: string | null
           trip_duration?: string | null
           updated_at?: string
           user_id: string
@@ -51,7 +59,10 @@ export type Database = {
           client_email?: string | null
           client_name?: string
           created_at?: string
+          departure?: string | null
           destination?: string | null
+          end_date?: string | null
+          estimated_budget?: string | null
           group_size?: number
           id?: string
           itinerary_pdf_path?: string | null
@@ -59,6 +70,7 @@ export type Database = {
           notes?: string | null
           payment_status?: string
           price?: number | null
+          start_date?: string | null
           trip_duration?: string | null
           updated_at?: string
           user_id?: string
