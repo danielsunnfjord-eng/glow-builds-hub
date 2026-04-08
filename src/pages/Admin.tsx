@@ -406,14 +406,14 @@ const AdminDashboard = () => {
             <h2 className="text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted mb-3">{t("admin.earningsOverview")}</h2>
             <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4">
               {[
-                { label: t("admin.thisWeek"), val: earningsWeek },
-                { label: t("admin.thisMonth"), val: earningsMonth },
-                { label: `${now.getFullYear()}`, val: earningsYear },
-                { label: t("admin.allTime"), val: earningsTotal },
+                { label: t("admin.thisWeek"), val: formatEarnings(earningsWeekByCur) },
+                { label: t("admin.thisMonth"), val: formatEarnings(earningsMonthByCur) },
+                { label: `${now.getFullYear()}`, val: formatEarnings(earningsYearByCur) },
+                { label: t("admin.allTime"), val: formatEarnings(earningsTotalByCur) },
               ].map((e) => (
                 <div key={e.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
                   <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{e.label}</div>
-                  <div className="font-serif text-2xl font-bold text-sage">€{e.val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                  <div className="font-serif text-lg font-bold text-sage leading-snug">{e.val}</div>
                 </div>
               ))}
             </div>
