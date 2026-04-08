@@ -585,23 +585,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     const md = credit
       ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
       : `\n\n![${alt}](${url})\n`;
-    const editor = editorRef.current;
-    if (editor && isEditingPreview) {
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      const before = itineraryContent.slice(0, start);
-      const after = itineraryContent.slice(end);
-      updateContent(before + md + after);
-      setTimeout(() => {
-        editor.focus();
-        const newPos = start + md.length;
-        editor.setSelectionRange(newPos, newPos);
-      }, 0);
-    } else {
-      updateContent((prev) => prev + md);
-    }
+    // Always append to markdown content — the WYSIWYG editor will sync
+    updateContent((prev) => prev + md);
     toast({ title: t("aa.imageInserted") });
-  }, [isEditingPreview, itineraryContent, updateContent, toast, t]);
+  }, [updateContent, toast, t]);
 
   const extractImages = (md: string) => {
     const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
