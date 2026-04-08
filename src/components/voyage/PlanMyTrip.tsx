@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import planTripImg from "@/assets/plan-trip-card.jpg";
 import { useTranslation } from "react-i18next";
+import { Video } from "lucide-react";
 import {
   Dialog,
   DialogContent,
