@@ -32,6 +32,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   const [customPrompt, setCustomPrompt] = useState("");
   const [showCustom, setShowCustom] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const interactingRef = useRef(false);
 
   useEffect(() => {
     const checkSelection = () => {
@@ -44,12 +45,23 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
       }
     };
 
+    const handleBlur = () => {
+      // Don't hide if user is interacting with the AI menu itself
+      setTimeout(() => {
+        if (!interactingRef.current) {
+          setVisible(false);
+        }
+      }, 300);
+    };
+
     editor.on("selectionUpdate", checkSelection);
-    editor.on("blur", () => setTimeout(() => setVisible(false), 200));
+    editor.on("blur", handleBlur);
     editor.on("focus", checkSelection);
 
     return () => {
       editor.off("selectionUpdate", checkSelection);
+      editor.off("blur", handleBlur);
+      editor.off("focus", checkSelection);
     };
   }, [editor]);
 
@@ -99,6 +111,8 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     <div
       ref={menuRef}
       className="sticky bottom-2 z-40 mx-auto w-fit"
+      onMouseDown={() => { interactingRef.current = true; }}
+      onMouseUp={() => { setTimeout(() => { interactingRef.current = false; }, 100); }}
     >
       <div className="bg-ink/95 backdrop-blur-sm rounded-lg shadow-xl border border-gold/20 px-2 py-1.5 flex items-center gap-1 flex-wrap max-w-[500px]">
         {/* AI sparkle indicator */}
