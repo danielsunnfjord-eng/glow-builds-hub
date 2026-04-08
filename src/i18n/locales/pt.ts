@@ -340,5 +340,8 @@ export default {
     newDraft: "Novo Rascunho",
     loadDraftConfirm: "Carregar este rascunho substituirá seu trabalho atual. Continuar?",
     untitled: "Rascunho sem título",
+    loadingDraft: "Carregando roteiro salvo...",
+    newItinerary: "Novo roteiro — comece a conversar para criar conteúdo",
+    selectProjectToSave: "Selecione um projeto para salvar",
   },
 };
