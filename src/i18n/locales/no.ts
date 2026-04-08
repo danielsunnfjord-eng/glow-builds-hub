@@ -338,5 +338,8 @@ export default {
     newDraft: "Nytt Utkast",
     loadDraftConfirm: "Å laste dette utkastet vil erstatte ditt nåværende arbeid. Fortsette?",
     untitled: "Utkast uten tittel",
+    loadingDraft: "Laster lagret reiseplan...",
+    newItinerary: "Ny reiseplan — begynn å chatte for å lage innhold",
+    selectProjectToSave: "Velg et prosjekt for å lagre",
   },
 };

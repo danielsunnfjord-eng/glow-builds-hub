@@ -43,14 +43,6 @@ const PICSUM_CATEGORIES = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/advisor-assistant`;
 const IMAGE_GEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-itinerary-image`;
 
-interface Draft {
-  id: string;
-  title: string;
-  content: string;
-  chat_history: Message[];
-  project_id: string | null;
-  updated_at: string;
-}
 
 const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const { toast } = useToast();
@@ -75,55 +67,80 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
 
-  // Draft state
-  const [drafts, setDrafts] = useState<Draft[]>([]);
+  // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
-  const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [showDrafts, setShowDrafts] = useState(false);
-  const [draftTitle, setDraftTitle] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
-  // --- Draft functions ---
-  const fetchDrafts = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data, error } = await supabase
-      .from("itinerary_drafts")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("updated_at", { ascending: false });
-    if (!error && data) {
-      setDrafts(data.map((d: any) => ({
-        id: d.id,
-        title: d.title,
-        content: d.content,
-        chat_history: (d.chat_history as Message[]) || [],
-        project_id: d.project_id,
-        updated_at: d.updated_at,
-      })));
+  // --- Load draft when project changes ---
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setCurrentDraftId(null);
+      setItineraryContent("");
+      setMessages([]);
+      setLastSavedAt(null);
+      return;
     }
-  }, []);
 
-  useEffect(() => { fetchDrafts(); }, [fetchDrafts]);
+    const loadProjectDraft = async () => {
+      setIsLoadingDraft(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-  const handleSaveDraft = async () => {
-    if (!itineraryContent && messages.length === 0) return;
-    setIsSavingDraft(true);
+        const { data, error } = await supabase
+          .from("itinerary_drafts")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("project_id", selectedProjectId)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!error && data) {
+          setCurrentDraftId(data.id);
+          setItineraryContent(data.content || "");
+          setMessages((data.chat_history as unknown as Message[]) || []);
+          setLastSavedAt(data.updated_at);
+        } else {
+          setCurrentDraftId(null);
+          setItineraryContent("");
+          setMessages([]);
+          setLastSavedAt(null);
+        }
+      } catch {
+        // ignore
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadProjectDraft();
+  }, [selectedProjectId]);
+
+  // --- Save draft (manual or auto) ---
+  const saveDraft = useCallback(async (content: string, chatMessages: Message[], silent = false) => {
+    if (!selectedProjectId) return;
+    if (!content && chatMessages.length === 0) return;
+    setIsSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const title = draftTitle.trim() || selectedProject?.client_name
-        ? `${selectedProject?.client_name || ""} — ${selectedProject?.destination || t("aa.untitled")}`
+      const title = selectedProject?.client_name
+        ? `${selectedProject.client_name} — ${selectedProject.destination || ""}`
         : t("aa.untitled");
 
       const draftData = {
         user_id: user.id,
-        project_id: selectedProjectId || null,
+        project_id: selectedProjectId,
         title,
-        content: itineraryContent,
-        chat_history: messages as any,
+        content,
+        chat_history: chatMessages as any,
       };
 
       if (currentDraftId) {
@@ -141,44 +158,30 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         if (error) throw error;
         setCurrentDraftId(data.id);
       }
-      toast({ title: `💾 ${t("aa.draftSaved")}` });
-      fetchDrafts();
+      setLastSavedAt(new Date().toISOString());
+      if (!silent) toast({ title: `💾 ${t("aa.draftSaved")}` });
     } catch (err: any) {
-      toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
+      if (!silent) toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
     } finally {
-      setIsSavingDraft(false);
+      setIsSaving(false);
     }
-  };
+  }, [selectedProjectId, selectedProject, currentDraftId, t, toast]);
 
-  const handleLoadDraft = (draft: Draft) => {
-    if ((itineraryContent || messages.length > 0) && !window.confirm(t("aa.loadDraftConfirm"))) return;
-    setCurrentDraftId(draft.id);
-    setItineraryContent(draft.content);
-    setMessages(draft.chat_history);
-    setDraftTitle(draft.title);
-    if (draft.project_id) setSelectedProjectId(draft.project_id);
-    setShowDrafts(false);
-    toast({ title: `📂 "${draft.title}"` });
-  };
+  // --- Auto-save on content/messages change (debounced 3s) ---
+  useEffect(() => {
+    if (!selectedProjectId) return;
+    if (!itineraryContent && messages.length === 0) return;
+    if (isLoadingDraft) return;
 
-  const handleDeleteDraft = async (draftId: string) => {
-    const { error } = await supabase.from("itinerary_drafts").delete().eq("id", draftId);
-    if (!error) {
-      if (currentDraftId === draftId) setCurrentDraftId(null);
-      setDrafts((prev) => prev.filter((d) => d.id !== draftId));
-      toast({ title: t("aa.draftDeleted") });
-    }
-  };
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveDraft(itineraryContent, messages, true);
+    }, 3000);
 
-  const handleNewDraft = () => {
-    setCurrentDraftId(null);
-    setItineraryContent("");
-    setMessages([]);
-    setDraftTitle("");
-    setSelectedPrompts(new Set());
-    setSelectedCustom(new Set());
-    setCustomItems([]);
-  };
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [itineraryContent, messages, selectedProjectId, isLoadingDraft, saveDraft]);
 
   const QUICK_PROMPTS = [
     t("aa.qpItinerary"),
@@ -671,80 +674,21 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         )}
       </div>
 
-      {/* Drafts Bar */}
-      <div className="bg-voyage-white border border-parchment-3 rounded-lg p-4">
-        <div className="flex items-center gap-3 flex-wrap">
-          <input
-            value={draftTitle}
-            onChange={(e) => setDraftTitle(e.target.value)}
-            placeholder={t("aa.draftTitle")}
-            className="px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold transition-colors flex-1 min-w-[200px]"
-          />
-          <button
-            onClick={handleSaveDraft}
-            disabled={isSavingDraft || (!itineraryContent && messages.length === 0)}
-            className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
-          >
-            💾 {isSavingDraft ? t("aa.savingDraft") : t("aa.saveDraft")}
-          </button>
-          <button
-            onClick={() => setShowDrafts(!showDrafts)}
-            className={`px-4 py-2 rounded-sm text-[0.72rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
-              showDrafts
-                ? "bg-gold/20 text-gold border border-gold/30"
-                : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
-            }`}
-          >
-            📂 {t("aa.drafts")} ({drafts.length})
-          </button>
-          <button
-            onClick={handleNewDraft}
-            className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold transition-colors"
-          >
-            ✨ {t("aa.newDraft")}
-          </button>
-          {currentDraftId && (
-            <span className="text-[0.65rem] text-sage">
-              ✓ {t("aa.lastSaved")}: {new Date(drafts.find(d => d.id === currentDraftId)?.updated_at || "").toLocaleString()}
+      {/* Auto-save status indicator */}
+      {selectedProjectId && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-parchment/50 border border-parchment-3 rounded-lg text-[0.72rem]">
+          {isLoadingDraft ? (
+            <span className="text-voyage-muted animate-pulse">⏳ {t("aa.loadingDraft")}</span>
+          ) : lastSavedAt ? (
+            <span className="text-sage">
+              ✓ {t("aa.autoSaved")} · {new Date(lastSavedAt).toLocaleString()}
             </span>
+          ) : (
+            <span className="text-voyage-muted">{t("aa.newItinerary")}</span>
           )}
+          {isSaving && <span className="text-gold animate-pulse ml-2">💾 {t("aa.savingDraft")}</span>}
         </div>
-
-        {showDrafts && (
-          <div className="mt-3 border-t border-parchment-3 pt-3 space-y-2 max-h-[300px] overflow-y-auto">
-            {drafts.length === 0 ? (
-              <p className="text-voyage-muted text-[0.8rem] text-center py-4">{t("aa.noDrafts")}</p>
-            ) : (
-              drafts.map((draft) => (
-                <div
-                  key={draft.id}
-                  className={`flex items-center gap-3 p-3 rounded-md border transition-colors cursor-pointer hover:border-gold/50 ${
-                    currentDraftId === draft.id
-                      ? "border-gold bg-gold/5"
-                      : "border-parchment-3 bg-parchment/30"
-                  }`}
-                  onClick={() => handleLoadDraft(draft)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[0.82rem] font-medium text-ink truncate">{draft.title}</p>
-                    <p className="text-[0.68rem] text-voyage-muted">
-                      {new Date(draft.updated_at).toLocaleString()}
-                      {draft.content && ` · ${draft.content.length} chars`}
-                      {draft.chat_history.length > 0 && ` · ${draft.chat_history.length} msgs`}
-                    </p>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDeleteDraft(draft.id); }}
-                    className="px-2 py-1 text-[0.65rem] text-destructive/60 hover:text-destructive transition-colors"
-                  >
-                    🗑 {t("aa.deleteDraft")}
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Main Layout: Chat + Preview */}
       <div className="grid grid-cols-1 gap-6">
@@ -1026,6 +970,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             <div className="flex items-center gap-2">
               {itineraryContent && (
                 <>
+                  <button
+                    onClick={() => saveDraft(itineraryContent, messages)}
+                    disabled={isSaving || !selectedProjectId}
+                    className="px-3 py-1.5 rounded-sm bg-sage text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-sage/80 transition-colors disabled:opacity-40"
+                    title={!selectedProjectId ? t("aa.selectProjectToSave") : ""}
+                  >
+                    💾 {isSaving ? t("aa.savingDraft") : t("aa.saveDraft")}
+                  </button>
                   <button
                     onClick={() => setShowImagePanel(!showImagePanel)}
                     className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${

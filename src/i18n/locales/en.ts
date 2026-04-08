@@ -353,5 +353,8 @@ export default {
     newDraft: "New Draft",
     loadDraftConfirm: "Loading this draft will replace your current work. Continue?",
     untitled: "Untitled Draft",
+    loadingDraft: "Loading saved itinerary...",
+    newItinerary: "New itinerary — start chatting to create content",
+    selectProjectToSave: "Select a project to save",
   },
 };
