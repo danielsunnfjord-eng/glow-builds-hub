@@ -141,9 +141,13 @@ const AdminDashboard = () => {
         estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
-        notes: form.children > 0
-          ? (form.notes ? form.notes + "\n" : "") + `Children ages: ${form.children_ages.join(", ")}`
-          : form.notes || null,
+        notes: (() => {
+          let n = (form.notes || "").replace(/\n?Children ages:.*$/m, "").trim();
+          if (form.children > 0) {
+            n = (n ? n + "\n" : "") + `Children ages: ${form.children_ages.join(", ")}`;
+          }
+          return n || null;
+        })(),
         user_id: user.id,
       };
       if (editingId) {
