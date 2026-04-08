@@ -600,11 +600,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
-    const md = credit
-      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
-      : `\n\n![${alt}](${url})\n`;
-    // Always append to markdown content — the WYSIWYG editor will sync
-    updateContent((prev) => prev + md);
+    if (editorRef.current) {
+      editorRef.current.insertImage(url, alt || "Travel photo");
+    } else {
+      const md = credit
+        ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
+        : `\n\n![${alt}](${url})\n`;
+      updateContent((prev) => prev + md);
+    }
     toast({ title: t("aa.imageInserted") });
   }, [updateContent, toast, t]);
 
