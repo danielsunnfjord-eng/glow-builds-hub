@@ -84,6 +84,102 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
+  // --- Draft functions ---
+  const fetchDrafts = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("itinerary_drafts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false });
+    if (!error && data) {
+      setDrafts(data.map((d: any) => ({
+        id: d.id,
+        title: d.title,
+        content: d.content,
+        chat_history: (d.chat_history as Message[]) || [],
+        project_id: d.project_id,
+        updated_at: d.updated_at,
+      })));
+    }
+  }, []);
+
+  useEffect(() => { fetchDrafts(); }, [fetchDrafts]);
+
+  const handleSaveDraft = async () => {
+    if (!itineraryContent && messages.length === 0) return;
+    setIsSavingDraft(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const title = draftTitle.trim() || selectedProject?.client_name
+        ? `${selectedProject?.client_name || ""} — ${selectedProject?.destination || t("aa.untitled")}`
+        : t("aa.untitled");
+
+      const draftData = {
+        user_id: user.id,
+        project_id: selectedProjectId || null,
+        title,
+        content: itineraryContent,
+        chat_history: messages as any,
+      };
+
+      if (currentDraftId) {
+        const { error } = await supabase
+          .from("itinerary_drafts")
+          .update(draftData)
+          .eq("id", currentDraftId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from("itinerary_drafts")
+          .insert(draftData)
+          .select("id")
+          .single();
+        if (error) throw error;
+        setCurrentDraftId(data.id);
+      }
+      toast({ title: `💾 ${t("aa.draftSaved")}` });
+      fetchDrafts();
+    } catch (err: any) {
+      toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleLoadDraft = (draft: Draft) => {
+    if ((itineraryContent || messages.length > 0) && !window.confirm(t("aa.loadDraftConfirm"))) return;
+    setCurrentDraftId(draft.id);
+    setItineraryContent(draft.content);
+    setMessages(draft.chat_history);
+    setDraftTitle(draft.title);
+    if (draft.project_id) setSelectedProjectId(draft.project_id);
+    setShowDrafts(false);
+    toast({ title: `📂 "${draft.title}"` });
+  };
+
+  const handleDeleteDraft = async (draftId: string) => {
+    const { error } = await supabase.from("itinerary_drafts").delete().eq("id", draftId);
+    if (!error) {
+      if (currentDraftId === draftId) setCurrentDraftId(null);
+      setDrafts((prev) => prev.filter((d) => d.id !== draftId));
+      toast({ title: t("aa.draftDeleted") });
+    }
+  };
+
+  const handleNewDraft = () => {
+    setCurrentDraftId(null);
+    setItineraryContent("");
+    setMessages([]);
+    setDraftTitle("");
+    setSelectedPrompts(new Set());
+    setSelectedCustom(new Set());
+    setCustomItems([]);
+  };
+
   const QUICK_PROMPTS = [
     t("aa.qpItinerary"),
     t("aa.qpAccommodation"),
