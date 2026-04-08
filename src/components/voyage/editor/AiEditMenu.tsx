@@ -3,6 +3,7 @@ import { Editor } from "@tiptap/react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
+import AiPreviewPanel from "./AiPreviewPanel";
 
 const AI_ACTIONS = [
   { key: "rewrite", icon: "✏️", labelKey: "aiEdit.rewrite" },
@@ -34,6 +35,9 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const interactingRef = useRef(false);
 
+  // Preview state
+  const [preview, setPreview] = useState<{ original: string; result: string; from: number; to: number } | null>(null);
+
   useEffect(() => {
     const checkSelection = () => {
       const { from, to } = editor.state.selection;
@@ -46,7 +50,6 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     };
 
     const handleBlur = () => {
-      // Don't hide if user is interacting with the AI menu itself
       setTimeout(() => {
         if (!interactingRef.current) {
           setVisible(false);
@@ -74,7 +77,10 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     const text = getSelectedText();
     if (!text.trim()) return;
 
+    const { from, to } = editor.state.selection;
     setLoading(action);
+    setPreview({ original: text, result: "", from, to });
+
     try {
       const body: any = { text, action };
       if (prompt) body.customPrompt = prompt;
@@ -86,10 +92,9 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
       const result = data.result;
       if (result) {
-        // Replace selected text with AI result
-        const { from, to } = editor.state.selection;
-        editor.chain().focus().deleteRange({ from, to }).insertContentAt(from, result).run();
-        toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
+        setPreview({ original: text, result, from, to });
+      } else {
+        setPreview(null);
       }
     } catch (err: any) {
       console.error("AI transform error:", err);
@@ -98,6 +103,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
         description: err.message,
         variant: "destructive",
       });
+      setPreview(null);
     } finally {
       setLoading(null);
       setShowCustom(false);
@@ -105,7 +111,19 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     }
   };
 
-  if (!visible) return null;
+  const acceptPreview = () => {
+    if (!preview?.result) return;
+    editor.chain().focus().deleteRange({ from: preview.from, to: preview.to }).insertContentAt(preview.from, preview.result).run();
+    toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
+    setPreview(null);
+  };
+
+  const rejectPreview = () => {
+    setPreview(null);
+    editor.commands.focus();
+  };
+
+  if (!visible && !preview) return null;
 
   return (
     <div
@@ -114,8 +132,18 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
       onMouseDown={() => { interactingRef.current = true; }}
       onMouseUp={() => { setTimeout(() => { interactingRef.current = false; }, 100); }}
     >
+      {/* Preview panel */}
+      {(preview || loading) && (
+        <AiPreviewPanel
+          original={preview?.original || ""}
+          preview={preview?.result || ""}
+          onAccept={acceptPreview}
+          onReject={rejectPreview}
+          loading={!!loading}
+        />
+      )}
+
       <div className="bg-ink/95 backdrop-blur-sm rounded-lg shadow-xl border border-gold/20 px-2 py-1.5 flex items-center gap-1 flex-wrap max-w-[500px]">
-        {/* AI sparkle indicator */}
         <span className="text-gold text-[0.65rem] font-semibold px-1.5 select-none">AI</span>
         <div className="w-px h-4 bg-white/20" />
 
@@ -123,7 +151,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
           <button
             key={key}
             type="button"
-            disabled={!!loading}
+            disabled={!!loading || !!preview}
             onClick={() => runAction(key)}
             title={t(labelKey) || key}
             className={`px-2 py-1 rounded text-[0.65rem] font-medium transition-all ${
@@ -138,11 +166,10 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
         <div className="w-px h-4 bg-white/20" />
 
-        {/* Translate dropdown */}
         <div className="relative">
           <button
             type="button"
-            disabled={!!loading}
+            disabled={!!loading || !!preview}
             onClick={() => { setShowTranslate(!showTranslate); setShowCustom(false); }}
             className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
             title={t("aiEdit.translate") || "Translate"}
@@ -172,10 +199,9 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
         <div className="w-px h-4 bg-white/20" />
 
-        {/* Custom prompt */}
         <button
           type="button"
-          disabled={!!loading}
+          disabled={!!loading || !!preview}
           onClick={() => { setShowCustom(!showCustom); setShowTranslate(false); }}
           className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
           title={t("aiEdit.custom") || "Custom prompt"}
