@@ -744,6 +744,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             )}
           </div>
         )}
+      </div>
 
       {/* Main Layout: Chat + Preview */}
       <div className="grid grid-cols-1 gap-6">
