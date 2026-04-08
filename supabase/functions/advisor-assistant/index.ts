@@ -60,11 +60,17 @@ serve(async (req) => {
     if (projectContext) {
       systemContent += `\n\nCurrent client project context:
 - Client: ${projectContext.clientName || "Not specified"}
+- Client email: ${projectContext.clientEmail || "Not specified"}
+- Departure city: ${projectContext.departure || "Not specified"}
 - Destination: ${projectContext.destination || "Not specified"}
 - Group size: ${projectContext.groupSize || "Not specified"}
 - Trip duration: ${projectContext.tripDuration || "Not specified"}
+- Start date: ${projectContext.startDate || "Not specified"}
+- End date: ${projectContext.endDate || "Not specified"}
+- Estimated budget: ${projectContext.estimatedBudget || "Not specified"}
+- Price/fee: ${projectContext.price || "Not specified"}
 - Notes: ${projectContext.notes || "None"}
-Use these details to personalise the itinerary.`;
+Use ALL these details to personalise the itinerary. Consider the departure city for flight suggestions, the budget for accommodation tier, the dates for seasonal activities and weather tips, and the group size for activity recommendations.`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
