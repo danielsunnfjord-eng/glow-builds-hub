@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import logo from "@/assets/logo.png";
 
 const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -14,9 +15,7 @@ const Footer = () => {
     <>
       <footer className="bg-ink text-voyage-white p-16 grid grid-cols-[1.5fr_1fr_1fr] gap-16 max-md:grid-cols-1 max-md:p-8">
         <div>
-          <span className="font-serif text-xl font-bold text-voyage-white block mb-3">
-            Fjord <span className="text-gold italic">&</span> Waves Tours
-          </span>
+          <img src={logo} alt="Fjord & Waves Travel" className="h-12 w-auto mb-3 brightness-0 invert" />
           <p className="text-[0.78rem] text-voyage-white/40 leading-relaxed">
             {t("footer.tagline")}
           </p>
