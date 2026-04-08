@@ -14,6 +14,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import Link from "@tiptap/extension-link";
 import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Toolbar from "./editor/Toolbar";
+import AiEditMenu from "./editor/AiEditMenu";
 import { markdownToHtml, htmlToMarkdown } from "./editor/markdownHelpers";
 
 interface ItineraryEditorProps {
