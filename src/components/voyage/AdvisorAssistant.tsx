@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
+import ItineraryEditor from "./ItineraryEditor";
 
 interface ClientProject {
   id: string;
@@ -57,14 +58,11 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
-  const [isEditingPreview, setIsEditingPreview] = useState(false);
+  
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
-  const [editingImage, setEditingImage] = useState<{ url: string; alt: string } | null>(null);
-  const [imgSize, setImgSize] = useState<"small" | "medium" | "full">("full");
-  const [imgCaption, setImgCaption] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -578,29 +576,16 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     return () => window.removeEventListener("keydown", handler);
   }, [handleUndo, handleRedo]);
 
-  const editorRef = useRef<HTMLTextAreaElement>(null);
+  
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
     const md = credit
       ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
       : `\n\n![${alt}](${url})\n`;
-    const editor = editorRef.current;
-    if (editor && isEditingPreview) {
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      const before = itineraryContent.slice(0, start);
-      const after = itineraryContent.slice(end);
-      updateContent(before + md + after);
-      setTimeout(() => {
-        editor.focus();
-        const newPos = start + md.length;
-        editor.setSelectionRange(newPos, newPos);
-      }, 0);
-    } else {
-      updateContent((prev) => prev + md);
-    }
+    // Always append to markdown content — the WYSIWYG editor will sync
+    updateContent((prev) => prev + md);
     toast({ title: t("aa.imageInserted") });
-  }, [isEditingPreview, itineraryContent, updateContent, toast, t]);
+  }, [updateContent, toast, t]);
 
   const extractImages = (md: string) => {
     const regex = /!\[([^\]]*)\]\(([^)]+)\)(\n\*Photo:[^*]*\*)?/g;
@@ -1019,16 +1004,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     🖼️ {t("aa.images")}
                   </button>
                   <button
-                    onClick={() => setIsEditingPreview(!isEditingPreview)}
-                    className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
-                      isEditingPreview
-                        ? "bg-sage text-voyage-white hover:bg-sage/80"
-                        : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
-                    }`}
-                  >
-                    {isEditingPreview ? `✓ ${t("aa.done")}` : `✏️ ${t("aa.edit")}`}
-                  </button>
-                  <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
@@ -1153,181 +1128,32 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             </div>
           )}
 
-          <div className="flex-1 overflow-y-auto p-6 max-h-[500px]">
+          <div className="flex-1 overflow-y-auto max-h-[500px]">
             {itineraryContent ? (
-              isEditingPreview ? (
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <button
-                      onClick={handleUndo}
-                      disabled={undoStack.length === 0}
-                      title={`${t("aa.undo")} (Ctrl+Z)`}
-                      className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
-                    >
-                      ↩ {t("aa.undo")}
-                    </button>
-                    <button
-                      onClick={handleRedo}
-                      disabled={redoStack.length === 0}
-                      title={`${t("aa.redo")} (Ctrl+Y)`}
-                      className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-30 disabled:hover:border-parchment-3 disabled:hover:text-voyage-muted"
-                    >
-                      ↪ {t("aa.redo")}
-                    </button>
-                    <span className="text-[0.6rem] text-voyage-muted">
-                      {undoStack.length > 0 && `${undoStack.length} ${t("aa.undo").toLowerCase()}${undoStack.length > 1 ? "s" : ""}`}
-                    </span>
-                    <div className="ml-auto flex items-center gap-1.5">
-                      <span className="text-[0.65rem] text-voyage-muted">{t("aa.insert")}</span>
-                      {PICSUM_CATEGORIES.slice(0, 4).map((cat) => (
-                        <button
-                          key={cat.seed}
-                          onClick={() => {
-                            const url = `https://picsum.photos/seed/${cat.seed}-${Date.now()}/800/500`;
-                            insertImageAtCursor(url, cat.label, "Lorem Picsum (picsum.photos) — Free license");
-                          }}
-                          title={`Insert ${cat.label} photo`}
-                          className="px-2 py-0.5 rounded-full border border-parchment-3 text-[0.6rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
-                        >
-                          📷 {cat.label}
-                        </button>
-                      ))}
-                      <button
-                        onClick={() => imageUploadRef.current?.click()}
-                        title={t("aa.uploadPc")}
-                        className="px-2 py-0.5 rounded-full border border-parchment-3 text-[0.6rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
-                      >
-                        📤 {t("aa.upload")}
-                      </button>
-                    </div>
+              <div>
+                {selectedProject && (
+                  <div className="text-center mb-4 pb-4 border-b border-parchment-3 px-6 pt-6">
+                    <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Travel</p>
+                    <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
+                      {selectedProject.destination || t("aa.travel")} {t("aa.itinerary")}
+                    </h1>
+                    <p className="text-[0.75rem] text-voyage-muted">
+                      {t("aa.preparedFor")} <strong>{selectedProject.client_name}</strong>
+                      {selectedProject.trip_duration && ` · ${selectedProject.trip_duration}`}
+                      {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} ${t("aa.travellers")}`}
+                    </p>
                   </div>
-                  <textarea
-                    ref={editorRef}
-                    value={itineraryContent}
-                    onChange={(e) => updateContent(e.target.value)}
-                    className="w-full flex-1 min-h-[360px] p-3 bg-parchment border border-parchment-3 rounded-sm text-ink text-[0.82rem] font-mono leading-relaxed focus:outline-none focus:border-gold transition-colors resize-none"
-                    placeholder={t("aa.editPlaceholder")}
-                  />
-                </div>
-              ) : (
-                <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3 prose-img:rounded-lg prose-img:shadow-md">
-                  {selectedProject && (
-                    <div className="text-center mb-6 pb-4 border-b border-parchment-3">
-                      <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Travel</p>
-                      <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
-                        {selectedProject.destination || t("aa.travel")} {t("aa.itinerary")}
-                      </h1>
-                      <p className="text-[0.75rem] text-voyage-muted">
-                        {t("aa.preparedFor")} <strong>{selectedProject.client_name}</strong>
-                        {selectedProject.trip_duration && ` · ${selectedProject.trip_duration}`}
-                        {selectedProject.group_size > 1 && ` · ${selectedProject.group_size} ${t("aa.travellers")}`}
-                      </p>
-                    </div>
-                  )}
-                  <ReactMarkdown
-                    components={{
-                      img: ({ node, alt, src, ...props }) => {
-                        const isSelected = editingImage?.url === src;
-                        return (
-                          <div className="my-4 group relative">
-                            <img
-                              {...props}
-                              src={src}
-                              alt={alt}
-                              className={`rounded-lg shadow-md cursor-pointer transition-all ${
-                                isSelected ? "ring-2 ring-gold" : "hover:ring-1 hover:ring-gold/50"
-                              } ${
-                                isSelected && imgSize === "small" ? "max-w-[40%]" :
-                                isSelected && imgSize === "medium" ? "max-w-[65%]" :
-                                "max-w-full"
-                              }`}
-                              loading="lazy"
-                              onClick={() => {
-                                if (isSelected) {
-                                  setEditingImage(null);
-                                } else {
-                                  setEditingImage({ url: src || "", alt: alt || "" });
-                                  setImgSize("full");
-                                  setImgCaption(alt || "");
-                                }
-                              }}
-                            />
-                            {alt && alt !== "Travel photo" && (
-                              <p className="text-[0.7rem] text-voyage-muted italic mt-1 text-center">{alt}</p>
-                            )}
-                            {isSelected && (
-                              <div className="mt-2 p-3 bg-parchment border border-gold/30 rounded-md space-y-2.5 animate-in fade-in duration-200">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[0.68rem] font-semibold text-ink uppercase tracking-wide w-16">{t("aa.size") || "Size"}</span>
-                                  {(["small", "medium", "full"] as const).map((size) => (
-                                    <button
-                                      key={size}
-                                      onClick={() => {
-                                        setImgSize(size);
-                                        // Update the markdown with size hint
-                                        const sizeHint = size === "full" ? "" : `{: .img-${size}}`;
-                                        const oldPattern = new RegExp(`!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)(\\{:[^}]*\\})?`);
-                                        const newMd = `![${imgCaption}](${src})${sizeHint}`;
-                                        updateContent(itineraryContent.replace(oldPattern, newMd));
-                                      }}
-                                      className={`px-2.5 py-1 rounded-sm text-[0.68rem] font-medium transition-colors ${
-                                        imgSize === size
-                                          ? "bg-gold text-ink"
-                                          : "bg-voyage-white border border-parchment-3 text-voyage-muted hover:border-gold"
-                                      }`}
-                                    >
-                                      {size === "small" ? "S" : size === "medium" ? "M" : "L"}
-                                    </button>
-                                  ))}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[0.68rem] font-semibold text-ink uppercase tracking-wide w-16">{t("aa.caption") || "Caption"}</span>
-                                  <input
-                                    type="text"
-                                    value={imgCaption}
-                                    onChange={(e) => setImgCaption(e.target.value)}
-                                    onBlur={() => {
-                                      // Update alt text in markdown
-                                      const oldPattern = new RegExp(`!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`);
-                                      updateContent(itineraryContent.replace(oldPattern, `![${imgCaption}](${src})`));
-                                    }}
-                                    placeholder={t("aa.addCaption") || "Add caption..."}
-                                    className="flex-1 px-2 py-1 bg-voyage-white border border-parchment-3 rounded-sm text-[0.72rem] text-ink focus:outline-none focus:border-gold transition-colors"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => {
-                                      // Remove image from markdown
-                                      const pattern = new RegExp(`\\n*!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)(\\{:[^}]*\\})?\\n*(\\*Photo:[^*]*\\*)?\\n*`);
-                                      updateContent(itineraryContent.replace(pattern, "\n"));
-                                      setEditingImage(null);
-                                      toast({ title: t("aa.imageRemoved") || "Image removed" });
-                                    }}
-                                    className="px-2.5 py-1 rounded-sm text-[0.68rem] font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-colors"
-                                  >
-                                    🗑 {t("aa.removeImage") || "Remove"}
-                                  </button>
-                                  <button
-                                    onClick={() => setEditingImage(null)}
-                                    className="px-2.5 py-1 rounded-sm text-[0.68rem] font-medium text-voyage-muted border border-parchment-3 hover:border-gold transition-colors ml-auto"
-                                  >
-                                    ✓ {t("aa.done") || "Done"}
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      },
-                    }}
-                  >
-                    {itineraryContent}
-                  </ReactMarkdown>
-                </div>
-              )
+                )}
+                <ItineraryEditor
+                  content={itineraryContent}
+                  onContentChange={(md) => {
+                    setItineraryContent(md);
+                  }}
+                  placeholder={t("aa.editPlaceholder")}
+                />
+              </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-center">
+              <div className="flex items-center justify-center h-full text-center p-6">
                 <div>
                   <div className="text-4xl mb-3 opacity-30">🗺️</div>
                   <p className="text-voyage-muted text-[0.82rem]">
