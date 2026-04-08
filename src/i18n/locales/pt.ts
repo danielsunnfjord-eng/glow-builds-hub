@@ -365,5 +365,11 @@ export default {
     apply: "Aplicar",
     applied: "IA aplicada",
     failed: "Transformação IA falhou",
+    generating: "Gerando preview...",
+    previewTitle: "Preview IA",
+    original: "Original",
+    suggested: "Sugestão",
+    accept: "Aceitar",
+    reject: "Rejeitar",
   },
 };

@@ -378,5 +378,11 @@ export default {
     apply: "Apply",
     applied: "AI applied",
     failed: "AI transform failed",
+    generating: "Generating preview...",
+    previewTitle: "AI Preview",
+    original: "Original",
+    suggested: "Suggested",
+    accept: "Accept",
+    reject: "Reject",
   },
 };
