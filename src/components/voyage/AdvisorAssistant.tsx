@@ -576,7 +576,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     return () => window.removeEventListener("keydown", handler);
   }, [handleUndo, handleRedo]);
 
-  const editorRef = useRef<HTMLTextAreaElement>(null);
+  
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
     const md = credit
