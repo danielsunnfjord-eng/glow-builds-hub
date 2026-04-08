@@ -261,6 +261,7 @@ export default {
     edit: "Rediger",
     done: "Ferdig",
     exportPdf: "Eksporter PDF",
+    pdfPreview: "Forhåndsvisning",
     aiGenerate: "AI-generering",
     aiPlaceholder: "f.eks. Nordlys over Tromsø-fjorden...",
     generate: "Generer",

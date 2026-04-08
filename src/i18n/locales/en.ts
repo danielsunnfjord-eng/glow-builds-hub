@@ -276,6 +276,7 @@ export default {
     edit: "Edit",
     done: "Done",
     exportPdf: "Export PDF",
+    pdfPreview: "Preview",
     aiGenerate: "AI Generate",
     aiPlaceholder: "e.g. Northern Lights over Tromsø fjord...",
     generate: "Generate",
