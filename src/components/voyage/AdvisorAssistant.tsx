@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import ItineraryEditor from "./ItineraryEditor";
+import ImageCropper from "./ImageCropper";
 
 interface ClientProject {
   id: string;
@@ -63,6 +64,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
+  const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -311,6 +313,22 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
     }
     if (imageUploadRef.current) imageUploadRef.current.value = "";
+  };
+
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    if (!cropTarget) return;
+    try {
+      const publicUrl = await uploadBase64Image(croppedDataUrl);
+      setImageResults((prev) =>
+        prev.map((img, i) =>
+          i === cropTarget.index ? { ...img, url: publicUrl } : img
+        )
+      );
+      toast({ title: `✂️ ${t("aa.cropApplied", "Crop applied")}` });
+    } catch (err: any) {
+      toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
+    }
+    setCropTarget(null);
   };
 
   // --- Chat functions ---
@@ -1074,16 +1092,24 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">{t("aa.clickInsert")}</p>
                   <div className="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto">
                     {imageResults.map((img, i) => (
-                      <button
-                        key={i}
-                        onClick={() => insertImageAtCursor(img.url, "Travel photo", img.credit)}
-                        className="group relative rounded-md overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
-                      >
-                        <img src={img.url} alt="Travel" className="w-full h-20 object-cover" loading="lazy" />
-                        <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center">
-                          <span className="text-voyage-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">{t("aa.insertImg")}</span>
-                        </div>
-                      </button>
+                      <div key={i} className="group relative rounded-md overflow-hidden border border-parchment-3 hover:border-gold transition-colors">
+                        <button
+                          onClick={() => insertImageAtCursor(img.url, "Travel photo", img.credit)}
+                          className="w-full"
+                        >
+                          <img src={img.url} alt="Travel" className="w-full h-20 object-cover" loading="lazy" />
+                          <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center">
+                            <span className="text-voyage-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">{t("aa.insertImg")}</span>
+                          </div>
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setCropTarget({ index: i, url: img.url }); }}
+                          className="absolute top-1 right-1 bg-ink/60 hover:bg-ink/80 text-voyage-white rounded-sm px-1.5 py-0.5 text-[0.6rem] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                          title={t("aa.cropImage", "Crop")}
+                        >
+                          ✂️
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -1168,6 +1194,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           </div>
         </div>
       </div>
+      {cropTarget && (
+        <ImageCropper
+          imageUrl={cropTarget.url}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCropTarget(null)}
+        />
+      )}
     </div>
   );
 };
