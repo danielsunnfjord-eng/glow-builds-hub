@@ -5,7 +5,7 @@ const corsHeaders = {
 
 const EMAIL_TEMPLATES: Record<string, { subject: string; body: (data: { clientName: string; destination: string; siteName: string }) => string }> = {
   'welcome': {
-    subject: 'Your Itinerary from Fjord & Waves Tours',
+    subject: 'Your Itinerary from Fjord & Waves Travel',
     body: ({ clientName, destination, siteName }) => `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e;">
         <h1 style="font-size: 24px; margin-bottom: 8px;">Dear ${clientName},</h1>
@@ -47,7 +47,7 @@ const EMAIL_TEMPLATES: Record<string, { subject: string; body: (data: { clientNa
     `,
   },
   'revision': {
-    subject: 'Updated Itinerary from Fjord & Waves Tours',
+    subject: 'Updated Itinerary from Fjord & Waves Travel',
     body: ({ clientName, destination, siteName }) => `
       <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e;">
         <h1 style="font-size: 24px; margin-bottom: 8px;">Dear ${clientName},</h1>
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    const siteName = 'Fjord & Waves Tours'
+    const siteName = 'Fjord & Waves Travel'
     const htmlBody = template.body({ clientName, destination: destination || '', siteName })
 
     // Build full email HTML with PDF download button

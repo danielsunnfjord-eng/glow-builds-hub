@@ -230,7 +230,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       if (!resp.ok) throw new Error(t("aa.genFailed"));
       const { imageUrl } = await resp.json();
       setImageResults((prev) => [
-        { url: imageUrl, credit: "AI Generated — Fjord & Waves Tours" },
+        { url: imageUrl, credit: "AI Generated — Fjord & Waves Travel" },
         ...prev,
       ]);
       toast({ title: `✨ ${t("aa.aiImageGenerated")}` });
@@ -474,12 +474,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       </head>
       <body>
         <div class="header">
-          <div class="brand">Fjord & Waves Tours</div>
+          <div class="brand">Fjord & Waves Travel</div>
           <h1>${selectedProject?.destination ? `${selectedProject.destination} ${t("aa.itinerary")}` : t("aa.itinerary")}</h1>
           <p style="font-size:13px;color:#777;">${t("aa.preparedFor")} <strong>${selectedProject?.client_name || ""}</strong>${selectedProject?.trip_duration ? ` · ${selectedProject.trip_duration}` : ""}${selectedProject?.group_size && selectedProject.group_size > 1 ? ` · ${selectedProject.group_size} ${t("aa.travellers")}` : ""}</p>
         </div>
         <div id="content"></div>
-        <div class="footer">© ${new Date().getFullYear()} Fjord & Waves Tours · Org.nr: 928804860</div>
+        <div class="footer">© ${new Date().getFullYear()} Fjord & Waves Travel · Org.nr: 928804860</div>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>
         <script>
           document.getElementById('content').innerHTML = marked.parse(${JSON.stringify(itineraryContent)});
@@ -1183,7 +1183,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <div className="prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3 prose-img:rounded-lg prose-img:shadow-md">
                   {selectedProject && (
                     <div className="text-center mb-6 pb-4 border-b border-parchment-3">
-                      <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Tours</p>
+                      <p className="text-[0.68rem] tracking-[0.15em] uppercase text-gold font-semibold mb-1">Fjord & Waves Travel</p>
                       <h1 className="font-serif text-xl font-bold text-ink !border-none !pb-0 !mb-1">
                         {selectedProject.destination || t("aa.travel")} {t("aa.itinerary")}
                       </h1>
