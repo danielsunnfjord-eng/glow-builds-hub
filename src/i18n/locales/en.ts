@@ -95,6 +95,8 @@ export default {
     cardTitle: "Start planning your journey →",
     cardDesc: "Click to fill out our quick intake form and I'll craft a personalised itinerary just for you.",
     dialogDesc: "Fill out the form below and I'll be in touch within 24 hours.",
+    videoCallText: "How about scheduling a quick video call so we can go over your itinerary and answer any questions? This way, I can better understand your needs and present options that match your style and budget.",
+    bookCall: "Book a Video Call",
   },
   // Newsletter
   newsletter: {

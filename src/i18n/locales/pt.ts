@@ -90,6 +90,8 @@ export default {
     cardTitle: "Comece a planejar sua viagem →",
     cardDesc: "Preencha nosso formulário rápido e eu criarei um roteiro personalizado só para você.",
     dialogDesc: "Preencha o formulário abaixo e entrarei em contato em até 24 horas.",
+    videoCallText: "Que tal agendar uma rápida videochamada para revisarmos seu roteiro e tirar todas as dúvidas? Assim, posso entender melhor suas necessidades e apresentar opções que combinem com seu estilo e orçamento.",
+    bookCall: "Agendar Videochamada",
   },
   newsletter: {
     badge: "Inspire-se",
