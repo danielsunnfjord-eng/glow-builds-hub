@@ -270,7 +270,6 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
       }),
       ImageResize.configure({
         inline: false,
-        allowBase64: true,
       }),
       Underline,
       TextAlign.configure({
