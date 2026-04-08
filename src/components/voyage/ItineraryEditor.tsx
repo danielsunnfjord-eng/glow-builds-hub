@@ -312,7 +312,7 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
   useEffect(() => {
     if (!editor) return;
     (editor as any).__insertImage = (url: string, alt: string) => {
-      editor.chain().focus().setImage({ src: url, alt }).run();
+      (editor.chain().focus() as any).setImage({ src: url, alt }).run();
     };
   }, [editor]);
 
