@@ -363,5 +363,11 @@ export default {
     apply: "Bruk",
     applied: "AI brukt",
     failed: "AI-transformasjon mislyktes",
+    generating: "Genererer forhåndsvisning...",
+    previewTitle: "AI Forhåndsvisning",
+    original: "Original",
+    suggested: "Forslag",
+    accept: "Godta",
+    reject: "Avvis",
   },
 };
