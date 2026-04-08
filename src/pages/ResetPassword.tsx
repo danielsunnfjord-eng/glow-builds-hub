@@ -39,7 +39,7 @@ const ResetPassword = () => {
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <h1 className="font-serif text-2xl font-bold text-voyage-white">
-            Fjord <span className="text-gold italic">&</span> Waves Tours
+            Fjord <span className="text-gold italic">&</span> Waves Travel
           </h1>
           <p className="text-[0.78rem] text-voyage-white/40 mt-2">Set your new password</p>
         </div>
