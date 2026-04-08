@@ -1020,16 +1020,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     🖼️ {t("aa.images")}
                   </button>
                   <button
-                    onClick={() => setIsEditingPreview(!isEditingPreview)}
-                    className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
-                      isEditingPreview
-                        ? "bg-sage text-voyage-white hover:bg-sage/80"
-                        : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
-                    }`}
-                  >
-                    {isEditingPreview ? `✓ ${t("aa.done")}` : `✏️ ${t("aa.edit")}`}
-                  </button>
-                  <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
