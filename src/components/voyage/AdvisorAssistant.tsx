@@ -1194,6 +1194,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           </div>
         </div>
       </div>
+      {cropTarget && (
+        <ImageCropper
+          imageUrl={cropTarget.url}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setCropTarget(null)}
+        />
+      )}
     </div>
   );
 };
