@@ -27,6 +27,7 @@ interface ClientProject {
   destination: string | null;
   trip_duration: string | null;
   price: number | null;
+  currency: string;
   itinerary_status: ItineraryStatus;
   payment_status: PaymentStatus;
   notes: string | null;
@@ -67,6 +68,7 @@ const emptyProject = {
   start_date: "",
   end_date: "",
   price: "",
+  currency: "EUR",
   estimated_budget: "",
   itinerary_status: "new" as ItineraryStatus,
   payment_status: "pending" as PaymentStatus,
@@ -139,6 +141,7 @@ const AdminDashboard = () => {
         start_date: form.start_date || null,
         end_date: form.end_date || null,
         price: form.price ? Number(form.price) : null,
+        currency: form.currency,
         estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
@@ -269,6 +272,7 @@ const AdminDashboard = () => {
       start_date: (p as any).start_date || "",
       end_date: (p as any).end_date || "",
       price: p.price?.toString() || "",
+      currency: p.currency || "EUR",
       estimated_budget: (p as any).estimated_budget || "",
       itinerary_status: p.itinerary_status,
       payment_status: p.payment_status,
@@ -293,12 +297,35 @@ const AdminDashboard = () => {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-  const sumPrices = (list: ClientProject[]) => list.reduce((sum, p) => sum + (p.price || 0), 0);
+  const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", NOK: "kr ", BRL: "R$ " };
+  const formatPrice = (p: ClientProject) => {
+    if (!p.price) return "—";
+    const sym = CURRENCY_SYMBOLS[p.currency] || "€";
+    return `${sym}${p.price.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  };
+
+  const sumByCurrency = (list: ClientProject[]) => {
+    const totals: Record<string, number> = {};
+    list.forEach((p) => {
+      if (p.price) {
+        const cur = p.currency || "EUR";
+        totals[cur] = (totals[cur] || 0) + p.price;
+      }
+    });
+    return totals;
+  };
+
   const paidProjects = projects.filter((p) => p.payment_status === "paid");
-  const earningsTotal = sumPrices(paidProjects);
-  const earningsYear = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
-  const earningsMonth = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
-  const earningsWeek = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+  const earningsWeekByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+  const earningsMonthByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
+  const earningsYearByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
+  const earningsTotalByCur = sumByCurrency(paidProjects);
+
+  const formatEarnings = (totals: Record<string, number>) => {
+    const entries = Object.entries(totals).sort(([a], [b]) => a.localeCompare(b));
+    if (entries.length === 0) return "—";
+    return entries.map(([cur, val]) => `${CURRENCY_SYMBOLS[cur] || cur}${val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`).join(" · ");
+  };
 
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
   const selectClass = inputClass;
@@ -379,14 +406,14 @@ const AdminDashboard = () => {
             <h2 className="text-[0.72rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted mb-3">{t("admin.earningsOverview")}</h2>
             <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4">
               {[
-                { label: t("admin.thisWeek"), val: earningsWeek },
-                { label: t("admin.thisMonth"), val: earningsMonth },
-                { label: `${now.getFullYear()}`, val: earningsYear },
-                { label: t("admin.allTime"), val: earningsTotal },
+                { label: t("admin.thisWeek"), val: formatEarnings(earningsWeekByCur) },
+                { label: t("admin.thisMonth"), val: formatEarnings(earningsMonthByCur) },
+                { label: `${now.getFullYear()}`, val: formatEarnings(earningsYearByCur) },
+                { label: t("admin.allTime"), val: formatEarnings(earningsTotalByCur) },
               ].map((e) => (
                 <div key={e.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
                   <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{e.label}</div>
-                  <div className="font-serif text-2xl font-bold text-sage">€{e.val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</div>
+                  <div className="font-serif text-lg font-bold text-sage leading-snug">{e.val}</div>
                 </div>
               ))}
             </div>
@@ -425,7 +452,7 @@ const AdminDashboard = () => {
                       </td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.destination || "—"}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.group_size}</td>
-                      <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] font-semibold text-ink">{p.price ? `${t("admin.currencySymbol")}${t("admin.currencySymbol") === "kr" ? " " : ""}${p.price}` : "—"}</td>
+                      <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] font-semibold text-ink">{formatPrice(p)}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={STATUS_LABELS[p.itinerary_status]} style={statusStyle[p.itinerary_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={PAYMENT_LABELS[p.payment_status]} style={paymentStyle[p.payment_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3">
@@ -550,15 +577,14 @@ const AdminDashboard = () => {
             <div>
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
               {(() => {
-                const lang = i18n.language;
-                const isPt = lang === "pt";
-                const isNo = lang === "no";
-                const sym = isPt ? "R$" : isNo ? "kr" : "€";
-                const presets = isPt
-                  ? [200, 300, 500, 750]
-                  : isNo
-                  ? [2600, 3150, 4000, 4900]
-                  : [225, 275, 300, 425];
+                const CURRENCY_PRESETS: Record<string, number[]> = {
+                  EUR: [225, 275, 300, 425],
+                  NOK: [2600, 3150, 4000, 4900],
+                  BRL: [200, 300, 500, 750],
+                };
+                const CURRENCY_SYM: Record<string, string> = { EUR: "€", NOK: "kr ", BRL: "R$ " };
+                const presets = CURRENCY_PRESETS[form.currency] || CURRENCY_PRESETS.EUR;
+                const sym = CURRENCY_SYM[form.currency] || "€";
                 const labels = [
                   t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
                   t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
@@ -567,6 +593,22 @@ const AdminDashboard = () => {
                 ];
                 return (
                   <div className="space-y-1.5">
+                    <div className="flex gap-2 mb-1.5">
+                      {["EUR", "NOK", "BRL"].map((cur) => (
+                        <button
+                          key={cur}
+                          type="button"
+                          onClick={() => setForm({ ...form, currency: cur, price: "" })}
+                          className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.06em] border transition-all ${
+                            form.currency === cur
+                              ? "bg-gold text-ink border-gold"
+                              : "bg-parchment text-voyage-muted border-parchment-3 hover:border-gold"
+                          }`}
+                        >
+                          {CURRENCY_SYM[cur]}{cur}
+                        </button>
+                      ))}
+                    </div>
                     <select
                       value={presets.includes(Number(form.price)) ? form.price : "custom"}
                       onChange={(e) => {
@@ -581,7 +623,7 @@ const AdminDashboard = () => {
                       <option value="">{t("admin.selectPrice")}</option>
                       {presets.map((p, i) => (
                         <option key={p} value={p}>
-                          {sym} {p.toLocaleString()} — {labels[i]}
+                          {sym}{p.toLocaleString()} — {labels[i]}
                         </option>
                       ))}
                       <option value="custom">{t("admin.customPrice")}</option>
