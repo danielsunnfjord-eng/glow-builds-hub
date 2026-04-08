@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import ItineraryEditor from "./ItineraryEditor";
 import ImageCropper from "./ImageCropper";
+import PdfPreview from "./PdfPreview";
 
 interface ClientProject {
   id: string;
@@ -65,6 +66,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
   const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1022,6 +1024,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     🖼️ {t("aa.images")}
                   </button>
                   <button
+                    onClick={() => setShowPdfPreview(true)}
+                    className="px-3 py-1.5 rounded-sm border border-gold text-gold text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold/10 transition-colors"
+                  >
+                    👁️ {t("aa.pdfPreview", "Preview")}
+                  </button>
+                  <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
@@ -1199,6 +1207,19 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           imageUrl={cropTarget.url}
           onCropComplete={handleCropComplete}
           onCancel={() => setCropTarget(null)}
+        />
+      )}
+      {showPdfPreview && (
+        <PdfPreview
+          content={itineraryContent}
+          project={selectedProject ? {
+            client_name: selectedProject.client_name,
+            destination: selectedProject.destination,
+            trip_duration: selectedProject.trip_duration,
+            group_size: selectedProject.group_size,
+          } : null}
+          onClose={() => setShowPdfPreview(false)}
+          onExport={() => { setShowPdfPreview(false); handleExportPdf(); }}
         />
       )}
     </div>

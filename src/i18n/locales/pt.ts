@@ -263,6 +263,7 @@ export default {
     edit: "Editar",
     done: "Concluído",
     exportPdf: "Exportar PDF",
+    pdfPreview: "Pré-visualizar",
     aiGenerate: "Gerar com IA",
     aiPlaceholder: "ex. Aurora Boreal sobre o fiorde de Tromsø...",
     generate: "Gerar",
