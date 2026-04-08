@@ -10,9 +10,17 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
+const CALENDLY_LINKS: Record<string, string> = {
+  en: "https://calendly.com/daniel-lirafigueiredo-fora/travel_planning",
+  no: "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging",
+  pt: "https://calendly.com/daniel-lirafigueiredo-fora/planejamento_de_viagem",
+};
+
 const PlanMyTrip = () => {
   const [open, setOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.substring(0, 2) || "en";
+  const calendlyUrl = CALENDLY_LINKS[lang] || CALENDLY_LINKS.en;
 
   const formCallback = useCallback((node: HTMLDivElement | null) => {
     if (!node || node.querySelector('iframe')) return;
@@ -56,6 +64,24 @@ const PlanMyTrip = () => {
                 <p className="text-sm text-muted-foreground leading-relaxed">{t("planTrip.cardDesc")}</p>
               </div>
             </button>
+          </ScrollReveal>
+
+          {/* Video call CTA */}
+          <ScrollReveal>
+            <div className="mt-8 text-center">
+              <p className="text-[0.92rem] text-muted-foreground leading-relaxed mb-4">
+                {t("planTrip.videoCallText")}
+              </p>
+              <a
+                href={calendlyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm tracking-wide hover:opacity-90 transition-opacity"
+              >
+                <Video className="w-4 h-4" />
+                {t("planTrip.bookCall")}
+              </a>
+            </div>
           </ScrollReveal>
         </div>
       </section>
