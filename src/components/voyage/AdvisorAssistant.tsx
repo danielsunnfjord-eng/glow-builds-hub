@@ -315,6 +315,22 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     if (imageUploadRef.current) imageUploadRef.current.value = "";
   };
 
+  const handleCropComplete = async (croppedDataUrl: string) => {
+    if (!cropTarget) return;
+    try {
+      const publicUrl = await uploadBase64Image(croppedDataUrl);
+      setImageResults((prev) =>
+        prev.map((img, i) =>
+          i === cropTarget.index ? { ...img, url: publicUrl } : img
+        )
+      );
+      toast({ title: `✂️ ${t("aa.cropApplied", "Crop applied")}` });
+    } catch (err: any) {
+      toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
+    }
+    setCropTarget(null);
+  };
+
   // --- Chat functions ---
   const streamChat = useCallback(
     async (userMessages: Message[]) => {
