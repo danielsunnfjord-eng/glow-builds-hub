@@ -27,6 +27,7 @@ interface ClientProject {
   destination: string | null;
   trip_duration: string | null;
   price: number | null;
+  currency: string;
   itinerary_status: ItineraryStatus;
   payment_status: PaymentStatus;
   notes: string | null;
