@@ -210,6 +210,7 @@ export default {
     groupSize: "Group Size",
     duration: "Duration",
     priceLabel: "Price (€)",
+    currencySymbol: "€",
     destinationLabel: "Destination",
     itineraryStatus: "Itinerary Status",
     paymentStatus: "Payment Status",
