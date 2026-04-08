@@ -125,13 +125,17 @@ const AdminDashboard = () => {
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const payload = {
+      const payload: any = {
         client_name: form.client_name,
         client_email: form.client_email || null,
         group_size: form.group_size,
         destination: form.destination || null,
+        departure: form.departure || null,
         trip_duration: form.trip_duration || null,
+        start_date: form.start_date || null,
+        end_date: form.end_date || null,
         price: form.price ? Number(form.price) : null,
+        estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
         notes: form.notes || null,
