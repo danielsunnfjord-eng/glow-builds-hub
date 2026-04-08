@@ -57,6 +57,9 @@ const emptyProject = {
   client_name: "",
   client_email: "",
   group_size: 1,
+  adults: 1,
+  children: 0,
+  children_ages: [] as number[],
   destination: "",
   departure: "",
   trip_duration: "",
@@ -128,7 +131,7 @@ const AdminDashboard = () => {
       const payload: any = {
         client_name: form.client_name,
         client_email: form.client_email || null,
-        group_size: form.group_size,
+        group_size: form.adults + form.children,
         destination: form.destination || null,
         departure: form.departure || null,
         trip_duration: form.trip_duration || null,
@@ -138,7 +141,9 @@ const AdminDashboard = () => {
         estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
-        notes: form.notes || null,
+        notes: form.children > 0
+          ? (form.notes ? form.notes + "\n" : "") + `Children ages: ${form.children_ages.join(", ")}`
+          : form.notes || null,
         user_id: user.id,
       };
       if (editingId) {
@@ -250,6 +255,9 @@ const AdminDashboard = () => {
       client_name: p.client_name,
       client_email: p.client_email || "",
       group_size: p.group_size,
+      adults: p.group_size,
+      children: 0,
+      children_ages: [],
       destination: p.destination || "",
       departure: (p as any).departure || "",
       trip_duration: p.trip_duration || "",
@@ -470,15 +478,49 @@ const AdminDashboard = () => {
                 <input type="email" value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} className={inputClass} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.groupSize")}</label>
-                <input type="number" min={1} value={form.group_size} onChange={(e) => setForm({ ...form, group_size: Number(e.target.value) })} className={inputClass} />
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.groupSize")}</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[0.65rem] text-voyage-muted mb-0.5 block">{t("admin.adults")}</label>
+                  <input type="number" min={1} value={form.adults} onChange={(e) => setForm({ ...form, adults: Math.max(1, Number(e.target.value)) })} className={inputClass} />
+                </div>
+                <div>
+                  <label className="text-[0.65rem] text-voyage-muted mb-0.5 block">{t("admin.childrenLabel")}</label>
+                  <input type="number" min={0} value={form.children} onChange={(e) => {
+                    const count = Math.max(0, Number(e.target.value));
+                    const ages = [...form.children_ages];
+                    while (ages.length < count) ages.push(0);
+                    while (ages.length > count) ages.pop();
+                    setForm({ ...form, children: count, children_ages: ages });
+                  }} className={inputClass} />
+                </div>
               </div>
-              <div>
-                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.duration")}</label>
-                <input value={form.trip_duration} onChange={(e) => setForm({ ...form, trip_duration: e.target.value })} placeholder="e.g. 7 days" className={inputClass} />
+              {form.children > 0 && (
+                <div className="mt-2">
+                  <label className="text-[0.65rem] text-voyage-muted mb-1 block">{t("admin.childrenAges")}</label>
+                  <div className="flex flex-wrap gap-2">
+                    {form.children_ages.map((age, i) => (
+                      <select key={i} value={age} onChange={(e) => {
+                        const ages = [...form.children_ages];
+                        ages[i] = Number(e.target.value);
+                        setForm({ ...form, children_ages: ages });
+                      }} className={inputClass + " !w-20"}>
+                        {Array.from({ length: 18 }, (_, a) => (
+                          <option key={a} value={a}>{a} {t("admin.years")}</option>
+                        ))}
+                      </select>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="text-[0.65rem] text-voyage-muted mt-1">
+                {t("admin.totalLabel")}: {form.adults + form.children}
               </div>
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.duration")}</label>
+              <input value={form.trip_duration} onChange={(e) => setForm({ ...form, trip_duration: e.target.value })} placeholder="e.g. 7 days" className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
