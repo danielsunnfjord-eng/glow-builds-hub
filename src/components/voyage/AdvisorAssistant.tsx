@@ -112,7 +112,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         if (!error && data) {
           setCurrentDraftId(data.id);
           setItineraryContent(data.content || "");
-          setMessages((data.chat_history as Message[]) || []);
+          setMessages((data.chat_history as unknown as Message[]) || []);
           setLastSavedAt(data.updated_at);
         } else {
           setCurrentDraftId(null);
