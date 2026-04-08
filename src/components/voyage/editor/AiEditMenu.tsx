@@ -32,6 +32,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   const [customPrompt, setCustomPrompt] = useState("");
   const [showCustom, setShowCustom] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const interactingRef = useRef(false);
 
   useEffect(() => {
     const checkSelection = () => {
@@ -44,12 +45,23 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
       }
     };
 
+    const handleBlur = () => {
+      // Don't hide if user is interacting with the AI menu itself
+      setTimeout(() => {
+        if (!interactingRef.current) {
+          setVisible(false);
+        }
+      }, 300);
+    };
+
     editor.on("selectionUpdate", checkSelection);
-    editor.on("blur", () => setTimeout(() => setVisible(false), 200));
+    editor.on("blur", handleBlur);
     editor.on("focus", checkSelection);
 
     return () => {
       editor.off("selectionUpdate", checkSelection);
+      editor.off("blur", handleBlur);
+      editor.off("focus", checkSelection);
     };
   }, [editor]);
 
