@@ -68,7 +68,7 @@ const emptyProject = {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -469,7 +469,57 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
-                <input type="number" min={0} step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className={inputClass} />
+                {(() => {
+                  const lang = i18n.language;
+                  const isPt = lang === "pt";
+                  const isNo = lang === "no";
+                  const sym = isPt ? "R$" : isNo ? "kr" : "€";
+                  const presets = isPt
+                    ? [200, 300, 500, 750]
+                    : isNo
+                    ? [2600, 3150, 4000, 4900]
+                    : [225, 275, 300, 425];
+                  const labels = [
+                    t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
+                    t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
+                    t("pricingData.r3group") + " / " + t("pricingData.r3dur"),
+                    t("pricingData.r4group") + " / " + t("pricingData.r4dur"),
+                  ];
+                  return (
+                    <div className="space-y-1.5">
+                      <select
+                        value={presets.includes(Number(form.price)) ? form.price : "custom"}
+                        onChange={(e) => {
+                          if (e.target.value === "custom") {
+                            setForm({ ...form, price: "" });
+                          } else {
+                            setForm({ ...form, price: e.target.value });
+                          }
+                        }}
+                        className={inputClass}
+                      >
+                        <option value="">{t("admin.selectPrice")}</option>
+                        {presets.map((p, i) => (
+                          <option key={p} value={p}>
+                            {sym} {p.toLocaleString()} — {labels[i]}
+                          </option>
+                        ))}
+                        <option value="custom">{t("admin.customPrice")}</option>
+                      </select>
+                      {(!presets.includes(Number(form.price)) || form.price === "") && (
+                        <input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          value={presets.includes(Number(form.price)) ? "" : form.price}
+                          onChange={(e) => setForm({ ...form, price: e.target.value })}
+                          placeholder={t("admin.customPricePlaceholder")}
+                          className={inputClass}
+                        />
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             <div>
