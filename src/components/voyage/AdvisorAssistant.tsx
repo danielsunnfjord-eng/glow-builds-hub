@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import ItineraryEditor from "./ItineraryEditor";
 import ImageCropper from "./ImageCropper";
+import PdfPreview from "./PdfPreview";
 
 interface ClientProject {
   id: string;
@@ -65,6 +66,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
   const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
