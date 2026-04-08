@@ -350,4 +350,18 @@ export default {
     newItinerary: "Ny reiseplan — begynn å chatte for å lage innhold",
     selectProjectToSave: "Velg et prosjekt for å lagre",
   },
+  aiEdit: {
+    rewrite: "Omskriv",
+    improve: "Forbedre",
+    shorten: "Forkort",
+    elaborate: "Utdyp",
+    format: "Formater",
+    professional: "Premium",
+    translate: "Oversett",
+    custom: "Egendefinert",
+    customPlaceholder: "Fortell AI hva den skal gjøre med den valgte teksten...",
+    apply: "Bruk",
+    applied: "AI brukt",
+    failed: "AI-transformasjon mislyktes",
+  },
 };
