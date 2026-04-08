@@ -88,7 +88,9 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
 
   return (
     <div className="border border-parchment-3 rounded-md overflow-hidden bg-voyage-white">
-      <Toolbar editor={editor} />
+      <div className="sticky top-0 z-30">
+        <Toolbar editor={editor} />
+      </div>
       <EditorContent editor={editor} />
     </div>
   );
