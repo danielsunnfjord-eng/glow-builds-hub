@@ -9,22 +9,36 @@ import { useTranslation } from "react-i18next";
 import TurndownService from "turndown";
 
 // --- Markdown ↔ HTML helpers ---
+function cleanMarkdown(md: string): string {
+  return md
+    // Remove backslash escapes before markdown characters
+    .replace(/\\([#*_~`>|\-\[\](){}+.!])/g, "$1")
+    // Remove stray backslashes
+    .replace(/\\\\/g, "\\")
+    // Clean up double/triple underscores used incorrectly (e.g. __ text __)
+    .replace(/(?<!\w)__(?!\w)/g, "")
+    // Clean up stray single underscores at word boundaries used as emphasis markers
+    .replace(/(?<=\s)_(\S[^_]*\S)_(?=\s|[.,;:!?]|$)/g, "<em>$1</em>");
+}
+
 function markdownToHtml(md: string): string {
   if (!md) return "";
-  let html = md
+  // Pre-clean the markdown of escape artifacts
+  let cleaned = cleanMarkdown(md);
+  let html = cleaned
     // Images with credit
     .replace(/!\[([^\]]*)\]\(([^)]+)\)\n\*Photo:\s*([^*]*)\*/g, '<figure><img src="$2" alt="$1"><figcaption>Photo: $3</figcaption></figure>')
     // Images
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-    // Headers
-    .replace(/^#### (.+)$/gm, "<h4>$1</h4>")
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+    // Headers (support optional leading whitespace and trailing whitespace)
+    .replace(/^#{4}\s+(.+?)\s*$/gm, "<h4>$1</h4>")
+    .replace(/^#{3}\s+(.+?)\s*$/gm, "<h3>$1</h3>")
+    .replace(/^#{2}\s+(.+?)\s*$/gm, "<h2>$1</h2>")
+    .replace(/^#{1}\s+(.+?)\s*$/gm, "<h1>$1</h1>")
     // Bold & italic
     .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
     // Horizontal rule
     .replace(/^---$/gm, "<hr>")
     // Unordered list items
