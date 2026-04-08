@@ -365,4 +365,18 @@ export default {
     newItinerary: "New itinerary — start chatting to create content",
     selectProjectToSave: "Select a project to save",
   },
+  aiEdit: {
+    rewrite: "Rewrite",
+    improve: "Improve",
+    shorten: "Shorten",
+    elaborate: "Elaborate",
+    format: "Format",
+    professional: "Premium",
+    translate: "Translate",
+    custom: "Custom",
+    customPlaceholder: "Tell AI what to do with the selected text...",
+    apply: "Apply",
+    applied: "AI applied",
+    failed: "AI transform failed",
+  },
 };

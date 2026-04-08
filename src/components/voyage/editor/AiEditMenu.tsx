@@ -1,0 +1,201 @@
+import { useState, useEffect, useRef } from "react";
+import { Editor } from "@tiptap/react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+
+const AI_ACTIONS = [
+  { key: "rewrite", icon: "✏️", labelKey: "aiEdit.rewrite" },
+  { key: "improve", icon: "✨", labelKey: "aiEdit.improve" },
+  { key: "shorten", icon: "📐", labelKey: "aiEdit.shorten" },
+  { key: "elaborate", icon: "📝", labelKey: "aiEdit.elaborate" },
+  { key: "format", icon: "📋", labelKey: "aiEdit.format" },
+  { key: "professional", icon: "💎", labelKey: "aiEdit.professional" },
+] as const;
+
+const TRANSLATE_ACTIONS = [
+  { key: "translate_en", icon: "🇬🇧", label: "English" },
+  { key: "translate_no", icon: "🇳🇴", label: "Norsk" },
+  { key: "translate_pt", icon: "🇧🇷", label: "Português" },
+] as const;
+
+interface AiEditMenuProps {
+  editor: Editor;
+}
+
+const AiEditMenu = ({ editor }: AiEditMenuProps) => {
+  const { t } = useTranslation();
+  const { toast } = useToast();
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [showTranslate, setShowTranslate] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [showCustom, setShowCustom] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkSelection = () => {
+      const { from, to } = editor.state.selection;
+      const hasSelection = from !== to;
+      setVisible(hasSelection);
+      if (!hasSelection) {
+        setShowTranslate(false);
+        setShowCustom(false);
+      }
+    };
+
+    editor.on("selectionUpdate", checkSelection);
+    editor.on("blur", () => setTimeout(() => setVisible(false), 200));
+    editor.on("focus", checkSelection);
+
+    return () => {
+      editor.off("selectionUpdate", checkSelection);
+    };
+  }, [editor]);
+
+  const getSelectedText = () => {
+    const { from, to } = editor.state.selection;
+    return editor.state.doc.textBetween(from, to, " ");
+  };
+
+  const runAction = async (action: string, prompt?: string) => {
+    const text = getSelectedText();
+    if (!text.trim()) return;
+
+    setLoading(action);
+    try {
+      const body: any = { text, action };
+      if (prompt) body.customPrompt = prompt;
+
+      const { data, error } = await supabase.functions.invoke("ai-text-transform", { body });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      const result = data.result;
+      if (result) {
+        // Replace selected text with AI result
+        const { from, to } = editor.state.selection;
+        editor.chain().focus().deleteRange({ from, to }).insertContentAt(from, result).run();
+        toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
+      }
+    } catch (err: any) {
+      console.error("AI transform error:", err);
+      toast({
+        title: t("aiEdit.failed") || "AI transform failed",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+      setShowCustom(false);
+      setCustomPrompt("");
+    }
+  };
+
+  if (!visible) return null;
+
+  return (
+    <div
+      ref={menuRef}
+      className="sticky bottom-2 z-40 mx-auto w-fit"
+    >
+      <div className="bg-ink/95 backdrop-blur-sm rounded-lg shadow-xl border border-gold/20 px-2 py-1.5 flex items-center gap-1 flex-wrap max-w-[500px]">
+        {/* AI sparkle indicator */}
+        <span className="text-gold text-[0.65rem] font-semibold px-1.5 select-none">AI</span>
+        <div className="w-px h-4 bg-white/20" />
+
+        {AI_ACTIONS.map(({ key, icon, labelKey }) => (
+          <button
+            key={key}
+            type="button"
+            disabled={!!loading}
+            onClick={() => runAction(key)}
+            title={t(labelKey) || key}
+            className={`px-2 py-1 rounded text-[0.65rem] font-medium transition-all ${
+              loading === key
+                ? "bg-gold/30 text-gold animate-pulse"
+                : "text-white/80 hover:bg-white/10 hover:text-white"
+            } disabled:opacity-40`}
+          >
+            {loading === key ? "⏳" : icon} {t(labelKey) || key}
+          </button>
+        ))}
+
+        <div className="w-px h-4 bg-white/20" />
+
+        {/* Translate dropdown */}
+        <div className="relative">
+          <button
+            type="button"
+            disabled={!!loading}
+            onClick={() => { setShowTranslate(!showTranslate); setShowCustom(false); }}
+            className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
+            title={t("aiEdit.translate") || "Translate"}
+          >
+            🌐 {t("aiEdit.translate") || "Translate"}
+          </button>
+          {showTranslate && (
+            <div className="absolute bottom-full left-0 mb-1 bg-ink/95 border border-gold/20 rounded-md shadow-lg p-1 min-w-[120px]">
+              {TRANSLATE_ACTIONS.map(({ key, icon, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => { runAction(key); setShowTranslate(false); }}
+                  className={`w-full text-left px-2 py-1 rounded text-[0.65rem] font-medium transition-all ${
+                    loading === key
+                      ? "bg-gold/30 text-gold animate-pulse"
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {icon} {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="w-px h-4 bg-white/20" />
+
+        {/* Custom prompt */}
+        <button
+          type="button"
+          disabled={!!loading}
+          onClick={() => { setShowCustom(!showCustom); setShowTranslate(false); }}
+          className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
+          title={t("aiEdit.custom") || "Custom prompt"}
+        >
+          💬
+        </button>
+
+        {showCustom && (
+          <div className="absolute bottom-full right-0 mb-1 bg-ink/95 border border-gold/20 rounded-lg shadow-lg p-2 w-[280px]">
+            <textarea
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              placeholder={t("aiEdit.customPlaceholder") || "Tell AI what to do with the selected text..."}
+              className="w-full bg-white/10 text-white text-[0.7rem] rounded px-2 py-1.5 border border-white/20 focus:border-gold focus:outline-none resize-none h-16 placeholder:text-white/40"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (customPrompt.trim()) runAction("custom", customPrompt);
+                }
+              }}
+            />
+            <button
+              type="button"
+              disabled={!!loading || !customPrompt.trim()}
+              onClick={() => runAction("custom", customPrompt)}
+              className="mt-1 w-full px-2 py-1 rounded bg-gold text-ink text-[0.65rem] font-semibold hover:bg-gold/80 disabled:opacity-40 transition-all"
+            >
+              {loading === "custom" ? "⏳ ..." : `✨ ${t("aiEdit.apply") || "Apply"}`}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AiEditMenu;

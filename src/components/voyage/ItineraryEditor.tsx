@@ -14,6 +14,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import Link from "@tiptap/extension-link";
 import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Toolbar from "./editor/Toolbar";
+import AiEditMenu from "./editor/AiEditMenu";
 import { markdownToHtml, htmlToMarkdown } from "./editor/markdownHelpers";
 
 interface ItineraryEditorProps {
@@ -92,12 +93,13 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
     if (!editor) return null;
 
     return (
-      <div className="border border-parchment-3 rounded-md bg-voyage-white flex flex-col max-h-[70vh]">
+      <div className="border border-parchment-3 rounded-md bg-voyage-white flex flex-col max-h-[70vh] relative">
         <div className="shrink-0 z-30 border-b border-parchment-3">
           <Toolbar editor={editor} />
         </div>
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 relative">
           <EditorContent editor={editor} />
+          <AiEditMenu editor={editor} />
         </div>
       </div>
     );

@@ -352,4 +352,18 @@ export default {
     newItinerary: "Novo roteiro — comece a conversar para criar conteúdo",
     selectProjectToSave: "Selecione um projeto para salvar",
   },
+  aiEdit: {
+    rewrite: "Reescrever",
+    improve: "Melhorar",
+    shorten: "Encurtar",
+    elaborate: "Elaborar",
+    format: "Formatar",
+    professional: "Premium",
+    translate: "Traduzir",
+    custom: "Personalizado",
+    customPlaceholder: "Diga à IA o que fazer com o texto selecionado...",
+    apply: "Aplicar",
+    applied: "IA aplicada",
+    failed: "Transformação IA falhou",
+  },
 };
