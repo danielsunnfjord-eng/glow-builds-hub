@@ -111,6 +111,8 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     <div
       ref={menuRef}
       className="sticky bottom-2 z-40 mx-auto w-fit"
+      onMouseDown={() => { interactingRef.current = true; }}
+      onMouseUp={() => { setTimeout(() => { interactingRef.current = false; }, 100); }}
     >
       <div className="bg-ink/95 backdrop-blur-sm rounded-lg shadow-xl border border-gold/20 px-2 py-1.5 flex items-center gap-1 flex-wrap max-w-[500px]">
         {/* AI sparkle indicator */}
