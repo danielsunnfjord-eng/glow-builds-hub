@@ -979,6 +979,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               {itineraryContent && (
                 <>
                   <button
+                    onClick={() => saveDraft(itineraryContent, messages)}
+                    disabled={isSaving || !selectedProjectId}
+                    className="px-3 py-1.5 rounded-sm bg-sage text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-sage/80 transition-colors disabled:opacity-40"
+                    title={!selectedProjectId ? t("aa.selectProjectToSave") : ""}
+                  >
+                    💾 {isSaving ? t("aa.savingDraft") : t("aa.saveDraft")}
+                  </button>
+                  <button
                     onClick={() => setShowImagePanel(!showImagePanel)}
                     className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
                       showImagePanel
