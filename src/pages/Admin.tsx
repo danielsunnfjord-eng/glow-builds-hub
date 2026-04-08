@@ -452,7 +452,7 @@ const AdminDashboard = () => {
                       </td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.destination || "—"}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] text-ink-2">{p.group_size}</td>
-                      <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] font-semibold text-ink">{p.price ? `${t("admin.currencySymbol")}${t("admin.currencySymbol") === "kr" ? " " : ""}${p.price}` : "—"}</td>
+                      <td className="px-4 py-3.5 border-b border-parchment-3 text-[0.82rem] font-semibold text-ink">{formatPrice(p)}</td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={STATUS_LABELS[p.itinerary_status]} style={statusStyle[p.itinerary_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3"><Badge label={PAYMENT_LABELS[p.payment_status]} style={paymentStyle[p.payment_status]} /></td>
                       <td className="px-4 py-3.5 border-b border-parchment-3">
