@@ -49,6 +49,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedPrompts, setSelectedPrompts] = useState<Set<number>>(new Set());
+  const [customItems, setCustomItems] = useState<string[]>([]);
+  const [selectedCustom, setSelectedCustom] = useState<Set<number>>(new Set());
+  const [customInput, setCustomInput] = useState("");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
@@ -72,6 +75,24 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     t("aa.qpAdventure"),
     t("aa.qpTips"),
     t("aa.qpRomantic"),
+    t("aa.qpFlights"),
+    t("aa.qpTransfers"),
+    t("aa.qpBudget"),
+    t("aa.qpFamily"),
+    t("aa.qpCulture"),
+    t("aa.qpNightlife"),
+    t("aa.qpShopping"),
+    t("aa.qpWellness"),
+    t("aa.qpPhotography"),
+    t("aa.qpLocalFood"),
+    t("aa.qpNature"),
+    t("aa.qpBeach"),
+    t("aa.qpWinter"),
+    t("aa.qpPacking"),
+    t("aa.qpVisa"),
+    t("aa.qpInsurance"),
+    t("aa.qpCruise"),
+    t("aa.qpWine"),
   ];
 
   useEffect(() => {
@@ -557,44 +578,133 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px]">
             {messages.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-voyage-muted text-[0.85rem] mb-4">
+              <div className="py-4">
+                <p className="text-voyage-muted text-[0.85rem] mb-4 text-center">
                   {selectedProject
                     ? t("aa.readyFor", { name: selectedProject.client_name })
                     : t("aa.selectOrChat")}
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center">
+
+                {/* Scrollable checklist */}
+                <div className="max-h-[260px] overflow-y-auto border border-parchment-3 rounded-lg p-3 bg-parchment/30 space-y-1.5">
                   {QUICK_PROMPTS.map((p, idx) => (
-                    <button
-                      key={p}
-                      onClick={() => {
-                        setSelectedPrompts((prev) => {
-                          const next = new Set(prev);
-                          next.has(idx) ? next.delete(idx) : next.add(idx);
-                          return next;
-                        });
-                      }}
-                      className={`px-3 py-1.5 rounded-full border text-[0.72rem] transition-all ${
+                    <label
+                      key={idx}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-md cursor-pointer transition-all text-[0.78rem] ${
                         selectedPrompts.has(idx)
-                          ? "bg-gold/20 text-gold border-gold font-semibold"
-                          : "border-gold/30 text-gold hover:bg-gold/5 hover:border-gold"
+                          ? "bg-gold/15 text-ink font-medium"
+                          : "hover:bg-parchment text-voyage-muted"
                       }`}
                     >
-                      {selectedPrompts.has(idx) ? "✓ " : ""}{p}
-                    </button>
+                      <input
+                        type="checkbox"
+                        checked={selectedPrompts.has(idx)}
+                        onChange={() => {
+                          setSelectedPrompts((prev) => {
+                            const next = new Set(prev);
+                            next.has(idx) ? next.delete(idx) : next.add(idx);
+                            return next;
+                          });
+                        }}
+                        className="accent-gold w-4 h-4 rounded"
+                      />
+                      {p}
+                    </label>
+                  ))}
+
+                  {/* Custom items */}
+                  {customItems.map((item, idx) => (
+                    <label
+                      key={`custom-${idx}`}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-md cursor-pointer transition-all text-[0.78rem] ${
+                        selectedCustom.has(idx)
+                          ? "bg-sage/15 text-ink font-medium"
+                          : "hover:bg-parchment text-voyage-muted"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCustom.has(idx)}
+                        onChange={() => {
+                          setSelectedCustom((prev) => {
+                            const next = new Set(prev);
+                            next.has(idx) ? next.delete(idx) : next.add(idx);
+                            return next;
+                          });
+                        }}
+                        className="accent-sage w-4 h-4 rounded"
+                      />
+                      <span className="flex-1">{item}</span>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCustomItems((prev) => prev.filter((_, i) => i !== idx));
+                          setSelectedCustom((prev) => {
+                            const next = new Set<number>();
+                            prev.forEach((v) => { if (v < idx) next.add(v); else if (v > idx) next.add(v - 1); });
+                            return next;
+                          });
+                        }}
+                        className="text-destructive/50 hover:text-destructive text-xs ml-1"
+                      >✕</button>
+                    </label>
                   ))}
                 </div>
-                {selectedPrompts.size > 0 && (
+
+                {/* Add custom item */}
+                <div className="flex gap-2 mt-3">
+                  <input
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && customInput.trim()) {
+                        e.preventDefault();
+                        setCustomItems((prev) => [...prev, customInput.trim()]);
+                        setSelectedCustom((prev) => new Set([...prev, customItems.length]));
+                        setCustomInput("");
+                      }
+                    }}
+                    placeholder={t("aa.customItemPlaceholder")}
+                    className="flex-1 px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.8rem] focus:outline-none focus:border-gold transition-colors"
+                  />
                   <button
                     onClick={() => {
-                      const combined = Array.from(selectedPrompts).sort().map((i) => QUICK_PROMPTS[i]).join(". ");
-                      setSelectedPrompts(new Set());
-                      handleSend(combined);
+                      if (!customInput.trim()) return;
+                      setCustomItems((prev) => [...prev, customInput.trim()]);
+                      setSelectedCustom((prev) => new Set([...prev, customItems.length]));
+                      setCustomInput("");
                     }}
-                    className="mt-3 px-5 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                    className="px-4 py-2 rounded-sm bg-ink/10 text-ink text-[0.72rem] font-semibold tracking-[0.06em] uppercase hover:bg-ink/20 transition-colors"
                   >
-                    {t("aa.sendSelected")} ({selectedPrompts.size})
+                    {t("aa.addBtn")}
                   </button>
+                </div>
+
+                {/* Actions */}
+                {(selectedPrompts.size > 0 || selectedCustom.size > 0) && (
+                  <div className="flex gap-2 mt-3 justify-center">
+                    <button
+                      onClick={() => {
+                        const parts = [
+                          ...Array.from(selectedPrompts).sort().map((i) => QUICK_PROMPTS[i]),
+                          ...Array.from(selectedCustom).sort().map((i) => customItems[i]),
+                        ];
+                        const combined = parts.join(". ");
+                        setSelectedPrompts(new Set());
+                        setSelectedCustom(new Set());
+                        handleSend(combined);
+                      }}
+                      className="px-5 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                    >
+                      {t("aa.buildItinerary")} ({selectedPrompts.size + selectedCustom.size})
+                    </button>
+                    <button
+                      onClick={() => { setSelectedPrompts(new Set()); setSelectedCustom(new Set()); }}
+                      className="px-4 py-2.5 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.06em] uppercase hover:border-ink hover:text-ink transition-colors"
+                    >
+                      {t("aa.clearSelection")}
+                    </button>
+                  </div>
                 )}
               </div>
             )}
