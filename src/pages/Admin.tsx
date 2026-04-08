@@ -271,6 +271,7 @@ const AdminDashboard = () => {
       start_date: (p as any).start_date || "",
       end_date: (p as any).end_date || "",
       price: p.price?.toString() || "",
+      currency: p.currency || "EUR",
       estimated_budget: (p as any).estimated_budget || "",
       itinerary_status: p.itinerary_status,
       payment_status: p.payment_status,
