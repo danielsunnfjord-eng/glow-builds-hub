@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import ItineraryEditor from "./ItineraryEditor";
+import ImageCropper from "./ImageCropper";
 
 interface ClientProject {
   id: string;
@@ -63,6 +64,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
+  const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
