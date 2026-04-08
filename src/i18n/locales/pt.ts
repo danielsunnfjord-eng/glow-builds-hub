@@ -79,7 +79,7 @@ export default {
   itineraryExamples: {
     badge: "Inspiração",
     title: "Roteiros exemplo",
-    subtitle: "Cada viagem é única — mas aqui está uma amostra do que já criei para outros viajantes.",
+    subtitle: "Cada viagem é única — mas aqui está uma amostra de roteiros que é possível criar, de forma simples ou mais elaborada, para se encaixar nas suas preferências, tempo e orçamento.",
     filterAll: "Todos",
     filterEn: "Inglês",
     filterPt: "Português",
