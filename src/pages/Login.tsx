@@ -66,9 +66,7 @@ const Login = () => {
       </div>
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <h1 className="font-serif text-2xl font-bold text-voyage-white">
-            Fjord <span className="text-gold italic">&</span> Waves Travel
-          </h1>
+          <img src={logo} alt="Fjord & Waves Travel" className="h-16 w-auto mx-auto mb-3 brightness-0 invert" />
           <p className="text-[0.78rem] text-voyage-white/40 mt-2">
             {view === "login" && t("login.signIn")}
             {view === "signup" && t("login.createAccount")}
