@@ -1226,9 +1226,100 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   )}
                   <ReactMarkdown
                     components={{
-                      img: ({ node, ...props }) => (
-                        <img {...props} className="rounded-lg shadow-md max-w-full" loading="lazy" />
-                      ),
+                      img: ({ node, alt, src, ...props }) => {
+                        const isSelected = editingImage?.url === src;
+                        return (
+                          <div className="my-4 group relative">
+                            <img
+                              {...props}
+                              src={src}
+                              alt={alt}
+                              className={`rounded-lg shadow-md cursor-pointer transition-all ${
+                                isSelected ? "ring-2 ring-gold" : "hover:ring-1 hover:ring-gold/50"
+                              } ${
+                                isSelected && imgSize === "small" ? "max-w-[40%]" :
+                                isSelected && imgSize === "medium" ? "max-w-[65%]" :
+                                "max-w-full"
+                              }`}
+                              loading="lazy"
+                              onClick={() => {
+                                if (isSelected) {
+                                  setEditingImage(null);
+                                } else {
+                                  setEditingImage({ url: src || "", alt: alt || "" });
+                                  setImgSize("full");
+                                  setImgCaption(alt || "");
+                                }
+                              }}
+                            />
+                            {alt && alt !== "Travel photo" && (
+                              <p className="text-[0.7rem] text-voyage-muted italic mt-1 text-center">{alt}</p>
+                            )}
+                            {isSelected && (
+                              <div className="mt-2 p-3 bg-parchment border border-gold/30 rounded-md space-y-2.5 animate-in fade-in duration-200">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[0.68rem] font-semibold text-ink uppercase tracking-wide w-16">{t("aa.size") || "Size"}</span>
+                                  {(["small", "medium", "full"] as const).map((size) => (
+                                    <button
+                                      key={size}
+                                      onClick={() => {
+                                        setImgSize(size);
+                                        // Update the markdown with size hint
+                                        const sizeHint = size === "full" ? "" : `{: .img-${size}}`;
+                                        const oldPattern = new RegExp(`!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)(\\{:[^}]*\\})?`);
+                                        const newMd = `![${imgCaption}](${src})${sizeHint}`;
+                                        updateContent(itineraryContent.replace(oldPattern, newMd));
+                                      }}
+                                      className={`px-2.5 py-1 rounded-sm text-[0.68rem] font-medium transition-colors ${
+                                        imgSize === size
+                                          ? "bg-gold text-ink"
+                                          : "bg-voyage-white border border-parchment-3 text-voyage-muted hover:border-gold"
+                                      }`}
+                                    >
+                                      {size === "small" ? "S" : size === "medium" ? "M" : "L"}
+                                    </button>
+                                  ))}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[0.68rem] font-semibold text-ink uppercase tracking-wide w-16">{t("aa.caption") || "Caption"}</span>
+                                  <input
+                                    type="text"
+                                    value={imgCaption}
+                                    onChange={(e) => setImgCaption(e.target.value)}
+                                    onBlur={() => {
+                                      // Update alt text in markdown
+                                      const oldPattern = new RegExp(`!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)`);
+                                      updateContent(itineraryContent.replace(oldPattern, `![${imgCaption}](${src})`));
+                                    }}
+                                    placeholder={t("aa.addCaption") || "Add caption..."}
+                                    className="flex-1 px-2 py-1 bg-voyage-white border border-parchment-3 rounded-sm text-[0.72rem] text-ink focus:outline-none focus:border-gold transition-colors"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => {
+                                      // Remove image from markdown
+                                      const pattern = new RegExp(`\\n*!\\[([^\\]]*)\\]\\(${src!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)(\\{:[^}]*\\})?\\n*(\\*Photo:[^*]*\\*)?\\n*`);
+                                      updateContent(itineraryContent.replace(pattern, "\n"));
+                                      setEditingImage(null);
+                                      toast({ title: t("aa.imageRemoved") || "Image removed" });
+                                    }}
+                                    className="px-2.5 py-1 rounded-sm text-[0.68rem] font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-colors"
+                                  >
+                                    🗑 {t("aa.removeImage") || "Remove"}
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingImage(null)}
+                                    className="px-2.5 py-1 rounded-sm text-[0.68rem] font-medium text-voyage-muted border border-parchment-3 hover:border-gold transition-colors ml-auto"
+                                  >
+                                    ✓ {t("aa.done") || "Done"}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      },
                     }}
                   >
                     {itineraryContent}
