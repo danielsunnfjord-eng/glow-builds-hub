@@ -87,11 +87,13 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
   if (!editor) return null;
 
   return (
-    <div className="border border-parchment-3 rounded-md overflow-hidden bg-voyage-white">
-      <div className="sticky top-0 z-30">
+    <div className="border border-parchment-3 rounded-md bg-voyage-white flex flex-col max-h-[70vh]">
+      <div className="shrink-0 z-30 border-b border-parchment-3">
         <Toolbar editor={editor} />
       </div>
-      <EditorContent editor={editor} />
+      <div className="overflow-y-auto flex-1">
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };
