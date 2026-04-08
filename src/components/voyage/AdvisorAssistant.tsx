@@ -71,6 +71,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<ItineraryEditorHandle>(null);
 
   // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
