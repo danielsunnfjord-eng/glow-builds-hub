@@ -75,55 +75,80 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
 
-  // Draft state
-  const [drafts, setDrafts] = useState<Draft[]>([]);
+  // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
-  const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [showDrafts, setShowDrafts] = useState(false);
-  const [draftTitle, setDraftTitle] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
-  // --- Draft functions ---
-  const fetchDrafts = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data, error } = await supabase
-      .from("itinerary_drafts")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("updated_at", { ascending: false });
-    if (!error && data) {
-      setDrafts(data.map((d: any) => ({
-        id: d.id,
-        title: d.title,
-        content: d.content,
-        chat_history: (d.chat_history as Message[]) || [],
-        project_id: d.project_id,
-        updated_at: d.updated_at,
-      })));
+  // --- Load draft when project changes ---
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setCurrentDraftId(null);
+      setItineraryContent("");
+      setMessages([]);
+      setLastSavedAt(null);
+      return;
     }
-  }, []);
 
-  useEffect(() => { fetchDrafts(); }, [fetchDrafts]);
+    const loadProjectDraft = async () => {
+      setIsLoadingDraft(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-  const handleSaveDraft = async () => {
-    if (!itineraryContent && messages.length === 0) return;
-    setIsSavingDraft(true);
+        const { data, error } = await supabase
+          .from("itinerary_drafts")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("project_id", selectedProjectId)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!error && data) {
+          setCurrentDraftId(data.id);
+          setItineraryContent(data.content || "");
+          setMessages((data.chat_history as Message[]) || []);
+          setLastSavedAt(data.updated_at);
+        } else {
+          setCurrentDraftId(null);
+          setItineraryContent("");
+          setMessages([]);
+          setLastSavedAt(null);
+        }
+      } catch {
+        // ignore
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadProjectDraft();
+  }, [selectedProjectId]);
+
+  // --- Save draft (manual or auto) ---
+  const saveDraft = useCallback(async (content: string, chatMessages: Message[], silent = false) => {
+    if (!selectedProjectId) return;
+    if (!content && chatMessages.length === 0) return;
+    setIsSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const title = draftTitle.trim() || selectedProject?.client_name
-        ? `${selectedProject?.client_name || ""} — ${selectedProject?.destination || t("aa.untitled")}`
+      const title = selectedProject?.client_name
+        ? `${selectedProject.client_name} — ${selectedProject.destination || ""}`
         : t("aa.untitled");
 
       const draftData = {
         user_id: user.id,
-        project_id: selectedProjectId || null,
+        project_id: selectedProjectId,
         title,
-        content: itineraryContent,
-        chat_history: messages as any,
+        content,
+        chat_history: chatMessages as any,
       };
 
       if (currentDraftId) {
@@ -141,44 +166,30 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         if (error) throw error;
         setCurrentDraftId(data.id);
       }
-      toast({ title: `💾 ${t("aa.draftSaved")}` });
-      fetchDrafts();
+      setLastSavedAt(new Date().toISOString());
+      if (!silent) toast({ title: `💾 ${t("aa.draftSaved")}` });
     } catch (err: any) {
-      toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
+      if (!silent) toast({ title: t("aa.draftSaveFailed"), description: err.message, variant: "destructive" });
     } finally {
-      setIsSavingDraft(false);
+      setIsSaving(false);
     }
-  };
+  }, [selectedProjectId, selectedProject, currentDraftId, t, toast]);
 
-  const handleLoadDraft = (draft: Draft) => {
-    if ((itineraryContent || messages.length > 0) && !window.confirm(t("aa.loadDraftConfirm"))) return;
-    setCurrentDraftId(draft.id);
-    setItineraryContent(draft.content);
-    setMessages(draft.chat_history);
-    setDraftTitle(draft.title);
-    if (draft.project_id) setSelectedProjectId(draft.project_id);
-    setShowDrafts(false);
-    toast({ title: `📂 "${draft.title}"` });
-  };
+  // --- Auto-save on content/messages change (debounced 3s) ---
+  useEffect(() => {
+    if (!selectedProjectId) return;
+    if (!itineraryContent && messages.length === 0) return;
+    if (isLoadingDraft) return;
 
-  const handleDeleteDraft = async (draftId: string) => {
-    const { error } = await supabase.from("itinerary_drafts").delete().eq("id", draftId);
-    if (!error) {
-      if (currentDraftId === draftId) setCurrentDraftId(null);
-      setDrafts((prev) => prev.filter((d) => d.id !== draftId));
-      toast({ title: t("aa.draftDeleted") });
-    }
-  };
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveDraft(itineraryContent, messages, true);
+    }, 3000);
 
-  const handleNewDraft = () => {
-    setCurrentDraftId(null);
-    setItineraryContent("");
-    setMessages([]);
-    setDraftTitle("");
-    setSelectedPrompts(new Set());
-    setSelectedCustom(new Set());
-    setCustomItems([]);
-  };
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [itineraryContent, messages, selectedProjectId, isLoadingDraft, saveDraft]);
 
   const QUICK_PROMPTS = [
     t("aa.qpItinerary"),
