@@ -58,14 +58,11 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
-  const [isEditingPreview, setIsEditingPreview] = useState(false);
+  
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
-  const [editingImage, setEditingImage] = useState<{ url: string; alt: string } | null>(null);
-  const [imgSize, setImgSize] = useState<"small" | "medium" | "full">("full");
-  const [imgCaption, setImgCaption] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
