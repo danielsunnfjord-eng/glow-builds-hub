@@ -227,10 +227,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         },
         body: JSON.stringify({ prompt: aiImagePrompt }),
       });
-      if (!resp.ok) throw new Error(t("aa.genFailed"));
-      const { imageUrl } = await resp.json();
+      const data = await resp.json();
+      if (data.fallback || data.error) {
+        toast({ title: data.error || t("aa.genFailed"), variant: "destructive" });
+        return;
+      }
       setImageResults((prev) => [
-        { url: imageUrl, credit: "AI Generated — Fjord & Waves Travel" },
+        { url: data.imageUrl, credit: "AI Generated — Fjord & Waves Travel" },
         ...prev,
       ]);
       toast({ title: `✨ ${t("aa.aiImageGenerated")}` });

@@ -21,8 +21,8 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "AI not configured" }), {
-        status: 500,
+      return new Response(JSON.stringify({ error: "AI not configured", fallback: true }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -48,20 +48,34 @@ serve(async (req) => {
     if (!response.ok) {
       const text = await response.text();
       console.error("AI image error:", response.status, text);
-      return new Response(JSON.stringify({ error: "Image generation failed" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please try again in a few moments.", fallback: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue.", fallback: true }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ error: "Image generation temporarily unavailable.", fallback: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const data = await response.json();
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
     if (!imageUrl) {
-      return new Response(JSON.stringify({ error: "No image generated" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "No image was generated. Try a different prompt.", fallback: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     return new Response(JSON.stringify({ imageUrl }), {
@@ -69,9 +83,9 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("generate-itinerary-image error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error", fallback: true }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
