@@ -470,7 +470,7 @@ const AdminDashboard = () => {
                 <input type="email" value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} className={inputClass} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.groupSize")}</label>
                 <input type="number" min={1} value={form.group_size} onChange={(e) => setForm({ ...form, group_size: Number(e.target.value) })} className={inputClass} />
@@ -479,64 +479,82 @@ const AdminDashboard = () => {
                 <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.duration")}</label>
                 <input value={form.trip_duration} onChange={(e) => setForm({ ...form, trip_duration: e.target.value })} placeholder="e.g. 7 days" className={inputClass} />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
-                {(() => {
-                  const lang = i18n.language;
-                  const isPt = lang === "pt";
-                  const isNo = lang === "no";
-                  const sym = isPt ? "R$" : isNo ? "kr" : "€";
-                  const presets = isPt
-                    ? [200, 300, 500, 750]
-                    : isNo
-                    ? [2600, 3150, 4000, 4900]
-                    : [225, 275, 300, 425];
-                  const labels = [
-                    t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
-                    t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
-                    t("pricingData.r3group") + " / " + t("pricingData.r3dur"),
-                    t("pricingData.r4group") + " / " + t("pricingData.r4dur"),
-                  ];
-                  return (
-                    <div className="space-y-1.5">
-                      <select
-                        value={presets.includes(Number(form.price)) ? form.price : "custom"}
-                        onChange={(e) => {
-                          if (e.target.value === "custom") {
-                            setForm({ ...form, price: "" });
-                          } else {
-                            setForm({ ...form, price: e.target.value });
-                          }
-                        }}
-                        className={inputClass}
-                      >
-                        <option value="">{t("admin.selectPrice")}</option>
-                        {presets.map((p, i) => (
-                          <option key={p} value={p}>
-                            {sym} {p.toLocaleString()} — {labels[i]}
-                          </option>
-                        ))}
-                        <option value="custom">{t("admin.customPrice")}</option>
-                      </select>
-                      {(!presets.includes(Number(form.price)) || form.price === "") && (
-                        <input
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          value={presets.includes(Number(form.price)) ? "" : form.price}
-                          onChange={(e) => setForm({ ...form, price: e.target.value })}
-                          placeholder={t("admin.customPricePlaceholder")}
-                          className={inputClass}
-                        />
-                      )}
-                    </div>
-                  );
-                })()}
+                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.startDate")}</label>
+                <input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={inputClass} />
               </div>
+              <div>
+                <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.endDate")}</label>
+                <input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} className={inputClass} />
+              </div>
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.departureLabel")}</label>
+              <input value={form.departure} onChange={(e) => setForm({ ...form, departure: e.target.value })} placeholder={t("admin.departurePlaceholder")} className={inputClass} />
             </div>
             <div>
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.destinationLabel")}</label>
               <input value={form.destination} onChange={(e) => setForm({ ...form, destination: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.estimatedBudget")}</label>
+              <input value={form.estimated_budget} onChange={(e) => setForm({ ...form, estimated_budget: e.target.value })} placeholder={t("admin.estimatedBudgetPlaceholder")} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.priceLabel")}</label>
+              {(() => {
+                const lang = i18n.language;
+                const isPt = lang === "pt";
+                const isNo = lang === "no";
+                const sym = isPt ? "R$" : isNo ? "kr" : "€";
+                const presets = isPt
+                  ? [200, 300, 500, 750]
+                  : isNo
+                  ? [2600, 3150, 4000, 4900]
+                  : [225, 275, 300, 425];
+                const labels = [
+                  t("pricingData.r1group") + " / " + t("pricingData.r1dur"),
+                  t("pricingData.r2group") + " / " + t("pricingData.r2dur"),
+                  t("pricingData.r3group") + " / " + t("pricingData.r3dur"),
+                  t("pricingData.r4group") + " / " + t("pricingData.r4dur"),
+                ];
+                return (
+                  <div className="space-y-1.5">
+                    <select
+                      value={presets.includes(Number(form.price)) ? form.price : "custom"}
+                      onChange={(e) => {
+                        if (e.target.value === "custom") {
+                          setForm({ ...form, price: "" });
+                        } else {
+                          setForm({ ...form, price: e.target.value });
+                        }
+                      }}
+                      className={inputClass}
+                    >
+                      <option value="">{t("admin.selectPrice")}</option>
+                      {presets.map((p, i) => (
+                        <option key={p} value={p}>
+                          {sym} {p.toLocaleString()} — {labels[i]}
+                        </option>
+                      ))}
+                      <option value="custom">{t("admin.customPrice")}</option>
+                    </select>
+                    {(!presets.includes(Number(form.price)) || form.price === "") && (
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={presets.includes(Number(form.price)) ? "" : form.price}
+                        onChange={(e) => setForm({ ...form, price: e.target.value })}
+                        placeholder={t("admin.customPricePlaceholder")}
+                        className={inputClass}
+                      />
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
