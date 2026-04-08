@@ -68,6 +68,7 @@ const emptyProject = {
   start_date: "",
   end_date: "",
   price: "",
+  currency: "EUR",
   estimated_budget: "",
   itinerary_status: "new" as ItineraryStatus,
   payment_status: "pending" as PaymentStatus,
