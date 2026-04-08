@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
+import ItineraryEditor from "./ItineraryEditor";
 
 interface ClientProject {
   id: string;
