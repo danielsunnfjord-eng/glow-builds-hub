@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
-import ItineraryEditor from "./ItineraryEditor";
+import ItineraryEditor, { type ItineraryEditorHandle } from "./ItineraryEditor";
 import ImageCropper from "./ImageCropper";
 import PdfPreview from "./PdfPreview";
 
@@ -71,6 +71,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<ItineraryEditorHandle>(null);
 
   // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
@@ -599,11 +600,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
-    const md = credit
-      ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
-      : `\n\n![${alt}](${url})\n`;
-    // Always append to markdown content — the WYSIWYG editor will sync
-    updateContent((prev) => prev + md);
+    if (editorRef.current) {
+      editorRef.current.insertImage(url, alt || "Travel photo");
+    } else {
+      const md = credit
+        ? `\n\n![${alt}](${url})\n*Photo: ${credit}*\n`
+        : `\n\n![${alt}](${url})\n`;
+      updateContent((prev) => prev + md);
+    }
     toast({ title: t("aa.imageInserted") });
   }, [updateContent, toast, t]);
 
@@ -1179,6 +1183,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   </div>
                 )}
                 <ItineraryEditor
+                  ref={editorRef}
                   content={itineraryContent}
                   onContentChange={(md) => {
                     setItineraryContent(md);
