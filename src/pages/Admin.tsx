@@ -141,6 +141,7 @@ const AdminDashboard = () => {
         start_date: form.start_date || null,
         end_date: form.end_date || null,
         price: form.price ? Number(form.price) : null,
+        currency: form.currency,
         estimated_budget: form.estimated_budget || null,
         itinerary_status: form.itinerary_status,
         payment_status: form.payment_status,
@@ -296,12 +297,35 @@ const AdminDashboard = () => {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-  const sumPrices = (list: ClientProject[]) => list.reduce((sum, p) => sum + (p.price || 0), 0);
+  const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", NOK: "kr ", BRL: "R$ " };
+  const formatPrice = (p: ClientProject) => {
+    if (!p.price) return "—";
+    const sym = CURRENCY_SYMBOLS[p.currency] || "€";
+    return `${sym}${p.price.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  };
+
+  const sumByCurrency = (list: ClientProject[]) => {
+    const totals: Record<string, number> = {};
+    list.forEach((p) => {
+      if (p.price) {
+        const cur = p.currency || "EUR";
+        totals[cur] = (totals[cur] || 0) + p.price;
+      }
+    });
+    return totals;
+  };
+
   const paidProjects = projects.filter((p) => p.payment_status === "paid");
-  const earningsTotal = sumPrices(paidProjects);
-  const earningsYear = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
-  const earningsMonth = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
-  const earningsWeek = sumPrices(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+  const earningsWeekByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfWeek));
+  const earningsMonthByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfMonth));
+  const earningsYearByCur = sumByCurrency(paidProjects.filter((p) => new Date(p.created_at) >= startOfYear));
+  const earningsTotalByCur = sumByCurrency(paidProjects);
+
+  const formatEarnings = (totals: Record<string, number>) => {
+    const entries = Object.entries(totals).sort(([a], [b]) => a.localeCompare(b));
+    if (entries.length === 0) return "—";
+    return entries.map(([cur, val]) => `${CURRENCY_SYMBOLS[cur] || cur}${val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`).join(" · ");
+  };
 
   const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
   const selectClass = inputClass;
