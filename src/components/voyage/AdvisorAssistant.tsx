@@ -43,14 +43,6 @@ const PICSUM_CATEGORIES = [
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/advisor-assistant`;
 const IMAGE_GEN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-itinerary-image`;
 
-interface Draft {
-  id: string;
-  title: string;
-  content: string;
-  chat_history: Message[];
-  project_id: string | null;
-  updated_at: string;
-}
 
 const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const { toast } = useToast();
