@@ -215,6 +215,20 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   }, [messages]);
 
   // --- Image functions ---
+  // Helper: upload base64 image to storage and return public URL
+  const uploadBase64Image = async (dataUrl: string): Promise<string> => {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext = blob.type.includes("png") ? "png" : "jpg";
+    const fileName = `ai-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("itinerary-images")
+      .upload(fileName, blob, { contentType: blob.type });
+    if (error) throw error;
+    const { data } = supabase.storage.from("itinerary-images").getPublicUrl(fileName);
+    return data.publicUrl;
+  };
+
   const handleAiImageGenerate = async () => {
     if (!aiImagePrompt.trim() || isGeneratingImage) return;
     setIsGeneratingImage(true);
@@ -232,8 +246,18 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         toast({ title: data.error || t("aa.genFailed"), variant: "destructive" });
         return;
       }
+      // If base64 data URL, upload to storage for a proper URL
+      let finalUrl = data.imageUrl;
+      if (finalUrl && finalUrl.startsWith("data:")) {
+        try {
+          finalUrl = await uploadBase64Image(finalUrl);
+        } catch (uploadErr: any) {
+          console.error("Failed to upload AI image:", uploadErr);
+          // Still use the data URL as fallback
+        }
+      }
       setImageResults((prev) => [
-        { url: data.imageUrl, credit: "AI Generated — Fjord & Waves Travel" },
+        { url: finalUrl, credit: "AI Generated — Fjord & Waves Travel" },
         ...prev,
       ]);
       toast({ title: `✨ ${t("aa.aiImageGenerated")}` });
