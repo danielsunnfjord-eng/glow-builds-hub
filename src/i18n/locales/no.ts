@@ -88,6 +88,8 @@ export default {
     cardTitle: "Start planleggingen av din reise →",
     cardDesc: "Fyll ut vårt raske skjema, så lager jeg et personlig reiseprogram bare for deg.",
     dialogDesc: "Fyll ut skjemaet nedenfor, så tar jeg kontakt innen 24 timer.",
+    videoCallText: "Hva med å booke en rask videosamtale slik at vi kan gå gjennom reiseplanen din og svare på eventuelle spørsmål? På denne måten kan jeg bedre forstå dine behov og presentere alternativer som passer din stil og budsjett.",
+    bookCall: "Book en videosamtale",
   },
   newsletter: {
     badge: "Hold deg inspirert",
