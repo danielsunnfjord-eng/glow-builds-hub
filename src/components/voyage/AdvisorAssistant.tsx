@@ -62,6 +62,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [aiImagePrompt, setAiImagePrompt] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
+  const [editingImage, setEditingImage] = useState<{ url: string; alt: string } | null>(null);
+  const [imgSize, setImgSize] = useState<"small" | "medium" | "full">("full");
+  const [imgCaption, setImgCaption] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
