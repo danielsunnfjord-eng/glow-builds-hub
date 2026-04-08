@@ -1,6 +1,6 @@
 import { useEditor, EditorContent, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
+import ImageResize from "tiptap-extension-resize-image";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -268,13 +268,9 @@ const ItineraryEditor = ({ content, onContentChange, placeholder }: ItineraryEdi
       StarterKit.configure({
         heading: { levels: [1, 2, 3, 4] },
       }),
-      Image.configure({
+      ImageResize.configure({
         inline: false,
         allowBase64: true,
-        HTMLAttributes: {
-          class: "rounded-lg shadow-md max-w-full cursor-pointer",
-          loading: "lazy",
-        },
       }),
       Underline,
       TextAlign.configure({
