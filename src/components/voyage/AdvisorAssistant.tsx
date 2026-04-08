@@ -49,6 +49,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedPrompts, setSelectedPrompts] = useState<Set<number>>(new Set());
+  const [customItems, setCustomItems] = useState<string[]>([]);
+  const [selectedCustom, setSelectedCustom] = useState<Set<number>>(new Set());
+  const [customInput, setCustomInput] = useState("");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
