@@ -127,6 +127,62 @@ const AdminDashboard = () => {
     },
   });
 
+  const { data: tripRequests = [], isLoading: requestsLoading } = useQuery({
+    queryKey: ["trip_requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trip_requests" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const updateRequestStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["trip_requests"] }),
+  });
+
+  const deleteRequest = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("trip_requests" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trip_requests"] });
+      toast({ title: t("admin.delete") });
+    },
+  });
+
+  const convertRequestToProject = (req: any) => {
+    setEditingId(null);
+    setForm({
+      client_name: req.client_name || "",
+      client_email: req.client_email || "",
+      group_size: req.group_size || 1,
+      adults: req.group_size || 1,
+      children: 0,
+      children_ages: [],
+      destination: req.destination || "",
+      departure: req.departure || "",
+      trip_duration: req.trip_duration || "",
+      start_date: req.start_date || "",
+      end_date: req.end_date || "",
+      price: "",
+      currency: "EUR",
+      estimated_budget: req.estimated_budget || "",
+      itinerary_status: "new" as ItineraryStatus,
+      payment_status: "pending" as PaymentStatus,
+      notes: req.notes || "",
+    });
+    updateRequestStatus.mutate({ id: req.id, status: "converted" });
+    setDialogOpen(true);
+  };
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
