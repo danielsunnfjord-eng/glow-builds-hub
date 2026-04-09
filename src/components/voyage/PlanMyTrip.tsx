@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import planTripImg from "@/assets/plan-trip-card.jpg";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import TripRequestForm from "./TripRequestForm";
 
 const CALENDLY_LINKS: Record<string, string> = {
   en: "https://calendly.com/daniel-lirafigueiredo-fora/travel_planning",
@@ -22,25 +23,6 @@ const PlanMyTrip = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.substring(0, 2) || "en";
   const calendlyUrl = CALENDLY_LINKS[lang] || CALENDLY_LINKS.en;
-
-  const formCallback = useCallback((node: HTMLDivElement | null) => {
-    if (!node || node.querySelector('iframe')) return;
-    const iframe = document.createElement('iframe');
-    iframe.style.border = 'none';
-    iframe.style.width = '100%';
-    iframe.style.minHeight = '1200px';
-    iframe.id = 'client-intake-form-fh1ldh';
-    iframe.src = 'https://opnform.com/forms/client-intake-form-fh1ldh';
-    node.appendChild(iframe);
-    const script = document.createElement('script');
-    script.src = 'https://opnform.com/widgets/iframe.min.js';
-    script.onload = () => {
-      if (typeof (window as any).initEmbed === 'function') {
-        (window as any).initEmbed('client-intake-form-fh1ldh', { autoResize: true });
-      }
-    };
-    node.appendChild(script);
-  }, []);
 
   return (
     <>
@@ -88,12 +70,12 @@ const PlanMyTrip = () => {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">{t("planTrip.title")}</DialogTitle>
             <DialogDescription>{t("planTrip.dialogDesc")}</DialogDescription>
           </DialogHeader>
-          <div ref={formCallback} className="w-full min-h-[400px]" />
+          <TripRequestForm onSuccess={() => setTimeout(() => setOpen(false), 3000)} />
         </DialogContent>
       </Dialog>
     </>

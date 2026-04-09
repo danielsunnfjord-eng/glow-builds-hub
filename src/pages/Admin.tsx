@@ -84,7 +84,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
-  const [activeTab, setActiveTab] = useState<"projects" | "assistant">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("projects");
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendProject, setSendProject] = useState<ClientProject | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState("welcome");
@@ -126,6 +126,62 @@ const AdminDashboard = () => {
       })) as ClientProject[];
     },
   });
+
+  const { data: tripRequests = [], isLoading: requestsLoading } = useQuery({
+    queryKey: ["trip_requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trip_requests" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const updateRequestStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["trip_requests"] }),
+  });
+
+  const deleteRequest = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("trip_requests" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trip_requests"] });
+      toast({ title: t("admin.delete") });
+    },
+  });
+
+  const convertRequestToProject = (req: any) => {
+    setEditingId(null);
+    setForm({
+      client_name: req.client_name || "",
+      client_email: req.client_email || "",
+      group_size: req.group_size || 1,
+      adults: req.group_size || 1,
+      children: 0,
+      children_ages: [],
+      destination: req.destination || "",
+      departure: req.departure || "",
+      trip_duration: req.trip_duration || "",
+      start_date: req.start_date || "",
+      end_date: req.end_date || "",
+      price: "",
+      currency: "EUR",
+      estimated_budget: req.estimated_budget || "",
+      itinerary_status: "new" as ItineraryStatus,
+      payment_status: "pending" as PaymentStatus,
+      notes: req.notes || "",
+    });
+    updateRequestStatus.mutate({ id: req.id, status: "converted" });
+    setDialogOpen(true);
+  };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -361,6 +417,14 @@ const AdminDashboard = () => {
             <button onClick={() => setActiveTab("projects")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.projects")}
             </button>
+            <button onClick={() => setActiveTab("requests")} className={`relative px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "requests" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+              {t("requests.tab")}
+              {tripRequests.filter((r: any) => r.status === "new").length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-voyage-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">
+                  {tripRequests.filter((r: any) => r.status === "new").length}
+                </span>
+              )}
+            </button>
             <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.assistant")}
             </button>
@@ -375,6 +439,76 @@ const AdminDashboard = () => {
                 <p className="text-[0.85rem] text-voyage-muted">{t("admin.assistantDesc")}</p>
               </div>
               <AdvisorAssistant projects={projects as any} />
+            </div>
+          ) : activeTab === "requests" ? (
+            <div>
+              <div className="mb-8">
+                <h1 className="font-serif text-3xl font-bold mb-1">{t("requests.title")}</h1>
+                <p className="text-[0.85rem] text-voyage-muted">{t("requests.desc")}</p>
+              </div>
+              {requestsLoading ? (
+                <p className="text-voyage-muted text-sm">{t("admin.loading")}</p>
+              ) : tripRequests.length === 0 ? (
+                <div className="bg-voyage-white border border-parchment-3 rounded-lg p-12 text-center">
+                  <p className="text-voyage-muted text-sm">{t("requests.noRequests")}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {tripRequests.map((req: any) => {
+                    const statusColors: Record<string, string> = {
+                      new: "bg-gold/10 text-gold border-gold/30",
+                      reviewed: "bg-sage/10 text-sage border-sage/30",
+                      converted: "bg-ink/[0.06] text-ink border-parchment-3",
+                    };
+                    return (
+                      <div key={req.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5 hover:shadow-sm transition-shadow">
+                        <div className="flex justify-between items-start mb-3 max-md:flex-col max-md:gap-2">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-serif text-lg font-bold text-ink">{req.client_name}</h3>
+                              <Badge label={t(`requests.${req.status}`)} style={statusColors[req.status] || statusColors.new} />
+                            </div>
+                            <p className="text-[0.78rem] text-voyage-muted">{req.client_email} {req.phone && `· ${req.phone}`}</p>
+                          </div>
+                          <div className="text-[0.72rem] text-voyage-muted">
+                            {t("requests.received")}: {new Date(req.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-4 max-md:grid-cols-2 gap-3 mb-4 text-[0.82rem]">
+                          {req.departure && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.departure")}</span><span className="text-ink">{req.departure}</span></div>}
+                          {req.destination && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.destination")}</span><span className="text-ink">{req.destination}</span></div>}
+                          <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.groupSize")}</span><span className="text-ink">{req.group_size}</span></div>
+                          {req.trip_duration && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.duration")}</span><span className="text-ink">{req.trip_duration}</span></div>}
+                          {req.start_date && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.startDate")}</span><span className="text-ink">{req.start_date}</span></div>}
+                          {req.end_date && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.endDate")}</span><span className="text-ink">{req.end_date}</span></div>}
+                          {req.estimated_budget && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.budget")}</span><span className="text-ink">{req.estimated_budget}</span></div>}
+                        </div>
+                        {req.notes && (
+                          <div className="bg-parchment rounded-sm p-3 mb-4 text-[0.82rem] text-ink-2">
+                            <span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block mb-1">{t("admin.notes")}</span>
+                            {req.notes}
+                          </div>
+                        )}
+                        <div className="flex gap-2 flex-wrap">
+                          {req.status === "new" && (
+                            <button onClick={() => updateRequestStatus.mutate({ id: req.id, status: "reviewed" })} className="px-3 py-1.5 rounded-sm border border-sage/30 text-[0.72rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">
+                              {t("requests.markReviewed")}
+                            </button>
+                          )}
+                          {req.status !== "converted" && (
+                            <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
+                              {t("requests.createProject")}
+                            </button>
+                          )}
+                          <button onClick={() => { if (confirm(t("requests.deleteConfirm"))) deleteRequest.mutate(req.id); }} className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">
+                            {t("admin.delete")}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           ) : (
           <>

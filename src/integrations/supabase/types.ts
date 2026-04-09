@@ -121,6 +121,63 @@ export type Database = {
           },
         ]
       }
+      trip_requests: {
+        Row: {
+          client_email: string
+          client_name: string
+          created_at: string
+          departure: string | null
+          destination: string | null
+          end_date: string | null
+          estimated_budget: string | null
+          group_size: number
+          id: string
+          language: string
+          notes: string | null
+          phone: string | null
+          start_date: string | null
+          status: string
+          trip_duration: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_email: string
+          client_name: string
+          created_at?: string
+          departure?: string | null
+          destination?: string | null
+          end_date?: string | null
+          estimated_budget?: string | null
+          group_size?: number
+          id?: string
+          language?: string
+          notes?: string | null
+          phone?: string | null
+          start_date?: string | null
+          status?: string
+          trip_duration?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_email?: string
+          client_name?: string
+          created_at?: string
+          departure?: string | null
+          destination?: string | null
+          end_date?: string | null
+          estimated_budget?: string | null
+          group_size?: number
+          id?: string
+          language?: string
+          notes?: string | null
+          phone?: string | null
+          start_date?: string | null
+          status?: string
+          trip_duration?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
