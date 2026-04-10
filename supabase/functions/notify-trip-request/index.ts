@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADVISOR_EMAIL = "daniel@fjordandwaves.com";
+const ADVISOR_EMAIL = "daniel.lirafigueiredo@fora.travel";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {

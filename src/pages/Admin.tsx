@@ -84,7 +84,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
-  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("requests");
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendProject, setSendProject] = useState<ClientProject | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState("welcome");
