@@ -84,7 +84,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
-  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("projects");
+  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("requests");
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendProject, setSendProject] = useState<ClientProject | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState("welcome");
@@ -414,9 +414,6 @@ const AdminDashboard = () => {
 
         <div className="bg-voyage-white border-b border-parchment-3 px-10 max-md:px-6">
           <div className="max-w-[1200px] mx-auto flex gap-1">
-            <button onClick={() => setActiveTab("projects")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              {t("admin.projects")}
-            </button>
             <button onClick={() => setActiveTab("requests")} className={`relative px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "requests" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("requests.tab")}
               {tripRequests.filter((r: any) => r.status === "new").length > 0 && (
@@ -424,6 +421,9 @@ const AdminDashboard = () => {
                   {tripRequests.filter((r: any) => r.status === "new").length}
                 </span>
               )}
+            </button>
+            <button onClick={() => setActiveTab("projects")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+              {t("admin.projects")}
             </button>
             <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.assistant")}
