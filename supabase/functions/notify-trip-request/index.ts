@@ -14,7 +14,12 @@ serve(async (req) => {
   }
 
   try {
-    const { clientName, clientEmail, destination, departure, groupSize, tripDuration, startDate, endDate, budget, notes } = await req.json();
+    const {
+      clientName, clientEmail, destination, departure, groupSize,
+      tripDuration, startDate, endDate, budget, notes,
+      interests, mobilityNotes, accommodationType,
+      dietaryRestrictions, mustHaveExperiences, travelPace, visitedBefore,
+    } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -24,7 +29,6 @@ serve(async (req) => {
       });
     }
 
-    // Use AI to compose a nice notification email
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -49,6 +53,13 @@ serve(async (req) => {
 - Duration: ${tripDuration || "Not specified"}
 - Dates: ${startDate || "?"} to ${endDate || "?"}
 - Budget: ${budget || "Not specified"}
+- Interests: ${interests?.length ? interests.join(", ") : "Not specified"}
+- Accommodation preference: ${accommodationType || "Not specified"}
+- Travel pace: ${travelPace || "Not specified"}
+- Mobility/accessibility: ${mobilityNotes || "None"}
+- Dietary restrictions: ${dietaryRestrictions || "None"}
+- Must-have experiences: ${mustHaveExperiences || "None"}
+- Visited before: ${visitedBefore ? "Yes" : "No"}
 - Notes: ${notes || "None"}
 
 Generate a clean HTML notification email body.`,
@@ -65,6 +76,13 @@ Generate a clean HTML notification email body.`,
 <li>Duration: ${tripDuration || "—"}</li>
 <li>Dates: ${startDate || "?"} → ${endDate || "?"}</li>
 <li>Budget: ${budget || "—"}</li>
+<li>Interests: ${interests?.length ? interests.join(", ") : "—"}</li>
+<li>Accommodation: ${accommodationType || "—"}</li>
+<li>Travel pace: ${travelPace || "—"}</li>
+<li>Mobility: ${mobilityNotes || "—"}</li>
+<li>Dietary: ${dietaryRestrictions || "—"}</li>
+<li>Must-have: ${mustHaveExperiences || "—"}</li>
+<li>Visited before: ${visitedBefore ? "Yes" : "No"}</li>
 </ul>
 ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ""}`;
 
@@ -74,13 +92,10 @@ ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ""}`;
       if (aiContent) emailBody = aiContent;
     }
 
-    // Send email via Supabase's built-in email or a simple edge function approach
-    // For now, we'll use the send-itinerary-email function pattern
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Try to send via the existing email function
     const { error } = await supabase.functions.invoke("send-itinerary-email", {
       body: {
         recipientEmail: ADVISOR_EMAIL,
