@@ -123,58 +123,79 @@ export type Database = {
       }
       trip_requests: {
         Row: {
+          accommodation_type: string | null
           client_email: string
           client_name: string
           created_at: string
           departure: string | null
           destination: string | null
+          dietary_restrictions: string | null
           end_date: string | null
           estimated_budget: string | null
           group_size: number
           id: string
+          interests: string[] | null
           language: string
+          mobility_notes: string | null
+          must_have_experiences: string | null
           notes: string | null
           phone: string | null
           start_date: string | null
           status: string
+          travel_pace: string | null
           trip_duration: string | null
           updated_at: string
+          visited_before: boolean | null
         }
         Insert: {
+          accommodation_type?: string | null
           client_email: string
           client_name: string
           created_at?: string
           departure?: string | null
           destination?: string | null
+          dietary_restrictions?: string | null
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
           id?: string
+          interests?: string[] | null
           language?: string
+          mobility_notes?: string | null
+          must_have_experiences?: string | null
           notes?: string | null
           phone?: string | null
           start_date?: string | null
           status?: string
+          travel_pace?: string | null
           trip_duration?: string | null
           updated_at?: string
+          visited_before?: boolean | null
         }
         Update: {
+          accommodation_type?: string | null
           client_email?: string
           client_name?: string
           created_at?: string
           departure?: string | null
           destination?: string | null
+          dietary_restrictions?: string | null
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
           id?: string
+          interests?: string[] | null
           language?: string
+          mobility_notes?: string | null
+          must_have_experiences?: string | null
           notes?: string | null
           phone?: string | null
           start_date?: string | null
           status?: string
+          travel_pace?: string | null
           trip_duration?: string | null
           updated_at?: string
+          visited_before?: boolean | null
         }
         Relationships: []
       }
