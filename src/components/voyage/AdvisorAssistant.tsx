@@ -349,7 +349,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             endDate: selectedProject.end_date,
             estimatedBudget: selectedProject.estimated_budget,
             price: selectedProject.price,
-            notes: selectedProject.notes,
+            notes: selectedProject.notes, // includes interests, accommodation, pace, mobility, dietary, must-have, children ages
           }
         : undefined;
 

@@ -83,7 +83,7 @@ serve(async (req) => {
 - Estimated budget: ${projectContext.estimatedBudget || "Not specified"}
 - Price/fee: ${projectContext.price || "Not specified"}
 - Notes: ${projectContext.notes || "None"}
-Use ALL these details to personalise the itinerary. Consider the departure city for flight suggestions, the budget for accommodation tier, the dates for seasonal activities and weather tips, and the group size for activity recommendations.`;
+Use ALL these details to personalise the itinerary. The notes field may contain structured client preferences (interests, accommodation type, travel pace, mobility needs, dietary restrictions, must-have experiences, children ages, whether they visited before). Parse and use ALL of these to create the most tailored itinerary possible. Consider the departure city for flight suggestions, the budget for accommodation tier, the dates for seasonal activities and weather tips, the group size and children ages for activity recommendations, dietary restrictions for restaurant suggestions, mobility needs for accessibility, and travel pace for daily planning intensity.`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

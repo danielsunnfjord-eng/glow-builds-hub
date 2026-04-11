@@ -124,6 +124,9 @@ export type Database = {
       trip_requests: {
         Row: {
           accommodation_type: string | null
+          adults: number
+          children_ages: number[] | null
+          children_count: number
           client_email: string
           client_name: string
           created_at: string
@@ -149,6 +152,9 @@ export type Database = {
         }
         Insert: {
           accommodation_type?: string | null
+          adults?: number
+          children_ages?: number[] | null
+          children_count?: number
           client_email: string
           client_name: string
           created_at?: string
@@ -174,6 +180,9 @@ export type Database = {
         }
         Update: {
           accommodation_type?: string | null
+          adults?: number
+          children_ages?: number[] | null
+          children_count?: number
           client_email?: string
           client_name?: string
           created_at?: string

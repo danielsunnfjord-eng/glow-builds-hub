@@ -160,13 +160,16 @@ const AdminDashboard = () => {
 
   const convertRequestToProject = (req: any) => {
     setEditingId(null);
+    const adults = req.adults || req.group_size || 1;
+    const childrenCount = req.children_count || 0;
+    const childrenAges = req.children_ages || [];
     setForm({
       client_name: req.client_name || "",
       client_email: req.client_email || "",
-      group_size: req.group_size || 1,
-      adults: req.group_size || 1,
-      children: 0,
-      children_ages: [],
+      group_size: adults + childrenCount,
+      adults,
+      children: childrenCount,
+      children_ages: childrenAges,
       destination: req.destination || "",
       departure: req.departure || "",
       trip_duration: req.trip_duration || "",
@@ -177,7 +180,17 @@ const AdminDashboard = () => {
       estimated_budget: req.estimated_budget || "",
       itinerary_status: "new" as ItineraryStatus,
       payment_status: "pending" as PaymentStatus,
-      notes: req.notes || "",
+      notes: [
+        req.notes || "",
+        req.interests?.length ? `Interests: ${req.interests.join(", ")}` : "",
+        req.accommodation_type ? `Accommodation: ${req.accommodation_type}` : "",
+        req.travel_pace ? `Pace: ${req.travel_pace}` : "",
+        req.mobility_notes ? `Mobility: ${req.mobility_notes}` : "",
+        req.dietary_restrictions ? `Dietary: ${req.dietary_restrictions}` : "",
+        req.must_have_experiences ? `Must-have: ${req.must_have_experiences}` : "",
+        req.visited_before ? "Has visited before" : "",
+        childrenCount > 0 ? `Children ages: ${childrenAges.join(", ")}` : "",
+      ].filter(Boolean).join("\n"),
     });
     updateRequestStatus.mutate({ id: req.id, status: "converted" });
     setDialogOpen(true);
