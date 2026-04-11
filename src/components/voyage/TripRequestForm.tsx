@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,17 @@ const INTEREST_OPTIONS = [
 const ACCOMMODATION_OPTIONS = ["boutiqueHotel", "resort", "airbnb", "cabin", "other"] as const;
 const PACE_OPTIONS = ["intense", "relaxed", "mixed"] as const;
 
+function calcDuration(start: string, end: string): string {
+  if (!start || !end) return "";
+  const s = new Date(start);
+  const e = new Date(end);
+  const diff = Math.round((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff <= 0) return "";
+  const nights = diff;
+  const days = diff + 1;
+  return `${days}d / ${nights}n`;
+}
+
 const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
@@ -26,7 +37,9 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     phone: "",
     destination: "",
     departure: "",
-    group_size: 1,
+    adults: 1,
+    children_count: 0,
+    children_ages: [] as number[],
     trip_duration: "",
     start_date: "",
     end_date: "",
@@ -40,6 +53,24 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     travel_pace: "",
     visited_before: false,
   });
+
+  // Auto-calculate duration
+  useEffect(() => {
+    const dur = calcDuration(form.start_date, form.end_date);
+    if (dur && dur !== form.trip_duration) {
+      setForm((f) => ({ ...f, trip_duration: dur }));
+    }
+  }, [form.start_date, form.end_date]);
+
+  // Sync children_ages array length
+  useEffect(() => {
+    setForm((f) => {
+      const ages = [...f.children_ages];
+      while (ages.length < f.children_count) ages.push(0);
+      if (ages.length > f.children_count) ages.length = f.children_count;
+      return { ...f, children_ages: ages };
+    });
+  }, [form.children_count]);
 
   const toggleInterest = (key: string) => {
     setForm((f) => ({
@@ -55,13 +86,17 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     setSubmitting(true);
     try {
       const lang = i18n.language?.substring(0, 2) || "en";
+      const groupSize = form.adults + form.children_count;
       const { error } = await supabase.from("trip_requests" as any).insert({
         client_name: form.client_name,
         client_email: form.client_email,
         phone: form.phone || null,
         destination: form.destination || null,
         departure: form.departure || null,
-        group_size: form.group_size,
+        group_size: groupSize,
+        adults: form.adults,
+        children_count: form.children_count,
+        children_ages: form.children_count > 0 ? form.children_ages : null,
         trip_duration: form.trip_duration || null,
         start_date: form.start_date || null,
         end_date: form.end_date || null,
@@ -86,7 +121,10 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             clientEmail: form.client_email,
             destination: form.destination,
             departure: form.departure,
-            groupSize: form.group_size,
+            groupSize: groupSize,
+            adults: form.adults,
+            childrenCount: form.children_count,
+            childrenAges: form.children_ages,
             tripDuration: form.trip_duration,
             startDate: form.start_date,
             endDate: form.end_date,
@@ -160,12 +198,46 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
       </div>
 
-      {/* Group, Start, End */}
-      <div className="grid grid-cols-3 gap-4 max-sm:grid-cols-1">
+      {/* Adults & Children */}
+      <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div>
-          <label className={labelClass}>{t("tripForm.groupSize")}</label>
-          <input type="number" min={1} value={form.group_size} onChange={(e) => setForm({ ...form, group_size: Math.max(1, Number(e.target.value)) })} className={inputClass} />
+          <label className={labelClass}>{t("tripForm.adults")}</label>
+          <input type="number" min={1} value={form.adults} onChange={(e) => setForm({ ...form, adults: Math.max(1, Number(e.target.value)) })} className={inputClass} />
         </div>
+        <div>
+          <label className={labelClass}>{t("tripForm.childrenLabel")}</label>
+          <input type="number" min={0} value={form.children_count} onChange={(e) => setForm({ ...form, children_count: Math.max(0, Number(e.target.value)) })} className={inputClass} />
+        </div>
+      </div>
+
+      {/* Children ages */}
+      {form.children_count > 0 && (
+        <div>
+          <label className={labelClass}>{t("tripForm.childrenAges")}</label>
+          <div className="flex flex-wrap gap-2">
+            {form.children_ages.map((age, idx) => (
+              <div key={idx} className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={0}
+                  max={17}
+                  value={age}
+                  onChange={(e) => {
+                    const ages = [...form.children_ages];
+                    ages[idx] = Math.min(17, Math.max(0, Number(e.target.value)));
+                    setForm({ ...form, children_ages: ages });
+                  }}
+                  className="w-16 px-2 py-2 rounded-lg bg-background border border-border text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+                <span className="text-xs text-muted-foreground">{t("tripForm.years")}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Start, End, Duration */}
+      <div className="grid grid-cols-3 gap-4 max-sm:grid-cols-1">
         <div>
           <label className={labelClass}>{t("tripForm.startDate")}</label>
           <input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} className={inputClass} />
@@ -174,18 +246,16 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           <label className={labelClass}>{t("tripForm.endDate")}</label>
           <input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} className={inputClass} />
         </div>
-      </div>
-
-      {/* Duration & Budget */}
-      <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div>
           <label className={labelClass}>{t("tripForm.duration")}</label>
-          <input value={form.trip_duration} onChange={(e) => setForm({ ...form, trip_duration: e.target.value })} placeholder={t("tripForm.durationPlaceholder")} className={inputClass} />
+          <input value={form.trip_duration} readOnly placeholder={t("tripForm.durationAutoPlaceholder")} className={`${inputClass} bg-muted cursor-default`} />
         </div>
-        <div>
-          <label className={labelClass}>{t("tripForm.budget")}</label>
-          <input value={form.estimated_budget} onChange={(e) => setForm({ ...form, estimated_budget: e.target.value })} placeholder={t("tripForm.budgetPlaceholder")} className={inputClass} />
-        </div>
+      </div>
+
+      {/* Budget */}
+      <div>
+        <label className={labelClass}>{t("tripForm.budget")}</label>
+        <input value={form.estimated_budget} onChange={(e) => setForm({ ...form, estimated_budget: e.target.value })} placeholder={t("tripForm.budgetPlaceholder")} className={inputClass} />
       </div>
 
       {/* Visited before */}
@@ -227,11 +297,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div>
           <label className={labelClass}>{t("tripForm.accommodationType")}</label>
-          <select
-            value={form.accommodation_type}
-            onChange={(e) => setForm({ ...form, accommodation_type: e.target.value })}
-            className={inputClass}
-          >
+          <select value={form.accommodation_type} onChange={(e) => setForm({ ...form, accommodation_type: e.target.value })} className={inputClass}>
             <option value="">{t("tripForm.selectOption")}</option>
             {ACCOMMODATION_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>{t(`tripForm.accommodation_${opt}`)}</option>
@@ -240,11 +306,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         </div>
         <div>
           <label className={labelClass}>{t("tripForm.travelPace")}</label>
-          <select
-            value={form.travel_pace}
-            onChange={(e) => setForm({ ...form, travel_pace: e.target.value })}
-            className={inputClass}
-          >
+          <select value={form.travel_pace} onChange={(e) => setForm({ ...form, travel_pace: e.target.value })} className={inputClass}>
             <option value="">{t("tripForm.selectOption")}</option>
             {PACE_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>{t(`tripForm.pace_${opt}`)}</option>
