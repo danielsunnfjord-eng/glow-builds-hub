@@ -29,7 +29,17 @@ const CuratedSection = () => {
     { icon: "📞", title: t("curated.perk3Title"), desc: t("curated.perk3Desc") },
   ];
 
-  const isNok = i18n.language === "no";
+  const services = [
+    { icon: "✈️", title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
+    { icon: "🏨", title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
+    { icon: "🎭", title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
+    { icon: "🚗", title: t("experiences.transfers"), desc: t("experiences.transfersDesc") },
+    { icon: "🛳️", title: t("experiences.cruises"), desc: t("experiences.cruisesDesc") },
+    { icon: "🛡️", title: t("experiences.insurance"), desc: t("experiences.insuranceDesc") },
+    { icon: "🍷", title: t("experiences.dining"), desc: t("experiences.diningDesc") },
+    { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
+  ];
+
   const isPt = i18n.language === "pt";
 
   const brlPrices = [200, 300, 500, 750];
