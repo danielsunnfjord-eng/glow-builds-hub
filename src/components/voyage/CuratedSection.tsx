@@ -147,6 +147,19 @@ const CuratedSection = () => {
       </div>
 
       {/* Part 2 — What we arrange (service boxes) */}
+      {(() => {
+        const services = [
+          { icon: "✈️", title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
+          { icon: "🏨", title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
+          { icon: "🎭", title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
+          { icon: "🚗", title: t("experiences.transfers"), desc: t("experiences.transfersDesc") },
+          { icon: "🛳️", title: t("experiences.cruises"), desc: t("experiences.cruisesDesc") },
+          { icon: "🛡️", title: t("experiences.insurance"), desc: t("experiences.insuranceDesc") },
+          { icon: "🍷", title: t("experiences.dining"), desc: t("experiences.diningDesc") },
+          { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
+        ];
+        return null;
+      })()}
       <div className="px-16 pb-12 max-md:px-6" id="experiences">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">{t("experiences.badge")}</div>
