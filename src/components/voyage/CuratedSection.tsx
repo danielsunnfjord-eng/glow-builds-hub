@@ -94,25 +94,9 @@ const CuratedSection = () => {
               {t("hero.title1")}
               <em className="block italic font-normal text-gold-2">{t("hero.title2")}</em>
             </h1>
-            <p className="text-[0.95rem] font-light text-voyage-white/55 max-w-[520px] leading-relaxed mb-12 animate-fade-up-2">
-              {t("curated.subtitle")}
+            <p className="text-base font-light text-voyage-white/60 max-w-[460px] leading-relaxed mb-0 animate-fade-up-2">
+              {t("hero.subtitle")}
             </p>
-            <div className="flex gap-4 flex-wrap animate-fade-up-3">
-              <button
-                onClick={() => scrollToId("enquiry")}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
-              >
-                {t("curated.ctaPrimary")}
-              </button>
-              <a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
-              >
-                {t("curated.ctaWhatsapp")}
-              </a>
-            </div>
           </div>
         </div>
 
