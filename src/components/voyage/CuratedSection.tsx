@@ -40,6 +40,7 @@ const CuratedSection = () => {
     { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
   ];
 
+  const isNok = i18n.language === "no";
   const isPt = i18n.language === "pt";
 
   const brlPrices = [200, 300, 500, 750];
