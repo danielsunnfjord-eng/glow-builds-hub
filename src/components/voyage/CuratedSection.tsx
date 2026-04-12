@@ -2,8 +2,26 @@ import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
 const FLAG_BR = "https://flagcdn.com/w80/br.png";
 
+const scrollToId = (id: string) => {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+};
+
+const WHATSAPP_URL = "https://wa.me/4746866855";
+
 const CuratedSection = () => {
   const { t, i18n } = useTranslation();
+
+  const steps = [
+    { num: "01", key: "hwStep1" },
+    { num: "02", key: "hwStep2" },
+    { num: "03", key: "hwStep3" },
+  ];
+
+  const values = [
+    { icon: "⏱", key: "hwValue1" },
+    { icon: "🛡️", key: "hwValue2" },
+    { icon: "✨", key: "hwValue3" },
+  ];
 
   const perks = [
     { icon: "🏨", title: t("curated.perk1Title"), desc: t("curated.perk1Desc") },
@@ -43,7 +61,7 @@ const CuratedSection = () => {
 
   return (
     <section className="bg-ink text-voyage-white" id="curated">
-      {/* Part 1 — Intro + No-packages disclaimer */}
+      {/* Part 1 — How It Works Hero */}
       <div className="py-28 px-16 max-md:px-6 max-md:py-16">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">{t("curated.badge")}</div>
@@ -54,12 +72,56 @@ const CuratedSection = () => {
           </h2>
         </ScrollReveal>
         <ScrollReveal>
-          <p className="text-[0.92rem] text-voyage-white/50 max-w-[480px] leading-relaxed">{t("curated.subtitle")}</p>
+          <p className="text-[0.95rem] text-voyage-white/55 max-w-[520px] leading-relaxed mb-10">
+            {t("curated.subtitle")}
+          </p>
         </ScrollReveal>
+        <ScrollReveal>
+          <div className="flex gap-4 flex-wrap">
+            <button
+              onClick={() => scrollToId("enquiry")}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
+            >
+              {t("curated.ctaPrimary")}
+            </button>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
+            >
+              {t("curated.ctaWhatsapp")}
+            </a>
+          </div>
+        </ScrollReveal>
+
+        {/* 3 Steps */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+          {steps.map((s) => (
+            <ScrollReveal key={s.key}>
+              <div className="relative pl-14 max-md:pl-12">
+                <span className="absolute left-0 top-0 font-serif text-[2.5rem] font-bold text-gold/20 leading-none">{s.num}</span>
+                <h3 className="text-[0.95rem] font-semibold text-voyage-white mb-1.5">{t(`curated.${s.key}`)}</h3>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {/* Value Props */}
+        <div className="mt-16 flex flex-col md:flex-row gap-6 md:gap-12">
+          {values.map((v) => (
+            <ScrollReveal key={v.key}>
+              <div className="flex items-center gap-3">
+                <span className="text-gold text-lg">{v.icon}</span>
+                <p className="text-[0.85rem] text-voyage-white/60 font-medium">{t(`curated.${v.key}`)}</p>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
 
         {/* No-packages disclaimer */}
         <ScrollReveal>
-          <div className="mt-10 mb-0 max-w-2xl">
+          <div className="mt-16 mb-0 max-w-2xl">
             <span className="inline-block px-4 py-1.5 rounded-full bg-red-500/15 border border-red-400/30 text-red-300 text-[0.78rem] font-semibold tracking-[0.06em] uppercase mb-4">
               ⚠️ {t("curated.noPackages")}
             </span>
