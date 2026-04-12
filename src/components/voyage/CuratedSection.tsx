@@ -61,39 +61,70 @@ const CuratedSection = () => {
 
   return (
     <section className="bg-ink text-voyage-white" id="curated">
-      {/* Part 1 — How It Works Hero */}
-      <div className="py-28 px-16 max-md:px-6 max-md:py-16">
-        <ScrollReveal>
-          <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">{t("curated.badge")}</div>
-        </ScrollReveal>
-        <ScrollReveal>
-          <h2 className="font-serif text-[clamp(2rem,3.5vw,3rem)] font-bold leading-[1.05] tracking-tight mb-4 text-voyage-white">
-            {t("curated.title1")}<br /><em className="italic font-normal text-gold-2">{t("curated.title2")}</em>
-          </h2>
-        </ScrollReveal>
-        <ScrollReveal>
-          <p className="text-[0.95rem] text-voyage-white/55 max-w-[520px] leading-relaxed mb-10">
-            {t("curated.subtitle")}
-          </p>
-        </ScrollReveal>
-        <ScrollReveal>
-          <div className="flex gap-4 flex-wrap">
-            <button
-              onClick={() => scrollToId("enquiry")}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
-            >
-              {t("curated.ctaPrimary")}
-            </button>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
-            >
-              {t("curated.ctaWhatsapp")}
-            </a>
+      {/* Hero + How It Works — merged */}
+      <div className="min-h-screen flex flex-col justify-end relative overflow-hidden">
+        {/* Background layers */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 70% at 80% 30%, rgba(184,135,42,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 50% at 10% 80%, rgba(107,124,94,0.1) 0%, transparent 50%),
+              linear-gradient(170deg, #0a0906 0%, #1a1510 40%, #13110e 100%)
+            `,
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(184,135,42,0.15) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            maskImage: "radial-gradient(ellipse 70% 70% at 80% 20%, black 0%, transparent 70%)",
+            WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 80% 20%, black 0%, transparent 70%)",
+          }}
+        />
+
+        <div className="relative z-10 px-16 pb-24 max-md:px-6 max-md:pb-16">
+          <div className="max-w-[700px]">
+            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-8 animate-fade-up">
+              <div className="w-[30px] h-px bg-gold" />
+              {t("hero.badge")}
+            </div>
+            <h1 className="font-serif text-[clamp(3.2rem,7vw,6rem)] font-bold leading-[0.95] text-voyage-white mb-4 tracking-tight animate-fade-up-1">
+              {t("hero.title1")}
+              <em className="block italic font-normal text-gold-2">{t("hero.title2")}</em>
+            </h1>
+            <p className="text-[0.95rem] font-light text-voyage-white/55 max-w-[520px] leading-relaxed mb-12 animate-fade-up-2">
+              {t("curated.subtitle")}
+            </p>
+            <div className="flex gap-4 flex-wrap animate-fade-up-3">
+              <button
+                onClick={() => scrollToId("enquiry")}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
+              >
+                {t("curated.ctaPrimary")}
+              </button>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
+              >
+                {t("curated.ctaWhatsapp")}
+              </a>
+            </div>
           </div>
-        </ScrollReveal>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-12 right-16 flex flex-col items-center gap-2 text-voyage-white/30 text-[0.62rem] tracking-[0.2em] uppercase animate-fade-up-4 max-md:hidden">
+          <div className="w-px h-[50px] bg-gradient-to-b from-gold/50 to-transparent animate-pulse-bar" />
+          {t("hero.scroll")}
+        </div>
+      </div>
+
+      {/* How it works — 3 Steps */}
+      <div className="py-28 px-16 max-md:px-6 max-md:py-16">
 
         {/* 3 Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
