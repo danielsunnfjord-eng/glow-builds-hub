@@ -125,9 +125,17 @@ const CuratedSection = () => {
 
       {/* How it works — 3 Steps */}
       <div className="py-28 px-16 max-md:px-6 max-md:py-16">
+        <ScrollReveal>
+          <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">{t("curated.badge")}</div>
+        </ScrollReveal>
+        <ScrollReveal>
+          <h2 className="font-serif text-[clamp(1.8rem,3vw,2.5rem)] font-bold leading-[1.1] tracking-tight mb-12 text-voyage-white">
+            {t("curated.title1")}<br /><em className="italic font-normal text-gold-2">{t("curated.title2")}</em>
+          </h2>
+        </ScrollReveal>
 
         {/* 3 Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((s) => (
             <ScrollReveal key={s.key}>
               <div className="relative pl-14 max-md:pl-12">
