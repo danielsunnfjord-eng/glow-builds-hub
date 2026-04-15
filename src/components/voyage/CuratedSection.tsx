@@ -274,6 +274,26 @@ const CuratedSection = () => {
           <ScrollReveal>
             <p className="text-[0.78rem] text-voyage-white/40 mt-5 text-center leading-relaxed whitespace-pre-line">{t("curated.pricingNote")}</p>
           </ScrollReveal>
+
+          {/* CTA after pricing */}
+          <ScrollReveal>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <button
+                onClick={() => scrollToId("enquiry")}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
+              >
+                {t("curated.ctaPrimary")}
+              </button>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
+              >
+                💬 {t("curated.ctaWhatsapp")}
+              </a>
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
