@@ -142,11 +142,31 @@ const CuratedSection = () => {
           ))}
         </div>
 
-        {/* No-packages disclaimer */}
+        {/* CTA after steps */}
+        <ScrollReveal>
+          <div className="mt-14 flex flex-col sm:flex-row gap-4 items-start">
+            <button
+              onClick={() => scrollToId("enquiry")}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
+            >
+              {t("curated.ctaPrimary")}
+            </button>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border border-voyage-white/25 text-voyage-white/80 font-medium text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:border-gold hover:text-gold hover:-translate-y-0.5 transition-all"
+            >
+              💬 {t("curated.ctaWhatsapp")}
+            </a>
+          </div>
+        </ScrollReveal>
+
+        {/* No-packages — soft tone */}
         <ScrollReveal>
           <div className="mt-16 mb-0 max-w-2xl">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-red-500/15 border border-red-400/30 text-red-300 text-[0.78rem] font-semibold tracking-[0.06em] uppercase mb-4">
-              ⚠️ {t("curated.noPackages")}
+            <span className="inline-block px-4 py-1.5 rounded-full bg-voyage-white/[0.06] border border-voyage-white/10 text-voyage-white/70 text-[0.78rem] font-semibold tracking-[0.06em] uppercase mb-4">
+              ✦ {t("curated.noPackages")}
             </span>
             <p className="text-[0.88rem] text-voyage-white/50 leading-relaxed">
               {t("curated.noPackagesDesc")}
