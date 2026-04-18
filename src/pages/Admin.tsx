@@ -639,7 +639,7 @@ const AdminDashboard = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">{editingId ? t("admin.editProject") : t("admin.newProjectTitle")}</DialogTitle>
             <DialogDescription>{t("admin.formDesc")}</DialogDescription>
