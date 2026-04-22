@@ -85,6 +85,17 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     visited_before: false,
   });
 
+  // Default country code based on language
+  const defaultDial = i18n.language?.startsWith("pt") ? "+55" : "+47";
+  const [phoneCountry, setPhoneCountry] = useState<string>(defaultDial);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+
+  // Keep combined phone in sync
+  useEffect(() => {
+    const digits = phoneNumber.replace(/[^\d\s\-]/g, "").trim();
+    setForm((f) => ({ ...f, phone: digits ? `${phoneCountry} ${digits}` : "" }));
+  }, [phoneCountry, phoneNumber]);
+
   // Auto-calculate duration
   useEffect(() => {
     const dur = calcDuration(form.start_date, form.end_date);
