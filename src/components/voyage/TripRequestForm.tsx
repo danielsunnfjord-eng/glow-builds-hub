@@ -15,6 +15,37 @@ const INTEREST_OPTIONS = [
 const ACCOMMODATION_OPTIONS = ["boutiqueHotel", "resort", "airbnb", "cabin", "other"] as const;
 const PACE_OPTIONS = ["intense", "relaxed", "mixed"] as const;
 
+// Common country dial codes (sorted by likely audience)
+const COUNTRY_CODES: { code: string; label: string; flag: string }[] = [
+  { code: "+47", label: "Norway", flag: "🇳🇴" },
+  { code: "+46", label: "Sweden", flag: "🇸🇪" },
+  { code: "+45", label: "Denmark", flag: "🇩🇰" },
+  { code: "+358", label: "Finland", flag: "🇫🇮" },
+  { code: "+354", label: "Iceland", flag: "🇮🇸" },
+  { code: "+44", label: "United Kingdom", flag: "🇬🇧" },
+  { code: "+1", label: "USA / Canada", flag: "🇺🇸" },
+  { code: "+33", label: "France", flag: "🇫🇷" },
+  { code: "+49", label: "Germany", flag: "🇩🇪" },
+  { code: "+34", label: "Spain", flag: "🇪🇸" },
+  { code: "+39", label: "Italy", flag: "🇮🇹" },
+  { code: "+351", label: "Portugal", flag: "🇵🇹" },
+  { code: "+31", label: "Netherlands", flag: "🇳🇱" },
+  { code: "+32", label: "Belgium", flag: "🇧🇪" },
+  { code: "+41", label: "Switzerland", flag: "🇨🇭" },
+  { code: "+43", label: "Austria", flag: "🇦🇹" },
+  { code: "+353", label: "Ireland", flag: "🇮🇪" },
+  { code: "+55", label: "Brazil", flag: "🇧🇷" },
+  { code: "+52", label: "Mexico", flag: "🇲🇽" },
+  { code: "+54", label: "Argentina", flag: "🇦🇷" },
+  { code: "+61", label: "Australia", flag: "🇦🇺" },
+  { code: "+64", label: "New Zealand", flag: "🇳🇿" },
+  { code: "+81", label: "Japan", flag: "🇯🇵" },
+  { code: "+86", label: "China", flag: "🇨🇳" },
+  { code: "+91", label: "India", flag: "🇮🇳" },
+  { code: "+971", label: "UAE", flag: "🇦🇪" },
+  { code: "+27", label: "South Africa", flag: "🇿🇦" },
+];
+
 function calcDuration(start: string, end: string): string {
   if (!start || !end) return "";
   const s = new Date(start);
@@ -53,6 +84,17 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     travel_pace: "",
     visited_before: false,
   });
+
+  // Default country code based on language
+  const defaultDial = i18n.language?.startsWith("pt") ? "+55" : "+47";
+  const [phoneCountry, setPhoneCountry] = useState<string>(defaultDial);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+
+  // Keep combined phone in sync
+  useEffect(() => {
+    const digits = phoneNumber.replace(/[^\d\s\-]/g, "").trim();
+    setForm((f) => ({ ...f, phone: digits ? `${phoneCountry} ${digits}` : "" }));
+  }, [phoneCountry, phoneNumber]);
 
   // Auto-calculate duration
   useEffect(() => {
@@ -197,24 +239,34 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       {/* Phone */}
       <div>
-        <label className={labelClass}>{t("tripForm.phone")}</label>
-        <input
-          type="tel"
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          onBlur={(e) => {
-            const v = e.target.value.trim();
-            if (v && !v.startsWith("+") && /^\d/.test(v)) {
-              setForm((f) => ({ ...f, phone: `+47 ${v}` }));
-            }
-          }}
-          placeholder={t("tripForm.phonePlaceholder")}
-          pattern={PHONE_REGEX}
-          title={t("tripForm.phoneHint")}
-          inputMode="tel"
-          autoComplete="tel"
-          className={inputClass}
-        />
+        <label className={labelClass}>{t("tripForm.phone")} *</label>
+        <div className="flex gap-2">
+          <select
+            required
+            value={phoneCountry}
+            onChange={(e) => setPhoneCountry(e.target.value)}
+            aria-label={t("tripForm.countryCode")}
+            className={`${inputClass} w-auto min-w-[8rem] flex-shrink-0 pr-2`}
+          >
+            {COUNTRY_CODES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.label} ({c.code})
+              </option>
+            ))}
+          </select>
+          <input
+            type="tel"
+            required
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder={t("tripForm.phoneNumberPlaceholder")}
+            pattern="[0-9\s\-]{6,}"
+            title={t("tripForm.phoneNumberHint")}
+            inputMode="tel"
+            autoComplete="tel-national"
+            className={`${inputClass} flex-1`}
+          />
+        </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
       </div>
 
