@@ -4,6 +4,7 @@ import Navbar from "@/components/voyage/Navbar";
 import CuratedSection from "@/components/voyage/CuratedSection";
 
 import ItineraryExamples from "@/components/voyage/ItineraryExamples";
+import Reviews from "@/components/voyage/Reviews";
 
 import Newsletter from "@/components/voyage/Newsletter";
 import PlanMyTrip from "@/components/voyage/PlanMyTrip";
@@ -24,9 +25,10 @@ const Index = () => {
     <div>
       <Navbar />
       <CuratedSection />
-      
+
       <ItineraryExamples />
-      
+      <Reviews />
+
       <PlanMyTrip />
       <Newsletter />
       <Footer />

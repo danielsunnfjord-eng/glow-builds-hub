@@ -454,4 +454,16 @@ export default {
     accept: "Aceitar",
     reject: "Rejeitar",
   },
+  reviews: {
+    eyebrow: "O que os clientes dizem",
+    title1: "Viagens que as pessoas",
+    title2: "ainda comentam",
+    items: [
+      {
+        text: "Eu não poderia ter tido um guia melhor que o Daniel na minha viagem ao Rio de Janeiro 🤍\n\nFiquei lá uma semana inteira, e todos os dias ele me recebia com novas experiências – tudo planejado e organizado de forma impecável. Ele me levou ao icônico Cristo Redentor, ao topo do Pão de Açúcar com vistas de tirar o fôlego, pelas ruas vibrantes de uma favela, às coloridas escadarias do Selarón, para pegar onda numa aula de surf – e numa noite ainda pude viver o samba brasileiro de verdade 💃\n\nO que torna o Daniel realmente especial não é só tudo o que ele te mostra – mas a forma como faz isso. Ele fala várias línguas fluentemente, é calmo, seguro e honesto, e tem uma habilidade única de fazer você se sentir cuidada e livre ao mesmo tempo. Nunca parece turístico – é genuíno, próximo e cheio de vida.\n\nGraças a ele, vivi o Rio de um jeito que jamais conseguiria planejar sozinha. Uma viagem que vou levar comigo por muito tempo.",
+        author: "Ingeborg Sol Fure",
+        dest: "Rio de Janeiro, uma semana",
+      },
+    ],
+  },
 };
