@@ -363,6 +363,8 @@ export default {
     email: "E-post",
     phone: "Telefon",
     phonePlaceholder: "f.eks. +47 123 45 678",
+    phoneHint: "Husk landskode (+47 for Norge, +44 for UK, +1 for USA).",
+    nameHint: "Bruk kun bokstaver — æ, ø, å og andre nordiske tegn er velkomne.",
     departure: "Avreiseby",
     departurePlaceholder: "f.eks. Oslo, Bergen...",
     destination: "Destinasjon",

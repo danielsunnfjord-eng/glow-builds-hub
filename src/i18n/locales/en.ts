@@ -378,6 +378,8 @@ export default {
     email: "Email",
     phone: "Phone",
     phonePlaceholder: "e.g. +47 123 45 678",
+    phoneHint: "Include country code (e.g. +47 for Norway, +44 UK, +1 US).",
+    nameHint: "Use letters only — accents and Nordic characters (æ, ø, å) are welcome.",
     departure: "Departure City",
     departurePlaceholder: "e.g. Oslo, London...",
     destination: "Destination",
