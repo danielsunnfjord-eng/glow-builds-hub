@@ -1120,6 +1120,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     👁️ {t("aa.pdfPreview", "Preview")}
                   </button>
                   <button
+                    onClick={handleShareLink}
+                    disabled={isSharing}
+                    className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85 transition-colors disabled:opacity-40"
+                  >
+                    🔗 {isSharing ? t("aa.sharing", "Sharing...") : t("aa.share", "Share with Client")}
+                  </button>
+                  <button
                     onClick={handleExportPdf}
                     className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
