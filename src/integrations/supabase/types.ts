@@ -121,6 +121,93 @@ export type Database = {
           },
         ]
       }
+      shared_itineraries: {
+        Row: {
+          client_name: string
+          cover_image_url: string | null
+          created_at: string
+          days: Json
+          destination: string | null
+          draft_id: string | null
+          end_date: string | null
+          group_size: number
+          id: string
+          is_published: boolean
+          language: string
+          last_viewed_at: string | null
+          markdown_content: string
+          practical_info: Json
+          project_id: string | null
+          share_token: string
+          start_date: string | null
+          trip_duration: string | null
+          updated_at: string
+          user_id: string
+          view_count: number
+        }
+        Insert: {
+          client_name: string
+          cover_image_url?: string | null
+          created_at?: string
+          days?: Json
+          destination?: string | null
+          draft_id?: string | null
+          end_date?: string | null
+          group_size?: number
+          id?: string
+          is_published?: boolean
+          language?: string
+          last_viewed_at?: string | null
+          markdown_content?: string
+          practical_info?: Json
+          project_id?: string | null
+          share_token?: string
+          start_date?: string | null
+          trip_duration?: string | null
+          updated_at?: string
+          user_id: string
+          view_count?: number
+        }
+        Update: {
+          client_name?: string
+          cover_image_url?: string | null
+          created_at?: string
+          days?: Json
+          destination?: string | null
+          draft_id?: string | null
+          end_date?: string | null
+          group_size?: number
+          id?: string
+          is_published?: boolean
+          language?: string
+          last_viewed_at?: string | null
+          markdown_content?: string
+          practical_info?: Json
+          project_id?: string | null
+          share_token?: string
+          start_date?: string | null
+          trip_duration?: string | null
+          updated_at?: string
+          user_id?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_itineraries_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "itinerary_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_itineraries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_requests: {
         Row: {
           accommodation_type: string | null
@@ -213,7 +300,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_itinerary_view: { Args: { _token: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
