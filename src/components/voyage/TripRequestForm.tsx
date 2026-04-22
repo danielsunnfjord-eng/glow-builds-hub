@@ -15,6 +15,37 @@ const INTEREST_OPTIONS = [
 const ACCOMMODATION_OPTIONS = ["boutiqueHotel", "resort", "airbnb", "cabin", "other"] as const;
 const PACE_OPTIONS = ["intense", "relaxed", "mixed"] as const;
 
+// Common country dial codes (sorted by likely audience)
+const COUNTRY_CODES: { code: string; label: string; flag: string }[] = [
+  { code: "+47", label: "Norway", flag: "🇳🇴" },
+  { code: "+46", label: "Sweden", flag: "🇸🇪" },
+  { code: "+45", label: "Denmark", flag: "🇩🇰" },
+  { code: "+358", label: "Finland", flag: "🇫🇮" },
+  { code: "+354", label: "Iceland", flag: "🇮🇸" },
+  { code: "+44", label: "United Kingdom", flag: "🇬🇧" },
+  { code: "+1", label: "USA / Canada", flag: "🇺🇸" },
+  { code: "+33", label: "France", flag: "🇫🇷" },
+  { code: "+49", label: "Germany", flag: "🇩🇪" },
+  { code: "+34", label: "Spain", flag: "🇪🇸" },
+  { code: "+39", label: "Italy", flag: "🇮🇹" },
+  { code: "+351", label: "Portugal", flag: "🇵🇹" },
+  { code: "+31", label: "Netherlands", flag: "🇳🇱" },
+  { code: "+32", label: "Belgium", flag: "🇧🇪" },
+  { code: "+41", label: "Switzerland", flag: "🇨🇭" },
+  { code: "+43", label: "Austria", flag: "🇦🇹" },
+  { code: "+353", label: "Ireland", flag: "🇮🇪" },
+  { code: "+55", label: "Brazil", flag: "🇧🇷" },
+  { code: "+52", label: "Mexico", flag: "🇲🇽" },
+  { code: "+54", label: "Argentina", flag: "🇦🇷" },
+  { code: "+61", label: "Australia", flag: "🇦🇺" },
+  { code: "+64", label: "New Zealand", flag: "🇳🇿" },
+  { code: "+81", label: "Japan", flag: "🇯🇵" },
+  { code: "+86", label: "China", flag: "🇨🇳" },
+  { code: "+91", label: "India", flag: "🇮🇳" },
+  { code: "+971", label: "UAE", flag: "🇦🇪" },
+  { code: "+27", label: "South Africa", flag: "🇿🇦" },
+];
+
 function calcDuration(start: string, end: string): string {
   if (!start || !end) return "";
   const s = new Date(start);
