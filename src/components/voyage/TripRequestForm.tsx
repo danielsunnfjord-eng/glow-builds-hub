@@ -173,23 +173,49 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 pb-24 sm:pb-4">
       {/* Name & Email */}
       <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div>
           <label className={labelClass}>{t("tripForm.name")} *</label>
-          <input required value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} className={inputClass} />
+          <input
+            required
+            value={form.client_name}
+            onChange={(e) => setForm({ ...form, client_name: e.target.value })}
+            pattern={NAME_REGEX}
+            title={t("tripForm.nameHint")}
+            autoComplete="name"
+            className={inputClass}
+          />
+          <p className={hintClass}>{t("tripForm.nameHint")}</p>
         </div>
         <div>
           <label className={labelClass}>{t("tripForm.email")} *</label>
-          <input type="email" required value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} className={inputClass} />
+          <input type="email" required value={form.client_email} onChange={(e) => setForm({ ...form, client_email: e.target.value })} autoComplete="email" className={inputClass} />
         </div>
       </div>
 
       {/* Phone */}
       <div>
         <label className={labelClass}>{t("tripForm.phone")}</label>
-        <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t("tripForm.phonePlaceholder")} className={inputClass} />
+        <input
+          type="tel"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          onBlur={(e) => {
+            const v = e.target.value.trim();
+            if (v && !v.startsWith("+") && /^\d/.test(v)) {
+              setForm((f) => ({ ...f, phone: `+47 ${v}` }));
+            }
+          }}
+          placeholder={t("tripForm.phonePlaceholder")}
+          pattern={PHONE_REGEX}
+          title={t("tripForm.phoneHint")}
+          inputMode="tel"
+          autoComplete="tel"
+          className={inputClass}
+        />
+        <p className={hintClass}>{t("tripForm.phoneHint")}</p>
       </div>
 
       {/* Departure & Destination */}
