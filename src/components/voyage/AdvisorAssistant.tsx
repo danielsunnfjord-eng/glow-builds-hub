@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import ItineraryEditor, { type ItineraryEditorHandle } from "./ItineraryEditor";
 import ImageCropper from "./ImageCropper";
 import PdfPreview from "./PdfPreview";
+import { parseItineraryMarkdown, extractCoverImage } from "@/lib/itineraryParser";
 
 interface ClientProject {
   id: string;
