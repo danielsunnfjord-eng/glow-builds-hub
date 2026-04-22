@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import ItineraryEditor, { type ItineraryEditorHandle } from "./ItineraryEditor";
 import ImageCropper from "./ImageCropper";
 import PdfPreview from "./PdfPreview";
+import { parseItineraryMarkdown, extractCoverImage } from "@/lib/itineraryParser";
 
 interface ClientProject {
   id: string;
@@ -540,6 +541,91 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     printWindow.document.close();
   };
 
+  // --- Share link (customer mobile app) ---
+  const [isSharing, setIsSharing] = useState(false);
+
+  const handleShareLink = async () => {
+    if (!itineraryContent.trim()) return;
+    setIsSharing(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        toast({ title: t("aa.shareNotLoggedIn", "Please log in to share"), variant: "destructive" });
+        return;
+      }
+
+      const days = parseItineraryMarkdown(itineraryContent);
+      const cover = extractCoverImage(itineraryContent);
+      const clientName = selectedProject?.client_name || t("aa.untitled", "Untitled Draft");
+
+      let row: { share_token: string } | null = null;
+      if (selectedProjectId) {
+        const { data: existing } = await supabase
+          .from("shared_itineraries")
+          .select("id, share_token")
+          .eq("project_id", selectedProjectId)
+          .eq("user_id", userData.user.id)
+          .maybeSingle();
+        if (existing) {
+          await supabase
+            .from("shared_itineraries")
+            .update({
+              client_name: clientName,
+              destination: selectedProject?.destination ?? null,
+              trip_duration: selectedProject?.trip_duration ?? null,
+              start_date: selectedProject?.start_date ?? null,
+              end_date: selectedProject?.end_date ?? null,
+              group_size: selectedProject?.group_size ?? 1,
+              language: i18n.language,
+              cover_image_url: cover ?? null,
+              markdown_content: itineraryContent,
+              days: days as any,
+              is_published: true,
+            })
+            .eq("id", existing.id);
+          row = { share_token: existing.share_token };
+        }
+      }
+
+      if (!row) {
+        const { data: inserted, error: insErr } = await supabase
+          .from("shared_itineraries")
+          .insert({
+            user_id: userData.user.id,
+            project_id: selectedProjectId || null,
+            draft_id: currentDraftId,
+            client_name: clientName,
+            destination: selectedProject?.destination ?? null,
+            trip_duration: selectedProject?.trip_duration ?? null,
+            start_date: selectedProject?.start_date ?? null,
+            end_date: selectedProject?.end_date ?? null,
+            group_size: selectedProject?.group_size ?? 1,
+            language: i18n.language,
+            cover_image_url: cover ?? null,
+            markdown_content: itineraryContent,
+            days: days as any,
+          })
+          .select("share_token")
+          .single();
+        if (insErr) throw insErr;
+        row = inserted;
+      }
+
+      const url = `${window.location.origin}/trip/${row.share_token}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        toast({ title: t("aa.shareCopied", "Link copied!"), description: url });
+      } catch {
+        toast({ title: t("aa.shareReady", "Share link ready"), description: url });
+      }
+    } catch (err) {
+      console.error("Share error:", err);
+      toast({ title: t("aa.shareFailed", "Could not create share link"), variant: "destructive" });
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   // --- Drag-and-drop image reorder ---
   const [dragIdx, setDragIdx] = useState<number | null>(null);
 
@@ -1032,6 +1118,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     className="px-3 py-1.5 rounded-sm border border-gold text-gold text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold/10 transition-colors"
                   >
                     👁️ {t("aa.pdfPreview", "Preview")}
+                  </button>
+                  <button
+                    onClick={handleShareLink}
+                    disabled={isSharing}
+                    className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85 transition-colors disabled:opacity-40"
+                  >
+                    🔗 {isSharing ? t("aa.sharing", "Sharing...") : t("aa.share", "Share with Client")}
                   </button>
                   <button
                     onClick={handleExportPdf}
