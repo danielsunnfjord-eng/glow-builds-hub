@@ -155,6 +155,12 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const inputClass = "w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
   const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block";
+  const hintClass = "text-xs text-muted-foreground mt-1";
+
+  // Accept letters (incl. Nordic/accented), spaces, hyphens, apostrophes
+  const NAME_REGEX = "[\\p{L} '\\-]{2,}";
+  // Require international format: + followed by 7-15 digits (spaces/dashes allowed)
+  const PHONE_REGEX = "\\+[0-9][0-9\\s\\-]{6,}";
 
   if (submitted) {
     return (
