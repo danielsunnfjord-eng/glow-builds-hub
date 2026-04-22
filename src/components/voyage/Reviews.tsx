@@ -7,6 +7,8 @@ const Reviews = () => {
     text: string;
     author: string;
     dest: string;
+    bio?: string;
+    instagram?: string;
   }>;
 
   return (
@@ -37,6 +39,19 @@ const Reviews = () => {
               <div className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-voyage-muted">
                 {r.author}
               </div>
+              {r.bio && (
+                <div className="text-[0.7rem] text-ink-2 mt-1 italic leading-relaxed">{r.bio}</div>
+              )}
+              {r.instagram && (
+                <a
+                  href={`https://instagram.com/${r.instagram.replace("@", "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[0.7rem] text-gold mt-1 hover:underline inline-block"
+                >
+                  {r.instagram}
+                </a>
+              )}
               <div className="text-[0.7rem] text-gold mt-1">{r.dest}</div>
             </div>
           ))}
