@@ -475,6 +475,8 @@ export default {
       {
         text: "I couldn't have asked for a better guide than Daniel on my trip to Rio de Janeiro 🤍\n\nI was there for a whole week, and every single day he met me with new experiences – all seamlessly planned and organised. He took me to the iconic Christ the Redeemer, up Sugarloaf Mountain with breathtaking views, through the lively streets of a favela, to the colourful Escadaria Selarón steps, out into the waves for a surf lesson – and one evening I even got to experience real Brazilian samba 💃\n\nWhat makes Daniel truly special is not just everything he shows you – but the way he does it. He speaks several languages fluently, is calm, grounded and honest, and has a unique ability to make you feel both looked after and completely free at the same time. It never feels touristy – just genuine, close and full of life.\n\nThanks to him, I got to experience Rio in a way I could never have planned myself. A trip I will carry with me for a long time.",
         author: "Ingeborg Sol Fure",
+        bio: "Norwegian content creator, photographer, writer and travel influencer.",
+        instagram: "@solfure",
         dest: "Rio de Janeiro, one week",
       },
     ],
