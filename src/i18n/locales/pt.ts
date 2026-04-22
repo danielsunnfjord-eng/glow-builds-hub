@@ -365,6 +365,8 @@ export default {
     email: "E-mail",
     phone: "Telefone",
     phonePlaceholder: "ex. +55 11 99999-9999",
+    phoneHint: "Inclua o código do país (+55 Brasil, +47 Noruega, +351 Portugal).",
+    nameHint: "Use apenas letras — acentos e caracteres especiais (ã, ç, é, å) são bem-vindos.",
     departure: "Cidade de Partida",
     departurePlaceholder: "ex. São Paulo, Rio...",
     destination: "Destino",
