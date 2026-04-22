@@ -239,24 +239,34 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       {/* Phone */}
       <div>
-        <label className={labelClass}>{t("tripForm.phone")}</label>
-        <input
-          type="tel"
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          onBlur={(e) => {
-            const v = e.target.value.trim();
-            if (v && !v.startsWith("+") && /^\d/.test(v)) {
-              setForm((f) => ({ ...f, phone: `+47 ${v}` }));
-            }
-          }}
-          placeholder={t("tripForm.phonePlaceholder")}
-          pattern={PHONE_REGEX}
-          title={t("tripForm.phoneHint")}
-          inputMode="tel"
-          autoComplete="tel"
-          className={inputClass}
-        />
+        <label className={labelClass}>{t("tripForm.phone")} *</label>
+        <div className="flex gap-2">
+          <select
+            required
+            value={phoneCountry}
+            onChange={(e) => setPhoneCountry(e.target.value)}
+            aria-label={t("tripForm.countryCode")}
+            className={`${inputClass} w-auto min-w-[8rem] flex-shrink-0 pr-2`}
+          >
+            {COUNTRY_CODES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.label} ({c.code})
+              </option>
+            ))}
+          </select>
+          <input
+            type="tel"
+            required
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder={t("tripForm.phoneNumberPlaceholder")}
+            pattern="[0-9\s\-]{6,}"
+            title={t("tripForm.phoneNumberHint")}
+            inputMode="tel"
+            autoComplete="tel-national"
+            className={`${inputClass} flex-1`}
+          />
+        </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
       </div>
 
