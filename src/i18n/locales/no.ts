@@ -452,4 +452,16 @@ export default {
     accept: "Godta",
     reject: "Avvis",
   },
+  reviews: {
+    eyebrow: "Hva kundene sier",
+    title1: "Reiser folk",
+    title2: "fortsatt snakker om",
+    items: [
+      {
+        text: "Eg kunne ikkje hatt ein betre guide enn Daniel på reisa mi i Rio de Janeiro 🤍\n\nEg var der i ei heil veke, og kvar einaste dag møtte han meg med nye opplevingar – alt sømlaust planlagt og organisert. Han tok meg med til ikoniske Christ the Redeemer, opp på Sugarloaf Mountain med utsikt som tek pusten frå deg, gjennom levande gater i ein favela, til dei fargerike trappene Escadaria Selarón, vidare ut i bølgene på surfetime – og ein kveld fekk eg også oppleve ekte brasiliansk samba 💃\n\nDet som gjer Daniel heilt spesiell, er ikkje berre alt han viser deg – men måten han gjer det på. Han snakkar fleire språk flytande, er trygg, roleg og ærleg, og har ei heilt eiga evne til å få deg til å kjenne deg både ivaretatt og fri på same tid. Det kjennest aldri turistete – berre ekte, nært og fullt av liv.\n\nTakka vere han fekk eg oppleve Rio på ein måte eg aldri kunne planlagt sjølv. Ein tur eg kjem til å bere med meg lenge.",
+        author: "Ingeborg Sol Fure",
+        dest: "Rio de Janeiro, ei veke",
+      },
+    ],
+  },
 };
