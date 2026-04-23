@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import type { ItineraryDay } from "@/lib/itineraryParser";
 import logo from "@/assets/logo.png";
+import logoWhite from "@/assets/logo-white.png";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 
 interface SharedItinerary {
@@ -214,14 +215,12 @@ const SharedItinerary = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/30 to-ink/85" />
           <div className="relative h-full flex flex-col justify-between p-6 max-w-3xl mx-auto">
-            {/* Logo container — white pill keeps brand legible on any cover */}
-            <div className="self-start bg-voyage-white/95 backdrop-blur-sm rounded-md px-3 py-2 shadow-sm">
-              <img
-                src={logo}
-                alt="Fjord & Waves Travel"
-                className="h-9 w-auto block"
-              />
-            </div>
+            {/* White logo on transparent background — crisp on dark cover */}
+            <img
+              src={logoWhite}
+              alt="Fjord & Waves Travel"
+              className="self-start h-12 w-auto block drop-shadow-md"
+            />
             <div className="text-voyage-white">
               <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold mb-2">
                 {t("share.preparedFor", "Prepared for")} {data.client_name}
