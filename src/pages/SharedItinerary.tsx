@@ -263,7 +263,8 @@ const SharedItinerary = () => {
                     </div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ol>
 
             {current.items.length === 0 && (
