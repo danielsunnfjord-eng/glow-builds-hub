@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import type { ItineraryDay, ItineraryItem } from "@/lib/itineraryParser";
 import logo from "@/assets/logo.png";
+import DayMap from "@/components/voyage/DayMap";
 
 interface SharedItinerary {
   id: string;
@@ -200,6 +201,9 @@ const SharedItinerary = () => {
                 <p className="text-ink/80 text-sm mt-3 leading-relaxed">{current.summary}</p>
               )}
             </div>
+
+            {/* Mini map */}
+            <DayMap items={current.items} contextLocation={current.location || data.destination || undefined} />
 
             {/* Timeline */}
             <ol className="relative space-y-4">
