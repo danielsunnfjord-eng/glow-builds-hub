@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { ItineraryDay, ItineraryItem } from "@/lib/itineraryParser";
 import logo from "@/assets/logo.png";
 import DayMap from "@/components/voyage/DayMap";
+import { getItemImageUrl, getDayHeroImage } from "@/lib/itineraryImages";
 
 interface SharedItinerary {
   id: string;
@@ -189,28 +190,53 @@ const SharedItinerary = () => {
         {/* Active day */}
         {current ? (
           <section className="py-6 sm:py-8">
-            <div className="mb-6">
-              <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold mb-2">
-                {t("share.day", "Day")} {current.day}
-              </p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-ink leading-tight">{current.title}</h2>
-              {current.location && (
-                <p className="text-voyage-muted text-sm mt-1">📍 {current.location}</p>
-              )}
-              {current.summary && (
-                <p className="text-ink/80 text-sm mt-3 leading-relaxed">{current.summary}</p>
-              )}
-            </div>
+            {(() => {
+              const dayHero = getDayHeroImage(current.items, current.location, data.destination || undefined);
+              return dayHero ? (
+                <div className="mb-6 -mx-4 sm:mx-0 sm:rounded-lg overflow-hidden h-44 sm:h-56 relative">
+                  <img src={dayHero} alt={current.title} className="w-full h-full object-cover" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-voyage-white">
+                    <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold mb-1">
+                      {t("share.day", "Day")} {current.day}
+                    </p>
+                    <h2 className="font-serif text-2xl sm:text-3xl leading-tight">{current.title}</h2>
+                    {current.location && <p className="text-voyage-white/85 text-sm mt-1">📍 {current.location}</p>}
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold mb-2">
+                    {t("share.day", "Day")} {current.day}
+                  </p>
+                  <h2 className="font-serif text-2xl sm:text-3xl text-ink leading-tight">{current.title}</h2>
+                  {current.location && (
+                    <p className="text-voyage-muted text-sm mt-1">📍 {current.location}</p>
+                  )}
+                </div>
+              );
+            })()}
+            {current.summary && (
+              <p className="text-ink/80 text-sm mb-5 leading-relaxed">{current.summary}</p>
+            )}
 
             {/* Mini map */}
             <DayMap items={current.items} contextLocation={current.location || data.destination || undefined} />
 
             {/* Timeline */}
             <ol className="relative space-y-4">
-              {current.items.map((item, idx) => (
+              {current.items.map((item, idx) => {
+                const imgUrl = getItemImageUrl(item, current.location || data.destination || undefined);
+                return (
                 <li key={idx} className="bg-voyage-white border border-parchment-3 rounded-lg overflow-hidden shadow-sm">
-                  {item.image_url && (
-                    <img src={item.image_url} alt={item.title} className="w-full h-44 object-cover" loading="lazy" />
+                  {imgUrl && (
+                    <img
+                      src={imgUrl}
+                      alt={item.title}
+                      className="w-full h-44 object-cover bg-parchment-2"
+                      loading="lazy"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    />
                   )}
                   <div className="p-4">
                     <div className="flex items-start gap-3">
