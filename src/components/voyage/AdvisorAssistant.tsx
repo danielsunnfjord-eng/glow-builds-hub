@@ -227,7 +227,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     const res = await fetch(dataUrl);
     const blob = await res.blob();
     const ext = blob.type.includes("png") ? "png" : "jpg";
-    const fileName = `ai-${Date.now()}.${ext}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+    const fileName = `${user.id}/ai-${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("itinerary-images")
       .upload(fileName, blob, { contentType: blob.type });
@@ -298,7 +300,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     }
 
     try {
-      const fileName = `${Date.now()}-${file.name}`;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const fileName = `${user.id}/${Date.now()}-${file.name}`;
       const { error } = await supabase.storage
         .from("itinerary-images")
         .upload(fileName, file, { contentType: file.type });
