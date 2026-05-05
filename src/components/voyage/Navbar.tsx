@@ -3,10 +3,18 @@ import { useTranslation } from "react-i18next";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo.png";
 
+const CALENDLY_LINKS: Record<string, string> = {
+  en: "https://calendly.com/daniel-lirafigueiredo-fora/travel_planning",
+  no: "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging",
+  pt: "https://calendly.com/daniel-lirafigueiredo-fora/planejamento_de_viagem",
+};
+
 const Navbar = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.substring(0, 2) || "en";
+  const calendlyUrl = CALENDLY_LINKS[lang] || CALENDLY_LINKS.en;
 
   const goToSection = (id: string) => {
     if (pathname === "/") {
@@ -35,6 +43,14 @@ const Navbar = () => {
           {t("nav.pricing")}
         </button>
         <LanguageSelector variant="light" />
+        <a
+          href={calendlyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-5 py-2.5 rounded-sm border border-gold/40 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink hover:border-gold transition-colors"
+        >
+          {t("nav.bookCall")}
+        </a>
         <button
           onClick={() => goToSection("enquiry")}
           className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
