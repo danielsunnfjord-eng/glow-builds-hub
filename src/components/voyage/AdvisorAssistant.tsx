@@ -636,6 +636,50 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     toast({ title: "↩ Reverted to previous version" });
   };
 
+  // ─── Per-day helpers ───────────────────────────────────────────────
+  // Split markdown into { head, days[], tail } using `## Day N` headings.
+  const splitDays = useCallback((md: string) => {
+    if (!md) return { head: "", days: [] as { title: string; body: string }[], tail: "" };
+    const lines = md.split("\n");
+    let head: string[] = [];
+    const days: { title: string; body: string }[] = [];
+    let current: { title: string; body: string[] } | null = null;
+    let inTail = false;
+    let tail: string[] = [];
+    const dayRe = /^##\s+Day\s+\d+/i;
+    const tailRe = /^##\s+(Practical|What I'll Secure|Notes\b)/i;
+
+    for (const line of lines) {
+      if (!inTail && tailRe.test(line) && days.length > 0) {
+        if (current) { days.push({ title: current.title, body: current.body.join("\n").trim() }); current = null; }
+        inTail = true;
+      }
+      if (inTail) { tail.push(line); continue; }
+      if (dayRe.test(line)) {
+        if (current) days.push({ title: current.title, body: current.body.join("\n").trim() });
+        current = { title: line.replace(/^##\s+/, "").trim(), body: [line] };
+        continue;
+      }
+      if (current) current.body.push(line);
+      else head.push(line);
+    }
+    if (current) days.push({ title: current.title, body: current.body.join("\n").trim() });
+    return { head: head.join("\n").trim(), days, tail: tail.join("\n").trim() };
+  }, []);
+
+  const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
+  const [dayInstruction, setDayInstruction] = useState("");
+  const [editingDayIdx, setEditingDayIdx] = useState<number | null>(null);
+
+  const dayQuickPresets: { label: string; emoji: string; prompt: string }[] = [
+    { emoji: "✨", label: "Polish writing", prompt: "Polish the writing in this day — keep the same structure, schedule and bookings; refine prose to a refined, evocative concierge tone (warm, first-person, never floral). Do not add or remove activities." },
+    { emoji: "💎", label: "More premium", prompt: "Elevate this day to feel more bespoke and premium: upgrade the hotel description with one signature perk, suggest a more curated dining venue, and add a subtle concierge touch. Keep timings and the overall flow." },
+    { emoji: "✂️", label: "Shorten", prompt: "Tighten this day. Cut filler words and merge redundant lines. Preserve every activity, time, hotel, image and booking note." },
+    { emoji: "🖼", label: "Add a photo", prompt: "Add ONE additional attraction photo to this day in the Morning or Afternoon section using the format ![alt](https://source.unsplash.com/1200x700/?keyword1,keyword2). Do not change anything else." },
+    { emoji: "🍽", label: "Better dining", prompt: "Improve the dining recommendation(s) for this day with a more memorable, locally-loved option that fits the day's pace. Keep timings." },
+    { emoji: "🚗", label: "Smoother logistics", prompt: "Review the logistics of this day (transfer times, distances, opening hours). Adjust timing or sequence subtly so the day flows better. Don't drop activities." },
+  ];
+
   const handleExportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
@@ -827,8 +871,45 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [handleUndo, handleRedo]);
+  const editDay = useCallback(async (idx: number, instruction: string) => {
+    if (!instruction.trim() || editingDayIdx !== null) return;
+    const parts = splitDays(itineraryContent);
+    const day = parts.days[idx];
+    if (!day) return;
+    setEditingDayIdx(idx);
+    try {
+      const imageMap: Record<string, string> = {};
+      let i = 0;
+      const tokenized = day.body.replace(
+        /!\[[^\]]*\]\([^)]+\)(\n\*Photo:[^*\n]*\*)?/g,
+        (full) => { const tok = `[[IMG_${i++}]]`; imageMap[tok] = full; return tok; }
+      );
+      const userMsg: Message = {
+        role: "user",
+        content: `Please revise ONLY the following day section.\n\nADVISOR REQUEST: ${instruction}\n\n--- CURRENT SECTION ---\n${tokenized}\n--- END SECTION ---`,
+      };
+      const revised = await streamChat([userMsg], { mode: "edit-snippet" as any });
+      if (!revised) return;
+      let restored = revised.trim().replace(/^```(?:markdown)?\n?/i, "").replace(/\n?```$/i, "").trim();
+      for (const [tok, full] of Object.entries(imageMap)) {
+        if (restored.includes(tok)) restored = restored.split(tok).join(full);
+      }
+      restored = mergePreserveImages(day.body, restored);
+      const newDays = parts.days.map((d, k) => (k === idx ? { ...d, body: restored } : d));
+      const next = [parts.head, newDays.map((d) => d.body).join("\n\n---\n\n"), parts.tail]
+        .filter((s) => s && s.trim().length > 0)
+        .join("\n\n");
+      setPreviousItinerary(itineraryContent);
+      updateContent(next);
+      setDayInstruction("");
+      toast({ title: `✨ Day ${idx + 1} updated` });
+    } catch (err: any) {
+      toast({ title: "AI Error", description: err.message, variant: "destructive" });
+    } finally {
+      setEditingDayIdx(null);
+    }
+  }, [itineraryContent, splitDays, streamChat, updateContent, editingDayIdx, toast]);
 
-  
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
     if (editorRef.current) {
@@ -1507,7 +1588,89 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 );
               })()}
             </div>
-          )}
+                )}
+
+                {/* ─── Per-day quick actions ─── */}
+                {(() => {
+                  const parts = splitDays(itineraryContent);
+                  if (parts.days.length === 0) return null;
+                  return (
+                    <div className="mx-4 mb-4 rounded-lg border border-parchment-3 bg-parchment/40">
+                      <div className="px-3 py-2 border-b border-parchment-3 flex items-center justify-between gap-2">
+                        <p className="text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">
+                          ✨ Per-day AI actions
+                        </p>
+                        <p className="text-[0.6rem] text-voyage-muted italic">
+                          Targets one day at a time — the rest stays untouched.
+                        </p>
+                      </div>
+                      <div className="p-2 flex flex-wrap gap-1.5">
+                        {parts.days.map((d, idx) => {
+                          const isOpen = activeDayIdx === idx;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => setActiveDayIdx(isOpen ? null : idx)}
+                              className={`px-2.5 py-1 rounded-md text-[0.7rem] font-semibold transition-colors ${
+                                isOpen
+                                  ? "bg-gold text-ink"
+                                  : "bg-voyage-white border border-parchment-3 text-ink hover:border-gold"
+                              }`}
+                              title={d.title}
+                            >
+                              Day {idx + 1}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {activeDayIdx !== null && parts.days[activeDayIdx] && (
+                        <div className="border-t border-parchment-3 p-3 space-y-2 bg-voyage-white/50">
+                          <p className="text-[0.72rem] text-ink font-semibold truncate">
+                            {parts.days[activeDayIdx].title}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {dayQuickPresets.map((p) => (
+                              <button
+                                key={p.label}
+                                onClick={() => editDay(activeDayIdx, p.prompt)}
+                                disabled={editingDayIdx !== null}
+                                className="px-2.5 py-1 rounded-full text-[0.68rem] border border-parchment-3 text-ink bg-voyage-white hover:border-gold hover:text-gold transition-colors disabled:opacity-40"
+                              >
+                                {p.emoji} {p.label}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={dayInstruction}
+                              onChange={(e) => setDayInstruction(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && dayInstruction.trim()) {
+                                  editDay(activeDayIdx, dayInstruction);
+                                }
+                              }}
+                              placeholder="Or describe a specific change for this day…"
+                              className="flex-1 px-2.5 py-1.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.75rem] focus:outline-none focus:border-gold"
+                            />
+                            <button
+                              onClick={() => editDay(activeDayIdx, dayInstruction)}
+                              disabled={!dayInstruction.trim() || editingDayIdx !== null}
+                              className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2 disabled:opacity-40"
+                            >
+                              {editingDayIdx === activeDayIdx ? "⏳…" : "Apply"}
+                            </button>
+                          </div>
+                          {editingDayIdx === activeDayIdx && (
+                            <p className="text-[0.65rem] text-voyage-muted italic">
+                              Revising Day {activeDayIdx + 1} — images are preserved automatically.
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
           <div className="flex-1 overflow-y-auto max-h-[500px]">
             {itineraryContent ? (
