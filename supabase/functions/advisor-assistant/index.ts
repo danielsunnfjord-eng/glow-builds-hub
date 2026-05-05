@@ -162,6 +162,7 @@ serve(async (req) => {
     const resolvedMode = mode || (currentItinerary ? "discuss" : "create");
     if (resolvedMode === "discuss") systemContent += "\n" + CHAT_MODE_INSTRUCTION;
     else if (resolvedMode === "edit") systemContent += "\n" + EDIT_MODE_INSTRUCTION;
+    else if (resolvedMode === "edit-snippet") systemContent += "\n" + EDIT_SNIPPET_INSTRUCTION;
     else systemContent += "\n" + CREATE_MODE_INSTRUCTION;
 
     if (autoImages === false && resolvedMode !== "discuss") {
