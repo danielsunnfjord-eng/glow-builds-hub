@@ -120,6 +120,20 @@ MODE: CREATE FULL ITINERARY
 ═══════════════════════════════════════════
 Produce a complete premium itinerary following the exact structure above, with cover images for every day.`;
 
+const EDIT_SNIPPET_INSTRUCTION = `
+═══════════════════════════════════════════
+MODE: EDIT A SINGLE SECTION (return only the revised section)
+═══════════════════════════════════════════
+The advisor is editing ONE day/section of a larger itinerary. The current text of that section is provided below in the user message.
+
+STRICT RULES:
+1. Output ONLY the revised section in clean markdown — NO preamble, NO commentary, NO surrounding context, NO triple backticks.
+2. The section may contain image placeholder tokens like [[IMG_0]], [[IMG_1]]. Keep every token EXACTLY as written, in its original relative position. Do NOT remove, rename, or wrap them.
+3. Keep the same Day heading (## Day N — …) unless the advisor asked to change it.
+4. Keep the same overall structure (Morning / Afternoon / Evening / Where you'll stay / What I'll arrange) unless told otherwise.
+5. Apply ONLY the change the advisor asked for; do not rewrite untouched paragraphs.
+6. Never invent new [[IMG_n]] tokens. If the advisor asks to add a photo, use \`![alt](https://source.unsplash.com/1200x700/?keywords)\` markdown.`;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
