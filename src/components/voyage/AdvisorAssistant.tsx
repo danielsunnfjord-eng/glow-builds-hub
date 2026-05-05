@@ -1347,6 +1347,44 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 </div>
               </div>
 
+              {/* City Image Bank */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em]">
+                    🗂 City image bank{cityLabel ? ` — ${cityLabel}` : ""}
+                  </p>
+                  <button
+                    onClick={loadCityBank}
+                    disabled={isLoadingBank || !citySlug}
+                    className="text-[0.62rem] text-voyage-muted hover:text-gold disabled:opacity-40"
+                    title="Refresh"
+                  >
+                    {isLoadingBank ? "⏳" : "↻ Refresh"}
+                  </button>
+                </div>
+                {!citySlug ? (
+                  <p className="text-[0.7rem] text-voyage-muted italic">Select a project with a destination to see its image bank.</p>
+                ) : cityBank.length === 0 ? (
+                  <p className="text-[0.7rem] text-voyage-muted italic">No images saved for {cityLabel} yet. Uploads will be auto-organized here.</p>
+                ) : (
+                  <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto p-1 rounded bg-voyage-white/60 border border-parchment-3">
+                    {cityBank.map((img) => (
+                      <button
+                        key={img.url}
+                        onClick={() => insertImageAtCursor(img.url, cityLabel || "Travel photo", `From ${cityLabel} bank`)}
+                        className="group relative rounded overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
+                        title={img.name}
+                      >
+                        <img src={img.url} alt={img.name} className="w-full h-16 object-cover" loading="lazy" />
+                        <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center">
+                          <span className="text-voyage-white text-[0.6rem] font-semibold opacity-0 group-hover:opacity-100">Insert</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em] mb-1.5">📸 {t("aa.stockPhotos")}</p>
                 <div className="flex flex-wrap gap-1.5">
