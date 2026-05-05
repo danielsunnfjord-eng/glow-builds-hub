@@ -89,6 +89,21 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
+  // Derive a stable folder slug from the destination (e.g. "Dubrovnik, Croatia" → "dubrovnik")
+  const citySlug = (() => {
+    const dest = selectedProject?.destination?.trim();
+    if (!dest) return "";
+    const first = dest.split(/[,\-—|/]/)[0].trim();
+    return first
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "uncategorized";
+  })();
+  const cityLabel = selectedProject?.destination?.split(/[,\-—|/]/)[0].trim() || "";
+
   // --- Load draft when project changes ---
   useEffect(() => {
     if (!selectedProjectId) {
