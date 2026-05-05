@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PlanMyTripPage from "./pages/PlanMyTrip.tsx";
 import SharedItinerary from "./pages/SharedItinerary.tsx";
+import Legal from "./pages/Legal.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,9 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/trip/:token" element={<SharedItinerary />} />
+          <Route path="/legal" element={<Legal />} />
+          <Route path="/privacy" element={<Legal />} />
+          <Route path="/terms" element={<Legal />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
