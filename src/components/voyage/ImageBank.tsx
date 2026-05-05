@@ -277,7 +277,12 @@ const ImageBank = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 relative">
+      {isMoving && (
+        <div className="absolute inset-0 z-40 bg-voyage-white/60 backdrop-blur-sm flex items-center justify-center text-ink text-sm font-semibold">
+          📁 Moving images…
+        </div>
+      )}
       {/* Toolbar */}
       <div className="bg-voyage-white border border-parchment-3 rounded-lg p-4 flex flex-wrap items-center gap-3">
         <input
