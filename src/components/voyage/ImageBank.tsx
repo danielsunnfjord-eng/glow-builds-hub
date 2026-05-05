@@ -31,6 +31,9 @@ const ImageBank = () => {
   const [preview, setPreview] = useState<BankImage | null>(null);
   const [uploadCity, setUploadCity] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [dragOverCity, setDragOverCity] = useState<string | null>(null);
+  const [draggingPaths, setDraggingPaths] = useState<string[]>([]);
+  const [isMoving, setIsMoving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load all images for this user, walking the city subfolders
@@ -182,7 +185,6 @@ const ImageBank = () => {
     const targetCity = slugify(targetCityRaw);
     if (!targetCity || targetCity === img.city || !userId) return;
     try {
-      // download
       const blob = await fetch(img.url).then((r) => r.blob());
       const newPath = `${userId}/${targetCity}/${Date.now()}-${img.name.replace(/^\d+-/, "")}`;
       const { error: upErr } = await supabase.storage
@@ -197,6 +199,44 @@ const ImageBank = () => {
       loadAll();
     } catch (err: any) {
       toast({ title: "Move failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const moveMany = async (paths: string[], targetCityRaw: string) => {
+    const targetCity = slugify(targetCityRaw);
+    if (!targetCity || !userId || paths.length === 0) return;
+    const items = images.filter((i) => paths.includes(i.path) && i.city !== targetCity);
+    if (items.length === 0) {
+      toast({ title: "Already in that folder" });
+      return;
+    }
+    setIsMoving(true);
+    let success = 0;
+    try {
+      for (const img of items) {
+        try {
+          const blob = await fetch(img.url).then((r) => r.blob());
+          const newPath = `${userId}/${targetCity}/${Date.now()}-${img.name.replace(/^\d+-/, "")}`;
+          const { error: upErr } = await supabase.storage
+            .from("itinerary-images")
+            .upload(newPath, blob, { contentType: blob.type });
+          if (upErr) throw upErr;
+          const { error: rmErr } = await supabase.storage
+            .from("itinerary-images")
+            .remove([img.path]);
+          if (rmErr) throw rmErr;
+          success++;
+        } catch (e) {
+          // continue with the rest
+        }
+      }
+      toast({ title: `📁 Moved ${success}/${items.length} → ${targetCity}` });
+      setSelected(new Set());
+      loadAll();
+    } finally {
+      setIsMoving(false);
+      setDraggingPaths([]);
+      setDragOverCity(null);
     }
   };
 
@@ -237,7 +277,12 @@ const ImageBank = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 relative">
+      {isMoving && (
+        <div className="absolute inset-0 z-40 bg-voyage-white/60 backdrop-blur-sm flex items-center justify-center text-ink text-sm font-semibold">
+          📁 Moving images…
+        </div>
+      )}
       {/* Toolbar */}
       <div className="bg-voyage-white border border-parchment-3 rounded-lg p-4 flex flex-wrap items-center gap-3">
         <input
@@ -290,6 +335,12 @@ const ImageBank = () => {
             🗑 Delete {selected.size}
           </button>
         )}
+
+        {selected.size > 0 && (
+          <span className="text-[0.68rem] text-voyage-muted italic">
+            Tip: drag any selected image onto a city to move {selected.size > 1 ? "them all" : "it"}.
+          </span>
+        )}
       </div>
 
       {/* Cities sidebar + grid */}
@@ -307,17 +358,69 @@ const ImageBank = () => {
           {cities.length === 0 && !loading && (
             <p className="text-[0.7rem] text-voyage-muted italic px-2 mt-2">No images yet.</p>
           )}
-          {cities.map(([city, count]) => (
-            <button
-              key={city}
-              onClick={() => setActiveCity(city)}
-              className={`w-full text-left px-3 py-1.5 rounded-md text-[0.78rem] mb-0.5 transition-all capitalize ${
-                activeCity === city ? "bg-gold/15 text-ink font-semibold" : "text-voyage-muted hover:bg-parchment hover:text-ink"
-              }`}
-            >
-              📍 {city.replace(/-/g, " ")} <span className="text-[0.65rem] opacity-60">({count})</span>
-            </button>
-          ))}
+          {cities.map(([city, count]) => {
+            const isDropTarget = dragOverCity === city;
+            return (
+              <button
+                key={city}
+                onClick={() => setActiveCity(city)}
+                onDragOver={(e) => {
+                  if (draggingPaths.length === 0) return;
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverCity !== city) setDragOverCity(city);
+                }}
+                onDragLeave={() => {
+                  if (dragOverCity === city) setDragOverCity(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const paths = draggingPaths.length ? draggingPaths : [];
+                  if (paths.length) moveMany(paths, city);
+                }}
+                className={`w-full text-left px-3 py-1.5 rounded-md text-[0.78rem] mb-0.5 transition-all capitalize ${
+                  isDropTarget
+                    ? "bg-gold/30 text-ink font-semibold ring-2 ring-gold"
+                    : activeCity === city
+                    ? "bg-gold/15 text-ink font-semibold"
+                    : "text-voyage-muted hover:bg-parchment hover:text-ink"
+                }`}
+              >
+                📍 {city.replace(/-/g, " ")} <span className="text-[0.65rem] opacity-60">({count})</span>
+              </button>
+            );
+          })}
+
+          {/* Drop zone: new city */}
+          <button
+            onClick={() => {
+              const name = prompt("New city folder name?");
+              if (name) setActiveCity(slugify(name));
+            }}
+            onDragOver={(e) => {
+              if (draggingPaths.length === 0) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              if (dragOverCity !== "__new__") setDragOverCity("__new__");
+            }}
+            onDragLeave={() => {
+              if (dragOverCity === "__new__") setDragOverCity(null);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const paths = draggingPaths.length ? draggingPaths : [];
+              if (!paths.length) return;
+              const name = prompt("Move to which new city folder?");
+              if (name) moveMany(paths, name);
+            }}
+            className={`w-full text-left px-3 py-1.5 mt-2 rounded-md text-[0.72rem] border border-dashed transition-all ${
+              dragOverCity === "__new__"
+                ? "border-gold bg-gold/20 text-ink"
+                : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+            }`}
+          >
+            ＋ New city / drop here
+          </button>
         </aside>
 
         <main>
@@ -342,9 +445,19 @@ const ImageBank = () => {
                 return (
                   <div
                     key={img.path}
-                    className={`group relative bg-voyage-white border rounded-lg overflow-hidden transition-all ${
+                    draggable
+                    onDragStart={(e) => {
+                      const paths = selected.has(img.path) && selected.size > 0
+                        ? Array.from(selected)
+                        : [img.path];
+                      setDraggingPaths(paths);
+                      e.dataTransfer.effectAllowed = "move";
+                      try { e.dataTransfer.setData("text/plain", paths.join(",")); } catch {}
+                    }}
+                    onDragEnd={() => { setDraggingPaths([]); setDragOverCity(null); }}
+                    className={`group relative bg-voyage-white border rounded-lg overflow-hidden transition-all cursor-grab active:cursor-grabbing ${
                       isSelected ? "border-gold ring-2 ring-gold/30" : "border-parchment-3 hover:border-gold/60"
-                    }`}
+                    } ${draggingPaths.includes(img.path) ? "opacity-50" : ""}`}
                   >
                     <button
                       onClick={() => setPreview(img)}
