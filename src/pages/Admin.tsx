@@ -846,7 +846,7 @@ const AdminDashboard = () => {
               <div className="flex items-center gap-2 px-3 py-2 bg-parchment rounded-sm border border-parchment-3">
                 <span className="text-[0.78rem]">📎</span>
                 <span className="text-[0.78rem] text-ink truncate">{sendProject.itinerary_pdf_path.split("/").pop()}</span>
-                <a href={getPdfUrl(sendProject.itinerary_pdf_path)} target="_blank" rel="noopener noreferrer" className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.preview")}</a>
+                <button onClick={() => openPdf(sendProject.itinerary_pdf_path!)} className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.preview")}</button>
               </div>
             )}
             <button onClick={handleSendEmail} disabled={isSending} className="px-6 py-3 rounded-sm bg-sage text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-sage/90 transition-colors disabled:opacity-60">
