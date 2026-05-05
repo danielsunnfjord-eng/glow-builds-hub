@@ -671,51 +671,6 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [dayInstruction, setDayInstruction] = useState("");
   const [editingDayIdx, setEditingDayIdx] = useState<number | null>(null);
 
-  const editDay = useCallback(async (idx: number, instruction: string) => {
-    if (!instruction.trim() || editingDayIdx !== null) return;
-    const parts = splitDays(itineraryContent);
-    const day = parts.days[idx];
-    if (!day) return;
-    setEditingDayIdx(idx);
-    try {
-      // Tokenize images in this day so the AI can't drop or move them
-      const imageMap: Record<string, string> = {};
-      let i = 0;
-      const tokenized = day.body.replace(
-        /!\[[^\]]*\]\([^)]+\)(\n\*Photo:[^*\n]*\*)?/g,
-        (full) => { const t = `[[IMG_${i++}]]`; imageMap[t] = full; return t; }
-      );
-      const userMsg: Message = {
-        role: "user",
-        content: `Please revise ONLY the following day section.\n\nADVISOR REQUEST: ${instruction}\n\n--- CURRENT SECTION ---\n${tokenized}\n--- END SECTION ---`,
-      };
-      const revised = await streamChat([userMsg], { mode: "edit-snippet" as any });
-      if (!revised) return;
-      let restored = revised.trim();
-      // Strip accidental code fences
-      restored = restored.replace(/^```(?:markdown)?\n?/i, "").replace(/\n?```$/i, "").trim();
-      for (const [tok, full] of Object.entries(imageMap)) {
-        if (restored.includes(tok)) restored = restored.split(tok).join(full);
-      }
-      // Safety net for any image dropped
-      restored = mergePreserveImages(day.body, restored);
-
-      // Reassemble itinerary with only this day swapped
-      const newDays = parts.days.map((d, k) => (k === idx ? { ...d, body: restored } : d));
-      const next = [parts.head, newDays.map((d) => d.body).join("\n\n---\n\n"), parts.tail]
-        .filter((s) => s && s.trim().length > 0)
-        .join("\n\n");
-      setPreviousItinerary(itineraryContent);
-      updateContent(next);
-      setDayInstruction("");
-      toast({ title: `✨ Day ${idx + 1} updated` });
-    } catch (err: any) {
-      toast({ title: "AI Error", description: err.message, variant: "destructive" });
-    } finally {
-      setEditingDayIdx(null);
-    }
-  }, [itineraryContent, splitDays, streamChat, updateContent, editingDayIdx, toast]);
-
   const dayQuickPresets: { label: string; emoji: string; prompt: string }[] = [
     { emoji: "✨", label: "Polish writing", prompt: "Polish the writing in this day — keep the same structure, schedule and bookings; refine prose to a refined, evocative concierge tone (warm, first-person, never floral). Do not add or remove activities." },
     { emoji: "💎", label: "More premium", prompt: "Elevate this day to feel more bespoke and premium: upgrade the hotel description with one signature perk, suggest a more curated dining venue, and add a subtle concierge touch. Keep timings and the overall flow." },
