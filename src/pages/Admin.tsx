@@ -455,7 +455,15 @@ const AdminDashboard = () => {
         </div>
 
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
-          {activeTab === "assistant" ? (
+          {activeTab === "images" ? (
+            <div>
+              <div className="mb-8">
+                <h1 className="font-serif text-3xl font-bold mb-1">Image Bank</h1>
+                <p className="text-[0.85rem] text-voyage-muted">Browse, organize, and reuse every photo you've added to client itineraries — grouped by destination.</p>
+              </div>
+              <ImageBank />
+            </div>
+          ) : activeTab === "assistant" ? (
             <div>
               <div className="mb-8">
                 <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.assistantTitle")}</h1>
