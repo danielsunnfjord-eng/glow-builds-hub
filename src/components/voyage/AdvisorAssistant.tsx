@@ -517,16 +517,38 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     }
   };
 
+  // Re-inject any image markdown the AI dropped during an edit, so images
+  // (especially advisor-uploaded Supabase URLs) never disappear silently.
+  const mergePreserveImages = (original: string, edited: string): string => {
+    const imgRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+    const editedUrls = new Set<string>();
+    let m: RegExpExecArray | null;
+    while ((m = imgRegex.exec(edited)) !== null) editedUrls.add(m[1]);
+
+    const missing: string[] = [];
+    imgRegex.lastIndex = 0;
+    while ((m = imgRegex.exec(original)) !== null) {
+      if (!editedUrls.has(m[1])) missing.push(m[0]);
+    }
+    if (missing.length === 0) return edited;
+    return edited + `\n\n<!-- Restored images preserved from previous version -->\n\n` + missing.join("\n\n");
+  };
+
   const acceptPendingEdit = () => {
     if (!pendingEdit) return;
     setPreviousItinerary(itineraryContent);
-    updateContent(pendingEdit);
+    const merged = mergePreserveImages(itineraryContent, pendingEdit);
+    const restoredCount = (merged.match(/!\[/g)?.length || 0) - (pendingEdit.match(/!\[/g)?.length || 0);
+    updateContent(merged);
     setPendingEdit(null);
-    toast({ title: "✓ Edits applied" });
+    toast({
+      title: "✓ Edits applied",
+      description: restoredCount > 0 ? `${restoredCount} image${restoredCount > 1 ? "s" : ""} preserved.` : undefined,
+    });
   };
   const rejectPendingEdit = () => {
     setPendingEdit(null);
-    toast({ title: "Edits discarded" });
+    toast({ title: "Edits discarded — your itinerary is unchanged" });
   };
   const revertEdits = () => {
     if (previousItinerary === null) return;
