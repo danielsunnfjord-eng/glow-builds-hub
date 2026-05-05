@@ -10,7 +10,7 @@ import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 interface SharedItinerary {
   id: string;
   share_token: string;
-  client_name: string;
+  client_first_name: string;
   destination: string | null;
   trip_duration: string | null;
   start_date: string | null;
@@ -21,7 +21,6 @@ interface SharedItinerary {
   markdown_content: string;
   days: ItineraryDay[];
   practical_info: Record<string, string>;
-  is_published: boolean;
 }
 
 const SharedItinerary = () => {
@@ -37,13 +36,10 @@ const SharedItinerary = () => {
     if (!token) return;
     let cancelled = false;
     (async () => {
-      const { data: row, error: err } = await supabase
-        .from("shared_itineraries")
-        .select("*")
-        .eq("share_token", token)
-        .eq("is_published", true)
-        .maybeSingle();
+      const { data: rows, error: err } = await supabase
+        .rpc("get_shared_itinerary", { _token: token });
       if (cancelled) return;
+      const row = Array.isArray(rows) ? rows[0] : rows;
       if (err || !row) {
         setError("not_found");
         setLoading(false);
@@ -89,7 +85,7 @@ const SharedItinerary = () => {
     if (!data) return;
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    const title = `${t("aa.itinerary", "Itinerary")} — ${data.client_name}`;
+    const title = `${t("aa.itinerary", "Itinerary")} — ${data.client_first_name}`;
     const headerTitle = data.destination
       ? `${data.destination} ${t("aa.itinerary", "Itinerary")}`
       : t("aa.itinerary", "Itinerary");
@@ -133,7 +129,7 @@ const SharedItinerary = () => {
         <div class="header">
           <div class="brand">Fjord & Waves Travel</div>
           <h1>${headerTitle}</h1>
-          <p style="font-size:13px;color:#777;">${t("aa.preparedFor", "Prepared for")} <strong>${data.client_name}</strong>${meta ? ` · ${meta}` : ""}</p>
+          <p style="font-size:13px;color:#777;">${t("aa.preparedFor", "Prepared for")} <strong>${data.client_first_name}</strong>${meta ? ` · ${meta}` : ""}</p>
         </div>
         <div id="content">${htmlContent}</div>
         <div class="footer">© ${new Date().getFullYear()} Fjord &amp; Waves Travel · Org.nr: 928804860</div>
@@ -223,7 +219,7 @@ const SharedItinerary = () => {
             />
             <div className="text-voyage-white">
               <p className="text-[0.65rem] tracking-[0.25em] uppercase text-gold mb-2">
-                {t("share.preparedFor", "Prepared for")} {data.client_name}
+                {t("share.preparedFor", "Prepared for")} {data.client_first_name}
               </p>
               <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-tight mb-3">
                 {data.destination || t("aa.itinerary", "Itinerary")}
