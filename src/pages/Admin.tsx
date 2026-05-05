@@ -448,6 +448,9 @@ const AdminDashboard = () => {
             <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.assistant")}
             </button>
+            <button onClick={() => setActiveTab("images")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "images" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+              🖼 Image Bank
+            </button>
           </div>
         </div>
 
