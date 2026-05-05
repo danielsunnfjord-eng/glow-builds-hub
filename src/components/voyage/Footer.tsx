@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { openCookieSettings } from "@/components/voyage/CookieConsent";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
@@ -42,6 +43,7 @@ const Footer = () => {
         <div className="flex items-center gap-5">
           <a href="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Privacy</a>
           <a href="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Terms</a>
+          <button onClick={openCookieSettings} className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Cookies</button>
           <button onClick={() => navigate("/login")} className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">{t("footer.admin")}</button>
         </div>
       </div>

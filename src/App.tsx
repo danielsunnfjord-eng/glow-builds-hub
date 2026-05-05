@@ -13,6 +13,7 @@ import PlanMyTripPage from "./pages/PlanMyTrip.tsx";
 import SharedItinerary from "./pages/SharedItinerary.tsx";
 import Legal from "./pages/Legal.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import CookieConsent from "./components/voyage/CookieConsent.tsx";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CookieConsent />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/plan-my-trip" element={<PlanMyTripPage />} />
