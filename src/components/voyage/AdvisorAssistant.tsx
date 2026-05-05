@@ -72,6 +72,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
   const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
+  const [cityBank, setCityBank] = useState<{ url: string; name: string }[]>([]);
+  const [isLoadingBank, setIsLoadingBank] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +88,21 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
+
+  // Derive a stable folder slug from the destination (e.g. "Dubrovnik, Croatia" → "dubrovnik")
+  const citySlug = (() => {
+    const dest = selectedProject?.destination?.trim();
+    if (!dest) return "";
+    const first = dest.split(/[,\-—|/]/)[0].trim();
+    return first
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "uncategorized";
+  })();
+  const cityLabel = selectedProject?.destination?.split(/[,\-—|/]/)[0].trim() || "";
 
   // --- Load draft when project changes ---
   useEffect(() => {
@@ -225,6 +242,38 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // --- City image bank: list previously uploaded images for this destination ---
+  const loadCityBank = useCallback(async () => {
+    if (!citySlug) { setCityBank([]); return; }
+    setIsLoadingBank(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setCityBank([]); return; }
+      const prefix = `${user.id}/${citySlug}`;
+      const { data, error } = await supabase.storage
+        .from("itinerary-images")
+        .list(prefix, { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+      if (error) throw error;
+      const items = (data || [])
+        .filter((f) => f.name && !f.name.startsWith("."))
+        .map((f) => {
+          const path = `${prefix}/${f.name}`;
+          const { data: pub } = supabase.storage.from("itinerary-images").getPublicUrl(path);
+          return { url: pub.publicUrl, name: f.name };
+        });
+      setCityBank(items);
+    } catch (err) {
+      console.error("loadCityBank error:", err);
+      setCityBank([]);
+    } finally {
+      setIsLoadingBank(false);
+    }
+  }, [citySlug]);
+
+  useEffect(() => {
+    if (showImagePanel) loadCityBank();
+  }, [showImagePanel, loadCityBank]);
+
   // --- Image functions ---
   // Helper: upload base64 image to storage and return public URL
   const uploadBase64Image = async (dataUrl: string): Promise<string> => {
@@ -233,7 +282,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     const ext = blob.type.includes("png") ? "png" : "jpg";
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
-    const fileName = `${user.id}/ai-${Date.now()}.${ext}`;
+    const folder = citySlug || "uncategorized";
+    const fileName = `${user.id}/${folder}/ai-${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("itinerary-images")
       .upload(fileName, blob, { contentType: blob.type });
@@ -306,7 +356,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const fileName = `${user.id}/${Date.now()}-${file.name}`;
+      const folder = citySlug || "uncategorized";
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+      const fileName = `${user.id}/${folder}/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from("itinerary-images")
         .upload(fileName, file, { contentType: file.type });
@@ -317,10 +369,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         .getPublicUrl(fileName);
 
       setImageResults((prev) => [
-        { url: data.publicUrl, credit: "Uploaded by advisor" },
+        { url: data.publicUrl, credit: `Uploaded by advisor${cityLabel ? ` · ${cityLabel}` : ""}` },
         ...prev,
       ]);
-      toast({ title: `📷 ${file.name} ${t("aa.uploaded")}` });
+      // refresh bank
+      loadCityBank();
+      toast({ title: `📷 ${file.name} ${t("aa.uploaded")}${cityLabel ? ` → ${cityLabel}` : ""}` });
     } catch (err: any) {
       toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
     }
@@ -1291,6 +1345,44 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     {isGeneratingImage ? "⏳" : t("aa.generate")}
                   </button>
                 </div>
+              </div>
+
+              {/* City Image Bank */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[0.68rem] font-semibold text-ink uppercase tracking-[0.1em]">
+                    🗂 City image bank{cityLabel ? ` — ${cityLabel}` : ""}
+                  </p>
+                  <button
+                    onClick={loadCityBank}
+                    disabled={isLoadingBank || !citySlug}
+                    className="text-[0.62rem] text-voyage-muted hover:text-gold disabled:opacity-40"
+                    title="Refresh"
+                  >
+                    {isLoadingBank ? "⏳" : "↻ Refresh"}
+                  </button>
+                </div>
+                {!citySlug ? (
+                  <p className="text-[0.7rem] text-voyage-muted italic">Select a project with a destination to see its image bank.</p>
+                ) : cityBank.length === 0 ? (
+                  <p className="text-[0.7rem] text-voyage-muted italic">No images saved for {cityLabel} yet. Uploads will be auto-organized here.</p>
+                ) : (
+                  <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto p-1 rounded bg-voyage-white/60 border border-parchment-3">
+                    {cityBank.map((img) => (
+                      <button
+                        key={img.url}
+                        onClick={() => insertImageAtCursor(img.url, cityLabel || "Travel photo", `From ${cityLabel} bank`)}
+                        className="group relative rounded overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
+                        title={img.name}
+                      >
+                        <img src={img.url} alt={img.name} className="w-full h-16 object-cover" loading="lazy" />
+                        <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/40 transition-colors flex items-center justify-center">
+                          <span className="text-voyage-white text-[0.6rem] font-semibold opacity-0 group-hover:opacity-100">Insert</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
