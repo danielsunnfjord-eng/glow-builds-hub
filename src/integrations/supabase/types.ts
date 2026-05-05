@@ -321,6 +321,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_shared_itinerary: {
+        Args: { _token: string }
+        Returns: {
+          client_first_name: string
+          cover_image_url: string
+          days: Json
+          destination: string
+          end_date: string
+          group_size: number
+          id: string
+          language: string
+          markdown_content: string
+          practical_info: Json
+          share_token: string
+          start_date: string
+          trip_duration: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
