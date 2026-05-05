@@ -290,16 +290,22 @@ const AdminDashboard = () => {
     fileInputRef.current?.click();
   };
 
-  const getPdfUrl = (path: string) => {
-    const { data } = supabase.storage.from("itineraries").getPublicUrl(path);
-    return data.publicUrl;
+  const getPdfUrl = async (path: string) => {
+    const { data, error } = await supabase.storage.from("itineraries").createSignedUrl(path, 60 * 60);
+    if (error || !data) return "";
+    return data.signedUrl;
+  };
+
+  const openPdf = async (path: string) => {
+    const url = await getPdfUrl(path);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleSendEmail = async () => {
     if (!sendProject || !sendProject.client_email || !sendProject.itinerary_pdf_path) return;
     setIsSending(true);
     try {
-      const pdfUrl = getPdfUrl(sendProject.itinerary_pdf_path);
+      const pdfUrl = await getPdfUrl(sendProject.itinerary_pdf_path);
       const { data, error } = await supabase.functions.invoke("send-itinerary-email", {
         body: {
           recipientEmail: sendProject.client_email,
@@ -606,7 +612,7 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2">
                           {p.itinerary_pdf_path ? (
                             <>
-                              <a href={getPdfUrl(p.itinerary_pdf_path)} target="_blank" rel="noopener noreferrer" className="text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.view")}</a>
+                              <button onClick={() => openPdf(p.itinerary_pdf_path!)} className="text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.view")}</button>
                               <button onClick={() => triggerUpload(p.id)} disabled={uploadingId === p.id} className="text-[0.68rem] text-voyage-muted hover:text-ink transition-colors">
                                 {uploadingId === p.id ? "..." : t("admin.replace")}
                               </button>
@@ -840,7 +846,7 @@ const AdminDashboard = () => {
               <div className="flex items-center gap-2 px-3 py-2 bg-parchment rounded-sm border border-parchment-3">
                 <span className="text-[0.78rem]">📎</span>
                 <span className="text-[0.78rem] text-ink truncate">{sendProject.itinerary_pdf_path.split("/").pop()}</span>
-                <a href={getPdfUrl(sendProject.itinerary_pdf_path)} target="_blank" rel="noopener noreferrer" className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.preview")}</a>
+                <button onClick={() => openPdf(sendProject.itinerary_pdf_path!)} className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.preview")}</button>
               </div>
             )}
             <button onClick={handleSendEmail} disabled={isSending} className="px-6 py-3 rounded-sm bg-sage text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-sage/90 transition-colors disabled:opacity-60">
