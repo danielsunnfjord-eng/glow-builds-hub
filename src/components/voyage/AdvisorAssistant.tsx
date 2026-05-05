@@ -61,6 +61,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
+  const [chatMode, setChatMode] = useState<"discuss" | "edit">("discuss");
+  const [autoImages, setAutoImages] = useState(true);
+  const [pendingEdit, setPendingEdit] = useState<string | null>(null);
+  const [previousItinerary, setPreviousItinerary] = useState<string | null>(null);
   
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [aiImagePrompt, setAiImagePrompt] = useState("");
@@ -341,7 +345,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
   // --- Chat functions ---
   const streamChat = useCallback(
-    async (userMessages: Message[]) => {
+    async (userMessages: Message[], opts?: { mode?: "discuss" | "edit" | "create"; currentItinerary?: string }) => {
       const projectContext = selectedProject
         ? {
             clientName: selectedProject.client_name,
@@ -354,7 +358,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             endDate: selectedProject.end_date,
             estimatedBudget: selectedProject.estimated_budget,
             price: selectedProject.price,
-            notes: selectedProject.notes, // includes interests, accommodation, pace, mobility, dietary, must-have, children ages
+            notes: selectedProject.notes,
           }
         : undefined;
 
@@ -374,6 +378,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           messages: userMessages,
           projectContext,
           language: langMap[i18n.language] || "English",
+          mode: opts?.mode,
+          currentItinerary: opts?.currentItinerary,
+          autoImages,
         }),
       });
 
@@ -424,7 +431,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       }
       return assistantContent;
     },
-    [selectedProject, i18n.language]
+    [selectedProject, i18n.language, autoImages]
   );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -486,13 +493,46 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     setIsLoading(true);
 
     try {
-      const content = await streamChat(updatedMessages);
-      if (content) setItineraryContent(content);
+      // Decide mode: explicit "create" if no itinerary yet; otherwise honor chatMode toggle
+      const effectiveMode: "discuss" | "edit" | "create" = !itineraryContent
+        ? "create"
+        : chatMode;
+      const content = await streamChat(updatedMessages, {
+        mode: effectiveMode,
+        currentItinerary: itineraryContent || undefined,
+      });
+      if (!content) return;
+
+      if (effectiveMode === "create") {
+        setItineraryContent(content);
+      } else if (effectiveMode === "edit") {
+        // Stage as pending edit — admin must Accept
+        setPendingEdit(content);
+      }
+      // discuss mode: do nothing to itineraryContent (chat-only)
     } catch (err: any) {
       toast({ title: "AI Error", description: err.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const acceptPendingEdit = () => {
+    if (!pendingEdit) return;
+    setPreviousItinerary(itineraryContent);
+    updateContent(pendingEdit);
+    setPendingEdit(null);
+    toast({ title: "✓ Edits applied" });
+  };
+  const rejectPendingEdit = () => {
+    setPendingEdit(null);
+    toast({ title: "Edits discarded" });
+  };
+  const revertEdits = () => {
+    if (previousItinerary === null) return;
+    updateContent(previousItinerary);
+    setPreviousItinerary(null);
+    toast({ title: "↩ Reverted to previous version" });
   };
 
   const handleExportPdf = () => {
@@ -823,11 +863,40 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       <div className="grid grid-cols-1 gap-6">
         {/* Chat Panel */}
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
-          <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
-            <h3 className="font-serif text-sm font-bold text-ink">{t("aa.chatTitle")}</h3>
+          <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <h3 className="font-serif text-sm font-bold text-ink">{t("aa.chatTitle")}</h3>
+              {itineraryContent && (
+                <div className="inline-flex rounded-full border border-parchment-3 bg-parchment p-0.5 text-[0.68rem]">
+                  <button
+                    onClick={() => setChatMode("discuss")}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "discuss" ? "bg-ink text-voyage-white shadow-sm" : "text-voyage-muted hover:text-ink"}`}
+                    title="Chat without changing the itinerary"
+                  >
+                    💬 Discuss
+                  </button>
+                  <button
+                    onClick={() => setChatMode("edit")}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "edit" ? "bg-gold text-ink shadow-sm font-semibold" : "text-voyage-muted hover:text-ink"}`}
+                    title="Apply your next message as edits to the itinerary"
+                  >
+                    ✏️ Apply edits
+                  </button>
+                </div>
+              )}
+              <label className="inline-flex items-center gap-1.5 text-[0.7rem] text-voyage-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={autoImages}
+                  onChange={(e) => setAutoImages(e.target.checked)}
+                  className="accent-gold"
+                />
+                🖼 Auto-illustrate
+              </label>
+            </div>
             {messages.length > 0 && (
               <button
-                onClick={() => { setMessages([]); setItineraryContent(""); }}
+                onClick={() => { setMessages([]); setItineraryContent(""); setPendingEdit(null); }}
                 className="text-[0.68rem] text-voyage-muted hover:text-destructive transition-colors"
               >
                 {t("aa.clearChat")}
@@ -1096,7 +1165,16 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
             <h3 className="font-serif text-sm font-bold text-ink">{t("aa.previewTitle")}</h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {previousItinerary !== null && !pendingEdit && (
+                <button
+                  onClick={revertEdits}
+                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                  title="Revert the last AI edit"
+                >
+                  ↩ Revert
+                </button>
+              )}
               {itineraryContent && (
                 <>
                   <button
@@ -1140,6 +1218,35 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               )}
             </div>
           </div>
+
+          {/* Pending AI edit panel */}
+          {pendingEdit && (
+            <div className="mx-4 mt-3 p-3 rounded-lg border border-gold/40 bg-gold/10">
+              <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
+                <div>
+                  <p className="text-[0.78rem] font-semibold text-ink">✨ AI proposed an edit</p>
+                  <p className="text-[0.7rem] text-voyage-muted">Review the revised draft below — accept to replace, or reject to keep the current version.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={rejectPendingEdit}
+                    className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                  >
+                    ✕ Reject
+                  </button>
+                  <button
+                    onClick={acceptPendingEdit}
+                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                  >
+                    ✓ Accept edit
+                  </button>
+                </div>
+              </div>
+              <div className="max-h-[260px] overflow-y-auto rounded border border-gold/20 bg-voyage-white p-3 prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-p:text-ink-2">
+                <ReactMarkdown>{pendingEdit}</ReactMarkdown>
+              </div>
+            </div>
+          )}
 
           {/* Image Panel */}
           {showImagePanel && itineraryContent && (
