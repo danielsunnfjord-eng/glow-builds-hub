@@ -290,16 +290,22 @@ const AdminDashboard = () => {
     fileInputRef.current?.click();
   };
 
-  const getPdfUrl = (path: string) => {
-    const { data } = supabase.storage.from("itineraries").getPublicUrl(path);
-    return data.publicUrl;
+  const getPdfUrl = async (path: string) => {
+    const { data, error } = await supabase.storage.from("itineraries").createSignedUrl(path, 60 * 60);
+    if (error || !data) return "";
+    return data.signedUrl;
+  };
+
+  const openPdf = async (path: string) => {
+    const url = await getPdfUrl(path);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleSendEmail = async () => {
     if (!sendProject || !sendProject.client_email || !sendProject.itinerary_pdf_path) return;
     setIsSending(true);
     try {
-      const pdfUrl = getPdfUrl(sendProject.itinerary_pdf_path);
+      const pdfUrl = await getPdfUrl(sendProject.itinerary_pdf_path);
       const { data, error } = await supabase.functions.invoke("send-itinerary-email", {
         body: {
           recipientEmail: sendProject.client_email,
