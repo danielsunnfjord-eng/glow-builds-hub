@@ -14,6 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
+import ImageBank from "@/components/voyage/ImageBank";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
