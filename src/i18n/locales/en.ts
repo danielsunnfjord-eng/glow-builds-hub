@@ -6,6 +6,7 @@ export default {
     whatWeArrange: "What We Arrange",
     pricing: "Pricing",
     planMyTrip: "Plan My Trip",
+    bookCall: "Book a Video Call",
   },
   // Hero
   hero: {

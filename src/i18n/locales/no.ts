@@ -5,6 +5,7 @@ export default {
     whatWeArrange: "Hva Vi Ordner",
     pricing: "Priser",
     planMyTrip: "Planlegg Min Reise",
+    bookCall: "Book Videosamtale",
   },
   hero: {
     badge: "Reiserådgiver · Fora Travel · IATA-akkreditert",
