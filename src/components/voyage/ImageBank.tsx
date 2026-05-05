@@ -31,6 +31,9 @@ const ImageBank = () => {
   const [preview, setPreview] = useState<BankImage | null>(null);
   const [uploadCity, setUploadCity] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [dragOverCity, setDragOverCity] = useState<string | null>(null);
+  const [draggingPaths, setDraggingPaths] = useState<string[]>([]);
+  const [isMoving, setIsMoving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load all images for this user, walking the city subfolders
