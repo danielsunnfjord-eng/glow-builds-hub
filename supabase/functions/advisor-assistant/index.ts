@@ -105,8 +105,13 @@ const EDIT_MODE_INSTRUCTION = `
 ═══════════════════════════════════════════
 MODE: APPLY EDITS (return full revised itinerary)
 ═══════════════════════════════════════════
-The advisor wants you to update the existing itinerary (provided below). Apply ONLY the requested changes while preserving everything else — structure, days not affected, existing image markdown, tone.
-Output the COMPLETE revised itinerary in the same premium markdown format. Keep all unchanged days verbatim.`;
+The advisor wants you to update the existing itinerary (provided below). Apply ONLY the requested changes.
+
+STRICT PRESERVATION RULES — failure to follow these breaks the advisor's work:
+1. KEEP EVERY EXISTING IMAGE LINE EXACTLY AS-IS — every \`![alt](url)\` markdown line must remain in the output, in the same section, with the same URL. Do NOT remove, replace, or rewrite image URLs (especially Supabase storage URLs the advisor uploaded).
+2. KEEP all unchanged days, headings, and prose verbatim. Only modify what the advisor asked you to modify.
+3. If the advisor asks to add a new day or section, generate new image markdown for it (using https://source.unsplash.com/...) — but never substitute Unsplash URLs for existing images.
+4. Output the COMPLETE revised itinerary in the same premium markdown format — no commentary, no preamble, no "Here is the revised itinerary:" intro.`;
 
 const CREATE_MODE_INSTRUCTION = `
 ═══════════════════════════════════════════
