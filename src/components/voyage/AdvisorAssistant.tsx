@@ -493,13 +493,46 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     setIsLoading(true);
 
     try {
-      const content = await streamChat(updatedMessages);
-      if (content) setItineraryContent(content);
+      // Decide mode: explicit "create" if no itinerary yet; otherwise honor chatMode toggle
+      const effectiveMode: "discuss" | "edit" | "create" = !itineraryContent
+        ? "create"
+        : chatMode;
+      const content = await streamChat(updatedMessages, {
+        mode: effectiveMode,
+        currentItinerary: itineraryContent || undefined,
+      });
+      if (!content) return;
+
+      if (effectiveMode === "create") {
+        setItineraryContent(content);
+      } else if (effectiveMode === "edit") {
+        // Stage as pending edit — admin must Accept
+        setPendingEdit(content);
+      }
+      // discuss mode: do nothing to itineraryContent (chat-only)
     } catch (err: any) {
       toast({ title: "AI Error", description: err.message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const acceptPendingEdit = () => {
+    if (!pendingEdit) return;
+    setPreviousItinerary(itineraryContent);
+    updateContent(pendingEdit);
+    setPendingEdit(null);
+    toast({ title: "✓ Edits applied" });
+  };
+  const rejectPendingEdit = () => {
+    setPendingEdit(null);
+    toast({ title: "Edits discarded" });
+  };
+  const revertEdits = () => {
+    if (previousItinerary === null) return;
+    updateContent(previousItinerary);
+    setPreviousItinerary(null);
+    toast({ title: "↩ Reverted to previous version" });
   };
 
   const handleExportPdf = () => {
