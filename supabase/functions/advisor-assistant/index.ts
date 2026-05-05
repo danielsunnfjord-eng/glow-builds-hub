@@ -120,7 +120,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, projectContext, language } = await req.json();
+    const { messages, projectContext, language, mode, currentItinerary, autoImages } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(
@@ -137,27 +137,37 @@ serve(async (req) => {
       );
     }
 
-    // Build system prompt with project context if provided
-    let systemContent = SYSTEM_PROMPT;
+    let systemContent = BASE_PROMPT;
+
+    const resolvedMode = mode || (currentItinerary ? "discuss" : "create");
+    if (resolvedMode === "discuss") systemContent += "\n" + CHAT_MODE_INSTRUCTION;
+    else if (resolvedMode === "edit") systemContent += "\n" + EDIT_MODE_INSTRUCTION;
+    else systemContent += "\n" + CREATE_MODE_INSTRUCTION;
+
+    if (autoImages === false && resolvedMode !== "discuss") {
+      systemContent += "\n\nIMAGE OVERRIDE: Do NOT include any image markdown in this response.";
+    }
 
     if (language && language !== "English") {
-      systemContent += `\n\nIMPORTANT: You MUST respond entirely in ${language}. All headings, descriptions, tips, and recommendations must be written in ${language}.`;
+      systemContent += `\n\nIMPORTANT: Respond entirely in ${language}. Image alt text keywords may stay in English for search compatibility.`;
     }
 
     if (projectContext) {
-      systemContent += `\n\nCurrent client project context:
+      systemContent += `\n\nClient project context:
 - Client: ${projectContext.clientName || "Not specified"}
-- Client email: ${projectContext.clientEmail || "Not specified"}
-- Departure city: ${projectContext.departure || "Not specified"}
+- Email: ${projectContext.clientEmail || "Not specified"}
+- Departure: ${projectContext.departure || "Not specified"}
 - Destination: ${projectContext.destination || "Not specified"}
 - Group size: ${projectContext.groupSize || "Not specified"}
 - Trip duration: ${projectContext.tripDuration || "Not specified"}
-- Start date: ${projectContext.startDate || "Not specified"}
-- End date: ${projectContext.endDate || "Not specified"}
-- Estimated budget: ${projectContext.estimatedBudget || "Not specified"}
-- Price/fee: ${projectContext.price || "Not specified"}
+- Dates: ${projectContext.startDate || "?"} → ${projectContext.endDate || "?"}
+- Budget: ${projectContext.estimatedBudget || "Not specified"}
 - Notes: ${projectContext.notes || "None"}
-Use ALL these details to personalise the itinerary. The notes field may contain structured client preferences (interests, accommodation type, travel pace, mobility needs, dietary restrictions, must-have experiences, children ages, whether they visited before). Parse and use ALL of these to create the most tailored itinerary possible. Consider the departure city for flight suggestions, the budget for accommodation tier, the dates for seasonal activities and weather tips, the group size and children ages for activity recommendations, dietary restrictions for restaurant suggestions, mobility needs for accessibility, and travel pace for daily planning intensity.`;
+Use ALL details (interests, pace, mobility, dietary, children ages, must-haves) to personalise.`;
+    }
+
+    if (currentItinerary && (resolvedMode === "discuss" || resolvedMode === "edit")) {
+      systemContent += `\n\n═══ CURRENT ITINERARY DRAFT ═══\n${currentItinerary}\n═══ END DRAFT ═══`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
