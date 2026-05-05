@@ -324,7 +324,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-      const fileName = `${user.id}/${Date.now()}-${file.name}`;
+      const folder = citySlug || "uncategorized";
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+      const fileName = `${user.id}/${folder}/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from("itinerary-images")
         .upload(fileName, file, { contentType: file.type });
@@ -335,10 +337,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         .getPublicUrl(fileName);
 
       setImageResults((prev) => [
-        { url: data.publicUrl, credit: "Uploaded by advisor" },
+        { url: data.publicUrl, credit: `Uploaded by advisor${cityLabel ? ` · ${cityLabel}` : ""}` },
         ...prev,
       ]);
-      toast({ title: `📷 ${file.name} ${t("aa.uploaded")}` });
+      // refresh bank
+      loadCityBank();
+      toast({ title: `📷 ${file.name} ${t("aa.uploaded")}${cityLabel ? ` → ${cityLabel}` : ""}` });
     } catch (err: any) {
       toast({ title: t("aa.uploadFailed"), description: err.message, variant: "destructive" });
     }
