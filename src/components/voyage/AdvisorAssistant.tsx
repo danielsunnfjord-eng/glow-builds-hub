@@ -871,8 +871,45 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [handleUndo, handleRedo]);
+  const editDay = useCallback(async (idx: number, instruction: string) => {
+    if (!instruction.trim() || editingDayIdx !== null) return;
+    const parts = splitDays(itineraryContent);
+    const day = parts.days[idx];
+    if (!day) return;
+    setEditingDayIdx(idx);
+    try {
+      const imageMap: Record<string, string> = {};
+      let i = 0;
+      const tokenized = day.body.replace(
+        /!\[[^\]]*\]\([^)]+\)(\n\*Photo:[^*\n]*\*)?/g,
+        (full) => { const tok = `[[IMG_${i++}]]`; imageMap[tok] = full; return tok; }
+      );
+      const userMsg: Message = {
+        role: "user",
+        content: `Please revise ONLY the following day section.\n\nADVISOR REQUEST: ${instruction}\n\n--- CURRENT SECTION ---\n${tokenized}\n--- END SECTION ---`,
+      };
+      const revised = await streamChat([userMsg], { mode: "edit-snippet" as any });
+      if (!revised) return;
+      let restored = revised.trim().replace(/^```(?:markdown)?\n?/i, "").replace(/\n?```$/i, "").trim();
+      for (const [tok, full] of Object.entries(imageMap)) {
+        if (restored.includes(tok)) restored = restored.split(tok).join(full);
+      }
+      restored = mergePreserveImages(day.body, restored);
+      const newDays = parts.days.map((d, k) => (k === idx ? { ...d, body: restored } : d));
+      const next = [parts.head, newDays.map((d) => d.body).join("\n\n---\n\n"), parts.tail]
+        .filter((s) => s && s.trim().length > 0)
+        .join("\n\n");
+      setPreviousItinerary(itineraryContent);
+      updateContent(next);
+      setDayInstruction("");
+      toast({ title: `✨ Day ${idx + 1} updated` });
+    } catch (err: any) {
+      toast({ title: "AI Error", description: err.message, variant: "destructive" });
+    } finally {
+      setEditingDayIdx(null);
+    }
+  }, [itineraryContent, splitDays, streamChat, updateContent, editingDayIdx, toast]);
 
-  
 
   const insertImageAtCursor = useCallback((url: string, alt: string, credit?: string) => {
     if (editorRef.current) {
