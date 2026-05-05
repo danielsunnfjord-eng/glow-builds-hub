@@ -863,11 +863,40 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       <div className="grid grid-cols-1 gap-6">
         {/* Chat Panel */}
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
-          <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
-            <h3 className="font-serif text-sm font-bold text-ink">{t("aa.chatTitle")}</h3>
+          <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <h3 className="font-serif text-sm font-bold text-ink">{t("aa.chatTitle")}</h3>
+              {itineraryContent && (
+                <div className="inline-flex rounded-full border border-parchment-3 bg-parchment p-0.5 text-[0.68rem]">
+                  <button
+                    onClick={() => setChatMode("discuss")}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "discuss" ? "bg-ink text-voyage-white shadow-sm" : "text-voyage-muted hover:text-ink"}`}
+                    title="Chat without changing the itinerary"
+                  >
+                    💬 Discuss
+                  </button>
+                  <button
+                    onClick={() => setChatMode("edit")}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "edit" ? "bg-gold text-ink shadow-sm font-semibold" : "text-voyage-muted hover:text-ink"}`}
+                    title="Apply your next message as edits to the itinerary"
+                  >
+                    ✏️ Apply edits
+                  </button>
+                </div>
+              )}
+              <label className="inline-flex items-center gap-1.5 text-[0.7rem] text-voyage-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={autoImages}
+                  onChange={(e) => setAutoImages(e.target.checked)}
+                  className="accent-gold"
+                />
+                🖼 Auto-illustrate
+              </label>
+            </div>
             {messages.length > 0 && (
               <button
-                onClick={() => { setMessages([]); setItineraryContent(""); }}
+                onClick={() => { setMessages([]); setItineraryContent(""); setPendingEdit(null); }}
                 className="text-[0.68rem] text-voyage-muted hover:text-destructive transition-colors"
               >
                 {t("aa.clearChat")}
