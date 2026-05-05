@@ -34,6 +34,8 @@ const ImageBank = () => {
   const [dragOverCity, setDragOverCity] = useState<string | null>(null);
   const [draggingPaths, setDraggingPaths] = useState<string[]>([]);
   const [isMoving, setIsMoving] = useState(false);
+  const [showNewCity, setShowNewCity] = useState(false);
+  const [newCityName, setNewCityName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load all images for this user, walking the city subfolders
@@ -391,36 +393,88 @@ const ImageBank = () => {
             );
           })}
 
-          {/* Drop zone: new city */}
-          <button
-            onClick={() => {
-              const name = prompt("New city folder name?");
-              if (name) setActiveCity(slugify(name));
-            }}
-            onDragOver={(e) => {
-              if (draggingPaths.length === 0) return;
-              e.preventDefault();
-              e.dataTransfer.dropEffect = "move";
-              if (dragOverCity !== "__new__") setDragOverCity("__new__");
-            }}
-            onDragLeave={() => {
-              if (dragOverCity === "__new__") setDragOverCity(null);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              const paths = draggingPaths.length ? draggingPaths : [];
-              if (!paths.length) return;
-              const name = prompt("Move to which new city folder?");
-              if (name) moveMany(paths, name);
-            }}
-            className={`w-full text-left px-3 py-1.5 mt-2 rounded-md text-[0.72rem] border border-dashed transition-all ${
-              dragOverCity === "__new__"
-                ? "border-gold bg-gold/20 text-ink"
-                : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
-            }`}
-          >
-            ＋ New city / drop here
-          </button>
+          {/* Drop zone / new city */}
+          {showNewCity ? (
+            <div className="mt-2 flex flex-col gap-1.5 p-2 rounded-md border border-dashed border-gold bg-gold/5">
+              <input
+                autoFocus
+                type="text"
+                value={newCityName}
+                onChange={(e) => setNewCityName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newCityName.trim()) {
+                    setActiveCity(slugify(newCityName));
+                    setUploadCity(slugify(newCityName));
+                    setShowNewCity(false);
+                    setNewCityName("");
+                  } else if (e.key === "Escape") {
+                    setShowNewCity(false);
+                    setNewCityName("");
+                  }
+                }}
+                placeholder="e.g. dubrovnik"
+                className="w-full px-2 py-1 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.75rem] focus:outline-none focus:border-gold"
+              />
+              <div className="flex gap-1">
+                <button
+                  onClick={() => {
+                    if (!newCityName.trim()) return;
+                    const slug = slugify(newCityName);
+                    const pending: string[] = (window as any).__pendingMovePaths || [];
+                    if (pending.length) {
+                      moveMany(pending, slug);
+                      (window as any).__pendingMovePaths = [];
+                    }
+                    setActiveCity(slug);
+                    setUploadCity(slug);
+                    setShowNewCity(false);
+                    setNewCityName("");
+                  }}
+                  className="flex-1 px-2 py-1 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2"
+                >
+                  Create
+                </button>
+                <button
+                  onClick={() => { setShowNewCity(false); setNewCityName(""); }}
+                  className="flex-1 px-2 py-1 rounded-sm border border-parchment-3 text-voyage-muted text-[0.65rem] font-semibold uppercase tracking-wide hover:border-ink hover:text-ink"
+                >
+                  Cancel
+                </button>
+              </div>
+              <p className="text-[0.6rem] text-voyage-muted italic">
+                Folder is created when you upload or drop the first image.
+              </p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowNewCity(true)}
+              onDragOver={(e) => {
+                if (draggingPaths.length === 0) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (dragOverCity !== "__new__") setDragOverCity("__new__");
+              }}
+              onDragLeave={() => {
+                if (dragOverCity === "__new__") setDragOverCity(null);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const paths = draggingPaths.length ? draggingPaths : [];
+                if (!paths.length) { setShowNewCity(true); return; }
+                setShowNewCity(true);
+                // store paths to move once user confirms name
+                (window as any).__pendingMovePaths = paths;
+              }}
+              className={`w-full text-left px-3 py-1.5 mt-2 rounded-md text-[0.72rem] border border-dashed transition-all ${
+                dragOverCity === "__new__"
+                  ? "border-gold bg-gold/20 text-ink"
+                  : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+              }`}
+            >
+              ＋ New city / drop here
+            </button>
+          )}
         </aside>
 
         <main>
