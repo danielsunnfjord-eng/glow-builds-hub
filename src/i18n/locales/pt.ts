@@ -5,6 +5,7 @@ export default {
     whatWeArrange: "O Que Organizamos",
     pricing: "Preços",
     planMyTrip: "Planeje Sua Viagem",
+    bookCall: "Agendar Videochamada",
   },
   hero: {
     badge: "Consultor de Viagens · Fora Travel · Credenciado IATA",
