@@ -1219,6 +1219,35 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             </div>
           </div>
 
+          {/* Pending AI edit panel */}
+          {pendingEdit && (
+            <div className="mx-4 mt-3 p-3 rounded-lg border border-gold/40 bg-gold/10">
+              <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
+                <div>
+                  <p className="text-[0.78rem] font-semibold text-ink">✨ AI proposed an edit</p>
+                  <p className="text-[0.7rem] text-voyage-muted">Review the revised draft below — accept to replace, or reject to keep the current version.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={rejectPendingEdit}
+                    className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                  >
+                    ✕ Reject
+                  </button>
+                  <button
+                    onClick={acceptPendingEdit}
+                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                  >
+                    ✓ Accept edit
+                  </button>
+                </div>
+              </div>
+              <div className="max-h-[260px] overflow-y-auto rounded border border-gold/20 bg-voyage-white p-3 prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-p:text-ink-2">
+                <ReactMarkdown>{pendingEdit}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
           {/* Image Panel */}
           {showImagePanel && itineraryContent && (
             <div className="px-4 py-3 border-b border-parchment-3 bg-parchment/50 space-y-3">
