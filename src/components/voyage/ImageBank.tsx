@@ -419,8 +419,14 @@ const ImageBank = () => {
                 <button
                   onClick={() => {
                     if (!newCityName.trim()) return;
-                    setActiveCity(slugify(newCityName));
-                    setUploadCity(slugify(newCityName));
+                    const slug = slugify(newCityName);
+                    const pending: string[] = (window as any).__pendingMovePaths || [];
+                    if (pending.length) {
+                      moveMany(pending, slug);
+                      (window as any).__pendingMovePaths = [];
+                    }
+                    setActiveCity(slug);
+                    setUploadCity(slug);
                     setShowNewCity(false);
                     setNewCityName("");
                   }}
