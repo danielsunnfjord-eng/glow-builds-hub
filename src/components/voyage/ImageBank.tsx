@@ -440,9 +440,19 @@ const ImageBank = () => {
                 return (
                   <div
                     key={img.path}
-                    className={`group relative bg-voyage-white border rounded-lg overflow-hidden transition-all ${
+                    draggable
+                    onDragStart={(e) => {
+                      const paths = selected.has(img.path) && selected.size > 0
+                        ? Array.from(selected)
+                        : [img.path];
+                      setDraggingPaths(paths);
+                      e.dataTransfer.effectAllowed = "move";
+                      try { e.dataTransfer.setData("text/plain", paths.join(",")); } catch {}
+                    }}
+                    onDragEnd={() => { setDraggingPaths([]); setDragOverCity(null); }}
+                    className={`group relative bg-voyage-white border rounded-lg overflow-hidden transition-all cursor-grab active:cursor-grabbing ${
                       isSelected ? "border-gold ring-2 ring-gold/30" : "border-parchment-3 hover:border-gold/60"
-                    }`}
+                    } ${draggingPaths.includes(img.path) ? "opacity-50" : ""}`}
                   >
                     <button
                       onClick={() => setPreview(img)}
