@@ -72,6 +72,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [imageResults, setImageResults] = useState<{ url: string; credit: string }[]>([]);
   const [cropTarget, setCropTarget] = useState<{ index: number; url: string } | null>(null);
   const [showPdfPreview, setShowPdfPreview] = useState(false);
+  const [cityBank, setCityBank] = useState<{ url: string; name: string }[]>([]);
+  const [isLoadingBank, setIsLoadingBank] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
