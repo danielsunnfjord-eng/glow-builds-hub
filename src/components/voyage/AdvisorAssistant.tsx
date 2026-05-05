@@ -242,6 +242,38 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // --- City image bank: list previously uploaded images for this destination ---
+  const loadCityBank = useCallback(async () => {
+    if (!citySlug) { setCityBank([]); return; }
+    setIsLoadingBank(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setCityBank([]); return; }
+      const prefix = `${user.id}/${citySlug}`;
+      const { data, error } = await supabase.storage
+        .from("itinerary-images")
+        .list(prefix, { limit: 100, sortBy: { column: "created_at", order: "desc" } });
+      if (error) throw error;
+      const items = (data || [])
+        .filter((f) => f.name && !f.name.startsWith("."))
+        .map((f) => {
+          const path = `${prefix}/${f.name}`;
+          const { data: pub } = supabase.storage.from("itinerary-images").getPublicUrl(path);
+          return { url: pub.publicUrl, name: f.name };
+        });
+      setCityBank(items);
+    } catch (err) {
+      console.error("loadCityBank error:", err);
+      setCityBank([]);
+    } finally {
+      setIsLoadingBank(false);
+    }
+  }, [citySlug]);
+
+  useEffect(() => {
+    if (showImagePanel) loadCityBank();
+  }, [showImagePanel, loadCityBank]);
+
   // --- Image functions ---
   // Helper: upload base64 image to storage and return public URL
   const uploadBase64Image = async (dataUrl: string): Promise<string> => {
