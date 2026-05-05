@@ -636,6 +636,95 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     toast({ title: "↩ Reverted to previous version" });
   };
 
+  // ─── Per-day helpers ───────────────────────────────────────────────
+  // Split markdown into { head, days[], tail } using `## Day N` headings.
+  const splitDays = useCallback((md: string) => {
+    if (!md) return { head: "", days: [] as { title: string; body: string }[], tail: "" };
+    const lines = md.split("\n");
+    let head: string[] = [];
+    const days: { title: string; body: string }[] = [];
+    let current: { title: string; body: string[] } | null = null;
+    let inTail = false;
+    let tail: string[] = [];
+    const dayRe = /^##\s+Day\s+\d+/i;
+    const tailRe = /^##\s+(Practical|What I'll Secure|Notes\b)/i;
+
+    for (const line of lines) {
+      if (!inTail && tailRe.test(line) && days.length > 0) {
+        if (current) { days.push({ title: current.title, body: current.body.join("\n").trim() }); current = null; }
+        inTail = true;
+      }
+      if (inTail) { tail.push(line); continue; }
+      if (dayRe.test(line)) {
+        if (current) days.push({ title: current.title, body: current.body.join("\n").trim() });
+        current = { title: line.replace(/^##\s+/, "").trim(), body: [line] };
+        continue;
+      }
+      if (current) current.body.push(line);
+      else head.push(line);
+    }
+    if (current) days.push({ title: current.title, body: current.body.join("\n").trim() });
+    return { head: head.join("\n").trim(), days, tail: tail.join("\n").trim() };
+  }, []);
+
+  const [activeDayIdx, setActiveDayIdx] = useState<number | null>(null);
+  const [dayInstruction, setDayInstruction] = useState("");
+  const [editingDayIdx, setEditingDayIdx] = useState<number | null>(null);
+
+  const editDay = useCallback(async (idx: number, instruction: string) => {
+    if (!instruction.trim() || editingDayIdx !== null) return;
+    const parts = splitDays(itineraryContent);
+    const day = parts.days[idx];
+    if (!day) return;
+    setEditingDayIdx(idx);
+    try {
+      // Tokenize images in this day so the AI can't drop or move them
+      const imageMap: Record<string, string> = {};
+      let i = 0;
+      const tokenized = day.body.replace(
+        /!\[[^\]]*\]\([^)]+\)(\n\*Photo:[^*\n]*\*)?/g,
+        (full) => { const t = `[[IMG_${i++}]]`; imageMap[t] = full; return t; }
+      );
+      const userMsg: Message = {
+        role: "user",
+        content: `Please revise ONLY the following day section.\n\nADVISOR REQUEST: ${instruction}\n\n--- CURRENT SECTION ---\n${tokenized}\n--- END SECTION ---`,
+      };
+      const revised = await streamChat([userMsg], { mode: "edit-snippet" as any });
+      if (!revised) return;
+      let restored = revised.trim();
+      // Strip accidental code fences
+      restored = restored.replace(/^```(?:markdown)?\n?/i, "").replace(/\n?```$/i, "").trim();
+      for (const [tok, full] of Object.entries(imageMap)) {
+        if (restored.includes(tok)) restored = restored.split(tok).join(full);
+      }
+      // Safety net for any image dropped
+      restored = mergePreserveImages(day.body, restored);
+
+      // Reassemble itinerary with only this day swapped
+      const newDays = parts.days.map((d, k) => (k === idx ? { ...d, body: restored } : d));
+      const next = [parts.head, newDays.map((d) => d.body).join("\n\n---\n\n"), parts.tail]
+        .filter((s) => s && s.trim().length > 0)
+        .join("\n\n");
+      setPreviousItinerary(itineraryContent);
+      updateContent(next);
+      setDayInstruction("");
+      toast({ title: `✨ Day ${idx + 1} updated` });
+    } catch (err: any) {
+      toast({ title: "AI Error", description: err.message, variant: "destructive" });
+    } finally {
+      setEditingDayIdx(null);
+    }
+  }, [itineraryContent, splitDays, streamChat, updateContent, editingDayIdx, toast]);
+
+  const dayQuickPresets: { label: string; emoji: string; prompt: string }[] = [
+    { emoji: "✨", label: "Polish writing", prompt: "Polish the writing in this day — keep the same structure, schedule and bookings; refine prose to a refined, evocative concierge tone (warm, first-person, never floral). Do not add or remove activities." },
+    { emoji: "💎", label: "More premium", prompt: "Elevate this day to feel more bespoke and premium: upgrade the hotel description with one signature perk, suggest a more curated dining venue, and add a subtle concierge touch. Keep timings and the overall flow." },
+    { emoji: "✂️", label: "Shorten", prompt: "Tighten this day. Cut filler words and merge redundant lines. Preserve every activity, time, hotel, image and booking note." },
+    { emoji: "🖼", label: "Add a photo", prompt: "Add ONE additional attraction photo to this day in the Morning or Afternoon section using the format ![alt](https://source.unsplash.com/1200x700/?keyword1,keyword2). Do not change anything else." },
+    { emoji: "🍽", label: "Better dining", prompt: "Improve the dining recommendation(s) for this day with a more memorable, locally-loved option that fits the day's pace. Keep timings." },
+    { emoji: "🚗", label: "Smoother logistics", prompt: "Review the logistics of this day (transfer times, distances, opening hours). Adjust timing or sequence subtly so the day flows better. Don't drop activities." },
+  ];
+
   const handleExportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
