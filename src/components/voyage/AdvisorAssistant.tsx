@@ -1165,7 +1165,16 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
         <div className="bg-voyage-white border border-parchment-3 rounded-lg flex flex-col" style={{ minHeight: 500 }}>
           <div className="px-4 py-3 border-b border-parchment-3 flex justify-between items-center">
             <h3 className="font-serif text-sm font-bold text-ink">{t("aa.previewTitle")}</h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {previousItinerary !== null && !pendingEdit && (
+                <button
+                  onClick={revertEdits}
+                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                  title="Revert the last AI edit"
+                >
+                  ↩ Revert
+                </button>
+              )}
               {itineraryContent && (
                 <>
                   <button
