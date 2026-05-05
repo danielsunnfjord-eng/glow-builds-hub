@@ -61,6 +61,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [itineraryContent, setItineraryContent] = useState("");
   const [attachedFile, setAttachedFile] = useState<{ name: string; content: string } | null>(null);
+  const [chatMode, setChatMode] = useState<"discuss" | "edit">("discuss");
+  const [autoImages, setAutoImages] = useState(true);
+  const [pendingEdit, setPendingEdit] = useState<string | null>(null);
+  const [previousItinerary, setPreviousItinerary] = useState<string | null>(null);
   
   const [showImagePanel, setShowImagePanel] = useState(false);
   const [aiImagePrompt, setAiImagePrompt] = useState("");
