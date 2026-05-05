@@ -108,10 +108,11 @@ MODE: APPLY EDITS (return full revised itinerary)
 The advisor wants you to update the existing itinerary (provided below). Apply ONLY the requested changes.
 
 STRICT PRESERVATION RULES — failure to follow these breaks the advisor's work:
-1. KEEP EVERY EXISTING IMAGE LINE EXACTLY AS-IS — every \`![alt](url)\` markdown line must remain in the output, in the same section, with the same URL. Do NOT remove, replace, or rewrite image URLs (especially Supabase storage URLs the advisor uploaded).
+1. The current itinerary contains image placeholder tokens like [[IMG_0]], [[IMG_1]], [[IMG_2]], etc. These represent real images. You MUST keep every token EXACTLY as written (same spelling, same brackets, same number, on its own line) and in its original position. Do NOT translate, rename, remove, merge, or wrap them in markdown.
 2. KEEP all unchanged days, headings, and prose verbatim. Only modify what the advisor asked you to modify.
-3. If the advisor asks to add a new day or section, generate new image markdown for it (using https://source.unsplash.com/...) — but never substitute Unsplash URLs for existing images.
-4. Output the COMPLETE revised itinerary in the same premium markdown format — no commentary, no preamble, no "Here is the revised itinerary:" intro.`;
+3. If the advisor asks to add a NEW day or section, you may add new image markdown for that new section using \`![alt](https://source.unsplash.com/1200x700/?keywords)\` — but never invent new [[IMG_n]] tokens, and never replace existing tokens with markdown.
+4. If the advisor explicitly asks you to remove or rearrange a day, move the [[IMG_n]] tokens belonging to that day with it (or delete them only if the whole section is deleted).
+5. Output the COMPLETE revised itinerary — no commentary, no preamble, no "Here is the revised itinerary:" intro.`;
 
 const CREATE_MODE_INSTRUCTION = `
 ═══════════════════════════════════════════
