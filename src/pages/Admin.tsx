@@ -612,7 +612,7 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2">
                           {p.itinerary_pdf_path ? (
                             <>
-                              <a href={getPdfUrl(p.itinerary_pdf_path)} target="_blank" rel="noopener noreferrer" className="text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.view")}</a>
+                              <button onClick={() => openPdf(p.itinerary_pdf_path!)} className="text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.view")}</button>
                               <button onClick={() => triggerUpload(p.id)} disabled={uploadingId === p.id} className="text-[0.68rem] text-voyage-muted hover:text-ink transition-colors">
                                 {uploadingId === p.id ? "..." : t("admin.replace")}
                               </button>
