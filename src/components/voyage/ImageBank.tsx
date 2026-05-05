@@ -185,7 +185,6 @@ const ImageBank = () => {
     const targetCity = slugify(targetCityRaw);
     if (!targetCity || targetCity === img.city || !userId) return;
     try {
-      // download
       const blob = await fetch(img.url).then((r) => r.blob());
       const newPath = `${userId}/${targetCity}/${Date.now()}-${img.name.replace(/^\d+-/, "")}`;
       const { error: upErr } = await supabase.storage
@@ -200,6 +199,44 @@ const ImageBank = () => {
       loadAll();
     } catch (err: any) {
       toast({ title: "Move failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const moveMany = async (paths: string[], targetCityRaw: string) => {
+    const targetCity = slugify(targetCityRaw);
+    if (!targetCity || !userId || paths.length === 0) return;
+    const items = images.filter((i) => paths.includes(i.path) && i.city !== targetCity);
+    if (items.length === 0) {
+      toast({ title: "Already in that folder" });
+      return;
+    }
+    setIsMoving(true);
+    let success = 0;
+    try {
+      for (const img of items) {
+        try {
+          const blob = await fetch(img.url).then((r) => r.blob());
+          const newPath = `${userId}/${targetCity}/${Date.now()}-${img.name.replace(/^\d+-/, "")}`;
+          const { error: upErr } = await supabase.storage
+            .from("itinerary-images")
+            .upload(newPath, blob, { contentType: blob.type });
+          if (upErr) throw upErr;
+          const { error: rmErr } = await supabase.storage
+            .from("itinerary-images")
+            .remove([img.path]);
+          if (rmErr) throw rmErr;
+          success++;
+        } catch (e) {
+          // continue with the rest
+        }
+      }
+      toast({ title: `📁 Moved ${success}/${items.length} → ${targetCity}` });
+      setSelected(new Set());
+      loadAll();
+    } finally {
+      setIsMoving(false);
+      setDraggingPaths([]);
+      setDragOverCity(null);
     }
   };
 
