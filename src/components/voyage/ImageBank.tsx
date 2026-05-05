@@ -330,6 +330,12 @@ const ImageBank = () => {
             🗑 Delete {selected.size}
           </button>
         )}
+
+        {selected.size > 0 && (
+          <span className="text-[0.68rem] text-voyage-muted italic">
+            Tip: drag any selected image onto a city to move {selected.size > 1 ? "them all" : "it"}.
+          </span>
+        )}
       </div>
 
       {/* Cities sidebar + grid */}
@@ -347,17 +353,69 @@ const ImageBank = () => {
           {cities.length === 0 && !loading && (
             <p className="text-[0.7rem] text-voyage-muted italic px-2 mt-2">No images yet.</p>
           )}
-          {cities.map(([city, count]) => (
-            <button
-              key={city}
-              onClick={() => setActiveCity(city)}
-              className={`w-full text-left px-3 py-1.5 rounded-md text-[0.78rem] mb-0.5 transition-all capitalize ${
-                activeCity === city ? "bg-gold/15 text-ink font-semibold" : "text-voyage-muted hover:bg-parchment hover:text-ink"
-              }`}
-            >
-              📍 {city.replace(/-/g, " ")} <span className="text-[0.65rem] opacity-60">({count})</span>
-            </button>
-          ))}
+          {cities.map(([city, count]) => {
+            const isDropTarget = dragOverCity === city;
+            return (
+              <button
+                key={city}
+                onClick={() => setActiveCity(city)}
+                onDragOver={(e) => {
+                  if (draggingPaths.length === 0) return;
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverCity !== city) setDragOverCity(city);
+                }}
+                onDragLeave={() => {
+                  if (dragOverCity === city) setDragOverCity(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const paths = draggingPaths.length ? draggingPaths : [];
+                  if (paths.length) moveMany(paths, city);
+                }}
+                className={`w-full text-left px-3 py-1.5 rounded-md text-[0.78rem] mb-0.5 transition-all capitalize ${
+                  isDropTarget
+                    ? "bg-gold/30 text-ink font-semibold ring-2 ring-gold"
+                    : activeCity === city
+                    ? "bg-gold/15 text-ink font-semibold"
+                    : "text-voyage-muted hover:bg-parchment hover:text-ink"
+                }`}
+              >
+                📍 {city.replace(/-/g, " ")} <span className="text-[0.65rem] opacity-60">({count})</span>
+              </button>
+            );
+          })}
+
+          {/* Drop zone: new city */}
+          <button
+            onClick={() => {
+              const name = prompt("New city folder name?");
+              if (name) setActiveCity(slugify(name));
+            }}
+            onDragOver={(e) => {
+              if (draggingPaths.length === 0) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              if (dragOverCity !== "__new__") setDragOverCity("__new__");
+            }}
+            onDragLeave={() => {
+              if (dragOverCity === "__new__") setDragOverCity(null);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const paths = draggingPaths.length ? draggingPaths : [];
+              if (!paths.length) return;
+              const name = prompt("Move to which new city folder?");
+              if (name) moveMany(paths, name);
+            }}
+            className={`w-full text-left px-3 py-1.5 mt-2 rounded-md text-[0.72rem] border border-dashed transition-all ${
+              dragOverCity === "__new__"
+                ? "border-gold bg-gold/20 text-ink"
+                : "border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
+            }`}
+          >
+            ＋ New city / drop here
+          </button>
         </aside>
 
         <main>
