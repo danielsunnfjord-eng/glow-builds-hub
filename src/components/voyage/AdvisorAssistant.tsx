@@ -551,17 +551,42 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       const effectiveMode: "discuss" | "edit" | "create" = !itineraryContent
         ? "create"
         : chatMode;
+
+      // For edit mode: tokenize images so the AI can't drop or move them.
+      // Each image becomes [[IMG_n]] in what we send; we restore after.
+      let itineraryToSend = itineraryContent || undefined;
+      const imageMap: Record<string, string> = {};
+      if (effectiveMode === "edit" && itineraryContent) {
+        let i = 0;
+        itineraryToSend = itineraryContent.replace(
+          /!\[[^\]]*\]\([^)]+\)(\n\*Photo:[^*\n]*\*)?/g,
+          (full) => {
+            const token = `[[IMG_${i++}]]`;
+            imageMap[token] = full;
+            return token;
+          }
+        );
+      }
+
       const content = await streamChat(updatedMessages, {
         mode: effectiveMode,
-        currentItinerary: itineraryContent || undefined,
+        currentItinerary: itineraryToSend,
       });
       if (!content) return;
 
       if (effectiveMode === "create") {
         setItineraryContent(content);
       } else if (effectiveMode === "edit") {
-        // Stage as pending edit — admin must Accept
-        setPendingEdit(content);
+        // Restore tokenized images back into the AI response in their positions
+        let restored = content;
+        for (const [token, full] of Object.entries(imageMap)) {
+          if (restored.includes(token)) {
+            restored = restored.split(token).join(full);
+          }
+        }
+        // Safety net: if AI dropped a token, append the missing image at end
+        restored = mergePreserveImages(itineraryContent, restored);
+        setPendingEdit(restored);
       }
       // discuss mode: do nothing to itineraryContent (chat-only)
     } catch (err: any) {
