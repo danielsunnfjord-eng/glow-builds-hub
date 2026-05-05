@@ -1588,7 +1588,89 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 );
               })()}
             </div>
-          )}
+                )}
+
+                {/* ─── Per-day quick actions ─── */}
+                {(() => {
+                  const parts = splitDays(itineraryContent);
+                  if (parts.days.length === 0) return null;
+                  return (
+                    <div className="mx-4 mb-4 rounded-lg border border-parchment-3 bg-parchment/40">
+                      <div className="px-3 py-2 border-b border-parchment-3 flex items-center justify-between gap-2">
+                        <p className="text-[0.65rem] font-semibold tracking-[0.12em] uppercase text-voyage-muted">
+                          ✨ Per-day AI actions
+                        </p>
+                        <p className="text-[0.6rem] text-voyage-muted italic">
+                          Targets one day at a time — the rest stays untouched.
+                        </p>
+                      </div>
+                      <div className="p-2 flex flex-wrap gap-1.5">
+                        {parts.days.map((d, idx) => {
+                          const isOpen = activeDayIdx === idx;
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => setActiveDayIdx(isOpen ? null : idx)}
+                              className={`px-2.5 py-1 rounded-md text-[0.7rem] font-semibold transition-colors ${
+                                isOpen
+                                  ? "bg-gold text-ink"
+                                  : "bg-voyage-white border border-parchment-3 text-ink hover:border-gold"
+                              }`}
+                              title={d.title}
+                            >
+                              Day {idx + 1}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {activeDayIdx !== null && parts.days[activeDayIdx] && (
+                        <div className="border-t border-parchment-3 p-3 space-y-2 bg-voyage-white/50">
+                          <p className="text-[0.72rem] text-ink font-semibold truncate">
+                            {parts.days[activeDayIdx].title}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {dayQuickPresets.map((p) => (
+                              <button
+                                key={p.label}
+                                onClick={() => editDay(activeDayIdx, p.prompt)}
+                                disabled={editingDayIdx !== null}
+                                className="px-2.5 py-1 rounded-full text-[0.68rem] border border-parchment-3 text-ink bg-voyage-white hover:border-gold hover:text-gold transition-colors disabled:opacity-40"
+                              >
+                                {p.emoji} {p.label}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={dayInstruction}
+                              onChange={(e) => setDayInstruction(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && dayInstruction.trim()) {
+                                  editDay(activeDayIdx, dayInstruction);
+                                }
+                              }}
+                              placeholder="Or describe a specific change for this day…"
+                              className="flex-1 px-2.5 py-1.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.75rem] focus:outline-none focus:border-gold"
+                            />
+                            <button
+                              onClick={() => editDay(activeDayIdx, dayInstruction)}
+                              disabled={!dayInstruction.trim() || editingDayIdx !== null}
+                              className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2 disabled:opacity-40"
+                            >
+                              {editingDayIdx === activeDayIdx ? "⏳…" : "Apply"}
+                            </button>
+                          </div>
+                          {editingDayIdx === activeDayIdx && (
+                            <p className="text-[0.65rem] text-voyage-muted italic">
+                              Revising Day {activeDayIdx + 1} — images are preserved automatically.
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
           <div className="flex-1 overflow-y-auto max-h-[500px]">
             {itineraryContent ? (
