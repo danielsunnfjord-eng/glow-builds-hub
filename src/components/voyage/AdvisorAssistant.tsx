@@ -345,7 +345,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
   // --- Chat functions ---
   const streamChat = useCallback(
-    async (userMessages: Message[]) => {
+    async (userMessages: Message[], opts?: { mode?: "discuss" | "edit" | "create"; currentItinerary?: string }) => {
       const projectContext = selectedProject
         ? {
             clientName: selectedProject.client_name,
@@ -358,7 +358,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             endDate: selectedProject.end_date,
             estimatedBudget: selectedProject.estimated_budget,
             price: selectedProject.price,
-            notes: selectedProject.notes, // includes interests, accommodation, pace, mobility, dietary, must-have, children ages
+            notes: selectedProject.notes,
           }
         : undefined;
 
@@ -378,6 +378,9 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           messages: userMessages,
           projectContext,
           language: langMap[i18n.language] || "English",
+          mode: opts?.mode,
+          currentItinerary: opts?.currentItinerary,
+          autoImages,
         }),
       });
 
@@ -428,7 +431,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
       }
       return assistantContent;
     },
-    [selectedProject, i18n.language]
+    [selectedProject, i18n.language, autoImages]
   );
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
