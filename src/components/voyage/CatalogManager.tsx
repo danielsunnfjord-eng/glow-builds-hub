@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AiAssistantPanel from "./AiAssistantPanel";
+import TranslateBar from "./TranslateBar";
 
 interface CatalogItem {
   id: string;
@@ -385,6 +386,8 @@ const CatalogManager = () => {
                   />
                 </div>
               </div>
+
+              <TranslateBar editing={editing} setEditing={setEditing} />
 
               {/* Titles */}
               <div className="grid grid-cols-3 gap-4">
