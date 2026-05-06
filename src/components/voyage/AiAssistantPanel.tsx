@@ -242,29 +242,42 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       toast({ title: "No PDF attached yet" });
       return;
     }
-    // Open the tab SYNCHRONOUSLY (inside the click handler) to avoid popup blockers,
-    // then set its location once we have the signed URL.
+    // Open the tab SYNCHRONOUSLY (avoids popup blockers), then load a blob: URL
+    // (avoids ad/tracker blockers like Edge SmartScreen blocking *.supabase.co).
     const win = window.open("about:blank", "_blank");
     setPreviewing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
-        body: { mode: "signed_url", pdf_path: editing.pdf_path },
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess?.session?.access_token;
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-catalog-pdf`;
+      const r = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ mode: "fetch_pdf", pdf_path: editing.pdf_path }),
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (!r.ok) {
+        const t = await r.text();
+        throw new Error(t || `HTTP ${r.status}`);
+      }
+      const blob = await r.blob();
+      const blobUrl = URL.createObjectURL(blob);
       if (win && !win.closed) {
-        win.location.href = data.url;
+        win.location.href = blobUrl;
       } else {
-        // Popup was blocked — fall back to a temporary link click
         const a = document.createElement("a");
-        a.href = data.url;
+        a.href = blobUrl;
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         document.body.appendChild(a);
         a.click();
         a.remove();
-        toast({ title: "If nothing opened", description: "Allow popups for this site to preview PDFs." });
       }
+      // Revoke after a delay so the new tab has time to load it
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (e: any) {
       if (win && !win.closed) win.close();
       toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
