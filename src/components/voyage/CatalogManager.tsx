@@ -361,6 +361,8 @@ const CatalogManager = () => {
             </div>
 
             <div className="p-6 space-y-6">
+              <AiAssistantPanel editing={editing} setEditing={setEditing} />
+
               {/* Basics */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
