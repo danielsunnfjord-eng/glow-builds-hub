@@ -13,11 +13,15 @@ type LangCode = typeof LANGS[number]["code"];
 interface Props {
   editing: any;
   setEditing: (v: any) => void;
+  editLang?: LangCode;
+  setEditLang?: (v: LangCode) => void;
 }
 
-const TranslateBar = ({ editing, setEditing }: Props) => {
+const TranslateBar = ({ editing, setEditing, editLang, setEditLang }: Props) => {
   const { toast } = useToast();
-  const [source, setSource] = useState<LangCode>("en");
+  const [internalSource, setInternalSource] = useState<LangCode>("en");
+  const source = editLang ?? internalSource;
+  const setSource = setEditLang ?? setInternalSource;
   const [busy, setBusy] = useState(false);
 
   const sourceFilled = () => {
@@ -72,22 +76,29 @@ const TranslateBar = ({ editing, setEditing }: Props) => {
       <span className="text-[0.78rem] font-medium text-ink">
         🌐 Write in one language → AI fills the others
       </span>
-      <div className="flex items-center gap-2 ml-auto">
-        <label className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted">I'm writing in</label>
-        <select
-          value={source}
-          onChange={(e) => setSource(e.target.value as LangCode)}
-          className="px-2 py-1.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.78rem] focus:outline-none focus:border-gold"
-        >
+      <div className="flex items-center gap-2 ml-auto flex-wrap">
+        <label className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted">Editing in</label>
+        <div className="flex rounded-sm overflow-hidden border border-parchment-3">
           {LANGS.map((l) => (
-            <option key={l.code} value={l.code}>{l.label}</option>
+            <button
+              key={l.code}
+              type="button"
+              onClick={() => setSource(l.code)}
+              className={`px-3 py-1.5 text-[0.72rem] font-medium tracking-[0.05em] uppercase transition-colors ${
+                source === l.code
+                  ? "bg-ink text-voyage-white"
+                  : "bg-voyage-white text-ink hover:bg-parchment-2"
+              }`}
+            >
+              {l.label}
+            </button>
           ))}
-        </select>
+        </div>
         <button
           type="button"
           onClick={translate}
           disabled={busy}
-          className="px-4 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.7rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+          className="px-4 py-1.5 rounded-sm bg-gold text-ink text-[0.7rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
         >
           {busy ? "Translating…" : "Translate to other languages"}
         </button>
