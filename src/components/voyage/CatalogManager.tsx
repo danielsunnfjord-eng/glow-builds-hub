@@ -386,6 +386,8 @@ const CatalogManager = () => {
                 </div>
               </div>
 
+              <TranslateBar editing={editing} setEditing={setEditing} />
+
               {/* Titles */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
