@@ -14,6 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
+      catalog_itineraries: {
+        Row: {
+          created_at: string
+          description_en: string
+          description_no: string | null
+          description_pt: string | null
+          destination: string | null
+          duration: string | null
+          estimated_trip_budget: string | null
+          gallery_images: Json
+          group_size_label: string | null
+          hero_image_url: string | null
+          id: string
+          is_published: boolean
+          pdf_path: string | null
+          price_eur: number
+          slug: string
+          sort_order: number
+          summary_en: string
+          summary_no: string | null
+          summary_pt: string | null
+          title_en: string
+          title_no: string | null
+          title_pt: string | null
+          updated_at: string
+          what_you_get_en: string
+          what_you_get_no: string | null
+          what_you_get_pt: string | null
+        }
+        Insert: {
+          created_at?: string
+          description_en?: string
+          description_no?: string | null
+          description_pt?: string | null
+          destination?: string | null
+          duration?: string | null
+          estimated_trip_budget?: string | null
+          gallery_images?: Json
+          group_size_label?: string | null
+          hero_image_url?: string | null
+          id?: string
+          is_published?: boolean
+          pdf_path?: string | null
+          price_eur?: number
+          slug: string
+          sort_order?: number
+          summary_en?: string
+          summary_no?: string | null
+          summary_pt?: string | null
+          title_en: string
+          title_no?: string | null
+          title_pt?: string | null
+          updated_at?: string
+          what_you_get_en?: string
+          what_you_get_no?: string | null
+          what_you_get_pt?: string | null
+        }
+        Update: {
+          created_at?: string
+          description_en?: string
+          description_no?: string | null
+          description_pt?: string | null
+          destination?: string | null
+          duration?: string | null
+          estimated_trip_budget?: string | null
+          gallery_images?: Json
+          group_size_label?: string | null
+          hero_image_url?: string | null
+          id?: string
+          is_published?: boolean
+          pdf_path?: string | null
+          price_eur?: number
+          slug?: string
+          sort_order?: number
+          summary_en?: string
+          summary_no?: string | null
+          summary_pt?: string | null
+          title_en?: string
+          title_no?: string | null
+          title_pt?: string | null
+          updated_at?: string
+          what_you_get_en?: string
+          what_you_get_no?: string | null
+          what_you_get_pt?: string | null
+        }
+        Relationships: []
+      }
+      catalog_purchases: {
+        Row: {
+          amount_total: number
+          created_at: string
+          currency: string
+          customer_email: string
+          customer_name: string | null
+          download_count: number
+          download_expires_at: string | null
+          download_token: string
+          id: string
+          itinerary_id: string
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_total: number
+          created_at?: string
+          currency?: string
+          customer_email: string
+          customer_name?: string | null
+          download_count?: number
+          download_expires_at?: string | null
+          download_token?: string
+          id?: string
+          itinerary_id: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_total?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string
+          customer_name?: string | null
+          download_count?: number
+          download_expires_at?: string | null
+          download_token?: string
+          id?: string
+          itinerary_id?: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_purchases_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_projects: {
         Row: {
           client_email: string | null
@@ -439,6 +582,20 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_purchase_by_token: {
+        Args: { _token: string }
+        Returns: {
+          amount_total: number
+          currency: string
+          customer_email: string
+          download_expires_at: string
+          id: string
+          itinerary_id: string
+          itinerary_slug: string
+          itinerary_title: string
+          status: string
+        }[]
       }
       get_shared_itinerary: {
         Args: { _token: string }
