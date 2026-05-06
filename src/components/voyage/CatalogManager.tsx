@@ -66,6 +66,7 @@ const CatalogManager = () => {
   const qc = useQueryClient();
   const { toast } = useToast();
   const [editing, setEditing] = useState<Partial<CatalogItem> | null>(null);
+  const [editLang, setEditLang] = useState<"en" | "pt" | "no">("en");
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
