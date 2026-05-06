@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import { Slider } from "@/components/ui/slider";
 
 interface CatalogItem {
   id: string;
@@ -55,6 +57,75 @@ const ItinerariesShop = () => {
     },
   });
 
+  // Filter state
+  const [search, setSearch] = useState("");
+  const [destination, setDestination] = useState("");
+  const [filterLang, setFilterLang] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number] | null>(null);
+
+  const { destinations, priceBounds } = useMemo(() => {
+    const dests = new Set<string>();
+    let min = Infinity;
+    let max = 0;
+    (data ?? []).forEach((d) => {
+      if (d.destination) dests.add(d.destination);
+      const p = Number(d.price_eur) || 0;
+      if (p < min) min = p;
+      if (p > max) max = p;
+    });
+    if (!isFinite(min)) min = 0;
+    if (max < min) max = min;
+    return {
+      destinations: Array.from(dests).sort((a, b) => a.localeCompare(b)),
+      priceBounds: [Math.floor(min), Math.ceil(max)] as [number, number],
+    };
+  }, [data]);
+
+  // Initialize price range when bounds change
+  useEffect(() => {
+    if (data && priceRange === null) {
+      setPriceRange(priceBounds);
+    }
+  }, [data, priceBounds, priceRange]);
+
+  const effectiveRange = priceRange ?? priceBounds;
+
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const q = search.trim().toLowerCase();
+    return data.filter((d) => {
+      if (destination && d.destination !== destination) return false;
+      if (filterLang === "pt" && !d.title_pt) return false;
+      if (filterLang === "no" && !d.title_no) return false;
+      if (filterLang === "en" && !d.title_en) return false;
+      const price = Number(d.price_eur) || 0;
+      if (price < effectiveRange[0] || price > effectiveRange[1]) return false;
+      if (q) {
+        const hay = [
+          d.title_en, d.title_pt, d.title_no,
+          d.summary_en, d.summary_pt, d.summary_no,
+          d.destination, d.duration,
+        ].filter(Boolean).join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [data, search, destination, filterLang, effectiveRange]);
+
+  const hasActiveFilters =
+    search !== "" ||
+    destination !== "" ||
+    filterLang !== "" ||
+    (priceRange !== null &&
+      (priceRange[0] !== priceBounds[0] || priceRange[1] !== priceBounds[1]));
+
+  const resetFilters = () => {
+    setSearch("");
+    setDestination("");
+    setFilterLang("");
+    setPriceRange(priceBounds);
+  };
+
   return (
     <div className="min-h-screen bg-parchment">
       <Navbar />
@@ -70,10 +141,97 @@ const ItinerariesShop = () => {
           </h1>
         </ScrollReveal>
         <ScrollReveal>
-          <p className="text-[0.95rem] text-voyage-muted max-w-[560px] leading-relaxed mb-12">
+          <p className="text-[0.95rem] text-voyage-muted max-w-[560px] leading-relaxed mb-10">
             {t("shop.subtitle")}
           </p>
         </ScrollReveal>
+
+        {!isLoading && (data?.length ?? 0) > 0 && (
+          <div className="mb-10 border border-ink/10 bg-voyage-white rounded-lg p-5 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+              {/* Search */}
+              <div className="md:col-span-4">
+                <label className="block text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-voyage-muted mb-2">
+                  {t("shop.filters.search").replace("…", "")}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-voyage-muted" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={t("shop.filters.search")}
+                    className="w-full pl-9 pr-3 py-2.5 text-[0.85rem] bg-parchment border border-ink/10 rounded-sm focus:outline-none focus:border-gold text-ink"
+                  />
+                </div>
+              </div>
+
+              {/* Destination */}
+              <div className="md:col-span-3">
+                <label className="block text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-voyage-muted mb-2">
+                  {t("shop.filters.destination")}
+                </label>
+                <select
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="w-full px-3 py-2.5 text-[0.85rem] bg-parchment border border-ink/10 rounded-sm focus:outline-none focus:border-gold text-ink"
+                >
+                  <option value="">{t("shop.filters.allDestinations")}</option>
+                  {destinations.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Language */}
+              <div className="md:col-span-2">
+                <label className="block text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-voyage-muted mb-2">
+                  {t("shop.filters.language")}
+                </label>
+                <select
+                  value={filterLang}
+                  onChange={(e) => setFilterLang(e.target.value)}
+                  className="w-full px-3 py-2.5 text-[0.85rem] bg-parchment border border-ink/10 rounded-sm focus:outline-none focus:border-gold text-ink"
+                >
+                  <option value="">{t("shop.filters.anyLanguage")}</option>
+                  <option value="en">English</option>
+                  <option value="pt">Português</option>
+                  <option value="no">Norsk</option>
+                </select>
+              </div>
+
+              {/* Price */}
+              <div className="md:col-span-3">
+                <label className="block text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-voyage-muted mb-2">
+                  {t("shop.filters.priceRange")}: €{effectiveRange[0]} – €{effectiveRange[1]}
+                </label>
+                <Slider
+                  min={priceBounds[0]}
+                  max={priceBounds[1]}
+                  step={1}
+                  value={effectiveRange}
+                  onValueChange={(v) => setPriceRange([v[0], v[1]] as [number, number])}
+                  className="py-2"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-parchment-3">
+              <span className="text-[0.75rem] text-voyage-muted">
+                {t("shop.filters.resultsCount", { count: filtered.length })}
+              </span>
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilters}
+                  className="inline-flex items-center gap-1.5 text-[0.72rem] font-medium tracking-[0.1em] uppercase text-ink hover:text-gold transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                  {t("shop.filters.reset")}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -100,8 +258,22 @@ const ItinerariesShop = () => {
           </div>
         )}
 
+        {!isLoading && (data?.length ?? 0) > 0 && filtered.length === 0 && (
+          <div className="border border-ink/10 bg-voyage-white rounded-lg p-12 text-center">
+            <p className="text-[0.9rem] text-voyage-muted mb-4">
+              {t("shop.filters.noMatches")}
+            </p>
+            <button
+              onClick={resetFilters}
+              className="inline-block px-6 py-3 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+            >
+              {t("shop.filters.reset")}
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {data?.map((trip) => {
+          {filtered.map((trip) => {
             const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no) || trip.title_en;
             const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no) || trip.summary_en;
             return (
