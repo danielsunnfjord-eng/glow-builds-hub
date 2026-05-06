@@ -387,71 +387,41 @@ const CatalogManager = () => {
                 </div>
               </div>
 
-              <TranslateBar editing={editing} setEditing={setEditing} />
+              <TranslateBar editing={editing} setEditing={setEditing} editLang={editLang} setEditLang={setEditLang} />
 
-              {/* Titles */}
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={label}>Title (EN) *</label>
-                  <input className={input} value={editing.title_en || ""} onChange={(e) => setEditing({ ...editing, title_en: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Title (PT)</label>
-                  <input className={input} value={editing.title_pt || ""} onChange={(e) => setEditing({ ...editing, title_pt: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Title (NO)</label>
-                  <input className={input} value={editing.title_no || ""} onChange={(e) => setEditing({ ...editing, title_no: e.target.value })} />
-                </div>
-              </div>
-
-              {/* Summaries */}
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={label}>Summary (EN)</label>
-                  <textarea className={input + " min-h-[80px]"} value={editing.summary_en || ""} onChange={(e) => setEditing({ ...editing, summary_en: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Summary (PT)</label>
-                  <textarea className={input + " min-h-[80px]"} value={editing.summary_pt || ""} onChange={(e) => setEditing({ ...editing, summary_pt: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Summary (NO)</label>
-                  <textarea className={input + " min-h-[80px]"} value={editing.summary_no || ""} onChange={(e) => setEditing({ ...editing, summary_no: e.target.value })} />
-                </div>
-              </div>
-
-              {/* Descriptions */}
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={label}>Description (EN)</label>
-                  <textarea className={input + " min-h-[160px]"} value={editing.description_en || ""} onChange={(e) => setEditing({ ...editing, description_en: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Description (PT)</label>
-                  <textarea className={input + " min-h-[160px]"} value={editing.description_pt || ""} onChange={(e) => setEditing({ ...editing, description_pt: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>Description (NO)</label>
-                  <textarea className={input + " min-h-[160px]"} value={editing.description_no || ""} onChange={(e) => setEditing({ ...editing, description_no: e.target.value })} />
-                </div>
-              </div>
-
-              {/* What you get (one per line) */}
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className={label}>What you get (EN — one per line)</label>
-                  <textarea className={input + " min-h-[120px]"} value={editing.what_you_get_en || ""} onChange={(e) => setEditing({ ...editing, what_you_get_en: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>What you get (PT)</label>
-                  <textarea className={input + " min-h-[120px]"} value={editing.what_you_get_pt || ""} onChange={(e) => setEditing({ ...editing, what_you_get_pt: e.target.value })} />
-                </div>
-                <div>
-                  <label className={label}>What you get (NO)</label>
-                  <textarea className={input + " min-h-[120px]"} value={editing.what_you_get_no || ""} onChange={(e) => setEditing({ ...editing, what_you_get_no: e.target.value })} />
-                </div>
-              </div>
+              {(() => {
+                const L = editLang;
+                const langLabel = L === "en" ? "English" : L === "pt" ? "Português" : "Norsk";
+                const otherLangs = (["en", "pt", "no"] as const).filter((c) => c !== L);
+                const filledOther = otherLangs.filter((c) => (editing[`title_${c}`] || editing[`summary_${c}`] || editing[`description_${c}`] || editing[`what_you_get_${c}`]));
+                return (
+                  <>
+                    <div className="space-y-4">
+                      <div>
+                        <label className={label}>Title ({langLabel}) *</label>
+                        <input className={input} value={editing[`title_${L}`] || ""} onChange={(e) => setEditing({ ...editing, [`title_${L}`]: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={label}>Summary ({langLabel})</label>
+                        <textarea className={input + " min-h-[80px]"} value={editing[`summary_${L}`] || ""} onChange={(e) => setEditing({ ...editing, [`summary_${L}`]: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={label}>Description ({langLabel})</label>
+                        <textarea className={input + " min-h-[200px]"} value={editing[`description_${L}`] || ""} onChange={(e) => setEditing({ ...editing, [`description_${L}`]: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={label}>What you get ({langLabel} — one per line)</label>
+                        <textarea className={input + " min-h-[140px]"} value={editing[`what_you_get_${L}`] || ""} onChange={(e) => setEditing({ ...editing, [`what_you_get_${L}`]: e.target.value })} />
+                      </div>
+                    </div>
+                    {filledOther.length > 0 && (
+                      <div className="text-[0.7rem] text-sage">
+                        ✓ Translations already filled for: {filledOther.map((c) => c.toUpperCase()).join(", ")}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
 
               {/* Trip metadata */}
               <div className="grid grid-cols-4 gap-4">
