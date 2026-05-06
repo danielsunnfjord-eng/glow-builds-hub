@@ -204,7 +204,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             <label className={label}>Brief</label>
             <textarea
               className={input + " min-h-[90px]"}
-              placeholder="e.g. 7-day romantic trip along the Norwegian fjords for couples — Bergen, Flåm, Geiranger. Focus on slow travel, scenic train, boutique stays, local seafood. Target price ~€89."
+              placeholder="Write in any language. e.g. 'Roteiro de 7 dias pelos fiordes noruegueses para casais — Bergen, Flåm, Geiranger. Slow travel, trens panorâmicos, hotéis boutique, frutos do mar locais. Preço alvo ~€89.'"
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
             />
