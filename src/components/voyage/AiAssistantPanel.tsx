@@ -21,6 +21,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [genText, setGenText] = useState(false);
   const [genHero, setGenHero] = useState(false);
   const [genGallery, setGenGallery] = useState(false);
+  const [galleryPrompt, setGalleryPrompt] = useState("");
+  const [galleryCount, setGalleryCount] = useState(4);
   const [genPdf, setGenPdf] = useState(false);
   const [pdfLang, setPdfLang] = useState<"en" | "pt" | "no" | "es" | "fr" | "de" | "it">("en");
   const [parsing, setParsing] = useState(false);
@@ -117,16 +119,36 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
   const generateGallery = async () => {
     const base = editing._ai_image_prompt || editing.destination || editing.title_en || brief;
-    if (!base) {
-      toast({ title: "Add destination or generate text first" });
+    if (!base && !galleryPrompt.trim()) {
+      toast({ title: "Add a destination, generate text first, or describe the gallery you want" });
       return;
     }
-    const prompts = [
-      `${base} — local cuisine, beautifully plated dish on rustic table`,
-      `${base} — boutique hotel interior, warm light, premium design`,
-      `${base} — unique landscape detail, soft golden hour`,
-      `${base} — cultural moment, candid scene, atmosphere`,
-    ];
+    const count = Math.min(Math.max(Number(galleryCount) || 4, 1), 6);
+    let prompts: string[];
+    if (galleryPrompt.trim()) {
+      // Split user prompt by newlines — each line is one image. If single line, expand to N variations.
+      const lines = galleryPrompt.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (lines.length >= 2) {
+        prompts = lines.slice(0, count).map((l) => (base ? `${base} — ${l}` : l));
+      } else {
+        const single = lines[0];
+        prompts = Array.from({ length: count }, (_, i) =>
+          base
+            ? `${base} — ${single} (variation ${i + 1}, different angle / composition)`
+            : `${single} (variation ${i + 1}, different angle / composition)`
+        );
+      }
+    } else {
+      const defaults = [
+        `${base} — local cuisine, beautifully plated dish on rustic table`,
+        `${base} — boutique hotel interior, warm light, premium design`,
+        `${base} — unique landscape detail, soft golden hour`,
+        `${base} — cultural moment, candid scene, atmosphere`,
+        `${base} — signature experience, editorial composition`,
+        `${base} — architectural detail, refined aesthetic`,
+      ];
+      prompts = defaults.slice(0, count);
+    }
     setGenGallery(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-catalog-images", {
@@ -265,14 +287,37 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             >
               {genHero ? "Creating…" : "🖼 Generate hero image"}
             </button>
-            <button
-              type="button"
-              onClick={generateGallery}
-              disabled={genGallery}
-              className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
-            >
-              {genGallery ? "Creating…" : "🖼 Generate gallery (4 images)"}
-            </button>
+          </div>
+
+          <div className="border-t border-gold/30 pt-4 space-y-2">
+            <label className={label}>Gallery image prompt (optional)</label>
+            <textarea
+              className={input + " min-h-[70px]"}
+              placeholder={"Describe the kind of gallery images you want.\nExamples:\n- Misty fjord at sunrise from a wooden viewpoint\n- Plate of fresh local seafood, overhead shot\n- Cozy cabin interior with fireplace\n\nTip: one description per line = one image. A single description = N variations."}
+              value={galleryPrompt}
+              onChange={(e) => setGalleryPrompt(e.target.value)}
+            />
+            <div className="flex flex-wrap items-end gap-3">
+              <div>
+                <label className={label}>How many images</label>
+                <select
+                  className={input + " w-auto"}
+                  value={galleryCount}
+                  onChange={(e) => setGalleryCount(Number(e.target.value))}
+                >
+                  {[1,2,3,4,5,6].map((n) => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={generateGallery}
+                disabled={genGallery}
+                className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+              >
+                {genGallery ? "Creating…" : `🖼 Generate gallery (${galleryCount} ${galleryCount === 1 ? "image" : "images"})`}
+              </button>
+              <span className="text-[0.7rem] text-voyage-muted">Leave prompt empty to use smart defaults (cuisine, hotel, landscape, culture…).</span>
+            </div>
           </div>
           <p className="text-[0.7rem] text-voyage-muted">
             ✨ Inputs can be in <strong>any language</strong> (English, Portuguese, Norwegian, Spanish, French…). The AI auto-detects and produces all 3 catalog languages. Existing slug, price and metadata are preserved.
