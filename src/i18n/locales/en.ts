@@ -546,6 +546,13 @@ export default {
         instagram: "@solfure",
         dest: "Rio de Janeiro, one week",
       },
+      {
+        text: "Daniel was our travel guide for a ten-day trip to Rio de Janeiro and Arraial do Cabo, Brazil in January 2026, and did a fantastic job!\n\nWe were warmly welcomed at the airport and brought safely to beautiful Arraial do Cabo for swimming, sun, relaxation and good times. A lovely little town with stunning beaches and azure-blue sea 😎🏝️\n\nThe trip then continued to Rio with city life, attractions, sun and beach time on the menu. Daniel put together a programme full of memorable experiences. SUP at sunrise on Copacabana and surfing on Ipanema beach 🏄🏽‍♂️ Guided tours to Christ the Redeemer, the Selarón Steps, the Museum of Tomorrow and Sugarloaf Mountain 🤩 Cosy restaurants and a samba night 💃🕺\n\nDaniel was a knowledgeable, friendly and lively guide — with great local insight 👏👏 We will remember this trip forever.",
+        author: "Åge Avedal",
+        bio: "From Sunnfjord, Norway.",
+        instagram: "@aageavedal",
+        dest: "Rio de Janeiro & Arraial do Cabo, ten days",
+      },
     ],
   },
 };

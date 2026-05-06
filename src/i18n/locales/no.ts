@@ -531,6 +531,13 @@ export default {
         instagram: "@solfure",
         dest: "Rio de Janeiro, ei veke",
       },
+      {
+        text: "Daniel var reiseguide for oss på ei ti-dagars reise til Rio de Janeiro og Arraial do Cabo, Brasil i januar 2026, og gjorde ein fantastisk jobb!\n\nVi vart tatt godt imot på flyplassen, og kom trygt fram til vakre Arraial do Cabo for bading, sol, avslapping og hygge. Ein vakker småby med nydelege strender og asurblått hav 😎🏝️\n\nTuren gjekk vidare til Rio med byliv, attraksjonar, sol og strandliv på menyen. Daniel sette saman eit program fullt av minneverdige opplevingar. SUP i soloppgangen på Copacabana og surfing på Ipanema-stranda 🏄🏽‍♂️ Guida turar til Kristusstatuen, Lapas-trappa, Framtidsmuseet og Sukkertoppen 🤩 Koselege restaurantar og sambafest 💃🕺\n\nDaniel var ein kyndig, hyggeleg og livlig guide - med god lokalkunnskap 👏👏 Vi kjem til å hugse denne turen for alltid",
+        author: "Åge Avedal",
+        bio: "Frå Sunnfjord, Noreg.",
+        instagram: "@aageavedal",
+        dest: "Rio de Janeiro & Arraial do Cabo, ti dagar",
+      },
     ],
   },
 };

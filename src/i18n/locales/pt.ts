@@ -533,6 +533,13 @@ export default {
         instagram: "@solfure",
         dest: "Rio de Janeiro, uma semana",
       },
+      {
+        text: "Daniel foi nosso guia em uma viagem de dez dias ao Rio de Janeiro e Arraial do Cabo, Brasil, em janeiro de 2026, e fez um trabalho fantástico!\n\nFomos muito bem recebidos no aeroporto e chegamos em segurança à linda Arraial do Cabo para banhos de mar, sol, descanso e boa companhia. Uma cidadezinha encantadora, com praias deslumbrantes e mar azul-turquesa 😎🏝️\n\nA viagem seguiu para o Rio, com vida urbana, atrações, sol e praia no cardápio. Daniel montou um programa repleto de experiências memoráveis. SUP ao nascer do sol em Copacabana e surf na praia de Ipanema 🏄🏽‍♂️ Passeios guiados ao Cristo Redentor, à Escadaria Selarón, ao Museu do Amanhã e ao Pão de Açúcar 🤩 Restaurantes aconchegantes e uma noite de samba 💃🕺\n\nDaniel foi um guia experiente, simpático e cheio de energia — com grande conhecimento local 👏👏 Vamos lembrar dessa viagem para sempre.",
+        author: "Åge Avedal",
+        bio: "De Sunnfjord, Noruega.",
+        instagram: "@aageavedal",
+        dest: "Rio de Janeiro & Arraial do Cabo, dez dias",
+      },
     ],
   },
 };
