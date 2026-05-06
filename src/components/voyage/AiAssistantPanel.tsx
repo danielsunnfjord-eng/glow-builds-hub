@@ -119,16 +119,36 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
   const generateGallery = async () => {
     const base = editing._ai_image_prompt || editing.destination || editing.title_en || brief;
-    if (!base) {
-      toast({ title: "Add destination or generate text first" });
+    if (!base && !galleryPrompt.trim()) {
+      toast({ title: "Add a destination, generate text first, or describe the gallery you want" });
       return;
     }
-    const prompts = [
-      `${base} — local cuisine, beautifully plated dish on rustic table`,
-      `${base} — boutique hotel interior, warm light, premium design`,
-      `${base} — unique landscape detail, soft golden hour`,
-      `${base} — cultural moment, candid scene, atmosphere`,
-    ];
+    const count = Math.min(Math.max(Number(galleryCount) || 4, 1), 6);
+    let prompts: string[];
+    if (galleryPrompt.trim()) {
+      // Split user prompt by newlines — each line is one image. If single line, expand to N variations.
+      const lines = galleryPrompt.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (lines.length >= 2) {
+        prompts = lines.slice(0, count).map((l) => (base ? `${base} — ${l}` : l));
+      } else {
+        const single = lines[0];
+        prompts = Array.from({ length: count }, (_, i) =>
+          base
+            ? `${base} — ${single} (variation ${i + 1}, different angle / composition)`
+            : `${single} (variation ${i + 1}, different angle / composition)`
+        );
+      }
+    } else {
+      const defaults = [
+        `${base} — local cuisine, beautifully plated dish on rustic table`,
+        `${base} — boutique hotel interior, warm light, premium design`,
+        `${base} — unique landscape detail, soft golden hour`,
+        `${base} — cultural moment, candid scene, atmosphere`,
+        `${base} — signature experience, editorial composition`,
+        `${base} — architectural detail, refined aesthetic`,
+      ];
+      prompts = defaults.slice(0, count);
+    }
     setGenGallery(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-catalog-images", {
