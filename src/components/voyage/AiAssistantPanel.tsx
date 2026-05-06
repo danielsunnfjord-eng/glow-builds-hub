@@ -242,6 +242,9 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       toast({ title: "No PDF attached yet" });
       return;
     }
+    // Open the tab SYNCHRONOUSLY (inside the click handler) to avoid popup blockers,
+    // then set its location once we have the signed URL.
+    const win = window.open("about:blank", "_blank");
     setPreviewing(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
@@ -249,8 +252,21 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      window.open(data.url, "_blank", "noopener,noreferrer");
+      if (win && !win.closed) {
+        win.location.href = data.url;
+      } else {
+        // Popup was blocked — fall back to a temporary link click
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast({ title: "If nothing opened", description: "Allow popups for this site to preview PDFs." });
+      }
     } catch (e: any) {
+      if (win && !win.closed) win.close();
       toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
     } finally {
       setPreviewing(false);
