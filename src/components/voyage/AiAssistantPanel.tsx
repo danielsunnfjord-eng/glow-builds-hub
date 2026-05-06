@@ -31,6 +31,15 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [renderingPdf, setRenderingPdf] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [showDraftPreview, setShowDraftPreview] = useState(true);
+
+  // Live-parse the editable JSON for the rough HTML preview
+  let draftPreview: any = null;
+  let draftPreviewError = "";
+  if (draftJson) {
+    try { draftPreview = JSON.parse(draftJson); }
+    catch (e: any) { draftPreviewError = e?.message || "Invalid JSON"; }
+  }
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -485,9 +494,29 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
             {draft && (
               <div className="mt-4 space-y-2">
-                <label className={label}>
-                  Editable draft (JSON) — tweak any text, then render
-                </label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className={label + " mb-0"}>
+                    Editable draft (JSON) — tweak any text, then render
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowDraftPreview((v) => !v)}
+                    className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-ink"
+                  >
+                    {showDraftPreview ? "Hide preview" : "👁 Show preview"}
+                  </button>
+                </div>
+
+                {showDraftPreview && (
+                  <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[60vh] overflow-auto">
+                    {draftPreviewError ? (
+                      <p className="text-[0.75rem] text-red-600">JSON error: {draftPreviewError}</p>
+                    ) : draftPreview ? (
+                      <DraftPreview doc={draftPreview} />
+                    ) : null}
+                  </div>
+                )}
+
                 <textarea
                   className={input + " min-h-[320px] font-mono text-[0.72rem]"}
                   value={draftJson}
