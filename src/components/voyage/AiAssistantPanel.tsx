@@ -21,6 +21,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [genText, setGenText] = useState(false);
   const [genHero, setGenHero] = useState(false);
   const [genGallery, setGenGallery] = useState(false);
+  const [genPdf, setGenPdf] = useState(false);
+  const [pdfLang, setPdfLang] = useState<"en" | "pt" | "no" | "es" | "fr" | "de" | "it">("en");
   const [parsing, setParsing] = useState(false);
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,6 +146,42 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const generatePdf = async () => {
+    const hasInput = brief || urls || docText || editing.title_en || editing.description_en || editing.summary_en;
+    if (!hasInput) {
+      toast({ title: "Add a brief or fill the itinerary fields first", variant: "destructive" });
+      return;
+    }
+    setGenPdf(true);
+    try {
+      const urlList = urls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const itinerary_context = {
+        title: editing.title_en, summary: editing.summary_en, description: editing.description_en,
+        what_you_get: editing.what_you_get_en, destination: editing.destination,
+        duration: editing.duration, group_size_label: editing.group_size_label,
+        estimated_trip_budget: editing.estimated_trip_budget,
+      };
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: {
+          language: pdfLang,
+          brief,
+          urls: urlList,
+          documents_text: docText,
+          hero_image_url: editing.hero_image_url || null,
+          itinerary_context,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setEditing({ ...editing, pdf_path: data.pdf_path });
+      toast({ title: "PDF generated", description: `${data.pages} pages in ${pdfLang.toUpperCase()}. Saved as the itinerary PDF.` });
+    } catch (e: any) {
+      toast({ title: "PDF generation failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setGenPdf(false);
+    }
+  };
+
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
       <button
@@ -166,7 +204,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             <label className={label}>Brief</label>
             <textarea
               className={input + " min-h-[90px]"}
-              placeholder="e.g. 7-day romantic trip along the Norwegian fjords for couples — Bergen, Flåm, Geiranger. Focus on slow travel, scenic train, boutique stays, local seafood. Target price ~€89."
+              placeholder="Write in any language. e.g. 'Roteiro de 7 dias pelos fiordes noruegueses para casais — Bergen, Flåm, Geiranger. Slow travel, trens panorâmicos, hotéis boutique, frutos do mar locais. Preço alvo ~€89.'"
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
             />
@@ -237,8 +275,46 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             </button>
           </div>
           <p className="text-[0.7rem] text-voyage-muted">
-            Text generation fills empty fields and overrides titles/summaries/descriptions/what-you-get in all 3 languages. Existing slug, price and metadata are preserved.
+            ✨ Inputs can be in <strong>any language</strong> (English, Portuguese, Norwegian, Spanish, French…). The AI auto-detects and produces all 3 catalog languages. Existing slug, price and metadata are preserved.
           </p>
+
+          <div className="border-t border-gold/30 pt-4 mt-2">
+            <div className="font-serif font-semibold text-ink text-[0.85rem] mb-2">
+              📄 Generate the downloadable PDF document
+            </div>
+            <p className="text-[0.7rem] text-voyage-muted mb-3">
+              Writes a complete, multi-page itinerary document (cover, day-by-day, practical info) in the language you choose, then attaches it as the PDF customers download after purchase.
+            </p>
+            <div className="flex flex-wrap items-end gap-3">
+              <div>
+                <label className={label}>Output language</label>
+                <select
+                  className={input + " w-auto"}
+                  value={pdfLang}
+                  onChange={(e) => setPdfLang(e.target.value as any)}
+                >
+                  <option value="en">English</option>
+                  <option value="pt">Português (BR)</option>
+                  <option value="no">Norsk (Bokmål)</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                  <option value="de">Deutsch</option>
+                  <option value="it">Italiano</option>
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={generatePdf}
+                disabled={genPdf}
+                className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+              >
+                {genPdf ? "Writing & rendering…" : "📄 Generate PDF document"}
+              </button>
+              {editing.pdf_path && (
+                <span className="text-[0.7rem] text-sage">✓ PDF attached: {editing.pdf_path}</span>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
