@@ -32,3 +32,6 @@ verify_jwt = true
 
 [functions.generate-catalog-pdf]
 verify_jwt = true
+
+[functions.translate-catalog-fields]
+verify_jwt = true
