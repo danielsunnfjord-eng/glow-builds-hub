@@ -13,6 +13,9 @@ import PlanMyTripPage from "./pages/PlanMyTrip.tsx";
 import SharedItinerary from "./pages/SharedItinerary.tsx";
 import Legal from "./pages/Legal.tsx";
 import Unsubscribe from "./pages/Unsubscribe.tsx";
+import ItinerariesShop from "./pages/ItinerariesShop.tsx";
+import ItineraryShopDetail from "./pages/ItineraryShopDetail.tsx";
+import ItineraryShopSuccess from "./pages/ItineraryShopSuccess.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import CookieConsent from "./components/voyage/CookieConsent.tsx";
 
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/privacy" element={<Legal />} />
           <Route path="/terms" element={<Legal />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/itineraries-shop" element={<ItinerariesShop />} />
+          <Route path="/itineraries-shop/success" element={<ItineraryShopSuccess />} />
+          <Route path="/itineraries-shop/:slug" element={<ItineraryShopDetail />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
