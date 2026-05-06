@@ -30,6 +30,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [draftJson, setDraftJson] = useState("");
   const [renderingPdf, setRenderingPdf] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -242,9 +243,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       toast({ title: "No PDF attached yet" });
       return;
     }
-    // Open the tab SYNCHRONOUSLY (avoids popup blockers), then load a blob: URL
-    // (avoids ad/tracker blockers like Edge SmartScreen blocking *.supabase.co).
-    const win = window.open("about:blank", "_blank");
     setPreviewing(true);
     try {
       const { data: sess } = await supabase.auth.getSession();
@@ -265,25 +263,23 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       }
       const blob = await r.blob();
       const blobUrl = URL.createObjectURL(blob);
-      if (win && !win.closed) {
-        win.location.href = blobUrl;
-      } else {
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      }
-      // Revoke after a delay so the new tab has time to load it
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+      setPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return blobUrl;
+      });
+      toast({ title: "Preview ready", description: "The PDF is shown below without opening a blocked tab." });
     } catch (e: any) {
-      if (win && !win.closed) win.close();
       toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
     } finally {
       setPreviewing(false);
     }
+  };
+
+  const closePreview = () => {
+    setPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return "";
+    });
   };
 
   return (
