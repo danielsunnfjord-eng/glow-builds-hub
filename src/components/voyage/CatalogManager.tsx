@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import AiAssistantPanel from "./AiAssistantPanel";
 
 interface CatalogItem {
   id: string;
@@ -361,6 +362,8 @@ const CatalogManager = () => {
             </div>
 
             <div className="p-6 space-y-6">
+              <AiAssistantPanel editing={editing} setEditing={setEditing} />
+
               {/* Basics */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
