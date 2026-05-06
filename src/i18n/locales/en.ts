@@ -43,6 +43,18 @@ export default {
     downloadHint: "This link is valid for 7 days. Save the PDF to your device.",
     paymentFailed: "We couldn't confirm your payment. Please contact us if you were charged.",
     notFound: "Itinerary not found.",
+    filters: {
+      search: "Search itineraries…",
+      destination: "Destination",
+      allDestinations: "All destinations",
+      language: "Available in",
+      anyLanguage: "Any language",
+      priceRange: "Price range",
+      reset: "Reset filters",
+      noMatches: "No itineraries match your filters.",
+      resultsCount: "{{count}} itinerary",
+      resultsCount_plural: "{{count}} itineraries",
+    },
   },
   // Hero
   hero: {
