@@ -552,4 +552,116 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   );
 };
 
+// Rough in-browser preview of the AI-generated itinerary draft JSON.
+// Mirrors the structure rendered server-side by the jsPDF renderer so
+// advisors can review content before triggering a full PDF render.
+const DraftPreview = ({ doc }: { doc: any }) => {
+  if (!doc || typeof doc !== "object") return null;
+  const ov = doc.trip_overview || {};
+  const pi = doc.practical_info || {};
+  const days = Array.isArray(doc.days) ? doc.days : [];
+  const highlights = Array.isArray(doc.highlights) ? doc.highlights : [];
+
+  return (
+    <div className="font-serif text-ink text-[0.85rem] leading-relaxed space-y-6">
+      <header className="text-center border-b border-parchment-3 pb-4">
+        <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold mb-1">
+          Fjord & Waves Travel
+        </p>
+        <h1 className="text-2xl font-semibold">{doc.title || "Untitled itinerary"}</h1>
+        {doc.subtitle && <p className="italic text-voyage-muted mt-1">{doc.subtitle}</p>}
+      </header>
+
+      {doc.intro && (
+        <section>
+          <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Overview</h2>
+          {String(doc.intro).split(/\n\n+/).map((p, i) => (
+            <p key={i} className="mb-2 whitespace-pre-line">{p}</p>
+          ))}
+        </section>
+      )}
+
+      {Object.values(ov).some(Boolean) && (
+        <section>
+          <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Trip details</h2>
+          <dl className="grid grid-cols-[140px_1fr] gap-y-1 text-[0.8rem]">
+            {[
+              ["Destination", ov.destination],
+              ["Duration", ov.duration],
+              ["Best for", ov.best_for],
+              ["Estimated budget", ov.estimated_budget],
+              ["Best season", ov.best_season],
+            ].map(([k, v]) => v ? (
+              <div key={k as string} className="contents">
+                <dt className="font-semibold">{k}</dt>
+                <dd>{v as string}</dd>
+              </div>
+            ) : null)}
+          </dl>
+        </section>
+      )}
+
+      {highlights.length > 0 && (
+        <section>
+          <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Highlights</h2>
+          <ul className="list-disc pl-5 space-y-1">
+            {highlights.map((h: any, i: number) => <li key={i}>{String(h)}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {days.length > 0 && (
+        <section className="space-y-5">
+          <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold">Day by day</h2>
+          {days.map((d: any, i: number) => (
+            <article key={i} className="border-t border-parchment-3 pt-3">
+              <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold">Day {d.day ?? i + 1}</p>
+              <h3 className="text-lg font-semibold">{d.title || ""}</h3>
+              {d.location && <p className="italic text-voyage-muted text-[0.78rem] mb-2">{d.location}</p>}
+              {[
+                ["Morning", d.morning],
+                ["Afternoon", d.afternoon],
+                ["Evening", d.evening],
+                ["Where to stay", d.where_to_stay],
+                ["Where to eat", d.where_to_eat],
+                ["Tips", d.tips],
+              ].map(([k, v]) => v ? (
+                <div key={k as string} className="mt-2">
+                  <p className="text-[0.7rem] uppercase tracking-[0.1em] font-semibold">{k}</p>
+                  <p className="whitespace-pre-line">{v as string}</p>
+                </div>
+              ) : null)}
+            </article>
+          ))}
+        </section>
+      )}
+
+      {Object.values(pi).some(Boolean) && (
+        <section>
+          <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Practical information</h2>
+          {[
+            ["Getting there", pi.getting_there],
+            ["Getting around", pi.getting_around],
+            ["Money", pi.money],
+            ["Language basics", pi.language_basics],
+            ["What to pack", pi.what_to_pack],
+            ["Etiquette", pi.etiquette],
+          ].map(([k, v]) => v ? (
+            <div key={k as string} className="mb-2">
+              <p className="text-[0.7rem] uppercase tracking-[0.1em] font-semibold">{k}</p>
+              <p className="whitespace-pre-line">{v as string}</p>
+            </div>
+          ) : null)}
+        </section>
+      )}
+
+      {doc.closing && (
+        <section className="border-t border-parchment-3 pt-3 italic text-voyage-muted">
+          {doc.closing}
+        </section>
+      )}
+    </div>
+  );
+};
+
 export default AiAssistantPanel;
