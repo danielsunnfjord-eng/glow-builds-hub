@@ -149,8 +149,27 @@ serve(async (req) => {
     }
 
     const body = await req.json();
+    const mode: string = (body.mode || "full").toString(); // "draft" | "render" | "full" | "signed_url"
     const language: string = (body.language || "en").toString();
     const langName = LANG_NAMES[language] || "English";
+
+    // --- Mode: signed_url — returns a short-lived signed URL for an existing PDF ---
+    if (mode === "signed_url") {
+      const pdf_path: string = (body.pdf_path || "").toString();
+      if (!pdf_path) {
+        return new Response(JSON.stringify({ error: "pdf_path required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
+      const { data, error } = await supaService.storage
+        .from("catalog-pdfs")
+        .createSignedUrl(pdf_path, 600);
+      if (error) throw error;
+      return new Response(JSON.stringify({ url: data.signedUrl }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const brief: string = (body.brief || "").toString().slice(0, 6000);
     const urls: string[] = Array.isArray(body.urls) ? body.urls.slice(0, 5) : [];
