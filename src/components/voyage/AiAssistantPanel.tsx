@@ -172,7 +172,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
-  const generatePdf = async () => {
+  const generatePdfDraft = async () => {
     const hasInput = brief || urls || docText || editing.title_en || editing.description_en || editing.summary_en;
     if (!hasInput) {
       toast({ title: "Add a brief or fill the itinerary fields first", variant: "destructive" });
@@ -189,22 +189,71 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       };
       const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
         body: {
+          mode: "draft",
           language: pdfLang,
-          brief,
-          urls: urlList,
-          documents_text: docText,
+          brief, urls: urlList, documents_text: docText,
           hero_image_url: editing.hero_image_url || null,
           itinerary_context,
         },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setEditing({ ...editing, pdf_path: data.pdf_path });
-      toast({ title: "PDF generated", description: `${data.pages} pages in ${pdfLang.toUpperCase()}. Saved as the itinerary PDF.` });
+      setDraft(data.draft);
+      setDraftJson(JSON.stringify(data.draft, null, 2));
+      toast({ title: "Draft ready", description: "Review and edit below, then click Render PDF." });
     } catch (e: any) {
-      toast({ title: "PDF generation failed", description: String(e.message || e), variant: "destructive" });
+      toast({ title: "Draft failed", description: String(e.message || e), variant: "destructive" });
     } finally {
       setGenPdf(false);
+    }
+  };
+
+  const renderPdfFromDraft = async () => {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(draftJson);
+    } catch (e: any) {
+      toast({ title: "Invalid JSON", description: "Please fix the draft JSON before rendering.", variant: "destructive" });
+      return;
+    }
+    setRenderingPdf(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: {
+          mode: "render",
+          language: pdfLang,
+          draft: parsed,
+          hero_image_url: editing.hero_image_url || null,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setEditing({ ...editing, pdf_path: data.pdf_path });
+      toast({ title: "PDF rendered", description: `${data.pages} pages. Attached as the itinerary PDF.` });
+    } catch (e: any) {
+      toast({ title: "Render failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setRenderingPdf(false);
+    }
+  };
+
+  const previewAttachedPdf = async () => {
+    if (!editing.pdf_path) {
+      toast({ title: "No PDF attached yet" });
+      return;
+    }
+    setPreviewing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "signed_url", pdf_path: editing.pdf_path },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (e: any) {
+      toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setPreviewing(false);
     }
   };
 
