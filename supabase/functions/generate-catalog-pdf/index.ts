@@ -171,6 +171,28 @@ serve(async (req) => {
       });
     }
 
+    // --- Mode: fetch_pdf — stream PDF bytes back through the function (avoids domain blockers) ---
+    if (mode === "fetch_pdf") {
+      const pdf_path: string = (body.pdf_path || "").toString();
+      if (!pdf_path) {
+        return new Response(JSON.stringify({ error: "pdf_path required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
+      const { data, error } = await supaService.storage.from("catalog-pdfs").download(pdf_path);
+      if (error) throw error;
+      const buf = new Uint8Array(await data.arrayBuffer());
+      return new Response(buf, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `inline; filename="itinerary.pdf"`,
+        },
+      });
+    }
+
     const brief: string = (body.brief || "").toString().slice(0, 6000);
     const urls: string[] = Array.isArray(body.urls) ? body.urls.slice(0, 5) : [];
     const documentsText: string = (body.documents_text || "").toString().slice(0, 16000);
