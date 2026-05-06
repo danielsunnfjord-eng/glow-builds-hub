@@ -21,6 +21,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [genText, setGenText] = useState(false);
   const [genHero, setGenHero] = useState(false);
   const [genGallery, setGenGallery] = useState(false);
+  const [genPdf, setGenPdf] = useState(false);
+  const [pdfLang, setPdfLang] = useState<"en" | "pt" | "no" | "es" | "fr" | "de" | "it">("en");
   const [parsing, setParsing] = useState(false);
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
