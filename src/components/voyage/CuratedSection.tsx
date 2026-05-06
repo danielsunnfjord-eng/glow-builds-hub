@@ -40,14 +40,11 @@ const CuratedSection = () => {
     { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
   ];
 
-  const isNok = i18n.language === "no";
   const isPt = i18n.language === "pt";
 
   const brlPrices = [200, 300, 500, 750];
-  const nokPrices = [2600, 3150, 4000, 4900];
 
   const fmt = (eur: number, idx: number) => {
-    if (isNok) return `kr ${nokPrices[idx].toLocaleString("nb-NO")}`;
     if (isPt) return `R$ ${brlPrices[idx]}`;
     return `€${eur}`;
   };
