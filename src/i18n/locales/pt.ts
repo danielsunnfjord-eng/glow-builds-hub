@@ -42,6 +42,18 @@ export default {
     downloadHint: "Este link é válido por 7 dias. Salve o PDF no seu dispositivo.",
     paymentFailed: "Não conseguimos confirmar seu pagamento. Entre em contato se foi cobrado.",
     notFound: "Roteiro não encontrado.",
+    filters: {
+      search: "Buscar roteiros…",
+      destination: "Destino",
+      allDestinations: "Todos os destinos",
+      language: "Disponível em",
+      anyLanguage: "Qualquer idioma",
+      priceRange: "Faixa de preço",
+      reset: "Limpar filtros",
+      noMatches: "Nenhum roteiro corresponde aos filtros.",
+      resultsCount: "{{count}} roteiro",
+      resultsCount_plural: "{{count}} roteiros",
+    },
   },
   hero: {
     badge: "Consultor de Viagens · Fora Travel · Credenciado IATA",

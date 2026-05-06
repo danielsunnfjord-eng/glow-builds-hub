@@ -42,6 +42,18 @@ export default {
     downloadHint: "Lenken er gyldig i 7 dager. Lagre PDF-en på enheten din.",
     paymentFailed: "Vi kunne ikke bekrefte betalingen. Kontakt oss hvis du ble belastet.",
     notFound: "Reiseruten ble ikke funnet.",
+    filters: {
+      search: "Søk reiseruter…",
+      destination: "Destinasjon",
+      allDestinations: "Alle destinasjoner",
+      language: "Tilgjengelig på",
+      anyLanguage: "Alle språk",
+      priceRange: "Prisklasse",
+      reset: "Tilbakestill filtre",
+      noMatches: "Ingen reiseruter samsvarer med filtrene.",
+      resultsCount: "{{count}} reiserute",
+      resultsCount_plural: "{{count}} reiseruter",
+    },
   },
   hero: {
     badge: "Reiserådgiver · Fora Travel · IATA-akkreditert",
