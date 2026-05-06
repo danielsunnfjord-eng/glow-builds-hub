@@ -14,3 +14,12 @@ verify_jwt = false
 
 [functions.handle-email-suppression]
 verify_jwt = false
+
+[functions.create-catalog-checkout]
+verify_jwt = false
+
+[functions.verify-catalog-purchase]
+verify_jwt = false
+
+[functions.download-catalog-pdf]
+verify_jwt = false
