@@ -26,6 +26,10 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [genPdf, setGenPdf] = useState(false);
   const [pdfLang, setPdfLang] = useState<"en" | "pt" | "no" | "es" | "fr" | "de" | "it">("en");
   const [parsing, setParsing] = useState(false);
+  const [draft, setDraft] = useState<any | null>(null);
+  const [draftJson, setDraftJson] = useState("");
+  const [renderingPdf, setRenderingPdf] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -168,7 +172,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
-  const generatePdf = async () => {
+  const generatePdfDraft = async () => {
     const hasInput = brief || urls || docText || editing.title_en || editing.description_en || editing.summary_en;
     if (!hasInput) {
       toast({ title: "Add a brief or fill the itinerary fields first", variant: "destructive" });
@@ -185,22 +189,71 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       };
       const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
         body: {
+          mode: "draft",
           language: pdfLang,
-          brief,
-          urls: urlList,
-          documents_text: docText,
+          brief, urls: urlList, documents_text: docText,
           hero_image_url: editing.hero_image_url || null,
           itinerary_context,
         },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setEditing({ ...editing, pdf_path: data.pdf_path });
-      toast({ title: "PDF generated", description: `${data.pages} pages in ${pdfLang.toUpperCase()}. Saved as the itinerary PDF.` });
+      setDraft(data.draft);
+      setDraftJson(JSON.stringify(data.draft, null, 2));
+      toast({ title: "Draft ready", description: "Review and edit below, then click Render PDF." });
     } catch (e: any) {
-      toast({ title: "PDF generation failed", description: String(e.message || e), variant: "destructive" });
+      toast({ title: "Draft failed", description: String(e.message || e), variant: "destructive" });
     } finally {
       setGenPdf(false);
+    }
+  };
+
+  const renderPdfFromDraft = async () => {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(draftJson);
+    } catch (e: any) {
+      toast({ title: "Invalid JSON", description: "Please fix the draft JSON before rendering.", variant: "destructive" });
+      return;
+    }
+    setRenderingPdf(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: {
+          mode: "render",
+          language: pdfLang,
+          draft: parsed,
+          hero_image_url: editing.hero_image_url || null,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setEditing({ ...editing, pdf_path: data.pdf_path });
+      toast({ title: "PDF rendered", description: `${data.pages} pages. Attached as the itinerary PDF.` });
+    } catch (e: any) {
+      toast({ title: "Render failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setRenderingPdf(false);
+    }
+  };
+
+  const previewAttachedPdf = async () => {
+    if (!editing.pdf_path) {
+      toast({ title: "No PDF attached yet" });
+      return;
+    }
+    setPreviewing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "signed_url", pdf_path: editing.pdf_path },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (e: any) {
+      toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setPreviewing(false);
     }
   };
 
@@ -325,10 +378,10 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
           <div className="border-t border-gold/30 pt-4 mt-2">
             <div className="font-serif font-semibold text-ink text-[0.85rem] mb-2">
-              📄 Generate the downloadable PDF document
+              📄 Downloadable PDF document
             </div>
             <p className="text-[0.7rem] text-voyage-muted mb-3">
-              Writes a complete, multi-page itinerary document (cover, day-by-day, practical info) in the language you choose, then attaches it as the PDF customers download after purchase.
+              Two-step flow: <strong>1)</strong> AI writes a full draft (cover, day-by-day, practical info) in the language you choose. <strong>2)</strong> Review &amp; edit the draft below. <strong>3)</strong> Render it into the final PDF customers download after purchase.
             </p>
             <div className="flex flex-wrap items-end gap-3">
               <div>
@@ -349,16 +402,60 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               </div>
               <button
                 type="button"
-                onClick={generatePdf}
+                onClick={generatePdfDraft}
                 disabled={genPdf}
                 className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
               >
-                {genPdf ? "Writing & rendering…" : "📄 Generate PDF document"}
+                {genPdf ? "Writing draft…" : draft ? "↻ Re-generate draft" : "✍️ 1. Generate draft"}
               </button>
               {editing.pdf_path && (
-                <span className="text-[0.7rem] text-sage">✓ PDF attached: {editing.pdf_path}</span>
+                <button
+                  type="button"
+                  onClick={previewAttachedPdf}
+                  disabled={previewing}
+                  className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                >
+                  {previewing ? "Opening…" : "👁 Preview attached PDF"}
+                </button>
+              )}
+              {editing.pdf_path && (
+                <span className="text-[0.7rem] text-sage">✓ Attached: {editing.pdf_path}</span>
               )}
             </div>
+
+            {draft && (
+              <div className="mt-4 space-y-2">
+                <label className={label}>
+                  Editable draft (JSON) — tweak any text, then render
+                </label>
+                <textarea
+                  className={input + " min-h-[320px] font-mono text-[0.72rem]"}
+                  value={draftJson}
+                  onChange={(e) => setDraftJson(e.target.value)}
+                  spellCheck={false}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={renderPdfFromDraft}
+                    disabled={renderingPdf}
+                    className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                  >
+                    {renderingPdf ? "Rendering…" : "📄 2. Render PDF from this draft"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setDraft(null); setDraftJson(""); }}
+                    className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                  >
+                    Discard draft
+                  </button>
+                  <span className="text-[0.7rem] text-voyage-muted self-center">
+                    Edit titles, day text, where_to_eat, tips, practical info, etc. Keep the JSON shape intact.
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

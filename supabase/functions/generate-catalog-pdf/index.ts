@@ -149,8 +149,27 @@ serve(async (req) => {
     }
 
     const body = await req.json();
+    const mode: string = (body.mode || "full").toString(); // "draft" | "render" | "full" | "signed_url"
     const language: string = (body.language || "en").toString();
     const langName = LANG_NAMES[language] || "English";
+
+    // --- Mode: signed_url — returns a short-lived signed URL for an existing PDF ---
+    if (mode === "signed_url") {
+      const pdf_path: string = (body.pdf_path || "").toString();
+      if (!pdf_path) {
+        return new Response(JSON.stringify({ error: "pdf_path required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
+      const { data, error } = await supaService.storage
+        .from("catalog-pdfs")
+        .createSignedUrl(pdf_path, 600);
+      if (error) throw error;
+      return new Response(JSON.stringify({ url: data.signedUrl }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const brief: string = (body.brief || "").toString().slice(0, 6000);
     const urls: string[] = Array.isArray(body.urls) ? body.urls.slice(0, 5) : [];
@@ -158,56 +177,68 @@ serve(async (req) => {
     const heroImageUrl: string | null = body.hero_image_url || null;
     const itineraryContext: any = body.itinerary_context || null; // existing fields the editor already filled
 
-    const urlTexts = await Promise.all(urls.map(async (u) => `# Source: ${u}\n${await fetchUrlText(u)}`));
-
-    const ctxBlocks: string[] = [];
-    if (itineraryContext) {
-      ctxBlocks.push("EXISTING CATALOG CONTENT (use as the canonical source of truth — expand into a full document):\n" +
-        JSON.stringify(itineraryContext, null, 2));
-    }
-    if (brief) ctxBlocks.push(`ADVISOR BRIEF:\n${brief}`);
-    if (documentsText) ctxBlocks.push(`UPLOADED DOCUMENT EXCERPT:\n${documentsText}`);
-    if (urlTexts.length) ctxBlocks.push(`REFERENCE URL CONTENT:\n${urlTexts.join("\n\n").slice(0, 16000)}`);
-
-    if (!ctxBlocks.length) {
-      return new Response(JSON.stringify({ error: "Provide a brief, document, URL or existing itinerary content." }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-pro",
-        messages: [
-          { role: "system", content: SYSTEM(langName) },
-          { role: "user", content: ctxBlocks.join("\n\n---\n\n") + `\n\nNow write the complete itinerary document in ${langName}. Return STRICT JSON only.` },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
-
-    if (!aiResp.ok) {
-      const t = await aiResp.text();
-      const status = aiResp.status === 429 || aiResp.status === 402 ? aiResp.status : 500;
-      const msg = aiResp.status === 429 ? "Rate limit reached, please try again shortly." :
-                  aiResp.status === 402 ? "AI credits exhausted." :
-                  `AI gateway error: ${t.slice(0, 300)}`;
-      return new Response(JSON.stringify({ error: msg }), {
-        status, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const aiData = await aiResp.json();
-    const content = aiData.choices?.[0]?.message?.content || "{}";
     let doc: any;
-    try {
-      doc = JSON.parse(content);
-    } catch {
-      // Try to recover JSON from inside fences
-      const m = content.match(/\{[\s\S]*\}/);
-      doc = m ? JSON.parse(m[0]) : {};
+
+    if (mode === "render" && body.draft) {
+      // Skip AI — use provided edited draft directly
+      doc = body.draft;
+    } else {
+      const urlTexts = await Promise.all(urls.map(async (u) => `# Source: ${u}\n${await fetchUrlText(u)}`));
+
+      const ctxBlocks: string[] = [];
+      if (itineraryContext) {
+        ctxBlocks.push("EXISTING CATALOG CONTENT (use as the canonical source of truth — expand into a full document):\n" +
+          JSON.stringify(itineraryContext, null, 2));
+      }
+      if (brief) ctxBlocks.push(`ADVISOR BRIEF:\n${brief}`);
+      if (documentsText) ctxBlocks.push(`UPLOADED DOCUMENT EXCERPT:\n${documentsText}`);
+      if (urlTexts.length) ctxBlocks.push(`REFERENCE URL CONTENT:\n${urlTexts.join("\n\n").slice(0, 16000)}`);
+
+      if (!ctxBlocks.length) {
+        return new Response(JSON.stringify({ error: "Provide a brief, document, URL or existing itinerary content." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-pro",
+          messages: [
+            { role: "system", content: SYSTEM(langName) },
+            { role: "user", content: ctxBlocks.join("\n\n---\n\n") + `\n\nNow write the complete itinerary document in ${langName}. Return STRICT JSON only.` },
+          ],
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!aiResp.ok) {
+        const t = await aiResp.text();
+        const status = aiResp.status === 429 || aiResp.status === 402 ? aiResp.status : 500;
+        const msg = aiResp.status === 429 ? "Rate limit reached, please try again shortly." :
+                    aiResp.status === 402 ? "AI credits exhausted." :
+                    `AI gateway error: ${t.slice(0, 300)}`;
+        return new Response(JSON.stringify({ error: msg }), {
+          status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiData = await aiResp.json();
+      const content = aiData.choices?.[0]?.message?.content || "{}";
+      try {
+        doc = JSON.parse(content);
+      } catch {
+        const m = content.match(/\{[\s\S]*\}/);
+        doc = m ? JSON.parse(m[0]) : {};
+      }
+
+      // Mode: draft — return the editable JSON, do not render PDF yet
+      if (mode === "draft") {
+        return new Response(JSON.stringify({ draft: doc, language }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // --- Render PDF ---
