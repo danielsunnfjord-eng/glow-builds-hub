@@ -26,6 +26,10 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [genPdf, setGenPdf] = useState(false);
   const [pdfLang, setPdfLang] = useState<"en" | "pt" | "no" | "es" | "fr" | "de" | "it">("en");
   const [parsing, setParsing] = useState(false);
+  const [draft, setDraft] = useState<any | null>(null);
+  const [draftJson, setDraftJson] = useState("");
+  const [renderingPdf, setRenderingPdf] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
