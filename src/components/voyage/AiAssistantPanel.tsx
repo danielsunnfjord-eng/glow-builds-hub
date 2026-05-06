@@ -448,6 +448,35 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               )}
             </div>
 
+            {previewUrl && (
+              <div className="mt-4 border border-gold/30 bg-parchment-1/40 rounded-sm overflow-hidden">
+                <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-gold/20">
+                  <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">PDF preview</span>
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href={previewUrl}
+                      download="itinerary-preview.pdf"
+                      className="px-3 py-1.5 rounded-sm border border-ink text-ink text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                    >
+                      Download
+                    </a>
+                    <button
+                      type="button"
+                      onClick={closePreview}
+                      className="px-3 py-1.5 rounded-sm border border-parchment-3 text-voyage-muted text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+                <iframe
+                  title="Attached itinerary PDF preview"
+                  src={previewUrl}
+                  className="w-full h-[72vh] bg-voyage-white"
+                />
+              </div>
+            )}
+
             {draft && (
               <div className="mt-4 space-y-2">
                 <label className={label}>
