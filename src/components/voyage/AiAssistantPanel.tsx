@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -30,6 +30,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [draftJson, setDraftJson] = useState("");
   const [renderingPdf, setRenderingPdf] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -242,9 +243,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       toast({ title: "No PDF attached yet" });
       return;
     }
-    // Open the tab SYNCHRONOUSLY (avoids popup blockers), then load a blob: URL
-    // (avoids ad/tracker blockers like Edge SmartScreen blocking *.supabase.co).
-    const win = window.open("about:blank", "_blank");
     setPreviewing(true);
     try {
       const { data: sess } = await supabase.auth.getSession();
@@ -265,26 +263,30 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       }
       const blob = await r.blob();
       const blobUrl = URL.createObjectURL(blob);
-      if (win && !win.closed) {
-        win.location.href = blobUrl;
-      } else {
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      }
-      // Revoke after a delay so the new tab has time to load it
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+      setPreviewUrl((current) => {
+        if (current) URL.revokeObjectURL(current);
+        return blobUrl;
+      });
+      toast({ title: "Preview ready", description: "The PDF is shown below without opening a blocked tab." });
     } catch (e: any) {
-      if (win && !win.closed) win.close();
       toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
     } finally {
       setPreviewing(false);
     }
   };
+
+  const closePreview = () => {
+    setPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return "";
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
@@ -451,6 +453,35 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                 <span className="text-[0.7rem] text-sage">✓ Attached: {editing.pdf_path}</span>
               )}
             </div>
+
+            {previewUrl && (
+              <div className="mt-4 border border-gold/30 bg-parchment-1/40 rounded-sm overflow-hidden">
+                <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-gold/20">
+                  <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">PDF preview</span>
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href={previewUrl}
+                      download="itinerary-preview.pdf"
+                      className="px-3 py-1.5 rounded-sm border border-ink text-ink text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                    >
+                      Download
+                    </a>
+                    <button
+                      type="button"
+                      onClick={closePreview}
+                      className="px-3 py-1.5 rounded-sm border border-parchment-3 text-voyage-muted text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+                <iframe
+                  title="Attached itinerary PDF preview"
+                  src={previewUrl}
+                  className="w-full h-[72vh] bg-voyage-white"
+                />
+              </div>
+            )}
 
             {draft && (
               <div className="mt-4 space-y-2">
