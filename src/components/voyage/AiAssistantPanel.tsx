@@ -146,6 +146,42 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const generatePdf = async () => {
+    const hasInput = brief || urls || docText || editing.title_en || editing.description_en || editing.summary_en;
+    if (!hasInput) {
+      toast({ title: "Add a brief or fill the itinerary fields first", variant: "destructive" });
+      return;
+    }
+    setGenPdf(true);
+    try {
+      const urlList = urls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const itinerary_context = {
+        title: editing.title_en, summary: editing.summary_en, description: editing.description_en,
+        what_you_get: editing.what_you_get_en, destination: editing.destination,
+        duration: editing.duration, group_size_label: editing.group_size_label,
+        estimated_trip_budget: editing.estimated_trip_budget,
+      };
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: {
+          language: pdfLang,
+          brief,
+          urls: urlList,
+          documents_text: docText,
+          hero_image_url: editing.hero_image_url || null,
+          itinerary_context,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setEditing({ ...editing, pdf_path: data.pdf_path });
+      toast({ title: "PDF generated", description: `${data.pages} pages in ${pdfLang.toUpperCase()}. Saved as the itinerary PDF.` });
+    } catch (e: any) {
+      toast({ title: "PDF generation failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setGenPdf(false);
+    }
+  };
+
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
       <button
