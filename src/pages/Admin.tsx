@@ -1,5 +1,5 @@
 import { useState, useRef, lazy, Suspense } from "react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-horizontal.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -419,7 +419,7 @@ const AdminDashboard = () => {
 
         <nav className="bg-ink px-10 py-4 flex justify-between items-center border-b border-voyage-white/[0.08] max-md:px-6 max-md:flex-wrap max-md:gap-3">
           <div>
-            <img src={logo} alt="Fjord & Waves Travel" className="h-[4.5rem] max-md:h-12 w-auto brightness-0 invert" />
+            <img src={logo} alt="Fjord & Waves Travel" className="h-24 max-md:h-16 w-auto [filter:contrast(1.4)_saturate(1.2)]" />
             <small className="block text-[0.62rem] tracking-[0.1em] uppercase text-voyage-white/35 mt-0.5">{t("admin.projectTracker")}</small>
           </div>
           <div className="flex gap-2 items-center">
