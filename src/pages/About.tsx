@@ -14,7 +14,7 @@ const About = () => {
     <div>
       <Navbar />
 
-      <section className="pt-32 pb-20 px-16 bg-ink relative overflow-hidden max-lg:px-10 max-md:px-6 max-md:pt-28 max-md:pb-14">
+      <section className="pt-44 pb-20 px-16 bg-ink relative overflow-hidden max-lg:px-10 max-md:px-6 max-md:pt-36 max-md:pb-14">
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 30%, rgba(169,198,193,0.10) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 10% 80%, rgba(76,111,117,0.18) 0%, transparent 55%), linear-gradient(170deg, #0d1722 0%, #1e2d3d 45%, #14202c 100%)" }} />
         <div className="relative z-10 flex items-center gap-12 max-md:flex-col max-md:gap-8">
           <div className="flex-1 min-w-0">
