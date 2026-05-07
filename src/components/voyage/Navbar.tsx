@@ -41,24 +41,27 @@ const Navbar = () => {
           <button onClick={() => goToSection("curated")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
+          <button onClick={() => goToSection("itineraries")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+            {t("nav.trips")}
+          </button>
           <button onClick={() => goToSection("experiences")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
           <LanguageSelector variant="light" />
+          <button
+            onClick={() => goToSection("enquiry")}
+            className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
+          >
+            {t("nav.planMyTrip")}
+          </button>
           <a
             href={calendlyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-sm border border-gold/40 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink hover:border-gold transition-colors"
+            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
           >
             {t("nav.bookCall")}
           </a>
-          <button
-            onClick={() => goToSection("enquiry")}
-            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
-          >
-            {t("nav.planMyTrip")}
-          </button>
         </div>
         <div className="md:hidden flex items-center gap-2">
           <LanguageSelector variant="light" />
@@ -85,27 +88,30 @@ const Navbar = () => {
           <button onClick={() => goToSection("curated")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
+          <button onClick={() => goToSection("itineraries")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+            {t("nav.trips")}
+          </button>
           <button onClick={() => goToSection("experiences")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
           <div className="pt-2">
             <LanguageSelector variant="light" />
           </div>
+          <button
+            onClick={() => goToSection("enquiry")}
+            className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
+          >
+            {t("nav.planMyTrip")}
+          </button>
           <a
             href={calendlyUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}
-            className="px-5 py-2.5 rounded-sm border border-gold/40 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:bg-gold hover:text-ink hover:border-gold transition-colors no-underline"
+            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:bg-gold hover:text-ink transition-colors no-underline"
           >
             {t("nav.bookCall")}
           </a>
-          <button
-            onClick={() => goToSection("enquiry")}
-            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
-          >
-            {t("nav.planMyTrip")}
-          </button>
         </div>
       )}
     </nav>
