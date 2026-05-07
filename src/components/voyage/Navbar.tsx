@@ -68,8 +68,9 @@ const Navbar = () => {
             aria-expanded={open}
             className="p-2 -mr-2 text-ink"
           >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {open && (
