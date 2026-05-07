@@ -2,13 +2,9 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
 import CuratedSection from "@/components/voyage/CuratedSection";
-
-import ItineraryExamples from "@/components/voyage/ItineraryExamples";
 import Reviews from "@/components/voyage/Reviews";
-
 import Newsletter from "@/components/voyage/Newsletter";
 import PlanMyTrip from "@/components/voyage/PlanMyTrip";
-
 import Footer from "@/components/voyage/Footer";
 
 const Index = () => {
@@ -25,10 +21,7 @@ const Index = () => {
     <div>
       <Navbar />
       <CuratedSection />
-
-      <ItineraryExamples />
       <Reviews />
-
       <PlanMyTrip />
       <Newsletter />
       <Footer />
