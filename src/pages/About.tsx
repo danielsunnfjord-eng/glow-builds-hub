@@ -17,12 +17,12 @@ const About = () => {
       <section className="pt-32 pb-20 px-16 bg-ink relative overflow-hidden max-md:px-6 max-md:pt-28 max-md:pb-14">
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 60% 70% at 80% 30%, rgba(169,198,193,0.10) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 10% 80%, rgba(76,111,117,0.18) 0%, transparent 55%), linear-gradient(170deg, #0d1722 0%, #1e2d3d 45%, #14202c 100%)" }} />
         <div className="relative z-10 flex items-center gap-12 max-md:flex-col max-md:gap-8">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-6">
               <div className="w-[30px] h-px bg-gold" />
               {t("about.badge")}
             </div>
-            <h1 className="font-serif text-[clamp(2.6rem,5vw,4.5rem)] font-bold leading-[1] text-voyage-white mb-6 tracking-tight">
+            <h1 className="font-serif text-[clamp(2.2rem,4.2vw,3.8rem)] font-bold leading-[1.05] text-voyage-white mb-6 tracking-tight break-words">
               Daniel Lira<br /><em className="italic font-normal text-gold-2">Figueiredo</em>
             </h1>
             <p className="text-sm text-voyage-white/50 tracking-[0.12em] uppercase">{t("about.foraLine")}</p>
