@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,49 +6,51 @@
 
 @layer base {
   :root {
-    --background: 40 33% 95%;
-    --foreground: 30 25% 7%;
+    /* Fjord & Waves brand palette
+       Glacier #F6F4EE, Fjord #A9C6C1, Ocean #4C6F75, Midnight #1E2D3D, Sand #DCCEB8 */
+    --background: 42 27% 94%;          /* Glacier */
+    --foreground: 211 35% 18%;         /* Midnight */
 
-    --card: 40 50% 98%;
-    --card-foreground: 30 25% 7%;
+    --card: 42 30% 97%;
+    --card-foreground: 211 35% 18%;
 
-    --popover: 40 50% 98%;
-    --popover-foreground: 30 25% 7%;
+    --popover: 42 30% 97%;
+    --popover-foreground: 211 35% 18%;
 
-    --primary: 30 25% 7%;
-    --primary-foreground: 40 50% 97%;
+    --primary: 211 35% 18%;            /* Midnight */
+    --primary-foreground: 42 27% 96%;
 
-    --secondary: 38 30% 90%;
-    --secondary-foreground: 30 25% 7%;
+    --secondary: 37 35% 86%;           /* Sand soft */
+    --secondary-foreground: 211 35% 18%;
 
-    --muted: 38 30% 90%;
-    --muted-foreground: 30 12% 46%;
+    --muted: 173 18% 86%;              /* Fjord soft */
+    --muted-foreground: 189 21% 38%;   /* Ocean */
 
-    --accent: 38 30% 90%;
-    --accent-foreground: 30 25% 7%;
+    --accent: 173 21% 72%;             /* Fjord */
+    --accent-foreground: 211 35% 18%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 40 50% 97%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 42 27% 96%;
 
-    --border: 38 25% 85%;
-    --input: 38 25% 85%;
-    --ring: 38 63% 44%;
+    --border: 173 15% 80%;
+    --input: 173 15% 80%;
+    --ring: 189 21% 38%;               /* Ocean */
 
     --radius: 4px;
 
-    /* Voyage & Co tokens */
-    --ink: 30 25% 7%;
-    --ink2: 32 18% 12%;
-    --ink3: 30 16% 17%;
-    --parchment: 40 33% 95%;
-    --parchment2: 38 30% 89%;
-    --parchment3: 35 25% 84%;
-    --gold: 38 63% 44%;
-    --gold2: 40 60% 55%;
-    --gold-light: 45 80% 69%;
-    --sage: 100 14% 42%;
-    --voyage-muted: 30 12% 46%;
-    --voyage-white: 40 50% 97%;
+    /* Voyage & Co tokens (semantic names preserved, mapped to new palette) */
+    --ink: 211 35% 18%;                /* Midnight */
+    --ink2: 211 30% 14%;
+    --ink3: 211 28% 22%;
+    --parchment: 42 27% 94%;           /* Glacier */
+    --parchment2: 37 35% 86%;          /* Sand soft */
+    --parchment3: 37 35% 79%;          /* Sand */
+    --gold: 37 35% 65%;                /* Sand accent (warm) */
+    --gold2: 37 40% 75%;               /* Sand light */
+    --gold-light: 37 45% 85%;
+    --sage: 189 21% 38%;               /* Ocean */
+    --voyage-muted: 189 18% 32%;       /* Ocean deep */
+    --voyage-white: 42 27% 96%;        /* Glacier light */
 
     --shadow-elegant: 0 8px 40px rgba(19,17,14,0.12);
 
@@ -69,7 +71,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
   }
   html {
@@ -82,7 +84,7 @@
 
 @layer utilities {
   .font-serif-display {
-    font-family: 'Libre Baskerville', serif;
+    font-family: 'Cormorant Garamond', serif;
   }
 
   /* Animations */

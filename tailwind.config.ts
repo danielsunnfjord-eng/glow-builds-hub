@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['"Libre Baskerville"', 'serif'],
-        sans: ['"Jost"', 'sans-serif'],
+        serif: ['"Cormorant Garamond"', 'serif'],
+        sans: ['"Montserrat"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
