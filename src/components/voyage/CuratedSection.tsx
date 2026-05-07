@@ -135,7 +135,7 @@ const CuratedSection = () => {
           {values.map((v) => (
             <ScrollReveal key={v.key}>
               <div className="flex items-center gap-3">
-                <span className="text-gold text-lg">{v.icon}</span>
+                <v.Icon className="text-gold w-5 h-5" strokeWidth={1.5} />
                 <p className="text-[0.85rem] text-voyage-white/60 font-medium">{t(`curated.${v.key}`)}</p>
               </div>
             </ScrollReveal>
@@ -180,7 +180,7 @@ const CuratedSection = () => {
             <div className="flex flex-col gap-5">
               {perks.map((p) => (
                 <div key={p.title} className="flex gap-4 items-start p-5 border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] hover:border-gold/30 transition-colors">
-                  <span className="text-[1.4rem] shrink-0 mt-0.5">{p.icon}</span>
+                  <p.Icon className="text-gold w-6 h-6 shrink-0 mt-0.5" strokeWidth={1.5} />
                   <div>
                     <h4 className="text-[0.85rem] font-semibold text-voyage-white mb-1">{p.title}</h4>
                     <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{p.desc}</p>
@@ -206,7 +206,7 @@ const CuratedSection = () => {
           <div className="grid grid-cols-4 max-md:grid-cols-1 gap-px bg-voyage-white/[0.06] rounded-lg overflow-hidden">
             {services.map((s) => (
               <div key={s.title} className="bg-ink p-8 max-md:p-6 hover:bg-voyage-white/[0.04] transition-all cursor-default">
-                <span className="text-[2rem] mb-4 block">{s.icon}</span>
+                <s.Icon className="text-gold w-7 h-7 mb-4 block" strokeWidth={1.5} />
                 <h4 className="font-serif text-base font-bold mb-1.5 text-voyage-white">{s.title}</h4>
                 <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{s.desc}</p>
               </div>
