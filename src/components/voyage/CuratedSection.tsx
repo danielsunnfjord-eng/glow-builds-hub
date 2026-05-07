@@ -65,16 +65,16 @@ const CuratedSection = () => {
           className="absolute inset-0"
           style={{
             background: `
-              radial-gradient(ellipse 60% 70% at 80% 30%, rgba(184,135,42,0.12) 0%, transparent 60%),
-              radial-gradient(ellipse 40% 50% at 10% 80%, rgba(107,124,94,0.1) 0%, transparent 50%),
-              linear-gradient(170deg, #0a0906 0%, #1a1510 40%, #13110e 100%)
+              radial-gradient(ellipse 60% 70% at 80% 30%, rgba(169,198,193,0.10) 0%, transparent 60%),
+              radial-gradient(ellipse 40% 50% at 10% 80%, rgba(76,111,117,0.18) 0%, transparent 55%),
+              linear-gradient(170deg, #0d1722 0%, #1e2d3d 45%, #14202c 100%)
             `,
           }}
         />
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(184,135,42,0.15) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, rgba(220,206,184,0.18) 1px, transparent 1px)",
             backgroundSize: "40px 40px",
             maskImage: "radial-gradient(ellipse 70% 70% at 80% 20%, black 0%, transparent 70%)",
             WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 80% 20%, black 0%, transparent 70%)",
