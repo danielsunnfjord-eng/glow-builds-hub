@@ -1,4 +1,10 @@
 export default {
+  meetDaniel: {
+    badge: "Meet Your Advisor",
+    title: "Hi, I'm Daniel — your travel designer.",
+    bio: "Brazilian-born, Norway-based since 2010. Trilingual, Fora Travel advisor and IATA accredited — I plan bespoke journeys for travellers who want substance, not packages.",
+    cta: "More about Daniel",
+  },
   // Navbar
   nav: {
     about: "About",

@@ -1,4 +1,10 @@
 export default {
+  meetDaniel: {
+    badge: "Møt Din Reiserådgiver",
+    title: "Hei, jeg er Daniel — din reisedesigner.",
+    bio: "Brasiliansk-født, bosatt i Norge siden 2010. Trespråklig, Fora Travel-rådgiver og IATA-akkreditert — jeg planlegger skreddersydde reiser for de som vil ha substans, ikke pakker.",
+    cta: "Mer om Daniel",
+  },
   nav: {
     about: "Om Oss",
     howItWorks: "Slik Fungerer Det",
