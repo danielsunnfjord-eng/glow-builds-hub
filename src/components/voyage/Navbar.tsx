@@ -60,12 +60,14 @@ const Navbar = () => {
             {t("nav.planMyTrip")}
           </button>
         </div>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          className="md:hidden p-2 -mr-2 text-ink"
-        >
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSelector variant="light" />
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            className="p-2 -mr-2 text-ink"
+          >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
