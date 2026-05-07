@@ -1,12 +1,15 @@
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
-const FLAG_BR = "https://flagcdn.com/w80/br.png";
+import {
+  Clock, ShieldCheck, Sparkles,
+  Hotel, Map, Phone,
+  Plane, BedDouble, Ticket, Car, Ship, Umbrella, Wine, Leaf,
+  type LucideIcon,
+} from "lucide-react";
 
 const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 };
-
-const WHATSAPP_URL = "https://wa.me/4746866855";
 
 const CuratedSection = () => {
   const { t, i18n } = useTranslation();
@@ -17,27 +20,27 @@ const CuratedSection = () => {
     { num: "03", key: "hwStep3" },
   ];
 
-  const values = [
-    { icon: "⏱", key: "hwValue1" },
-    { icon: "🛡️", key: "hwValue2" },
-    { icon: "✨", key: "hwValue3" },
+  const values: { Icon: LucideIcon; key: string }[] = [
+    { Icon: Clock, key: "hwValue1" },
+    { Icon: ShieldCheck, key: "hwValue2" },
+    { Icon: Sparkles, key: "hwValue3" },
   ];
 
-  const perks = [
-    { icon: "🏨", title: t("curated.perk1Title"), desc: t("curated.perk1Desc") },
-    { icon: "🗺️", title: t("curated.perk2Title"), desc: t("curated.perk2Desc") },
-    { icon: "📞", title: t("curated.perk3Title"), desc: t("curated.perk3Desc") },
+  const perks: { Icon: LucideIcon; title: string; desc: string }[] = [
+    { Icon: Hotel, title: t("curated.perk1Title"), desc: t("curated.perk1Desc") },
+    { Icon: Map, title: t("curated.perk2Title"), desc: t("curated.perk2Desc") },
+    { Icon: Phone, title: t("curated.perk3Title"), desc: t("curated.perk3Desc") },
   ];
 
-  const services = [
-    { icon: "✈️", title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
-    { icon: "🏨", title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
-    { icon: "🎭", title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
-    { icon: "🚗", title: t("experiences.transfers"), desc: t("experiences.transfersDesc") },
-    { icon: "🛳️", title: t("experiences.cruises"), desc: t("experiences.cruisesDesc") },
-    { icon: "🛡️", title: t("experiences.insurance"), desc: t("experiences.insuranceDesc") },
-    { icon: "🍷", title: t("experiences.dining"), desc: t("experiences.diningDesc") },
-    { icon: "🌿", title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
+  const services: { Icon: LucideIcon; title: string; desc: string }[] = [
+    { Icon: Plane, title: t("experiences.flights"), desc: t("experiences.flightsDesc") },
+    { Icon: BedDouble, title: t("experiences.accommodation"), desc: t("experiences.accommodationDesc") },
+    { Icon: Ticket, title: t("experiences.activities"), desc: t("experiences.activitiesDesc") },
+    { Icon: Car, title: t("experiences.transfers"), desc: t("experiences.transfersDesc") },
+    { Icon: Ship, title: t("experiences.cruises"), desc: t("experiences.cruisesDesc") },
+    { Icon: Umbrella, title: t("experiences.insurance"), desc: t("experiences.insuranceDesc") },
+    { Icon: Wine, title: t("experiences.dining"), desc: t("experiences.diningDesc") },
+    { Icon: Leaf, title: t("experiences.wellness"), desc: t("experiences.wellnessDesc") },
   ];
 
   const isPt = i18n.language === "pt";
@@ -132,7 +135,7 @@ const CuratedSection = () => {
           {values.map((v) => (
             <ScrollReveal key={v.key}>
               <div className="flex items-center gap-3">
-                <span className="text-gold text-lg">{v.icon}</span>
+                <v.Icon className="text-gold w-5 h-5" strokeWidth={1.5} />
                 <p className="text-[0.85rem] text-voyage-white/60 font-medium">{t(`curated.${v.key}`)}</p>
               </div>
             </ScrollReveal>
@@ -177,7 +180,7 @@ const CuratedSection = () => {
             <div className="flex flex-col gap-5">
               {perks.map((p) => (
                 <div key={p.title} className="flex gap-4 items-start p-5 border border-voyage-white/[0.06] rounded-lg bg-voyage-white/[0.03] hover:border-gold/30 transition-colors">
-                  <span className="text-[1.4rem] shrink-0 mt-0.5">{p.icon}</span>
+                  <p.Icon className="text-gold w-6 h-6 shrink-0 mt-0.5" strokeWidth={1.5} />
                   <div>
                     <h4 className="text-[0.85rem] font-semibold text-voyage-white mb-1">{p.title}</h4>
                     <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{p.desc}</p>
@@ -203,7 +206,7 @@ const CuratedSection = () => {
           <div className="grid grid-cols-4 max-md:grid-cols-1 gap-px bg-voyage-white/[0.06] rounded-lg overflow-hidden">
             {services.map((s) => (
               <div key={s.title} className="bg-ink p-8 max-md:p-6 hover:bg-voyage-white/[0.04] transition-all cursor-default">
-                <span className="text-[2rem] mb-4 block">{s.icon}</span>
+                <s.Icon className="text-gold w-7 h-7 mb-4 block" strokeWidth={1.5} />
                 <h4 className="font-serif text-base font-bold mb-1.5 text-voyage-white">{s.title}</h4>
                 <p className="text-[0.78rem] text-voyage-white/45 leading-relaxed">{s.desc}</p>
               </div>
