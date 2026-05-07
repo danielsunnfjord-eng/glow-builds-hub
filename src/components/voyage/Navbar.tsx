@@ -44,12 +44,6 @@ const Navbar = () => {
           <button onClick={() => goToSection("experiences")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
-          <button onClick={() => goToSection("pricing")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.pricing")}
-          </button>
-          <a href="/itineraries-shop" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
-            {t("nav.shop")}
-          </a>
           <LanguageSelector variant="light" />
           <a
             href={calendlyUrl}
@@ -91,16 +85,6 @@ const Navbar = () => {
           <button onClick={() => goToSection("experiences")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
-          <button onClick={() => goToSection("pricing")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.pricing")}
-          </button>
-          <a
-            href="/itineraries-shop"
-            onClick={() => setOpen(false)}
-            className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
-          >
-            {t("nav.shop")}
-          </a>
           <div className="pt-2">
             <LanguageSelector variant="light" />
           </div>
