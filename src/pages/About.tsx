@@ -56,7 +56,7 @@ const About = () => {
             { icon: "🏔️", text: t("about.h4") },
           ].map((item) => (
             <ScrollReveal key={item.text}>
-              <div className="flex items-start gap-4 p-6 rounded-sm bg-parchment border border-gold/10">
+              <div className="flex items-start gap-4 p-6 rounded-sm bg-parchment border border-gold/20 shadow-sm">
                 <span className="text-2xl">{item.icon}</span>
                 <p className="text-sm text-ink leading-relaxed font-medium">{item.text}</p>
               </div>
@@ -65,14 +65,17 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-20 px-16 bg-ink text-center max-md:px-6 max-md:py-14">
-        <ScrollReveal>
-          <h2 className="font-serif text-3xl text-voyage-white mb-4">{t("about.ctaTitle")}</h2>
-          <p className="text-voyage-white/50 mb-8 max-w-md mx-auto text-sm leading-relaxed">{t("about.ctaSubtitle")}</p>
-          <button onClick={() => navigate("/")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all">
-            {t("about.ctaBtn")}
-          </button>
-        </ScrollReveal>
+      <section className="py-20 px-16 bg-ink text-center relative overflow-hidden max-md:px-6 max-md:py-14">
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 60% at 50% 50%, rgba(76,111,117,0.20) 0%, transparent 60%), linear-gradient(170deg, #0d1722 0%, #1e2d3d 50%, #14202c 100%)" }} />
+        <div className="relative z-10">
+          <ScrollReveal>
+            <h2 className="font-serif text-3xl text-voyage-white mb-4">{t("about.ctaTitle")}</h2>
+            <p className="text-voyage-white/60 mb-8 max-w-md mx-auto text-sm leading-relaxed">{t("about.ctaSubtitle")}</p>
+            <button onClick={() => navigate("/")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+              {t("about.ctaBtn")}
+            </button>
+          </ScrollReveal>
+        </div>
       </section>
 
       <Footer />
