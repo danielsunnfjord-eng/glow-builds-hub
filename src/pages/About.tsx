@@ -33,8 +33,8 @@ const About = () => {
               <a href="https://www.instagram.com/fjord_and_waves_travel/" target="_blank" rel="noopener noreferrer" className="text-voyage-white/40 hover:text-gold transition-colors"><Instagram size={18} /></a>
             </div>
           </div>
-          <div className="w-56 h-56 rounded-full overflow-hidden border-2 border-gold/40 shadow-[0_10px_40px_rgba(169,198,193,0.18)] flex-shrink-0 max-md:w-44 max-md:h-44">
-            <img src={danielProfile} alt="Daniel Lira Figueiredo" className="w-full h-full object-cover" />
+          <div className="w-56 h-56 rounded-full overflow-hidden border-2 border-gold/40 shadow-[0_10px_40px_rgba(169,198,193,0.18)] flex-shrink-0 translate-y-6 max-md:w-44 max-md:h-44 max-md:translate-y-3">
+            <img src={danielProfile} alt="Daniel Lira Figueiredo" className="w-full h-full object-cover object-[center_42%]" />
           </div>
         </div>
       </section>
