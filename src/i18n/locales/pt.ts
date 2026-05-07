@@ -3,6 +3,7 @@ export default {
     about: "Sobre",
     howItWorks: "Como Funciona",
     whatWeArrange: "O Que Organizamos",
+    trips: "Roteiros",
     pricing: "Preços",
     planMyTrip: "Planeje Sua Viagem",
     bookCall: "Agendar Videochamada",

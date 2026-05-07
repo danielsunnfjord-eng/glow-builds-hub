@@ -4,6 +4,7 @@ export default {
     about: "About",
     howItWorks: "How It Works",
     whatWeArrange: "What We Arrange",
+    trips: "Sample Trips",
     pricing: "Pricing",
     planMyTrip: "Plan My Trip",
     bookCall: "Book a Video Call",

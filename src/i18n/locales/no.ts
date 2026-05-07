@@ -3,6 +3,7 @@ export default {
     about: "Om Oss",
     howItWorks: "Slik Fungerer Det",
     whatWeArrange: "Hva Vi Ordner",
+    trips: "Reiser",
     pricing: "Priser",
     planMyTrip: "Planlegg Min Reise",
     bookCall: "Book Videosamtale",
