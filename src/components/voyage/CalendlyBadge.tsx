@@ -1,5 +1,13 @@
 import { useEffect } from "react";
 
+declare global {
+  interface Window {
+    Calendly: {
+      initBadgeWidget(options: Record<string, unknown>): void;
+    };
+  }
+}
+
 /**
  * Loads the Calendly badge widget dynamically.
  * The badge appears as a floating button in the bottom-right corner
