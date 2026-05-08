@@ -29,6 +29,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <CookieConsent />
+        <CalendlyBadge />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/plan-my-trip" element={<PlanMyTripPage />} />
