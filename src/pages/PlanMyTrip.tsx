@@ -5,11 +5,7 @@ import TripRequestForm from "@/components/voyage/TripRequestForm";
 import { useState } from "react";
 import { Video } from "lucide-react";
 
-const CALENDLY_LINKS: Record<string, string> = {
-  en: "https://calendly.com/daniel-lirafigueiredo-fora/travel_planning",
-  no: "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging",
-  pt: "https://calendly.com/daniel-lirafigueiredo-fora/planejamento_de_viagem",
-};
+const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
 const PlanMyTripPage = () => {
   const { t, i18n } = useTranslation();
