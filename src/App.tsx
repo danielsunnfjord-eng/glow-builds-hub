@@ -18,6 +18,7 @@ import ItineraryShopDetail from "./pages/ItineraryShopDetail.tsx";
 import ItineraryShopSuccess from "./pages/ItineraryShopSuccess.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import CookieConsent from "./components/voyage/CookieConsent.tsx";
+import CalendlyBadge from "./components/voyage/CalendlyBadge.tsx";
 
 const queryClient = new QueryClient();
 
