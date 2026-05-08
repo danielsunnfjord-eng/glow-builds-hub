@@ -10,8 +10,7 @@ const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanl
 const PlanMyTripPage = () => {
   const { t, i18n } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
-  const lang = i18n.language?.substring(0, 2) || "en";
-  const calendlyUrl = CALENDLY_LINKS[lang] || CALENDLY_LINKS.en;
+  const calendlyUrl = CALENDLY_URL;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
