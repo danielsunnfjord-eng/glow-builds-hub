@@ -5,11 +5,7 @@ import { Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.png";
 
-const CALENDLY_LINKS: Record<string, string> = {
-  en: "https://calendly.com/daniel-lirafigueiredo-fora/travel_planning",
-  no: "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging",
-  pt: "https://calendly.com/daniel-lirafigueiredo-fora/planejamento_de_viagem",
-};
+const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
 const Navbar = () => {
   const navigate = useNavigate();
