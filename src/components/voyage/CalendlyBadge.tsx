@@ -10,11 +10,21 @@ declare global {
 
 /**
  * Loads the Calendly badge widget dynamically.
- * The badge appears as a floating button in the bottom-right corner
- * that opens Calendly scheduling on click.
+ * Positioned at the bottom-left so it does not overlap
+ * footer links or the admin button on the right.
  */
 const CalendlyBadge = () => {
   useEffect(() => {
+    // Inject override styles before Calendly loads
+    const style = document.createElement("style");
+    style.textContent = `
+      .calendly-badge-widget {
+        right: auto !important;
+        left: 20px !important;
+      }
+    `;
+    document.head.appendChild(style);
+
     // Load Calendly CSS
     const link = document.createElement("link");
     link.href = "https://assets.calendly.com/assets/external/widget.css";
@@ -40,9 +50,10 @@ const CalendlyBadge = () => {
     document.body.appendChild(script);
 
     return () => {
-      // Clean up: remove CSS link and script
+      // Clean up: remove CSS link, script, and override style
       document.head.removeChild(link);
       document.body.removeChild(script);
+      document.head.removeChild(style);
 
       // Remove any badge widget elements Calendly may have injected
       const badge = document.querySelector(".calendly-badge-widget");
