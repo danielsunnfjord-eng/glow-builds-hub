@@ -33,7 +33,7 @@ const Navbar = () => {
           <a href="/about" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
             {t("nav.about")}
           </a>
-          <button onClick={() => goToSection("curated")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+          <button onClick={() => goToSection("how-it-works")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
           <button onClick={() => goToSection("itineraries")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
@@ -80,7 +80,7 @@ const Navbar = () => {
           >
             {t("nav.about")}
           </a>
-          <button onClick={() => goToSection("curated")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+          <button onClick={() => goToSection("how-it-works")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
           <button onClick={() => goToSection("itineraries")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
