@@ -108,7 +108,7 @@ const CuratedSection = () => {
       </div>
 
       {/* How it works — 3 Steps */}
-      <div className="py-28 px-16 max-md:px-6 max-md:py-16">
+      <div className="py-28 px-16 max-md:px-6 max-md:py-16" id="how-it-works">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">{t("curated.badge")}</div>
         </ScrollReveal>
