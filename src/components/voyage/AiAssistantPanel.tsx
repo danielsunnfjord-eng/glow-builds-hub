@@ -8,11 +8,13 @@ const label = "block text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted 
 
 const cloneDoc = (doc: any) => JSON.parse(JSON.stringify(doc || {}));
 
-const buildDraftFromCatalog = (editing: any, language: string) => ({
-  title: editing.title_en || editing.title_pt || editing.title_no || "Untitled itinerary",
-  subtitle: editing.summary_en || editing.summary_pt || editing.summary_no || "",
+const buildDraftFromCatalog = (editing: any, language: string) => {
+  const lang = language === "pt" || language === "no" ? language : "en";
+  return {
+  title: editing[`title_${lang}`] || editing.title_en || editing.title_pt || editing.title_no || "Untitled itinerary",
+  subtitle: editing[`summary_${lang}`] || editing.summary_en || editing.summary_pt || editing.summary_no || "",
   cover_image_url: editing.hero_image_url || "",
-  intro: editing.description_en || editing.description_pt || editing.description_no || "",
+  intro: editing[`description_${lang}`] || editing.description_en || editing.description_pt || editing.description_no || "",
   trip_overview: {
     destination: editing.destination || "",
     duration: editing.duration || "",
@@ -20,7 +22,7 @@ const buildDraftFromCatalog = (editing: any, language: string) => ({
     estimated_budget: editing.estimated_trip_budget || "",
     best_season: "",
   },
-  highlights: String(editing.what_you_get_en || editing.what_you_get_pt || editing.what_you_get_no || "")
+  highlights: String(editing[`what_you_get_${lang}`] || editing.what_you_get_en || editing.what_you_get_pt || editing.what_you_get_no || "")
     .split(/\n+/)
     .map((line) => line.trim())
     .filter(Boolean),
@@ -35,7 +37,8 @@ const buildDraftFromCatalog = (editing: any, language: string) => ({
   },
   closing: "",
   language,
-});
+  };
+};
 
 interface Props {
   editing: any;
