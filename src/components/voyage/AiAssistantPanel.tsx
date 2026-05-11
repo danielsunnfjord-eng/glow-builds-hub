@@ -739,6 +739,171 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   );
 };
 
+const StructuredDraftEditor = ({
+  doc,
+  onChange,
+  onUploadImage,
+  uploadingImageKey,
+}: {
+  doc: any;
+  onChange: (doc: any) => void;
+  onUploadImage: (file: File, applyUrl: (url: string) => void, key: string) => void;
+  uploadingImageKey: string | null;
+}) => {
+  const update = (path: (string | number)[], value: any) => {
+    const next = cloneDoc(doc);
+    let target = next;
+    path.slice(0, -1).forEach((key) => {
+      if (target[key] === undefined || target[key] === null) target[key] = typeof key === "number" ? [] : {};
+      target = target[key];
+    });
+    target[path[path.length - 1]] = value;
+    onChange(next);
+  };
+
+  const updateList = (key: "highlights" | "days", value: any[]) => onChange({ ...cloneDoc(doc), [key]: value });
+  const overview = doc.trip_overview || {};
+  const practical = doc.practical_info || {};
+  const highlights = Array.isArray(doc.highlights) ? doc.highlights : [];
+  const days = Array.isArray(doc.days) ? doc.days : [];
+
+  const imageUpload = (path: (string | number)[], key: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) await onUploadImage(file, (url) => update(path, url), key);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="rounded-sm border border-parchment-3 bg-voyage-white p-4 space-y-5 max-h-[62vh] overflow-auto">
+      <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 items-start">
+        <div className="space-y-2">
+          {doc.cover_image_url ? (
+            <img src={doc.cover_image_url} alt="Draft cover" className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />
+          ) : (
+            <div className="w-full aspect-[4/3] rounded-sm border border-dashed border-parchment-3 bg-parchment flex items-center justify-center text-[0.72rem] text-voyage-muted">
+              No cover image
+            </div>
+          )}
+          <input type="file" accept="image/*" onChange={imageUpload(["cover_image_url"], "cover")} className="text-[0.72rem]" disabled={uploadingImageKey === "cover"} />
+          {uploadingImageKey === "cover" && <p className="text-[0.7rem] text-voyage-muted">Uploading…</p>}
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className={label}>Title</label>
+            <input className={input} value={doc.title || ""} onChange={(e) => update(["title"], e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Subtitle</label>
+            <input className={input} value={doc.subtitle || ""} onChange={(e) => update(["subtitle"], e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Cover image URL</label>
+            <input className={input} value={doc.cover_image_url || ""} onChange={(e) => update(["cover_image_url"], e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className={label}>Intro</label>
+        <textarea className={input + " min-h-[130px]"} value={doc.intro || ""} onChange={(e) => update(["intro"], e.target.value)} />
+      </div>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <h3 className="font-serif font-semibold text-ink">Trip details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            ["destination", "Destination"],
+            ["duration", "Duration"],
+            ["best_for", "Best for"],
+            ["estimated_budget", "Estimated budget"],
+            ["best_season", "Best season"],
+          ].map(([key, title]) => (
+            <div key={key}>
+              <label className={label}>{title}</label>
+              <input className={input} value={overview[key] || ""} onChange={(e) => update(["trip_overview", key], e.target.value)} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-serif font-semibold text-ink">Highlights</h3>
+          <button type="button" onClick={() => updateList("highlights", [...highlights, ""])} className="text-[0.7rem] uppercase tracking-[0.1em] text-gold hover:text-ink">+ Add</button>
+        </div>
+        <div className="space-y-2">
+          {highlights.map((item: any, i: number) => (
+            <div key={i} className="flex gap-2">
+              <input className={input} value={String(item || "")} onChange={(e) => updateList("highlights", highlights.map((h: any, j: number) => j === i ? e.target.value : h))} />
+              <button type="button" onClick={() => updateList("highlights", highlights.filter((_: any, j: number) => j !== i))} className="px-3 rounded-sm border border-parchment-3 text-voyage-muted hover:text-destructive">×</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4 border-t border-parchment-3 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-serif font-semibold text-ink">Day by day</h3>
+          <button type="button" onClick={() => updateList("days", [...days, { day: days.length + 1, title: "", location: "", morning: "", afternoon: "", evening: "", where_to_stay: "", where_to_eat: "", tips: "", image_url: "" }])} className="text-[0.7rem] uppercase tracking-[0.1em] text-gold hover:text-ink">+ Add day</button>
+        </div>
+        {days.map((day: any, i: number) => (
+          <article key={i} className="rounded-sm border border-parchment-3 bg-parchment/40 p-3 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[0.7rem] uppercase tracking-[0.14em] text-gold">Day {day.day ?? i + 1}</p>
+              <button type="button" onClick={() => updateList("days", days.filter((_: any, j: number) => j !== i).map((d: any, j: number) => ({ ...d, day: j + 1 })))} className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-destructive">Remove</button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className={label}>Title</label>
+                <input className={input} value={day.title || ""} onChange={(e) => update(["days", i, "title"], e.target.value)} />
+              </div>
+              <div>
+                <label className={label}>Location</label>
+                <input className={input} value={day.location || ""} onChange={(e) => update(["days", i, "location"], e.target.value)} />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-3 items-start">
+              {day.image_url && <img src={day.image_url} alt={`Day ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />}
+              <div className="space-y-2">
+                <label className={label}>Day image URL</label>
+                <input className={input} value={day.image_url || ""} onChange={(e) => update(["days", i, "image_url"], e.target.value)} />
+                <input type="file" accept="image/*" onChange={imageUpload(["days", i, "image_url"], `day-${i}`)} className="text-[0.72rem]" disabled={uploadingImageKey === `day-${i}`} />
+              </div>
+            </div>
+            {[
+              ["morning", "Morning"], ["afternoon", "Afternoon"], ["evening", "Evening"],
+              ["where_to_stay", "Where to stay"], ["where_to_eat", "Where to eat"], ["tips", "Tips"],
+            ].map(([key, title]) => (
+              <div key={key}>
+                <label className={label}>{title}</label>
+                <textarea className={input + " min-h-[90px]"} value={day[key] || ""} onChange={(e) => update(["days", i, key], e.target.value)} />
+              </div>
+            ))}
+          </article>
+        ))}
+      </section>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <h3 className="font-serif font-semibold text-ink">Practical information</h3>
+        {[
+          ["getting_there", "Getting there"], ["getting_around", "Getting around"], ["money", "Money"],
+          ["language_basics", "Language basics"], ["what_to_pack", "What to pack"], ["etiquette", "Etiquette"],
+        ].map(([key, title]) => (
+          <div key={key}>
+            <label className={label}>{title}</label>
+            <textarea className={input + " min-h-[80px]"} value={practical[key] || ""} onChange={(e) => update(["practical_info", key], e.target.value)} />
+          </div>
+        ))}
+      </section>
+
+      <div className="border-t border-parchment-3 pt-4">
+        <label className={label}>Closing</label>
+        <textarea className={input + " min-h-[100px]"} value={doc.closing || ""} onChange={(e) => update(["closing"], e.target.value)} />
+      </div>
+    </div>
+  );
+};
+
 // Rough in-browser preview of the AI-generated itinerary draft JSON.
 // Mirrors the structure rendered server-side by the jsPDF renderer so
 // advisors can review content before triggering a full PDF render.
