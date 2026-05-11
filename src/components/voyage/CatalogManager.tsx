@@ -283,6 +283,8 @@ const CatalogManager = () => {
               <th className="p-3">Title</th>
               <th className="p-3">Slug</th>
               <th className="p-3">Price</th>
+              <th className="p-3">Views</th>
+              <th className="p-3">Sales</th>
               <th className="p-3">PDF</th>
               <th className="p-3">Published</th>
               <th className="p-3"></th>
@@ -291,7 +293,7 @@ const CatalogManager = () => {
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-voyage-muted">
+                <td colSpan={8} className="p-6 text-center text-voyage-muted">
                   No itineraries yet. Create your first one.
                 </td>
               </tr>
@@ -301,13 +303,19 @@ const CatalogManager = () => {
                 <td className="p-3 font-medium">{it.title_en}</td>
                 <td className="p-3 text-voyage-muted font-mono text-[0.78rem]">{it.slug}</td>
                 <td className="p-3">€{Number(it.price_eur).toFixed(0)}</td>
+                <td className="p-3 text-voyage-muted">{it.view_count ?? 0}</td>
+                <td className="p-3 text-voyage-muted">{salesMap[it.id!] ?? 0}</td>
                 <td className="p-3">{it.pdf_path ? "✓" : "—"}</td>
                 <td className="p-3">
-                  {it.is_published ? (
-                    <span className="text-sage">● Live</span>
-                  ) : (
-                    <span className="text-voyage-muted">○ Draft</span>
-                  )}
+                  <button
+                    onClick={() =>
+                      togglePublishMutation.mutate({ id: it.id!, is_published: !it.is_published })
+                    }
+                    className={`text-[0.72rem] font-medium ${it.is_published ? "text-sage" : "text-voyage-muted"} hover:underline`}
+                    title="Click to toggle publish state"
+                  >
+                    {it.is_published ? "● Live" : "○ Draft"}
+                  </button>
                 </td>
                 <td className="p-3 text-right whitespace-nowrap">
                   <button
@@ -316,17 +324,23 @@ const CatalogManager = () => {
                   >
                     Edit
                   </button>
+                  <button
+                    onClick={() => { setPreviewMode("detail"); setPreviewSlug(it.slug); }}
+                    className="text-[0.78rem] text-voyage-muted hover:text-ink mr-3"
+                  >
+                    Preview
+                  </button>
                   <a
                     href={`/itineraries-shop/${it.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[0.78rem] text-voyage-muted hover:text-ink mr-3"
                   >
-                    View
+                    Open ↗
                   </a>
                   <button
                     onClick={() => {
-                      if (confirm(`Delete "${it.title_en}"?`)) deleteMutation.mutate(it.id);
+                      if (confirm(`Delete "${it.title_en}"?`)) deleteMutation.mutate(it.id!);
                     }}
                     className="text-[0.78rem] text-destructive hover:underline"
                   >
