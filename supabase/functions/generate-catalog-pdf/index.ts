@@ -303,6 +303,7 @@ serve(async (req) => {
     }
 
     // --- Render PDF ---
+    const coverImageUrl = doc.cover_image_url || heroImageUrl;
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const W = pdf.internal.pageSize.getWidth();
     const H = pdf.internal.pageSize.getHeight();
@@ -311,7 +312,7 @@ serve(async (req) => {
 
     // Cover
     let heroData: string | null = null;
-    if (heroImageUrl) heroData = await fetchImageDataUrl(heroImageUrl);
+    if (coverImageUrl) heroData = await fetchImageDataUrl(coverImageUrl);
     if (heroData) {
       try { pdf.addImage(heroData, "JPEG", 0, 0, W, H * 0.55, undefined, "FAST"); } catch {}
       pdf.setFillColor(20, 20, 20);
@@ -409,6 +410,16 @@ serve(async (req) => {
         }
         yy += 10;
 
+        if (d.image_url) {
+          const dayImage = await fetchImageDataUrl(d.image_url);
+          if (dayImage) {
+            try {
+              pdf.addImage(dayImage, "JPEG", M, yy, contentW, 150, undefined, "FAST");
+              yy += 168;
+            } catch {}
+          }
+        }
+
         const sections: [string, string][] = [
           ["Morning", d.morning || ""],
           ["Afternoon", d.afternoon || ""],
@@ -474,7 +485,7 @@ serve(async (req) => {
       pdf.text("fjordwavestravel.com", M, H - 24);
     }
 
-    const bytes = renderPdf(pdf, heroImageUrl);
+    const bytes = renderPdf(pdf, coverImageUrl);
 
     // Upload to private bucket
     const path = `${crypto.randomUUID()}.pdf`;
