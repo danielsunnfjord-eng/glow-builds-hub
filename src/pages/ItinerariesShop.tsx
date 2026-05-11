@@ -58,6 +58,19 @@ const ItinerariesShop = () => {
     },
   });
 
+  const { data: salesMap = {} } = useQuery({
+    queryKey: ["catalog-sales-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_catalog_sales_counts");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: any) => {
+        map[r.itinerary_id] = Number(r.sales_count) || 0;
+      });
+      return map;
+    },
+  });
+
   // Filter state
   const [search, setSearch] = useState("");
   const [destination, setDestination] = useState("");
@@ -305,6 +318,16 @@ const ItinerariesShop = () => {
                         {summary}
                       </p>
                     )}
+                    <div className="flex items-center gap-4 text-[0.7rem] text-voyage-muted mb-4">
+                      <span className="inline-flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5" />
+                        {trip.view_count ?? 0}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Download className="w-3.5 h-3.5" />
+                        {salesMap[trip.id] ?? 0}
+                      </span>
+                    </div>
                     <div className="flex items-baseline justify-between border-t border-parchment-3 pt-4">
                       <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">
                         {t("shop.from")}
