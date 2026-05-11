@@ -16,8 +16,6 @@ export type Database = {
     Tables: {
       catalog_itineraries: {
         Row: {
-          client_document_draft: Json | null
-          client_document_language: string
           created_at: string
           description_en: string
           description_no: string | null
@@ -47,8 +45,6 @@ export type Database = {
           what_you_get_pt: string | null
         }
         Insert: {
-          client_document_draft?: Json | null
-          client_document_language?: string
           created_at?: string
           description_en?: string
           description_no?: string | null
@@ -78,8 +74,6 @@ export type Database = {
           what_you_get_pt?: string | null
         }
         Update: {
-          client_document_draft?: Json | null
-          client_document_language?: string
           created_at?: string
           description_en?: string
           description_no?: string | null
@@ -109,6 +103,41 @@ export type Database = {
           what_you_get_pt?: string | null
         }
         Relationships: []
+      }
+      catalog_itinerary_drafts: {
+        Row: {
+          created_at: string
+          draft: Json
+          itinerary_id: string
+          language: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          draft?: Json
+          itinerary_id: string
+          language?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          draft?: Json
+          itinerary_id?: string
+          language?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_itinerary_drafts_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: true
+            referencedRelation: "catalog_itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       catalog_purchases: {
         Row: {
