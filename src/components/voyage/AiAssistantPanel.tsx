@@ -772,7 +772,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
                 {/* CURRENT DOCUMENT PREVIEW */}
                 {!pendingDraft && draftPreview && !draftPreviewError && (
-                  <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[55vh] overflow-auto">
+                  <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[80vh] overflow-y-auto resize-y min-h-[300px]">
                     <div className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-2">Current document</div>
                     <DraftPreview doc={draftPreview} />
                   </div>
