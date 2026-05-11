@@ -421,6 +421,56 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const refineDraft = async () => {
+    if (!draft) {
+      toast({ title: "Open a draft first" });
+      return;
+    }
+    if (!refineInstruction.trim()) {
+      toast({ title: "Describe what to change", description: "e.g. 'Add a paragraph about northern lights tours in day 3, with a link to visitnorway.com'" });
+      return;
+    }
+    let current: any;
+    try { current = JSON.parse(draftJson); } catch { current = draft; }
+    setRefining(true);
+    try {
+      const urlList = refineUrls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "refine_draft", draft: current, instruction: refineInstruction, urls: urlList, language: pdfLang },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setPendingDraft(data.draft);
+      setDraftView("preview");
+      toast({ title: "Suggested changes ready", description: "Review the preview below — accept or discard." });
+    } catch (e: any) {
+      toast({ title: "Refine failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setRefining(false);
+    }
+  };
+
+  const acceptPendingDraft = async () => {
+    if (!pendingDraft) return;
+    setDraftDocument(pendingDraft);
+    setPendingDraft(null);
+    setRefineInstruction("");
+    setRefineUrls("");
+    if (editing.id) {
+      try {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: pendingDraft, language: pdfLang },
+        });
+      } catch {}
+    }
+    toast({ title: "Changes accepted", description: "Draft updated and saved." });
+  };
+
+  const rejectPendingDraft = () => {
+    setPendingDraft(null);
+    toast({ title: "Changes discarded" });
+  };
+
   const closePreview = () => {
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
