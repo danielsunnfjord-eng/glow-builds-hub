@@ -30,6 +30,7 @@ interface CatalogItem {
   pdf_path: string | null;
   is_published: boolean;
   sort_order: number;
+  view_count?: number;
 }
 
 const emptyItem: Partial<CatalogItem> = {
@@ -70,6 +71,8 @@ const CatalogManager = () => {
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<"catalog" | "detail">("catalog");
 
   const { data: items = [] } = useQuery({
     queryKey: ["catalog-admin"],
