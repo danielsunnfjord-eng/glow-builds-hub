@@ -147,11 +147,52 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const { data: isStaff } = await supaUser.rpc("is_staff", { _user_id: ures.user.id });
+    if (!isStaff) {
+      return new Response(JSON.stringify({ error: "Staff access required" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const body = await req.json();
     const mode: string = (body.mode || "full").toString(); // "draft" | "render" | "full" | "signed_url"
     const language: string = (body.language || "en").toString();
     const langName = LANG_NAMES[language] || "English";
+    const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    if (mode === "get_draft") {
+      const itineraryId: string = (body.itinerary_id || "").toString();
+      if (!itineraryId) {
+        return new Response(JSON.stringify({ error: "itinerary_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data, error } = await supaService
+        .from("catalog_itinerary_drafts")
+        .select("draft, language")
+        .eq("itinerary_id", itineraryId)
+        .maybeSingle();
+      if (error) throw error;
+      return new Response(JSON.stringify(data || { draft: null, language: "en" }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (mode === "save_draft") {
+      const itineraryId: string = (body.itinerary_id || "").toString();
+      if (!itineraryId || !body.draft) {
+        return new Response(JSON.stringify({ error: "itinerary_id and draft required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { error } = await supaService
+        .from("catalog_itinerary_drafts")
+        .upsert({ itinerary_id: itineraryId, draft: body.draft, language, updated_by: ures.user.id }, { onConflict: "itinerary_id" });
+      if (error) throw error;
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // --- Mode: signed_url — returns a short-lived signed URL for an existing PDF ---
     if (mode === "signed_url") {
@@ -161,7 +202,6 @@ serve(async (req) => {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
       const { data, error } = await supaService.storage
         .from("catalog-pdfs")
         .createSignedUrl(pdf_path, 600);
@@ -179,7 +219,6 @@ serve(async (req) => {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
       const { data, error } = await supaService.storage.from("catalog-pdfs").download(pdf_path);
       if (error) throw error;
       const buf = new Uint8Array(await data.arrayBuffer());
