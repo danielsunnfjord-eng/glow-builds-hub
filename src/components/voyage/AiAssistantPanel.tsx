@@ -1201,7 +1201,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
           ].map(([k, v]) => v ? (
             <div key={k as string} className="mb-2">
               <p className="text-[0.7rem] uppercase tracking-[0.1em] font-semibold">{k}</p>
-              <p className="whitespace-pre-line">{v as string}</p>
+              <p className="whitespace-pre-line">{linkify(v as string)}</p>
             </div>
           ) : null)}
         </section>
