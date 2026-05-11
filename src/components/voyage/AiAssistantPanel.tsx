@@ -286,6 +286,57 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const loadSavedDraft = useCallback(async () => {
+    if (!editing.id) return;
+    setLoadingSavedDraft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "get_draft", itinerary_id: editing.id },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.draft) {
+        setDraft(data.draft);
+        setDraftJson(JSON.stringify(data.draft, null, 2));
+        setPdfLang(data.language || "en");
+        setShowDraftPreview(true);
+      } else {
+        toast({ title: "No saved draft", description: "Generate a draft first, then save it for later editing." });
+      }
+    } catch (e: any) {
+      toast({ title: "Could not open draft", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setLoadingSavedDraft(false);
+    }
+  }, [editing.id, toast]);
+
+  const saveDraft = async () => {
+    if (!editing.id) {
+      toast({ title: "Save the itinerary first", description: "Create the catalog item before saving its client document draft." });
+      return;
+    }
+    let parsed: any;
+    try {
+      parsed = JSON.parse(draftJson);
+    } catch {
+      toast({ title: "Invalid JSON", description: "Please fix the draft before saving.", variant: "destructive" });
+      return;
+    }
+    setSavingDraft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "save_draft", itinerary_id: editing.id, draft: parsed, language: pdfLang },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Draft saved", description: "You can reopen and continue editing it later." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   const closePreview = () => {
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
@@ -298,6 +349,15 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
+
+  useEffect(() => {
+    setDraft(null);
+    setDraftJson("");
+    setPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return "";
+    });
+  }, [editing.id]);
 
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
