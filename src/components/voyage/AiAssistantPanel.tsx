@@ -859,7 +859,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   </div>
                 )}
               </div>
-              </div>
             )}
           </div>
         </div>
