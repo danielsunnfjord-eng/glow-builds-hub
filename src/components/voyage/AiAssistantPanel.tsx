@@ -345,29 +345,18 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
     setPreviewing(true);
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      const token = sess?.session?.access_token;
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-catalog-pdf`;
-      const r = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ mode: "fetch_pdf", pdf_path: editing.pdf_path }),
+      // Use a signed HTTPS URL (some browsers/extensions block blob: URLs in iframes/objects)
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "signed_url", pdf_path: editing.pdf_path },
       });
-      if (!r.ok) {
-        const t = await r.text();
-        throw new Error(t || `HTTP ${r.status}`);
-      }
-      const blob = await r.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      if (error) throw error;
+      const signedUrl: string | undefined = data?.url;
+      if (!signedUrl) throw new Error("No signed URL returned");
       setPreviewUrl((current) => {
-        if (current) URL.revokeObjectURL(current);
-        return blobUrl;
+        if (current && current.startsWith("blob:")) URL.revokeObjectURL(current);
+        return signedUrl;
       });
-      toast({ title: "Preview ready", description: "The PDF is shown below without opening a blocked tab." });
+      toast({ title: "Preview ready" });
     } catch (e: any) {
       toast({ title: "Preview failed", description: String(e.message || e), variant: "destructive" });
     } finally {
