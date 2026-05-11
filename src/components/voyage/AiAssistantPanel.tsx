@@ -76,6 +76,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [refining, setRefining] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<any | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [documentView, setDocumentView] = useState<"draft" | "pdf">("draft");
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
@@ -84,6 +85,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     try { draftPreview = JSON.parse(draftJson); }
     catch (e: any) { draftPreviewError = e?.message || "Invalid JSON"; }
   }
+  const draftDayCount = Array.isArray(draftPreview?.days) ? draftPreview.days.length : 0;
 
   const setDraftDocument = useCallback((next: any) => {
     setDraft(next);
@@ -373,6 +375,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const openPdfDocumentView = async () => {
+    setDocumentView("pdf");
+    if (!previewUrl && editing.pdf_path) await previewAttachedPdf();
+  };
+
   const loadSavedDraft = useCallback(async () => {
     if (!editing.id) return;
     setLoadingSavedDraft(true);
@@ -512,9 +519,17 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   }, [previewUrl]);
 
   useEffect(() => {
+    if (editing.pdf_path && draftPreview && draftDayCount === 0 && documentView === "draft") {
+      setDocumentView("pdf");
+      if (!previewUrl && !previewing) void previewAttachedPdf();
+    }
+  }, [editing.pdf_path, draftPreview, draftDayCount, documentView, previewUrl, previewing]);
+
+  useEffect(() => {
     setDraft(null);
     setDraftJson("");
     setPendingDraft(null);
+    setDocumentView("draft");
     setRefineImages([]);
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
@@ -719,7 +734,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               )}
             </div>
 
-            {previewUrl && (
+            {previewUrl && documentView !== "pdf" && (
               <div className="mt-4 border border-gold/30 bg-parchment-1/40 rounded-sm overflow-hidden">
                 <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-gold/20">
                   <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">PDF preview</span>
@@ -749,7 +764,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             )}
 
             {draft && (
-              <div className="mt-4">
+              <div className="mt-4 border-t border-gold/30 pt-4">
                 {/* TWO-COLUMN DRAFT WORKSPACE */}
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                   {/* LEFT: Refine controls */}
@@ -926,11 +941,37 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   </div>
 
                   {/* RIGHT: Current document preview — always visible, tall & scrollable */}
-                  {!pendingDraft && draftPreview && !draftPreviewError && (
-                    <div className="lg:col-span-3">
-                      <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 h-[85vh] overflow-y-auto">
-                        <div className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-2">Current document</div>
-                        <DraftPreview doc={draftPreview} />
+                  {!pendingDraft && (draftPreview || editing.pdf_path) && !draftPreviewError && (
+                    <div className="lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
+                      <div className="rounded-sm border border-parchment-3 bg-voyage-white h-[78vh] min-h-[620px] overflow-hidden flex flex-col">
+                        <div className="shrink-0 flex items-center justify-between gap-3 border-b border-parchment-3 bg-voyage-white px-5 py-3">
+                          <div>
+                            <div className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted">Current document</div>
+                            <div className="text-[0.68rem] text-sage">Read the full itinerary here before refining.</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {draftPreview && (
+                              <button type="button" onClick={() => setDocumentView("draft")} className={`px-2 py-1 text-[0.65rem] uppercase tracking-[0.1em] border ${documentView === "draft" ? "bg-ink text-voyage-white border-ink" : "border-parchment-3 text-voyage-muted hover:text-ink"}`}>Draft</button>
+                            )}
+                            {editing.pdf_path && (
+                              <button type="button" onClick={openPdfDocumentView} className={`px-2 py-1 text-[0.65rem] uppercase tracking-[0.1em] border ${documentView === "pdf" ? "bg-ink text-voyage-white border-ink" : "border-parchment-3 text-voyage-muted hover:text-ink"}`}>Full PDF</button>
+                            )}
+                            {documentView === "draft" && <span className="text-[0.68rem] uppercase tracking-[0.1em] text-gold font-semibold">{Array.isArray(draftPreview?.days) ? draftPreview.days.length : 0} days</span>}
+                          </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6">
+                          {documentView === "pdf" && editing.pdf_path ? (
+                            previewUrl ? (
+                              <iframe title="Full attached itinerary PDF" src={previewUrl} className="h-full min-h-[68vh] w-full bg-voyage-white" />
+                            ) : (
+                              <button type="button" onClick={openPdfDocumentView} disabled={previewing} className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50">
+                                {previewing ? "Opening full PDF…" : "Open full attached PDF"}
+                              </button>
+                            )
+                          ) : (
+                            <DraftPreview doc={draftPreview} />
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}

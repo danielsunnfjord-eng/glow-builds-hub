@@ -394,7 +394,7 @@ const CatalogManager = () => {
       {/* Editor modal */}
       {editing && (
         <div className="fixed inset-0 z-50 bg-ink/60 flex items-center justify-center p-4">
-          <div className="bg-parchment rounded-lg max-w-4xl w-full max-h-[92vh] overflow-auto">
+          <div className="bg-parchment rounded-lg w-[96vw] max-w-[1500px] max-h-[92vh] overflow-auto">
             <div className="sticky top-0 bg-parchment border-b border-parchment-3 px-6 py-4 flex justify-between items-center z-10">
               <h2 className="font-serif text-xl font-bold">
                 {editing.id ? "Edit" : "New"} Itinerary
