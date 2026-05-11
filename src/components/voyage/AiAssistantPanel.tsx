@@ -278,8 +278,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setDraft(data.draft);
-      setDraftJson(JSON.stringify(data.draft, null, 2));
+      setDraftDocument(data.draft);
+      setDraftView("edit");
       if (editing.id) {
         await supabase.functions.invoke("generate-catalog-pdf", {
           body: { mode: "save_draft", itinerary_id: editing.id, draft: data.draft, language: pdfLang },
@@ -374,9 +374,9 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (data?.draft) {
-        setDraft(data.draft);
-        setDraftJson(JSON.stringify(data.draft, null, 2));
+        setDraftDocument(data.draft);
         setPdfLang(data.language || "en");
+        setDraftView("edit");
         setShowDraftPreview(true);
       } else {
         toast({ title: "No saved draft", description: "Generate a draft first, then save it for later editing." });
@@ -386,7 +386,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     } finally {
       setLoadingSavedDraft(false);
     }
-  }, [editing.id, toast]);
+  }, [editing.id, setDraftDocument, toast]);
 
   const saveDraft = async () => {
     if (!editing.id) {
