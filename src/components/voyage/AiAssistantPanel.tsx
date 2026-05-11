@@ -212,6 +212,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (data?.error) throw new Error(data.error);
       setDraft(data.draft);
       setDraftJson(JSON.stringify(data.draft, null, 2));
+      if (editing.id) {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: data.draft, language: pdfLang },
+        });
+      }
       toast({ title: "Draft ready", description: "Review and edit below, then click Render PDF." });
     } catch (e: any) {
       toast({ title: "Draft failed", description: String(e.message || e), variant: "destructive" });
@@ -240,6 +245,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (editing.id) {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: parsed, language: pdfLang },
+        });
+      }
       setEditing({ ...editing, pdf_path: data.pdf_path });
       toast({ title: "PDF rendered", description: `${data.pages} pages. Attached as the itinerary PDF.` });
     } catch (e: any) {
