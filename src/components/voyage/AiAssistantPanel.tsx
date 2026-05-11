@@ -71,6 +71,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
   const [refineInstruction, setRefineInstruction] = useState("");
   const [refineUrls, setRefineUrls] = useState("");
+  const [refineImages, setRefineImages] = useState<string[]>([]);
+  const [uploadingRefineImage, setUploadingRefineImage] = useState(false);
   const [refining, setRefining] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<any | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -421,12 +423,32 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const onRefineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploadingRefineImage(true);
+    try {
+      const uploaded: string[] = [];
+      for (const f of files) {
+        const url = await uploadCatalogImage(f);
+        uploaded.push(url);
+      }
+      setRefineImages((prev) => [...prev, ...uploaded]);
+      toast({ title: `${uploaded.length} image(s) attached`, description: "Tell the assistant where to place them (cover, day 3, etc.)." });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: String(err.message || err), variant: "destructive" });
+    } finally {
+      setUploadingRefineImage(false);
+      e.target.value = "";
+    }
+  };
+
   const refineDraft = async () => {
     if (!draft) {
       toast({ title: "Open a draft first" });
       return;
     }
-    if (!refineInstruction.trim()) {
+    if (!refineInstruction.trim() && refineImages.length === 0) {
       toast({ title: "Describe what to change", description: "e.g. 'Add a paragraph about northern lights tours in day 3, with a link to visitnorway.com'" });
       return;
     }
@@ -435,8 +457,12 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setRefining(true);
     try {
       const urlList = refineUrls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const imageHint = refineImages.length
+        ? `\n\nAttached image URLs (use them in the document where the instruction asks — e.g. set cover_image_url, or set days[N].image_url. If no specific placement is given, use the first as cover_image_url and the rest in order on days that have no image yet):\n${refineImages.map((u, i) => `${i + 1}. ${u}`).join("\n")}`
+        : "";
+      const fullInstruction = (refineInstruction || "Place the attached images in the document.") + imageHint;
       const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
-        body: { mode: "refine_draft", draft: current, instruction: refineInstruction, urls: urlList, language: pdfLang },
+        body: { mode: "refine_draft", draft: current, instruction: fullInstruction, urls: urlList, language: pdfLang },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -456,6 +482,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setPendingDraft(null);
     setRefineInstruction("");
     setRefineUrls("");
+    setRefineImages([]);
     if (editing.id) {
       try {
         await supabase.functions.invoke("generate-catalog-pdf", {
@@ -487,11 +514,27 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   useEffect(() => {
     setDraft(null);
     setDraftJson("");
+    setPendingDraft(null);
+    setRefineImages([]);
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
       return "";
     });
-  }, [editing.id]);
+    // Auto-load any saved draft for this itinerary so it appears in the edit tab
+    if (editing.id) {
+      (async () => {
+        try {
+          const { data } = await supabase.functions.invoke("generate-catalog-pdf", {
+            body: { mode: "get_draft", itinerary_id: editing.id },
+          });
+          if (data?.draft && Object.keys(data.draft).length > 0) {
+            setDraftDocument(data.draft);
+            if (data.language) setPdfLang(data.language);
+          }
+        } catch {}
+      })();
+    }
+  }, [editing.id, setDraftDocument]);
 
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
@@ -734,6 +777,33 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                       onChange={(e) => setRefineUrls(e.target.value)}
                       disabled={!!pendingDraft || refining}
                     />
+                  </div>
+                  <div>
+                    <label className={label}>Attach pictures (optional)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={onRefineImageUpload}
+                      disabled={!!pendingDraft || refining || uploadingRefineImage}
+                      className="text-[0.78rem]"
+                    />
+                    {uploadingRefineImage && <div className="text-[0.7rem] text-voyage-muted mt-1">Uploading…</div>}
+                    {refineImages.length > 0 && (
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {refineImages.map((img, i) => (
+                          <div key={i} className="relative">
+                            <img src={img} alt="" className="w-16 h-16 object-cover rounded border border-parchment-3" />
+                            <button
+                              type="button"
+                              onClick={() => setRefineImages(refineImages.filter((_, j) => j !== i))}
+                              className="absolute -top-1 -right-1 bg-destructive text-voyage-white w-4 h-4 rounded-full text-[0.6rem] leading-none"
+                            >×</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-[0.65rem] text-voyage-muted mt-1">Then tell the assistant where to use them — e.g. "use the first as cover, the second on day 2".</p>
                   </div>
                   {!pendingDraft ? (
                     <button
@@ -1035,6 +1105,18 @@ const StructuredDraftEditor = ({
 // Rough in-browser preview of the AI-generated itinerary draft JSON.
 // Mirrors the structure rendered server-side by the jsPDF renderer so
 // advisors can review content before triggering a full PDF render.
+const linkify = (text: string) => {
+  if (!text) return null;
+  const parts = String(text).split(/(https?:\/\/[^\s<>")]+)/g);
+  return parts.map((p, i) =>
+    /^https?:\/\//.test(p) ? (
+      <a key={i} href={p} target="_blank" rel="noopener noreferrer" className="text-gold underline hover:text-ink break-all">{p}</a>
+    ) : (
+      <span key={i}>{p}</span>
+    )
+  );
+};
+
 const DraftPreview = ({ doc }: { doc: any }) => {
   if (!doc || typeof doc !== "object") return null;
   const ov = doc.trip_overview || {};
@@ -1044,6 +1126,9 @@ const DraftPreview = ({ doc }: { doc: any }) => {
 
   return (
     <div className="font-serif text-ink text-[0.85rem] leading-relaxed space-y-6">
+      {doc.cover_image_url && (
+        <img src={doc.cover_image_url} alt="" className="w-full max-h-[280px] object-cover rounded" />
+      )}
       <header className="text-center border-b border-parchment-3 pb-4">
         <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold mb-1">
           Fjord & Waves Travel
@@ -1056,7 +1141,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
         <section>
           <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Overview</h2>
           {String(doc.intro).split(/\n\n+/).map((p, i) => (
-            <p key={i} className="mb-2 whitespace-pre-line">{p}</p>
+            <p key={i} className="mb-2 whitespace-pre-line">{linkify(p)}</p>
           ))}
         </section>
       )}
@@ -1098,6 +1183,9 @@ const DraftPreview = ({ doc }: { doc: any }) => {
               <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold">Day {d.day ?? i + 1}</p>
               <h3 className="text-lg font-semibold">{d.title || ""}</h3>
               {d.location && <p className="italic text-voyage-muted text-[0.78rem] mb-2">{d.location}</p>}
+              {d.image_url && (
+                <img src={d.image_url} alt="" className="w-full max-h-[220px] object-cover rounded my-2" />
+              )}
               {[
                 ["Morning", d.morning],
                 ["Afternoon", d.afternoon],
@@ -1108,7 +1196,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
               ].map(([k, v]) => v ? (
                 <div key={k as string} className="mt-2">
                   <p className="text-[0.7rem] uppercase tracking-[0.1em] font-semibold">{k}</p>
-                  <p className="whitespace-pre-line">{v as string}</p>
+                  <p className="whitespace-pre-line">{linkify(v as string)}</p>
                 </div>
               ) : null)}
             </article>
@@ -1129,7 +1217,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
           ].map(([k, v]) => v ? (
             <div key={k as string} className="mb-2">
               <p className="text-[0.7rem] uppercase tracking-[0.1em] font-semibold">{k}</p>
-              <p className="whitespace-pre-line">{v as string}</p>
+              <p className="whitespace-pre-line">{linkify(v as string)}</p>
             </div>
           ) : null)}
         </section>
