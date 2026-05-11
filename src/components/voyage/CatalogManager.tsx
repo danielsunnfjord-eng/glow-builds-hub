@@ -567,6 +567,49 @@ const CatalogManager = () => {
           </div>
         </div>
       )}
+
+      {/* Public preview modal (catalog or detail subpage) */}
+      {previewSlug && (
+        <div className="fixed inset-0 z-50 bg-ink/70 flex flex-col p-4">
+          <div className="bg-voyage-white rounded-t-lg px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-[0.7rem] uppercase tracking-[0.12em] text-voyage-muted">
+                Preview ({previewMode === "catalog" ? "Catalog" : "Subpage"})
+              </span>
+              <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.7rem]">
+                <button
+                  onClick={() => setPreviewMode("catalog")}
+                  className={`px-3 py-1 ${previewMode === "catalog" ? "bg-ink text-voyage-white" : "text-ink hover:bg-parchment"}`}
+                >
+                  Catalog
+                </button>
+                <button
+                  onClick={() => setPreviewMode("detail")}
+                  disabled={previewSlug === "__catalog__"}
+                  className={`px-3 py-1 ${previewMode === "detail" ? "bg-ink text-voyage-white" : "text-ink hover:bg-parchment"} disabled:opacity-40`}
+                >
+                  Subpage
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setPreviewSlug(null)}
+              className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-ink"
+            >
+              Close ✕
+            </button>
+          </div>
+          <iframe
+            title="Catalog preview"
+            src={
+              previewMode === "catalog" || previewSlug === "__catalog__"
+                ? "/itineraries-shop"
+                : `/itineraries-shop/${previewSlug}`
+            }
+            className="flex-1 w-full bg-voyage-white rounded-b-lg border-0"
+          />
+        </div>
+      )}
     </div>
   );
 };
