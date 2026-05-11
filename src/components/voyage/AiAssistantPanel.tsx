@@ -6,6 +6,40 @@ const input =
   "w-full px-3 py-2.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
 const label = "block text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-1";
 
+const cloneDoc = (doc: any) => JSON.parse(JSON.stringify(doc || {}));
+
+const buildDraftFromCatalog = (editing: any, language: string) => {
+  const lang = language === "pt" || language === "no" ? language : "en";
+  return {
+  title: editing[`title_${lang}`] || editing.title_en || editing.title_pt || editing.title_no || "Untitled itinerary",
+  subtitle: editing[`summary_${lang}`] || editing.summary_en || editing.summary_pt || editing.summary_no || "",
+  cover_image_url: editing.hero_image_url || "",
+  intro: editing[`description_${lang}`] || editing.description_en || editing.description_pt || editing.description_no || "",
+  trip_overview: {
+    destination: editing.destination || "",
+    duration: editing.duration || "",
+    best_for: editing.group_size_label || "",
+    estimated_budget: editing.estimated_trip_budget || "",
+    best_season: "",
+  },
+  highlights: String(editing[`what_you_get_${lang}`] || editing.what_you_get_en || editing.what_you_get_pt || editing.what_you_get_no || "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean),
+  days: [],
+  practical_info: {
+    getting_there: "",
+    getting_around: "",
+    money: "",
+    language_basics: "",
+    what_to_pack: "",
+    etiquette: "",
+  },
+  closing: "",
+  language,
+  };
+};
+
 interface Props {
   editing: any;
   setEditing: (v: any) => void;
@@ -31,9 +65,10 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [renderingPdf, setRenderingPdf] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [showDraftPreview, setShowDraftPreview] = useState(true);
   const [loadingSavedDraft, setLoadingSavedDraft] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
+  const [draftView, setDraftView] = useState<"edit" | "preview" | "json">("edit");
+  const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
@@ -42,6 +77,35 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     try { draftPreview = JSON.parse(draftJson); }
     catch (e: any) { draftPreviewError = e?.message || "Invalid JSON"; }
   }
+
+  const setDraftDocument = useCallback((next: any) => {
+    setDraft(next);
+    setDraftJson(JSON.stringify(next, null, 2));
+  }, []);
+
+  const uploadCatalogImage = async (file: File): Promise<string> => {
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("catalog-images")
+      .upload(path, file, { contentType: file.type });
+    if (error) throw error;
+    const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  const uploadDraftImage = async (file: File, applyUrl: (url: string) => void, key: string) => {
+    setUploadingDraftImage(key);
+    try {
+      const url = await uploadCatalogImage(file);
+      applyUrl(url);
+      toast({ title: "Image uploaded" });
+    } catch (e: any) {
+      toast({ title: "Upload failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setUploadingDraftImage(null);
+    }
+  };
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -210,8 +274,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setDraft(data.draft);
-      setDraftJson(JSON.stringify(data.draft, null, 2));
+      setDraftDocument(data.draft);
+      setDraftView("edit");
       if (editing.id) {
         await supabase.functions.invoke("generate-catalog-pdf", {
           body: { mode: "save_draft", itinerary_id: editing.id, draft: data.draft, language: pdfLang },
@@ -223,6 +287,12 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     } finally {
       setGenPdf(false);
     }
+  };
+
+  const startEditableDraft = () => {
+    setDraftDocument(buildDraftFromCatalog(editing, pdfLang));
+    setDraftView("edit");
+    toast({ title: "Editable draft opened", description: "Edit the text and pictures, then save or render the PDF." });
   };
 
   const renderPdfFromDraft = async () => {
@@ -240,7 +310,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
           mode: "render",
           language: pdfLang,
           draft: parsed,
-          hero_image_url: editing.hero_image_url || null,
+          hero_image_url: parsed.cover_image_url || editing.hero_image_url || null,
         },
       });
       if (error) throw error;
@@ -306,10 +376,9 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (data?.draft) {
-        setDraft(data.draft);
-        setDraftJson(JSON.stringify(data.draft, null, 2));
+        setDraftDocument(data.draft);
         setPdfLang(data.language || "en");
-        setShowDraftPreview(true);
+        setDraftView("edit");
       } else {
         toast({ title: "No saved draft", description: "Generate a draft first, then save it for later editing." });
       }
@@ -318,7 +387,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     } finally {
       setLoadingSavedDraft(false);
     }
-  }, [editing.id, toast]);
+  }, [editing.id, setDraftDocument, toast]);
 
   const saveDraft = async () => {
     if (!editing.id) {
@@ -530,6 +599,13 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   {loadingSavedDraft ? "Opening…" : "Open saved draft"}
                 </button>
               )}
+              <button
+                type="button"
+                onClick={startEditableDraft}
+                className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+              >
+                Open editable draft
+              </button>
               {editing.pdf_path && (
                 <button
                   type="button"
@@ -578,33 +654,55 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <label className={label + " mb-0"}>
-                    Editable draft (JSON) — tweak any text, then render
+                    Editable client document — adjust text and pictures before rendering the PDF
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowDraftPreview((v) => !v)}
-                    className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-ink"
-                  >
-                    {showDraftPreview ? "Hide preview" : "👁 Show preview"}
-                  </button>
+                  <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
+                    {(["edit", "preview", "json"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setDraftView(mode)}
+                        className={`px-3 py-1.5 ${draftView === mode ? "bg-ink text-voyage-white" : "bg-voyage-white text-ink hover:bg-parchment"}`}
+                      >
+                        {mode === "edit" ? "Edit" : mode === "preview" ? "Preview" : "JSON"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {showDraftPreview && (
+                {draftView === "edit" && draftPreview && !draftPreviewError && (
+                  <StructuredDraftEditor
+                    doc={draftPreview}
+                    onChange={setDraftDocument}
+                    onUploadImage={uploadDraftImage}
+                    uploadingImageKey={uploadingDraftImage}
+                  />
+                )}
+
+                {draftView === "edit" && draftPreviewError && (
+                  <p className="rounded-sm border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
+                    JSON error: {draftPreviewError}. Switch to JSON to repair it.
+                  </p>
+                )}
+
+                {draftView === "preview" && (
                   <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[60vh] overflow-auto">
                     {draftPreviewError ? (
-                      <p className="text-[0.75rem] text-red-600">JSON error: {draftPreviewError}</p>
+                      <p className="text-[0.75rem] text-destructive">JSON error: {draftPreviewError}</p>
                     ) : draftPreview ? (
                       <DraftPreview doc={draftPreview} />
                     ) : null}
                   </div>
                 )}
 
-                <textarea
-                  className={input + " min-h-[320px] font-mono text-[0.72rem]"}
-                  value={draftJson}
-                  onChange={(e) => setDraftJson(e.target.value)}
-                  spellCheck={false}
-                />
+                {draftView === "json" && (
+                  <textarea
+                    className={input + " min-h-[320px] font-mono text-[0.72rem]"}
+                    value={draftJson}
+                    onChange={(e) => setDraftJson(e.target.value)}
+                    spellCheck={false}
+                  />
+                )}
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -640,6 +738,171 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const StructuredDraftEditor = ({
+  doc,
+  onChange,
+  onUploadImage,
+  uploadingImageKey,
+}: {
+  doc: any;
+  onChange: (doc: any) => void;
+  onUploadImage: (file: File, applyUrl: (url: string) => void, key: string) => void;
+  uploadingImageKey: string | null;
+}) => {
+  const update = (path: (string | number)[], value: any) => {
+    const next = cloneDoc(doc);
+    let target = next;
+    path.slice(0, -1).forEach((key) => {
+      if (target[key] === undefined || target[key] === null) target[key] = typeof key === "number" ? [] : {};
+      target = target[key];
+    });
+    target[path[path.length - 1]] = value;
+    onChange(next);
+  };
+
+  const updateList = (key: "highlights" | "days", value: any[]) => onChange({ ...cloneDoc(doc), [key]: value });
+  const overview = doc.trip_overview || {};
+  const practical = doc.practical_info || {};
+  const highlights = Array.isArray(doc.highlights) ? doc.highlights : [];
+  const days = Array.isArray(doc.days) ? doc.days : [];
+
+  const imageUpload = (path: (string | number)[], key: string) => async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) await onUploadImage(file, (url) => update(path, url), key);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="rounded-sm border border-parchment-3 bg-voyage-white p-4 space-y-5 max-h-[62vh] overflow-auto">
+      <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 items-start">
+        <div className="space-y-2">
+          {doc.cover_image_url ? (
+            <img src={doc.cover_image_url} alt="Draft cover" className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />
+          ) : (
+            <div className="w-full aspect-[4/3] rounded-sm border border-dashed border-parchment-3 bg-parchment flex items-center justify-center text-[0.72rem] text-voyage-muted">
+              No cover image
+            </div>
+          )}
+          <input type="file" accept="image/*" onChange={imageUpload(["cover_image_url"], "cover")} className="text-[0.72rem]" disabled={uploadingImageKey === "cover"} />
+          {uploadingImageKey === "cover" && <p className="text-[0.7rem] text-voyage-muted">Uploading…</p>}
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className={label}>Title</label>
+            <input className={input} value={doc.title || ""} onChange={(e) => update(["title"], e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Subtitle</label>
+            <input className={input} value={doc.subtitle || ""} onChange={(e) => update(["subtitle"], e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Cover image URL</label>
+            <input className={input} value={doc.cover_image_url || ""} onChange={(e) => update(["cover_image_url"], e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label className={label}>Intro</label>
+        <textarea className={input + " min-h-[130px]"} value={doc.intro || ""} onChange={(e) => update(["intro"], e.target.value)} />
+      </div>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <h3 className="font-serif font-semibold text-ink">Trip details</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            ["destination", "Destination"],
+            ["duration", "Duration"],
+            ["best_for", "Best for"],
+            ["estimated_budget", "Estimated budget"],
+            ["best_season", "Best season"],
+          ].map(([key, title]) => (
+            <div key={key}>
+              <label className={label}>{title}</label>
+              <input className={input} value={overview[key] || ""} onChange={(e) => update(["trip_overview", key], e.target.value)} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-serif font-semibold text-ink">Highlights</h3>
+          <button type="button" onClick={() => updateList("highlights", [...highlights, ""])} className="text-[0.7rem] uppercase tracking-[0.1em] text-gold hover:text-ink">+ Add</button>
+        </div>
+        <div className="space-y-2">
+          {highlights.map((item: any, i: number) => (
+            <div key={i} className="flex gap-2">
+              <input className={input} value={String(item || "")} onChange={(e) => updateList("highlights", highlights.map((h: any, j: number) => j === i ? e.target.value : h))} />
+              <button type="button" onClick={() => updateList("highlights", highlights.filter((_: any, j: number) => j !== i))} className="px-3 rounded-sm border border-parchment-3 text-voyage-muted hover:text-destructive">×</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4 border-t border-parchment-3 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="font-serif font-semibold text-ink">Day by day</h3>
+          <button type="button" onClick={() => updateList("days", [...days, { day: days.length + 1, title: "", location: "", morning: "", afternoon: "", evening: "", where_to_stay: "", where_to_eat: "", tips: "", image_url: "" }])} className="text-[0.7rem] uppercase tracking-[0.1em] text-gold hover:text-ink">+ Add day</button>
+        </div>
+        {days.map((day: any, i: number) => (
+          <article key={i} className="rounded-sm border border-parchment-3 bg-parchment/40 p-3 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[0.7rem] uppercase tracking-[0.14em] text-gold">Day {day.day ?? i + 1}</p>
+              <button type="button" onClick={() => updateList("days", days.filter((_: any, j: number) => j !== i).map((d: any, j: number) => ({ ...d, day: j + 1 })))} className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-destructive">Remove</button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className={label}>Title</label>
+                <input className={input} value={day.title || ""} onChange={(e) => update(["days", i, "title"], e.target.value)} />
+              </div>
+              <div>
+                <label className={label}>Location</label>
+                <input className={input} value={day.location || ""} onChange={(e) => update(["days", i, "location"], e.target.value)} />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-3 items-start">
+              {day.image_url && <img src={day.image_url} alt={`Day ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />}
+              <div className="space-y-2">
+                <label className={label}>Day image URL</label>
+                <input className={input} value={day.image_url || ""} onChange={(e) => update(["days", i, "image_url"], e.target.value)} />
+                <input type="file" accept="image/*" onChange={imageUpload(["days", i, "image_url"], `day-${i}`)} className="text-[0.72rem]" disabled={uploadingImageKey === `day-${i}`} />
+              </div>
+            </div>
+            {[
+              ["morning", "Morning"], ["afternoon", "Afternoon"], ["evening", "Evening"],
+              ["where_to_stay", "Where to stay"], ["where_to_eat", "Where to eat"], ["tips", "Tips"],
+            ].map(([key, title]) => (
+              <div key={key}>
+                <label className={label}>{title}</label>
+                <textarea className={input + " min-h-[90px]"} value={day[key] || ""} onChange={(e) => update(["days", i, key], e.target.value)} />
+              </div>
+            ))}
+          </article>
+        ))}
+      </section>
+
+      <section className="space-y-3 border-t border-parchment-3 pt-4">
+        <h3 className="font-serif font-semibold text-ink">Practical information</h3>
+        {[
+          ["getting_there", "Getting there"], ["getting_around", "Getting around"], ["money", "Money"],
+          ["language_basics", "Language basics"], ["what_to_pack", "What to pack"], ["etiquette", "Etiquette"],
+        ].map(([key, title]) => (
+          <div key={key}>
+            <label className={label}>{title}</label>
+            <textarea className={input + " min-h-[80px]"} value={practical[key] || ""} onChange={(e) => update(["practical_info", key], e.target.value)} />
+          </div>
+        ))}
+      </section>
+
+      <div className="border-t border-parchment-3 pt-4">
+        <label className={label}>Closing</label>
+        <textarea className={input + " min-h-[100px]"} value={doc.closing || ""} onChange={(e) => update(["closing"], e.target.value)} />
+      </div>
     </div>
   );
 };
