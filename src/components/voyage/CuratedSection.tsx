@@ -62,7 +62,7 @@ const CuratedSection = () => {
   return (
     <section className="bg-ink text-voyage-white" id="curated">
       {/* Hero + How It Works — merged */}
-      <div className="min-h-screen flex flex-col justify-end relative overflow-hidden">
+      <div className="min-h-screen flex flex-col justify-end relative overflow-hidden max-md:min-h-[80vh] max-md:justify-center max-md:pt-32">
         {/* Background layers */}
         <div
           className="absolute inset-0"
