@@ -1125,7 +1125,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
         <section>
           <h2 className="text-[0.7rem] uppercase tracking-[0.14em] text-gold mb-2">Overview</h2>
           {String(doc.intro).split(/\n\n+/).map((p, i) => (
-            <p key={i} className="mb-2 whitespace-pre-line">{p}</p>
+            <p key={i} className="mb-2 whitespace-pre-line">{linkify(p)}</p>
           ))}
         </section>
       )}
