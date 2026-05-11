@@ -423,12 +423,32 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const onRefineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploadingRefineImage(true);
+    try {
+      const uploaded: string[] = [];
+      for (const f of files) {
+        const url = await uploadCatalogImage(f);
+        uploaded.push(url);
+      }
+      setRefineImages((prev) => [...prev, ...uploaded]);
+      toast({ title: `${uploaded.length} image(s) attached`, description: "Tell the assistant where to place them (cover, day 3, etc.)." });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: String(err.message || err), variant: "destructive" });
+    } finally {
+      setUploadingRefineImage(false);
+      e.target.value = "";
+    }
+  };
+
   const refineDraft = async () => {
     if (!draft) {
       toast({ title: "Open a draft first" });
       return;
     }
-    if (!refineInstruction.trim()) {
+    if (!refineInstruction.trim() && refineImages.length === 0) {
       toast({ title: "Describe what to change", description: "e.g. 'Add a paragraph about northern lights tours in day 3, with a link to visitnorway.com'" });
       return;
     }
@@ -437,8 +457,12 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setRefining(true);
     try {
       const urlList = refineUrls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const imageHint = refineImages.length
+        ? `\n\nAttached image URLs (use them in the document where the instruction asks — e.g. set cover_image_url, or set days[N].image_url. If no specific placement is given, use the first as cover_image_url and the rest in order on days that have no image yet):\n${refineImages.map((u, i) => `${i + 1}. ${u}`).join("\n")}`
+        : "";
+      const fullInstruction = (refineInstruction || "Place the attached images in the document.") + imageHint;
       const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
-        body: { mode: "refine_draft", draft: current, instruction: refineInstruction, urls: urlList, language: pdfLang },
+        body: { mode: "refine_draft", draft: current, instruction: fullInstruction, urls: urlList, language: pdfLang },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
