@@ -520,6 +520,16 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               >
                 {genPdf ? "Writing draft…" : draft ? "↻ Re-generate draft" : "✍️ 1. Generate draft"}
               </button>
+              {editing.id && (
+                <button
+                  type="button"
+                  onClick={loadSavedDraft}
+                  disabled={loadingSavedDraft}
+                  className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                >
+                  {loadingSavedDraft ? "Opening…" : "Open saved draft"}
+                </button>
+              )}
               {editing.pdf_path && (
                 <button
                   type="button"
@@ -604,6 +614,16 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   >
                     {renderingPdf ? "Rendering…" : "📄 2. Render PDF from this draft"}
                   </button>
+                  {editing.id && (
+                    <button
+                      type="button"
+                      onClick={saveDraft}
+                      disabled={savingDraft}
+                      className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                    >
+                      {savingDraft ? "Saving…" : "Save draft"}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => { setDraft(null); setDraftJson(""); }}
