@@ -514,11 +514,27 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   useEffect(() => {
     setDraft(null);
     setDraftJson("");
+    setPendingDraft(null);
+    setRefineImages([]);
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
       return "";
     });
-  }, [editing.id]);
+    // Auto-load any saved draft for this itinerary so it appears in the edit tab
+    if (editing.id) {
+      (async () => {
+        try {
+          const { data } = await supabase.functions.invoke("generate-catalog-pdf", {
+            body: { mode: "get_draft", itinerary_id: editing.id },
+          });
+          if (data?.draft && Object.keys(data.draft).length > 0) {
+            setDraftDocument(data.draft);
+            if (data.language) setPdfLang(data.language);
+          }
+        } catch {}
+      })();
+    }
+  }, [editing.id, setDraftDocument]);
 
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
