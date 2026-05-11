@@ -71,6 +71,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
   const [refineInstruction, setRefineInstruction] = useState("");
   const [refineUrls, setRefineUrls] = useState("");
+  const [refineImages, setRefineImages] = useState<string[]>([]);
+  const [uploadingRefineImage, setUploadingRefineImage] = useState(false);
   const [refining, setRefining] = useState(false);
   const [pendingDraft, setPendingDraft] = useState<any | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
