@@ -956,12 +956,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                                   <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-sm">Open in new tab</a>
                                   <a href={previewUrl} download={`itinerary-${editing.id || "draft"}.pdf`} className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-sm">Download</a>
                                 </div>
-                                <object data={previewUrl} type="application/pdf" className="flex-1 min-h-[60vh] w-full bg-voyage-white">
-                                  <iframe title="Full attached itinerary PDF" src={previewUrl} className="h-full min-h-[60vh] w-full bg-voyage-white" />
-                                  <div className="p-6 text-sm text-voyage-muted">
-                                    Your browser cannot display the PDF inline. <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="text-gold underline">Open it in a new tab</a>.
-                                  </div>
-                                </object>
+                                <PdfJsViewer url={previewUrl} />
                               </div>
                             ) : (
                               <button type="button" onClick={openPdfDocumentView} disabled={previewing} className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50">
