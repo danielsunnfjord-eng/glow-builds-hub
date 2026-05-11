@@ -1,1 +1,1 @@
-export const GATRACKINGID = 'G-XXXXXXXXXX'; // Replace with my real GA4 ID
+export const GATRACKINGID = 'G-SR4S98JHQF';
