@@ -69,6 +69,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftView, setDraftView] = useState<"edit" | "preview" | "json">("edit");
   const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
+  const [refineInstruction, setRefineInstruction] = useState("");
+  const [refineUrls, setRefineUrls] = useState("");
+  const [refining, setRefining] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<any | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
@@ -416,6 +421,56 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const refineDraft = async () => {
+    if (!draft) {
+      toast({ title: "Open a draft first" });
+      return;
+    }
+    if (!refineInstruction.trim()) {
+      toast({ title: "Describe what to change", description: "e.g. 'Add a paragraph about northern lights tours in day 3, with a link to visitnorway.com'" });
+      return;
+    }
+    let current: any;
+    try { current = JSON.parse(draftJson); } catch { current = draft; }
+    setRefining(true);
+    try {
+      const urlList = refineUrls.split(/\n|,/).map((u) => u.trim()).filter(Boolean);
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "refine_draft", draft: current, instruction: refineInstruction, urls: urlList, language: pdfLang },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setPendingDraft(data.draft);
+      setDraftView("preview");
+      toast({ title: "Suggested changes ready", description: "Review the preview below — accept or discard." });
+    } catch (e: any) {
+      toast({ title: "Refine failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setRefining(false);
+    }
+  };
+
+  const acceptPendingDraft = async () => {
+    if (!pendingDraft) return;
+    setDraftDocument(pendingDraft);
+    setPendingDraft(null);
+    setRefineInstruction("");
+    setRefineUrls("");
+    if (editing.id) {
+      try {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: pendingDraft, language: pdfLang },
+        });
+      } catch {}
+    }
+    toast({ title: "Changes accepted", description: "Draft updated and saved." });
+  };
+
+  const rejectPendingDraft = () => {
+    setPendingDraft(null);
+    toast({ title: "Changes discarded" });
+  };
+
   const closePreview = () => {
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
@@ -651,88 +706,158 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             )}
 
             {draft && (
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <label className={label + " mb-0"}>
-                    Editable client document — adjust text and pictures before rendering the PDF
-                  </label>
-                  <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
-                    {(["edit", "preview", "json"] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        onClick={() => setDraftView(mode)}
-                        className={`px-3 py-1.5 ${draftView === mode ? "bg-ink text-voyage-white" : "bg-voyage-white text-ink hover:bg-parchment"}`}
-                      >
-                        {mode === "edit" ? "Edit" : mode === "preview" ? "Preview" : "JSON"}
-                      </button>
-                    ))}
+              <div className="mt-4 space-y-4">
+                {/* SIMPLE REFINE BOX */}
+                <div className="rounded-sm border border-gold/40 bg-voyage-white p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-serif font-semibold text-ink text-[0.9rem]">💬 Refine with AI</div>
+                      <div className="text-[0.72rem] text-voyage-muted">Tell the assistant what to add or change. Review the suggested version, then accept.</div>
+                    </div>
+                    {pendingDraft && (
+                      <span className="text-[0.7rem] uppercase tracking-[0.1em] text-gold font-semibold">Pending review</span>
+                    )}
                   </div>
+                  <textarea
+                    className={input + " min-h-[80px]"}
+                    placeholder={"e.g. 'Add a paragraph about northern-lights tours on day 3 with a link to visitnorway.com', 'Make the intro shorter and more poetic', 'Add tips on local etiquette in the practical info'"}
+                    value={refineInstruction}
+                    onChange={(e) => setRefineInstruction(e.target.value)}
+                    disabled={!!pendingDraft || refining}
+                  />
+                  <div>
+                    <label className={label}>Reference URLs (optional, one per line)</label>
+                    <textarea
+                      className={input + " min-h-[44px]"}
+                      placeholder="https://visitnorway.com/..."
+                      value={refineUrls}
+                      onChange={(e) => setRefineUrls(e.target.value)}
+                      disabled={!!pendingDraft || refining}
+                    />
+                  </div>
+                  {!pendingDraft ? (
+                    <button
+                      type="button"
+                      onClick={refineDraft}
+                      disabled={refining}
+                      className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+                    >
+                      {refining ? "Thinking…" : "✨ Suggest changes"}
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="rounded-sm border border-gold/40 bg-gold/5 p-4 max-h-[55vh] overflow-auto">
+                        <div className="text-[0.7rem] uppercase tracking-[0.1em] text-gold font-semibold mb-2">Suggested updated document</div>
+                        <DraftPreview doc={pendingDraft} />
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={acceptPendingDraft}
+                          className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                        >
+                          ✓ Accept changes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={rejectPendingDraft}
+                          className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                        >
+                          ✕ Discard
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {draftView === "edit" && draftPreview && !draftPreviewError && (
-                  <StructuredDraftEditor
-                    doc={draftPreview}
-                    onChange={setDraftDocument}
-                    onUploadImage={uploadDraftImage}
-                    uploadingImageKey={uploadingDraftImage}
-                  />
-                )}
-
-                {draftView === "edit" && draftPreviewError && (
-                  <p className="rounded-sm border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
-                    JSON error: {draftPreviewError}. Switch to JSON to repair it.
-                  </p>
-                )}
-
-                {draftView === "preview" && (
-                  <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[60vh] overflow-auto">
-                    {draftPreviewError ? (
-                      <p className="text-[0.75rem] text-destructive">JSON error: {draftPreviewError}</p>
-                    ) : draftPreview ? (
-                      <DraftPreview doc={draftPreview} />
-                    ) : null}
+                {/* CURRENT DOCUMENT PREVIEW */}
+                {!pendingDraft && draftPreview && !draftPreviewError && (
+                  <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[55vh] overflow-auto">
+                    <div className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-2">Current document</div>
+                    <DraftPreview doc={draftPreview} />
                   </div>
                 )}
 
-                {draftView === "json" && (
-                  <textarea
-                    className={input + " min-h-[320px] font-mono text-[0.72rem]"}
-                    value={draftJson}
-                    onChange={(e) => setDraftJson(e.target.value)}
-                    spellCheck={false}
-                  />
-                )}
-                <div className="flex flex-wrap gap-2">
+                {/* PUBLISH / RENDER ACTIONS */}
+                <div className="flex flex-wrap gap-2 items-center">
                   <button
                     type="button"
                     onClick={renderPdfFromDraft}
-                    disabled={renderingPdf}
+                    disabled={renderingPdf || !!pendingDraft}
                     className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                   >
-                    {renderingPdf ? "Rendering…" : "📄 2. Render PDF from this draft"}
+                    {renderingPdf ? "Rendering…" : "📄 Render PDF (ready for catalog)"}
                   </button>
                   {editing.id && (
                     <button
                       type="button"
                       onClick={saveDraft}
-                      disabled={savingDraft}
+                      disabled={savingDraft || !!pendingDraft}
                       className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                     >
-                      {savingDraft ? "Saving…" : "Save draft"}
+                      {savingDraft ? "Saving…" : "💾 Save draft"}
                     </button>
                   )}
                   <button
                     type="button"
-                    onClick={() => { setDraft(null); setDraftJson(""); }}
+                    onClick={() => setShowAdvanced(!showAdvanced)}
                     className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
                   >
-                    Discard draft
+                    {showAdvanced ? "Hide manual editor" : "⚙ Manual editor"}
                   </button>
-                  <span className="text-[0.7rem] text-voyage-muted self-center">
-                    Edit titles, day text, where_to_eat, tips, practical info, etc. Keep the JSON shape intact.
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => { setDraft(null); setDraftJson(""); setPendingDraft(null); }}
+                    className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                  >
+                    Close draft
+                  </button>
                 </div>
+
+                {/* ADVANCED: STRUCTURED EDITOR + JSON */}
+                {showAdvanced && (
+                  <div className="space-y-2 border-t border-parchment-3 pt-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <label className={label + " mb-0"}>Manual editor — fine-tune individual fields and images</label>
+                      <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
+                        {(["edit", "json"] as const).map((mode) => (
+                          <button
+                            key={mode}
+                            type="button"
+                            onClick={() => setDraftView(mode)}
+                            className={`px-3 py-1.5 ${draftView === mode ? "bg-ink text-voyage-white" : "bg-voyage-white text-ink hover:bg-parchment"}`}
+                          >
+                            {mode === "edit" ? "Fields" : "JSON"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {draftView === "edit" && draftPreview && !draftPreviewError && (
+                      <StructuredDraftEditor
+                        doc={draftPreview}
+                        onChange={setDraftDocument}
+                        onUploadImage={uploadDraftImage}
+                        uploadingImageKey={uploadingDraftImage}
+                      />
+                    )}
+
+                    {draftView === "edit" && draftPreviewError && (
+                      <p className="rounded-sm border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
+                        JSON error: {draftPreviewError}. Switch to JSON to repair it.
+                      </p>
+                    )}
+
+                    {draftView === "json" && (
+                      <textarea
+                        className={input + " min-h-[320px] font-mono text-[0.72rem]"}
+                        value={draftJson}
+                        onChange={(e) => setDraftJson(e.target.value)}
+                        spellCheck={false}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
