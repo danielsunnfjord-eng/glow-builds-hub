@@ -482,6 +482,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setPendingDraft(null);
     setRefineInstruction("");
     setRefineUrls("");
+    setRefineImages([]);
     if (editing.id) {
       try {
         await supabase.functions.invoke("generate-catalog-pdf", {
