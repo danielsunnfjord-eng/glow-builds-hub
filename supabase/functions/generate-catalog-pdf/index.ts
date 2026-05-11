@@ -211,6 +211,77 @@ serve(async (req) => {
       });
     }
 
+    // --- Mode: refine_draft — apply a natural-language instruction to the existing draft JSON ---
+    if (mode === "refine_draft") {
+      const currentDraft = body.draft;
+      const instruction: string = (body.instruction || "").toString().slice(0, 4000);
+      const refUrls: string[] = Array.isArray(body.urls) ? body.urls.slice(0, 5) : [];
+      if (!currentDraft || !instruction) {
+        return new Response(JSON.stringify({ error: "draft and instruction required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const urlTexts = await Promise.all(refUrls.map(async (u) => `# Source: ${u}\n${await fetchUrlText(u)}`));
+      const refineSystem = `You are an editor refining a travel itinerary JSON document for Fjord & Waves Travel.
+
+You will receive:
+- The CURRENT itinerary JSON document
+- An INSTRUCTION from the advisor describing what to change, add, or improve
+- Optional REFERENCE URL CONTENT to draw facts from
+
+Apply the instruction precisely. Preserve the exact JSON shape and keys. Only modify what the instruction targets — keep all other content intact. Keep language consistent with the current document. Return STRICT JSON only (no markdown), the full updated document with the same shape:
+
+{
+  "title": "string", "subtitle": "string", "cover_image_url": "string",
+  "intro": "string",
+  "trip_overview": { "destination": "string", "duration": "string", "best_for": "string", "estimated_budget": "string", "best_season": "string" },
+  "highlights": ["string"],
+  "days": [{ "day": 1, "title": "string", "location": "string", "image_url": "string", "morning": "string", "afternoon": "string", "evening": "string", "where_to_stay": "string", "where_to_eat": "string", "tips": "string" }],
+  "practical_info": { "getting_there": "string", "getting_around": "string", "money": "string", "language_basics": "string", "what_to_pack": "string", "etiquette": "string" },
+  "closing": "string"
+}
+
+When asked to add links, embed them inline in the relevant paragraph as plain URLs (e.g. "see https://example.com"). Do not invent image URLs — leave image_url empty if not provided.`;
+
+      const userMsg = [
+        "CURRENT DOCUMENT:\n" + JSON.stringify(currentDraft, null, 2),
+        "INSTRUCTION:\n" + instruction,
+        urlTexts.length ? "REFERENCE URL CONTENT:\n" + urlTexts.join("\n\n").slice(0, 16000) : "",
+      ].filter(Boolean).join("\n\n---\n\n");
+
+      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-pro",
+          messages: [
+            { role: "system", content: refineSystem },
+            { role: "user", content: userMsg + "\n\nReturn the full updated JSON document." },
+          ],
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!aiResp.ok) {
+        const t = await aiResp.text();
+        const status = aiResp.status === 429 || aiResp.status === 402 ? aiResp.status : 500;
+        const msg = aiResp.status === 429 ? "Rate limit reached, please try again shortly." :
+                    aiResp.status === 402 ? "AI credits exhausted." :
+                    `AI gateway error: ${t.slice(0, 300)}`;
+        return new Response(JSON.stringify({ error: msg }), {
+          status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const aiData = await aiResp.json();
+      const content = aiData.choices?.[0]?.message?.content || "{}";
+      let updated: any;
+      try { updated = JSON.parse(content); }
+      catch { const m = content.match(/\{[\s\S]*\}/); updated = m ? JSON.parse(m[0]) : currentDraft; }
+      return new Response(JSON.stringify({ draft: updated }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // --- Mode: fetch_pdf — stream PDF bytes back through the function (avoids domain blockers) ---
     if (mode === "fetch_pdf") {
       const pdf_path: string = (body.pdf_path || "").toString();
