@@ -99,6 +99,34 @@ const CatalogManager = () => {
     },
   });
 
+  const { data: salesMap = {} } = useQuery({
+    queryKey: ["catalog-sales-counts-admin"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_catalog_sales_counts");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: any) => {
+        map[r.itinerary_id] = Number(r.sales_count) || 0;
+      });
+      return map;
+    },
+  });
+
+  const togglePublishMutation = useMutation({
+    mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
+      const { error } = await supabase
+        .from("catalog_itineraries")
+        .update({ is_published })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["catalog-admin"] });
+      toast({ title: "Updated" });
+    },
+    onError: (e) => toast({ title: "Error", description: String(e), variant: "destructive" }),
+  });
+
   const saveMutation = useMutation({
     mutationFn: async (item: Partial<CatalogItem>) => {
       const payload = {
