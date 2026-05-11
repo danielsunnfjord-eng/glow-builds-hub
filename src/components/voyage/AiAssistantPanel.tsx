@@ -762,6 +762,33 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                       disabled={!!pendingDraft || refining}
                     />
                   </div>
+                  <div>
+                    <label className={label}>Attach pictures (optional)</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={onRefineImageUpload}
+                      disabled={!!pendingDraft || refining || uploadingRefineImage}
+                      className="text-[0.78rem]"
+                    />
+                    {uploadingRefineImage && <div className="text-[0.7rem] text-voyage-muted mt-1">Uploading…</div>}
+                    {refineImages.length > 0 && (
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {refineImages.map((img, i) => (
+                          <div key={i} className="relative">
+                            <img src={img} alt="" className="w-16 h-16 object-cover rounded border border-parchment-3" />
+                            <button
+                              type="button"
+                              onClick={() => setRefineImages(refineImages.filter((_, j) => j !== i))}
+                              className="absolute -top-1 -right-1 bg-destructive text-voyage-white w-4 h-4 rounded-full text-[0.6rem] leading-none"
+                            >×</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-[0.65rem] text-voyage-muted mt-1">Then tell the assistant where to use them — e.g. "use the first as cover, the second on day 2".</p>
+                  </div>
                   {!pendingDraft ? (
                     <button
                       type="button"
