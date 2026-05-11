@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       catalog_itineraries: {
         Row: {
+          client_document_draft: Json | null
+          client_document_language: string
           created_at: string
           description_en: string
           description_no: string | null
@@ -45,6 +47,8 @@ export type Database = {
           what_you_get_pt: string | null
         }
         Insert: {
+          client_document_draft?: Json | null
+          client_document_language?: string
           created_at?: string
           description_en?: string
           description_no?: string | null
@@ -74,6 +78,8 @@ export type Database = {
           what_you_get_pt?: string | null
         }
         Update: {
+          client_document_draft?: Json | null
+          client_document_language?: string
           created_at?: string
           description_en?: string
           description_no?: string | null
