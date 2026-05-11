@@ -1089,6 +1089,18 @@ const StructuredDraftEditor = ({
 // Rough in-browser preview of the AI-generated itinerary draft JSON.
 // Mirrors the structure rendered server-side by the jsPDF renderer so
 // advisors can review content before triggering a full PDF render.
+const linkify = (text: string) => {
+  if (!text) return null;
+  const parts = String(text).split(/(https?:\/\/[^\s<>")]+)/g);
+  return parts.map((p, i) =>
+    /^https?:\/\//.test(p) ? (
+      <a key={i} href={p} target="_blank" rel="noopener noreferrer" className="text-gold underline hover:text-ink break-all">{p}</a>
+    ) : (
+      <span key={i}>{p}</span>
+    )
+  );
+};
+
 const DraftPreview = ({ doc }: { doc: any }) => {
   if (!doc || typeof doc !== "object") return null;
   const ov = doc.trip_overview || {};
@@ -1098,6 +1110,9 @@ const DraftPreview = ({ doc }: { doc: any }) => {
 
   return (
     <div className="font-serif text-ink text-[0.85rem] leading-relaxed space-y-6">
+      {doc.cover_image_url && (
+        <img src={doc.cover_image_url} alt="" className="w-full max-h-[280px] object-cover rounded" />
+      )}
       <header className="text-center border-b border-parchment-3 pb-4">
         <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold mb-1">
           Fjord & Waves Travel
