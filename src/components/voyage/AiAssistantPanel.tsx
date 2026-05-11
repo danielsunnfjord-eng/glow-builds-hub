@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import PdfJsViewer from "./PdfJsViewer";
 
 const input =
   "w-full px-3 py-2.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
