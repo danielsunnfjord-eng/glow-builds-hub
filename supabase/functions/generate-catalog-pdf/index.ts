@@ -477,7 +477,6 @@ serve(async (req) => {
     const bytes = renderPdf(pdf, heroImageUrl);
 
     // Upload to private bucket
-    const supaService = createClient(SUPABASE_URL, SERVICE_KEY);
     const path = `${crypto.randomUUID()}.pdf`;
     const { error: upErr } = await supaService.storage
       .from("catalog-pdfs")
