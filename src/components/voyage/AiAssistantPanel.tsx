@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,6 +32,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [previewing, setPreviewing] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [showDraftPreview, setShowDraftPreview] = useState(true);
+  const [loadingSavedDraft, setLoadingSavedDraft] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
