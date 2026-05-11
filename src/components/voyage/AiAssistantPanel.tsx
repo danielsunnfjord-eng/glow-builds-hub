@@ -69,6 +69,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftView, setDraftView] = useState<"edit" | "preview" | "json">("edit");
   const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
+  const [refineInstruction, setRefineInstruction] = useState("");
+  const [refineUrls, setRefineUrls] = useState("");
+  const [refining, setRefining] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<any | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
