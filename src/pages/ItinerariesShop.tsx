@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, Eye, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
@@ -23,6 +23,7 @@ interface CatalogItem {
   hero_image_url: string | null;
   price_eur: number;
   sort_order: number;
+  view_count: number;
 }
 
 const pickLang = <T extends string | null>(
@@ -47,7 +48,7 @@ const ItinerariesShop = () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order, view_count",
         )
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
