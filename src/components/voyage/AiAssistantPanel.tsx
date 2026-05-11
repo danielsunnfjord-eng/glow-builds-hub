@@ -496,14 +496,14 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
 
   const closePreview = () => {
     setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current);
+      if (current && current.startsWith("blob:")) URL.revokeObjectURL(current);
       return "";
     });
   };
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrl && previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
