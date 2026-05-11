@@ -646,33 +646,55 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <label className={label + " mb-0"}>
-                    Editable draft (JSON) — tweak any text, then render
+                    Editable client document — adjust text and pictures before rendering the PDF
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowDraftPreview((v) => !v)}
-                    className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-ink"
-                  >
-                    {showDraftPreview ? "Hide preview" : "👁 Show preview"}
-                  </button>
+                  <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
+                    {(["edit", "preview", "json"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setDraftView(mode)}
+                        className={`px-3 py-1.5 ${draftView === mode ? "bg-ink text-voyage-white" : "bg-voyage-white text-ink hover:bg-parchment"}`}
+                      >
+                        {mode === "edit" ? "Edit" : mode === "preview" ? "Preview" : "JSON"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {showDraftPreview && (
+                {draftView === "edit" && draftPreview && !draftPreviewError && (
+                  <StructuredDraftEditor
+                    doc={draftPreview}
+                    onChange={setDraftDocument}
+                    onUploadImage={uploadDraftImage}
+                    uploadingImageKey={uploadingDraftImage}
+                  />
+                )}
+
+                {draftView === "edit" && draftPreviewError && (
+                  <p className="rounded-sm border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
+                    JSON error: {draftPreviewError}. Switch to JSON to repair it.
+                  </p>
+                )}
+
+                {draftView === "preview" && (
                   <div className="rounded-sm border border-parchment-3 bg-voyage-white p-5 max-h-[60vh] overflow-auto">
                     {draftPreviewError ? (
-                      <p className="text-[0.75rem] text-red-600">JSON error: {draftPreviewError}</p>
+                      <p className="text-[0.75rem] text-destructive">JSON error: {draftPreviewError}</p>
                     ) : draftPreview ? (
                       <DraftPreview doc={draftPreview} />
                     ) : null}
                   </div>
                 )}
 
-                <textarea
-                  className={input + " min-h-[320px] font-mono text-[0.72rem]"}
-                  value={draftJson}
-                  onChange={(e) => setDraftJson(e.target.value)}
-                  spellCheck={false}
-                />
+                {draftView === "json" && (
+                  <textarea
+                    className={input + " min-h-[320px] font-mono text-[0.72rem]"}
+                    value={draftJson}
+                    onChange={(e) => setDraftJson(e.target.value)}
+                    spellCheck={false}
+                  />
+                )}
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
