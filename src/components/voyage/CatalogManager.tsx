@@ -252,19 +252,27 @@ const CatalogManager = () => {
 
   return (
     <div>
-      <div className="mb-8 flex justify-between items-end gap-4">
+      <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
         <div>
           <h1 className="font-serif text-3xl font-bold mb-1">Itinerary Catalog</h1>
           <p className="text-[0.85rem] text-voyage-muted">
             Pre-designed PDF itineraries clients can buy and download instantly.
           </p>
         </div>
-        <button
-          onClick={() => setEditing({ ...emptyItem })}
-          className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink transition-colors"
-        >
-          + New Itinerary
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setPreviewMode("catalog"); setPreviewSlug("__catalog__"); }}
+            className="px-4 py-2.5 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white transition-colors"
+          >
+            Preview Catalog
+          </button>
+          <button
+            onClick={() => setEditing({ ...emptyItem })}
+            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink transition-colors"
+          >
+            + New Itinerary
+          </button>
+        </div>
       </div>
 
       {/* List */}
