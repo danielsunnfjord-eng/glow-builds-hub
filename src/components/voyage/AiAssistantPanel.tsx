@@ -62,7 +62,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [renderingPdf, setRenderingPdf] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [showDraftPreview, setShowDraftPreview] = useState(true);
   const [loadingSavedDraft, setLoadingSavedDraft] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [draftView, setDraftView] = useState<"edit" | "preview" | "json">("edit");
@@ -80,12 +79,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setDraft(next);
     setDraftJson(JSON.stringify(next, null, 2));
   }, []);
-
-  const updateDraftDocument = (updater: (doc: any) => any) => {
-    const source = draftPreview || draft || buildDraftFromCatalog(editing, pdfLang);
-    const next = updater(cloneDoc(source));
-    setDraftDocument(next);
-  };
 
   const uploadCatalogImage = async (file: File): Promise<string> => {
     const ext = file.name.split(".").pop() || "jpg";
@@ -293,6 +286,12 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const startEditableDraft = () => {
+    setDraftDocument(buildDraftFromCatalog(editing, pdfLang));
+    setDraftView("edit");
+    toast({ title: "Editable draft opened", description: "Edit the text and pictures, then save or render the PDF." });
+  };
+
   const renderPdfFromDraft = async () => {
     let parsed: any;
     try {
@@ -377,7 +376,6 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
         setDraftDocument(data.draft);
         setPdfLang(data.language || "en");
         setDraftView("edit");
-        setShowDraftPreview(true);
       } else {
         toast({ title: "No saved draft", description: "Generate a draft first, then save it for later editing." });
       }
