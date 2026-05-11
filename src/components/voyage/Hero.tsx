@@ -8,7 +8,7 @@ const Hero = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="min-h-screen flex flex-col justify-end px-16 pb-24 relative overflow-hidden bg-ink max-md:px-6 max-md:pb-20 max-md:min-h-[80vh] max-md:justify-center max-md:pt-32">
+    <section className="min-h-[75vh] flex flex-col justify-center px-16 pt-40 pb-24 relative overflow-hidden bg-ink max-md:px-6 max-md:pb-20 max-md:min-h-[80vh] max-md:pt-32">
       <div
         className="absolute inset-0"
         style={{
