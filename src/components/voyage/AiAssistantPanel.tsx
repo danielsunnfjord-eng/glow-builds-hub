@@ -6,6 +6,37 @@ const input =
   "w-full px-3 py-2.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
 const label = "block text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-1";
 
+const cloneDoc = (doc: any) => JSON.parse(JSON.stringify(doc || {}));
+
+const buildDraftFromCatalog = (editing: any, language: string) => ({
+  title: editing.title_en || editing.title_pt || editing.title_no || "Untitled itinerary",
+  subtitle: editing.summary_en || editing.summary_pt || editing.summary_no || "",
+  cover_image_url: editing.hero_image_url || "",
+  intro: editing.description_en || editing.description_pt || editing.description_no || "",
+  trip_overview: {
+    destination: editing.destination || "",
+    duration: editing.duration || "",
+    best_for: editing.group_size_label || "",
+    estimated_budget: editing.estimated_trip_budget || "",
+    best_season: "",
+  },
+  highlights: String(editing.what_you_get_en || editing.what_you_get_pt || editing.what_you_get_no || "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean),
+  days: [],
+  practical_info: {
+    getting_there: "",
+    getting_around: "",
+    money: "",
+    language_basics: "",
+    what_to_pack: "",
+    etiquette: "",
+  },
+  closing: "",
+  language,
+});
+
 interface Props {
   editing: any;
   setEditing: (v: any) => void;
@@ -34,6 +65,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [showDraftPreview, setShowDraftPreview] = useState(true);
   const [loadingSavedDraft, setLoadingSavedDraft] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
+  const [draftView, setDraftView] = useState<"edit" | "preview" | "json">("edit");
+  const [uploadingDraftImage, setUploadingDraftImage] = useState<string | null>(null);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
@@ -42,6 +75,41 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     try { draftPreview = JSON.parse(draftJson); }
     catch (e: any) { draftPreviewError = e?.message || "Invalid JSON"; }
   }
+
+  const setDraftDocument = useCallback((next: any) => {
+    setDraft(next);
+    setDraftJson(JSON.stringify(next, null, 2));
+  }, []);
+
+  const updateDraftDocument = (updater: (doc: any) => any) => {
+    const source = draftPreview || draft || buildDraftFromCatalog(editing, pdfLang);
+    const next = updater(cloneDoc(source));
+    setDraftDocument(next);
+  };
+
+  const uploadCatalogImage = async (file: File): Promise<string> => {
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("catalog-images")
+      .upload(path, file, { contentType: file.type });
+    if (error) throw error;
+    const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  const uploadDraftImage = async (file: File, applyUrl: (url: string) => void, key: string) => {
+    setUploadingDraftImage(key);
+    try {
+      const url = await uploadCatalogImage(file);
+      applyUrl(url);
+      toast({ title: "Image uploaded" });
+    } catch (e: any) {
+      toast({ title: "Upload failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setUploadingDraftImage(null);
+    }
+  };
 
   const onParseDoc = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
