@@ -521,7 +521,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     setDocumentView("draft");
     setRefineImages([]);
     setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current);
+      if (current && current.startsWith("blob:")) URL.revokeObjectURL(current);
       return "";
     });
     // Auto-load any saved draft for this itinerary so it appears in the edit tab
