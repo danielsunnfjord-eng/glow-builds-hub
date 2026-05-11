@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,6 +32,8 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
   const [previewing, setPreviewing] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
   const [showDraftPreview, setShowDraftPreview] = useState(true);
+  const [loadingSavedDraft, setLoadingSavedDraft] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
 
   // Live-parse the editable JSON for the rough HTML preview
   let draftPreview: any = null;
@@ -210,6 +212,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (data?.error) throw new Error(data.error);
       setDraft(data.draft);
       setDraftJson(JSON.stringify(data.draft, null, 2));
+      if (editing.id) {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: data.draft, language: pdfLang },
+        });
+      }
       toast({ title: "Draft ready", description: "Review and edit below, then click Render PDF." });
     } catch (e: any) {
       toast({ title: "Draft failed", description: String(e.message || e), variant: "destructive" });
@@ -238,6 +245,11 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (editing.id) {
+        await supabase.functions.invoke("generate-catalog-pdf", {
+          body: { mode: "save_draft", itinerary_id: editing.id, draft: parsed, language: pdfLang },
+        });
+      }
       setEditing({ ...editing, pdf_path: data.pdf_path });
       toast({ title: "PDF rendered", description: `${data.pages} pages. Attached as the itinerary PDF.` });
     } catch (e: any) {
@@ -284,6 +296,57 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
     }
   };
 
+  const loadSavedDraft = useCallback(async () => {
+    if (!editing.id) return;
+    setLoadingSavedDraft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "get_draft", itinerary_id: editing.id },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      if (data?.draft) {
+        setDraft(data.draft);
+        setDraftJson(JSON.stringify(data.draft, null, 2));
+        setPdfLang(data.language || "en");
+        setShowDraftPreview(true);
+      } else {
+        toast({ title: "No saved draft", description: "Generate a draft first, then save it for later editing." });
+      }
+    } catch (e: any) {
+      toast({ title: "Could not open draft", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setLoadingSavedDraft(false);
+    }
+  }, [editing.id, toast]);
+
+  const saveDraft = async () => {
+    if (!editing.id) {
+      toast({ title: "Save the itinerary first", description: "Create the catalog item before saving its client document draft." });
+      return;
+    }
+    let parsed: any;
+    try {
+      parsed = JSON.parse(draftJson);
+    } catch {
+      toast({ title: "Invalid JSON", description: "Please fix the draft before saving.", variant: "destructive" });
+      return;
+    }
+    setSavingDraft(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-catalog-pdf", {
+        body: { mode: "save_draft", itinerary_id: editing.id, draft: parsed, language: pdfLang },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Draft saved", description: "You can reopen and continue editing it later." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: String(e.message || e), variant: "destructive" });
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   const closePreview = () => {
     setPreviewUrl((current) => {
       if (current) URL.revokeObjectURL(current);
@@ -296,6 +359,15 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
+
+  useEffect(() => {
+    setDraft(null);
+    setDraftJson("");
+    setPreviewUrl((current) => {
+      if (current) URL.revokeObjectURL(current);
+      return "";
+    });
+  }, [editing.id]);
 
   return (
     <div className="border border-gold/40 bg-gold/5 rounded-lg overflow-hidden">
@@ -448,6 +520,16 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               >
                 {genPdf ? "Writing draft…" : draft ? "↻ Re-generate draft" : "✍️ 1. Generate draft"}
               </button>
+              {editing.id && (
+                <button
+                  type="button"
+                  onClick={loadSavedDraft}
+                  disabled={loadingSavedDraft}
+                  className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                >
+                  {loadingSavedDraft ? "Opening…" : "Open saved draft"}
+                </button>
+              )}
               {editing.pdf_path && (
                 <button
                   type="button"
@@ -532,6 +614,16 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   >
                     {renderingPdf ? "Rendering…" : "📄 2. Render PDF from this draft"}
                   </button>
+                  {editing.id && (
+                    <button
+                      type="button"
+                      onClick={saveDraft}
+                      disabled={savingDraft}
+                      className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                    >
+                      {savingDraft ? "Saving…" : "Save draft"}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => { setDraft(null); setDraftJson(""); }}

@@ -104,6 +104,41 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_itinerary_drafts: {
+        Row: {
+          created_at: string
+          draft: Json
+          itinerary_id: string
+          language: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          draft?: Json
+          itinerary_id: string
+          language?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          draft?: Json
+          itinerary_id?: string
+          language?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_itinerary_drafts_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: true
+            referencedRelation: "catalog_itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       catalog_purchases: {
         Row: {
           amount_total: number
