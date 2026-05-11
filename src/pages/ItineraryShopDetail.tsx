@@ -79,6 +79,12 @@ const ItineraryShopDetail = () => {
     if (title) document.title = `${title} · Fjord & Waves Travel`;
   }, [title]);
 
+  useEffect(() => {
+    if (slug) {
+      supabase.rpc("increment_catalog_view", { _slug: slug }).then(() => {});
+    }
+  }, [slug]);
+
   const handleBuy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!data) return;
@@ -291,16 +297,26 @@ const ItineraryShopDetail = () => {
             </div>
 
             {/* Plan instead CTA */}
-            <div className="mt-5 text-center">
-              <span className="text-[0.78rem] text-voyage-muted">
-                {t("shop.or")}{" "}
-              </span>
-              <button
-                onClick={() => navigate("/plan-my-trip")}
-                className="text-[0.78rem] text-gold hover:underline font-medium"
-              >
-                {t("shop.planInstead")}
-              </button>
+            <div className="mt-5 bg-voyage-white border border-ink/[0.06] rounded-lg p-5 text-center">
+              <p className="text-[0.8rem] text-ink/80 mb-3">
+                {t("shop.or")} {t("shop.planInstead")}
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => navigate("/plan-my-trip")}
+                  className="w-full px-4 py-2.5 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-ink hover:text-voyage-white transition-colors"
+                >
+                  {t("nav.planMyTrip")}
+                </button>
+                <a
+                  href="https://calendly.com/danielfigueiredo-travel/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-ink hover:text-voyage-white transition-colors"
+                >
+                  📅 {t("shop.bookMeeting", "Book a meeting")}
+                </a>
+              </div>
             </div>
           </aside>
         </section>

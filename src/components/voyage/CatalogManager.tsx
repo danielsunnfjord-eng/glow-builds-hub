@@ -30,6 +30,7 @@ interface CatalogItem {
   pdf_path: string | null;
   is_published: boolean;
   sort_order: number;
+  view_count?: number;
 }
 
 const emptyItem: Partial<CatalogItem> = {
@@ -70,6 +71,8 @@ const CatalogManager = () => {
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<"catalog" | "detail">("catalog");
 
   const { data: items = [] } = useQuery({
     queryKey: ["catalog-admin"],
@@ -94,6 +97,34 @@ const CatalogManager = () => {
         .limit(50);
       return data || [];
     },
+  });
+
+  const { data: salesMap = {} } = useQuery({
+    queryKey: ["catalog-sales-counts-admin"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_catalog_sales_counts");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: any) => {
+        map[r.itinerary_id] = Number(r.sales_count) || 0;
+      });
+      return map;
+    },
+  });
+
+  const togglePublishMutation = useMutation({
+    mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
+      const { error } = await supabase
+        .from("catalog_itineraries")
+        .update({ is_published })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["catalog-admin"] });
+      toast({ title: "Updated" });
+    },
+    onError: (e) => toast({ title: "Error", description: String(e), variant: "destructive" }),
   });
 
   const saveMutation = useMutation({
@@ -221,19 +252,27 @@ const CatalogManager = () => {
 
   return (
     <div>
-      <div className="mb-8 flex justify-between items-end gap-4">
+      <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
         <div>
           <h1 className="font-serif text-3xl font-bold mb-1">Itinerary Catalog</h1>
           <p className="text-[0.85rem] text-voyage-muted">
             Pre-designed PDF itineraries clients can buy and download instantly.
           </p>
         </div>
-        <button
-          onClick={() => setEditing({ ...emptyItem })}
-          className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink transition-colors"
-        >
-          + New Itinerary
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setPreviewMode("catalog"); setPreviewSlug("__catalog__"); }}
+            className="px-4 py-2.5 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white transition-colors"
+          >
+            Preview Catalog
+          </button>
+          <button
+            onClick={() => setEditing({ ...emptyItem })}
+            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink transition-colors"
+          >
+            + New Itinerary
+          </button>
+        </div>
       </div>
 
       {/* List */}
@@ -244,6 +283,8 @@ const CatalogManager = () => {
               <th className="p-3">Title</th>
               <th className="p-3">Slug</th>
               <th className="p-3">Price</th>
+              <th className="p-3">Views</th>
+              <th className="p-3">Sales</th>
               <th className="p-3">PDF</th>
               <th className="p-3">Published</th>
               <th className="p-3"></th>
@@ -252,7 +293,7 @@ const CatalogManager = () => {
           <tbody>
             {items.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-voyage-muted">
+                <td colSpan={8} className="p-6 text-center text-voyage-muted">
                   No itineraries yet. Create your first one.
                 </td>
               </tr>
@@ -262,13 +303,19 @@ const CatalogManager = () => {
                 <td className="p-3 font-medium">{it.title_en}</td>
                 <td className="p-3 text-voyage-muted font-mono text-[0.78rem]">{it.slug}</td>
                 <td className="p-3">€{Number(it.price_eur).toFixed(0)}</td>
+                <td className="p-3 text-voyage-muted">{it.view_count ?? 0}</td>
+                <td className="p-3 text-voyage-muted">{salesMap[it.id!] ?? 0}</td>
                 <td className="p-3">{it.pdf_path ? "✓" : "—"}</td>
                 <td className="p-3">
-                  {it.is_published ? (
-                    <span className="text-sage">● Live</span>
-                  ) : (
-                    <span className="text-voyage-muted">○ Draft</span>
-                  )}
+                  <button
+                    onClick={() =>
+                      togglePublishMutation.mutate({ id: it.id!, is_published: !it.is_published })
+                    }
+                    className={`text-[0.72rem] font-medium ${it.is_published ? "text-sage" : "text-voyage-muted"} hover:underline`}
+                    title="Click to toggle publish state"
+                  >
+                    {it.is_published ? "● Live" : "○ Draft"}
+                  </button>
                 </td>
                 <td className="p-3 text-right whitespace-nowrap">
                   <button
@@ -277,17 +324,23 @@ const CatalogManager = () => {
                   >
                     Edit
                   </button>
+                  <button
+                    onClick={() => { setPreviewMode("detail"); setPreviewSlug(it.slug); }}
+                    className="text-[0.78rem] text-voyage-muted hover:text-ink mr-3"
+                  >
+                    Preview
+                  </button>
                   <a
                     href={`/itineraries-shop/${it.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[0.78rem] text-voyage-muted hover:text-ink mr-3"
                   >
-                    View
+                    Open ↗
                   </a>
                   <button
                     onClick={() => {
-                      if (confirm(`Delete "${it.title_en}"?`)) deleteMutation.mutate(it.id);
+                      if (confirm(`Delete "${it.title_en}"?`)) deleteMutation.mutate(it.id!);
                     }}
                     className="text-[0.78rem] text-destructive hover:underline"
                   >
@@ -512,6 +565,49 @@ const CatalogManager = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Public preview modal (catalog or detail subpage) */}
+      {previewSlug && (
+        <div className="fixed inset-0 z-50 bg-ink/70 flex flex-col p-4">
+          <div className="bg-voyage-white rounded-t-lg px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-[0.7rem] uppercase tracking-[0.12em] text-voyage-muted">
+                Preview ({previewMode === "catalog" ? "Catalog" : "Subpage"})
+              </span>
+              <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.7rem]">
+                <button
+                  onClick={() => setPreviewMode("catalog")}
+                  className={`px-3 py-1 ${previewMode === "catalog" ? "bg-ink text-voyage-white" : "text-ink hover:bg-parchment"}`}
+                >
+                  Catalog
+                </button>
+                <button
+                  onClick={() => setPreviewMode("detail")}
+                  disabled={previewSlug === "__catalog__"}
+                  className={`px-3 py-1 ${previewMode === "detail" ? "bg-ink text-voyage-white" : "text-ink hover:bg-parchment"} disabled:opacity-40`}
+                >
+                  Subpage
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setPreviewSlug(null)}
+              className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-ink"
+            >
+              Close ✕
+            </button>
+          </div>
+          <iframe
+            title="Catalog preview"
+            src={
+              previewMode === "catalog" || previewSlug === "__catalog__"
+                ? "/itineraries-shop"
+                : `/itineraries-shop/${previewSlug}`
+            }
+            className="flex-1 w-full bg-voyage-white rounded-b-lg border-0"
+          />
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search, X, Eye, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
@@ -23,6 +23,7 @@ interface CatalogItem {
   hero_image_url: string | null;
   price_eur: number;
   sort_order: number;
+  view_count: number;
 }
 
 const pickLang = <T extends string | null>(
@@ -47,13 +48,26 @@ const ItinerariesShop = () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order, view_count",
         )
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as CatalogItem[];
+    },
+  });
+
+  const { data: salesMap = {} } = useQuery({
+    queryKey: ["catalog-sales-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_catalog_sales_counts");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: any) => {
+        map[r.itinerary_id] = Number(r.sales_count) || 0;
+      });
+      return map;
     },
   });
 
@@ -304,6 +318,16 @@ const ItinerariesShop = () => {
                         {summary}
                       </p>
                     )}
+                    <div className="flex items-center gap-4 text-[0.7rem] text-voyage-muted mb-4">
+                      <span className="inline-flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5" />
+                        {trip.view_count ?? 0}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Download className="w-3.5 h-3.5" />
+                        {salesMap[trip.id] ?? 0}
+                      </span>
+                    </div>
                     <div className="flex items-baseline justify-between border-t border-parchment-3 pt-4">
                       <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">
                         {t("shop.from")}

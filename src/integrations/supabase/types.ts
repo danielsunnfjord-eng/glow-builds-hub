@@ -39,6 +39,7 @@ export type Database = {
           title_no: string | null
           title_pt: string | null
           updated_at: string
+          view_count: number
           what_you_get_en: string
           what_you_get_no: string | null
           what_you_get_pt: string | null
@@ -67,6 +68,7 @@ export type Database = {
           title_no?: string | null
           title_pt?: string | null
           updated_at?: string
+          view_count?: number
           what_you_get_en?: string
           what_you_get_no?: string | null
           what_you_get_pt?: string | null
@@ -95,6 +97,7 @@ export type Database = {
           title_no?: string | null
           title_pt?: string | null
           updated_at?: string
+          view_count?: number
           what_you_get_en?: string
           what_you_get_no?: string | null
           what_you_get_pt?: string | null
@@ -583,6 +586,13 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_catalog_sales_counts: {
+        Args: never
+        Returns: {
+          itinerary_id: string
+          sales_count: number
+        }[]
+      }
       get_purchase_by_token: {
         Args: { _token: string }
         Returns: {
@@ -622,6 +632,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_catalog_view: { Args: { _slug: string }; Returns: undefined }
       increment_itinerary_view: { Args: { _token: string }; Returns: undefined }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
