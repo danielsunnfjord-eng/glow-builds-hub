@@ -596,6 +596,13 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   {loadingSavedDraft ? "Opening…" : "Open saved draft"}
                 </button>
               )}
+              <button
+                type="button"
+                onClick={startEditableDraft}
+                className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+              >
+                Open editable draft
+              </button>
               {editing.pdf_path && (
                 <button
                   type="button"
