@@ -19,16 +19,15 @@ const isAllowedTripUrl = (url: URL) =>
 
 const injectPreviewHelpers = (html: string, targetUrl: URL) => {
   const helpers = `
-    <base href="${targetUrl.origin}/">
     <style>html,body,#__next{min-height:100%;}</style>
     <script>
       (function(){
         function guardHistory(method) {
-          var original = history[method];
-          history[method] = function(state, title, url) {
+          var original = History.prototype[method];
+          History.prototype[method] = function(state, title, url) {
             try { return original.apply(this, arguments); }
             catch (error) {
-              if (error && error.name === 'SecurityError') return original.call(this, state, title);
+              if (error && error.name === 'SecurityError') return original.call(this, state, title, location.href);
               throw error;
             }
           };
