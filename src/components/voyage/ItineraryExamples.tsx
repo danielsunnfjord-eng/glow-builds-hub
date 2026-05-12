@@ -68,6 +68,8 @@ const langFlags: Record<string, { src: string; alt: string }> = {
 const ItineraryExamples = () => {
   const { t } = useTranslation();
   const [activeLang, setActiveLang] = useState<string>("all");
+  const [openUrl, setOpenUrl] = useState<string | null>(null);
+  const [openTitle, setOpenTitle] = useState<string>("");
 
   const displayItems = activeLang === "all" ? itineraries : itineraries.filter((trip) => trip.lang === activeLang);
 
@@ -105,7 +107,11 @@ const ItineraryExamples = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
         {displayItems.map((trip) => (
           <ScrollReveal key={trip.url}>
-            <a href={trip.url} rel="noreferrer" referrerPolicy="no-referrer" className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer">
+            <button
+              type="button"
+              onClick={() => { setOpenUrl(trip.url); setOpenTitle(trip.title); }}
+              className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer"
+            >
               <div className="aspect-[16/10] overflow-hidden">
                 <img src={trip.image} alt={trip.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               </div>
@@ -126,10 +132,50 @@ const ItineraryExamples = () => {
                   />
                 )}
               </div>
-            </a>
+            </button>
           </ScrollReveal>
         ))}
       </div>
+
+      {openUrl && (
+        <div
+          className="fixed inset-0 z-[100] bg-ink/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+          onClick={() => setOpenUrl(null)}
+        >
+          <div
+            className="bg-voyage-white w-full max-w-6xl h-[90vh] rounded-lg overflow-hidden shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b border-ink/10 bg-parchment">
+              <p className="font-serif text-[0.95rem] text-ink truncate pr-4">{openTitle}</p>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <a
+                  href={openUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[0.7rem] tracking-[0.12em] uppercase text-gold hover:underline"
+                >
+                  {t("itineraryExamples.openInNewTab", "Open in new tab ↗")}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setOpenUrl(null)}
+                  className="w-8 h-8 rounded-full hover:bg-ink/5 flex items-center justify-center text-ink text-lg leading-none"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={openUrl}
+              title={openTitle}
+              className="flex-1 w-full border-0 bg-voyage-white"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 };
