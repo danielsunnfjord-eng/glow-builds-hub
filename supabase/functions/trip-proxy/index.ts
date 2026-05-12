@@ -11,7 +11,7 @@ const allowedTripHosts = new Set(["trips.foratravel.com"]);
 const responseHeaders = (contentType: string) => new Headers({
   ...corsHeaders,
   "content-type": contentType,
-  "cache-control": "public, max-age=300",
+  "cache-control": "no-store",
 });
 
 const isAllowedTripUrl = (url: URL) =>

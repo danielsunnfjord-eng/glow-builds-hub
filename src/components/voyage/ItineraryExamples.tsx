@@ -91,7 +91,7 @@ const ItineraryExamples = () => {
     setPreviewHtml("");
     setPreviewError("");
 
-    fetch(getTripPreviewUrl(openUrl), { signal: controller.signal })
+    fetch(getTripPreviewUrl(openUrl), { signal: controller.signal, cache: "no-store" })
       .then(async (response) => {
         const html = await response.text();
         if (!response.ok) throw new Error(html || "Unable to load this trip preview");
