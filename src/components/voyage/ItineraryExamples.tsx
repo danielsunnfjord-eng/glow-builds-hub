@@ -105,7 +105,7 @@ const ItineraryExamples = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
         {displayItems.map((trip) => (
           <ScrollReveal key={trip.url}>
-            <a href={trip.url} className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer">
+            <a href={trip.url} rel="noreferrer" referrerPolicy="no-referrer" className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer">
               <div className="aspect-[16/10] overflow-hidden">
                 <img src={trip.image} alt={trip.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
               </div>
