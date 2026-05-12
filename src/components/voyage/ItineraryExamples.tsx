@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
 
@@ -65,13 +65,44 @@ const langFlags: Record<string, { src: string; alt: string }> = {
   no: { src: "https://flagcdn.com/w40/no.png", alt: "Norsk" },
 };
 
+const getTripPreviewUrl = (url: string) => {
+  const functionsUrl = import.meta.env.VITE_SUPABASE_URL;
+  return `${functionsUrl}/functions/v1/trip-proxy?url=${encodeURIComponent(url)}`;
+};
+
 const ItineraryExamples = () => {
   const { t } = useTranslation();
   const [activeLang, setActiveLang] = useState<string>("all");
   const [openUrl, setOpenUrl] = useState<string | null>(null);
   const [openTitle, setOpenTitle] = useState<string>("");
+  const [previewHtml, setPreviewHtml] = useState<string>("");
+  const [previewError, setPreviewError] = useState<string>("");
 
   const displayItems = activeLang === "all" ? itineraries : itineraries.filter((trip) => trip.lang === activeLang);
+
+  useEffect(() => {
+    if (!openUrl) {
+      setPreviewHtml("");
+      setPreviewError("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setPreviewHtml("");
+    setPreviewError("");
+
+    fetch(getTripPreviewUrl(openUrl), { signal: controller.signal, cache: "no-store" })
+      .then(async (response) => {
+        const html = await response.text();
+        if (!response.ok) throw new Error(html || "Unable to load this trip preview");
+        setPreviewHtml(html);
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setPreviewError(error.message || "Unable to load this trip preview");
+      });
+
+    return () => controller.abort();
+  }, [openUrl]);
 
   return (
     <section className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16" id="itineraries">
@@ -167,12 +198,22 @@ const ItineraryExamples = () => {
                 </button>
               </div>
             </div>
-            <iframe
-              src={openUrl}
-              title={openTitle}
-              className="flex-1 w-full border-0 bg-voyage-white"
-              referrerPolicy="no-referrer"
-            />
+            {previewError ? (
+              <div className="flex-1 flex items-center justify-center bg-voyage-white px-6 text-center text-sm text-voyage-muted">
+                {previewError}
+              </div>
+            ) : previewHtml ? (
+              <iframe
+                srcDoc={previewHtml}
+                title={openTitle}
+                className="flex-1 w-full border-0 bg-voyage-white"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center bg-voyage-white text-sm text-voyage-muted">
+                {t("common.loading", "Loading...")}
+              </div>
+            )}
           </div>
         </div>
       )}
