@@ -22,6 +22,20 @@ const injectPreviewHelpers = (html: string, targetUrl: URL) => {
     <base href="${targetUrl.origin}/">
     <style>html,body,#__next{min-height:100%;}</style>
     <script>
+      (function(){
+        function guardHistory(method) {
+          var original = history[method];
+          history[method] = function(state, title, url) {
+            try { return original.apply(this, arguments); }
+            catch (error) {
+              if (error && error.name === 'SecurityError') return original.call(this, state, title);
+              throw error;
+            }
+          };
+        }
+        guardHistory('pushState');
+        guardHistory('replaceState');
+      })();
       window.open = function(url){ if (url) window.location.href = url; return null; };
       document.addEventListener('click', function(event) {
         var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
