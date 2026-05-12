@@ -65,6 +65,11 @@ const langFlags: Record<string, { src: string; alt: string }> = {
   no: { src: "https://flagcdn.com/w40/no.png", alt: "Norsk" },
 };
 
+const getTripPreviewUrl = (url: string) => {
+  const functionsUrl = import.meta.env.VITE_SUPABASE_URL;
+  return `${functionsUrl}/functions/v1/trip-proxy?url=${encodeURIComponent(url)}`;
+};
+
 const ItineraryExamples = () => {
   const { t } = useTranslation();
   const [activeLang, setActiveLang] = useState<string>("all");
@@ -168,7 +173,7 @@ const ItineraryExamples = () => {
               </div>
             </div>
             <iframe
-              src={openUrl}
+              src={getTripPreviewUrl(openUrl)}
               title={openTitle}
               className="flex-1 w-full border-0 bg-voyage-white"
               referrerPolicy="no-referrer"
