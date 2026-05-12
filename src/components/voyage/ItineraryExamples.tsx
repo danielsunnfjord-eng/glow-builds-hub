@@ -71,6 +71,8 @@ const ItineraryExamples = () => {
   const [openUrl, setOpenUrl] = useState<string | null>(null);
   const [openTitle, setOpenTitle] = useState<string>("");
 
+  const displayItems = activeLang === "all" ? itineraries : itineraries.filter((trip) => trip.lang === activeLang);
+
   return (
     <section className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16" id="itineraries">
       <ScrollReveal>
