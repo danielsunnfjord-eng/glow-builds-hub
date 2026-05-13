@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
+
+const openTripPopup = (url: string) => {
+  const w = Math.min(1200, window.screen.availWidth - 80);
+  const h = Math.min(900, window.screen.availHeight - 80);
+  const left = window.screen.availWidth / 2 - w / 2;
+  const top = window.screen.availHeight / 2 - h / 2;
+  const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},scrollbars=yes,resizable=yes,noopener,noreferrer`;
+  const win = window.open(url, "fjordwaves_trip_preview", features);
+  if (win) win.focus();
+};
 
 const itineraries = [
   {
@@ -65,44 +75,11 @@ const langFlags: Record<string, { src: string; alt: string }> = {
   no: { src: "https://flagcdn.com/w40/no.png", alt: "Norsk" },
 };
 
-const getTripPreviewUrl = (url: string) => {
-  const functionsUrl = import.meta.env.VITE_SUPABASE_URL;
-  return `${functionsUrl}/functions/v1/trip-proxy?url=${encodeURIComponent(url)}`;
-};
-
 const ItineraryExamples = () => {
   const { t } = useTranslation();
   const [activeLang, setActiveLang] = useState<string>("all");
-  const [openUrl, setOpenUrl] = useState<string | null>(null);
-  const [openTitle, setOpenTitle] = useState<string>("");
-  const [previewHtml, setPreviewHtml] = useState<string>("");
-  const [previewError, setPreviewError] = useState<string>("");
 
   const displayItems = activeLang === "all" ? itineraries : itineraries.filter((trip) => trip.lang === activeLang);
-
-  useEffect(() => {
-    if (!openUrl) {
-      setPreviewHtml("");
-      setPreviewError("");
-      return;
-    }
-
-    const controller = new AbortController();
-    setPreviewHtml("");
-    setPreviewError("");
-
-    fetch(getTripPreviewUrl(openUrl), { signal: controller.signal, cache: "no-store" })
-      .then(async (response) => {
-        const html = await response.text();
-        if (!response.ok) throw new Error(html || "Unable to load this trip preview");
-        setPreviewHtml(html);
-      })
-      .catch((error) => {
-        if (error.name !== "AbortError") setPreviewError(error.message || "Unable to load this trip preview");
-      });
-
-    return () => controller.abort();
-  }, [openUrl]);
 
   return (
     <section className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16" id="itineraries">
@@ -140,7 +117,7 @@ const ItineraryExamples = () => {
           <ScrollReveal key={trip.url}>
             <button
               type="button"
-              onClick={() => { setOpenUrl(trip.url); setOpenTitle(trip.title); }}
+              onClick={() => openTripPopup(trip.url)}
               className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer"
             >
               <div className="aspect-[16/10] overflow-hidden">
@@ -168,55 +145,6 @@ const ItineraryExamples = () => {
         ))}
       </div>
 
-      {openUrl && (
-        <div
-          className="fixed inset-0 z-[100] bg-ink/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
-          onClick={() => setOpenUrl(null)}
-        >
-          <div
-            className="bg-voyage-white w-full max-w-6xl h-[90vh] rounded-lg overflow-hidden shadow-2xl flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-ink/10 bg-parchment">
-              <p className="font-serif text-[0.95rem] text-ink truncate pr-4">{openTitle}</p>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <a
-                  href={openUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[0.7rem] tracking-[0.12em] uppercase text-gold hover:underline"
-                >
-                  {t("itineraryExamples.openInNewTab", "Open in new tab ↗")}
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setOpenUrl(null)}
-                  className="w-8 h-8 rounded-full hover:bg-ink/5 flex items-center justify-center text-ink text-lg leading-none"
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-            {previewError ? (
-              <div className="flex-1 flex items-center justify-center bg-voyage-white px-6 text-center text-sm text-voyage-muted">
-                {previewError}
-              </div>
-            ) : previewHtml ? (
-              <iframe
-                srcDoc={previewHtml}
-                title={openTitle}
-                className="flex-1 w-full border-0 bg-voyage-white"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="flex-1 flex items-center justify-center bg-voyage-white text-sm text-voyage-muted">
-                {t("common.loading", "Loading...")}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 };
