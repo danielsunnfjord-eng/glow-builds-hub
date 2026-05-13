@@ -145,55 +145,6 @@ const ItineraryExamples = () => {
         ))}
       </div>
 
-      {openUrl && (
-        <div
-          className="fixed inset-0 z-[100] bg-ink/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
-          onClick={() => setOpenUrl(null)}
-        >
-          <div
-            className="bg-voyage-white w-full max-w-6xl h-[90vh] rounded-lg overflow-hidden shadow-2xl flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-5 py-3 border-b border-ink/10 bg-parchment">
-              <p className="font-serif text-[0.95rem] text-ink truncate pr-4">{openTitle}</p>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <a
-                  href={openUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[0.7rem] tracking-[0.12em] uppercase text-gold hover:underline"
-                >
-                  {t("itineraryExamples.openInNewTab", "Open in new tab ↗")}
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setOpenUrl(null)}
-                  className="w-8 h-8 rounded-full hover:bg-ink/5 flex items-center justify-center text-ink text-lg leading-none"
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-            {previewError ? (
-              <div className="flex-1 flex items-center justify-center bg-voyage-white px-6 text-center text-sm text-voyage-muted">
-                {previewError}
-              </div>
-            ) : previewHtml ? (
-              <iframe
-                srcDoc={previewHtml}
-                title={openTitle}
-                className="flex-1 w-full border-0 bg-voyage-white"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="flex-1 flex items-center justify-center bg-voyage-white text-sm text-voyage-muted">
-                {t("common.loading", "Loading...")}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 };
