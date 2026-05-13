@@ -117,7 +117,7 @@ const ItineraryExamples = () => {
           <ScrollReveal key={trip.url}>
             <button
               type="button"
-              onClick={() => { setOpenUrl(trip.url); setOpenTitle(trip.title); }}
+              onClick={() => openTripPopup(trip.url)}
               className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer"
             >
               <div className="aspect-[16/10] overflow-hidden">
