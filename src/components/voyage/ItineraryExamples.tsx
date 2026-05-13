@@ -1,6 +1,15 @@
-import { useEffect, useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
+
+const openTripPopup = (url: string) => {
+  const w = Math.min(1200, window.screen.availWidth - 80);
+  const h = Math.min(900, window.screen.availHeight - 80);
+  const left = window.screen.availWidth / 2 - w / 2;
+  const top = window.screen.availHeight / 2 - h / 2;
+  const features = `popup=yes,width=${w},height=${h},left=${left},top=${top},scrollbars=yes,resizable=yes,noopener,noreferrer`;
+  const win = window.open(url, "fjordwaves_trip_preview", features);
+  if (win) win.focus();
+};
 
 const itineraries = [
   {
