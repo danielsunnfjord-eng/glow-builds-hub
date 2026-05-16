@@ -561,7 +561,7 @@ export default {
         dest: "Rio de Janeiro & Arraial do Cabo, ten days",
       },
       {
-        text: "Daniel planned a perfect weekend in Rome, with a programme that struck an excellent balance between sightseeing and relaxation. We visited historical landmarks such as the Colosseum, while also enjoying time at the beach and spa. He also booked a fantastic pasta-making course in a beautiful part of town near the San Giovanni della Malva Church. It was an amazing experience, where I learned a lot about Italian food in a cosy and lively neighbourhood. Even though the trip lasted only a weekend, we managed to do a great deal without it ever feeling too busy. Daniel was extremely organised and had full control throughout, handling all bookings and follow-ups. He shared clear information in advance and put together a varied and well-planned programme.",
+        text: "Daniel planned a perfect weekend in Rome, with a programme that struck an excellent balance between sightseeing and relaxation. We visited historical landmarks such as the Colosseum, while also enjoying time at the beach and spa.\n\nHe also booked a fantastic pasta-making course in a beautiful part of town near the San Giovanni della Malva Church. It was an amazing experience, where I learned a lot about Italian food in a cosy and lively neighbourhood. Even though the trip lasted only a weekend, we managed to do a great deal without it ever feeling too busy.\n\nDaniel was extremely organised and had full control throughout, handling all bookings and follow-ups. He shared clear information in advance and put together a varied and well-planned programme.",
         author: "Therese Lothe",
         bio: "From Sunnfjord, Norway.",
         dest: "Rome, weekend trip",
