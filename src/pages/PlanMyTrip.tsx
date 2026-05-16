@@ -21,6 +21,7 @@ const PlanMyTripPage = () => {
         path="/plan-my-trip"
       />
       <Navbar />
+      <main>
       <main className="flex-1 py-28 px-6 max-md:py-20">
         <div className="max-w-2xl mx-auto">
           <h1 className="font-serif text-[clamp(2rem,3.5vw,3rem)] font-bold leading-[1.05] tracking-tight mb-2 text-foreground text-center">
@@ -50,6 +51,7 @@ const PlanMyTripPage = () => {
             </a>
           </div>
         </div>
+      </main>
       </main>
       <Footer />
     </div>

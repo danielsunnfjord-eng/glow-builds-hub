@@ -149,6 +149,7 @@ const ItinerariesShop = () => {
         path="/itineraries-shop"
       />
       <Navbar />
+      <main>
       <main className="pt-32 pb-20 px-16 max-md:px-6 max-md:pt-24">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
@@ -348,6 +349,7 @@ const ItinerariesShop = () => {
             );
           })}
         </div>
+      </main>
       </main>
       <Footer />
     </div>
