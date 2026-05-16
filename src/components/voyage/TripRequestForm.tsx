@@ -246,7 +246,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             value={phoneCountry}
             onChange={(e) => setPhoneCountry(e.target.value)}
             aria-label={t("tripForm.countryCode")}
-            className={`${inputClass} w-auto min-w-[8rem] flex-shrink-0 pr-2`}
+            className="flex-shrink-0 w-32 px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
