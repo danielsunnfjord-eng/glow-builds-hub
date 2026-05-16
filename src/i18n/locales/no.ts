@@ -545,6 +545,12 @@ export default {
         instagram: "@aageavedal",
         dest: "Rio de Janeiro & Arraial do Cabo, ti dagar",
       },
+      {
+        text: "Daniel planla ein perfekt helg i Roma, med eit program som balanserte sightseeing og avslapping på ein framifrå måte. Vi besøkte historiske landemerke som Colosseum, og fekk samstundes nyte tid på stranda og på spa. Han booka også eit fantastisk pastakurs i ein vakker bydel nær kyrkja San Giovanni della Malva. Det var ei utruleg oppleving, der eg lærte mykje om italiensk mat i eit koseleg og livleg nabolag. Sjølv om turen berre varte ei helg, fekk vi gjort veldig mykje utan at det nokon gong kjentest stressande. Daniel var ekstremt organisert og hadde full kontroll heile vegen, og tok seg av alle bookingar og oppfølgingar. Han delte tydeleg informasjon på førehand og sette saman eit variert og godt planlagt program.",
+        author: "Therese Lothe",
+        bio: "Frå Sunnfjord, Noreg.",
+        dest: "Roma, helgetur",
+      },
     ],
   },
 };
