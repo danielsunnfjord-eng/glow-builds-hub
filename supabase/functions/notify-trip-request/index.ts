@@ -29,11 +29,6 @@ serve(async (req) => {
         templateData: payload,
       },
     });
-        templateName: "trip-request-notification",
-        idempotencyKey,
-        templateData: payload,
-      },
-    });
 
     if (error) {
       console.error("send-transactional-email error:", error);
