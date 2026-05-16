@@ -265,7 +265,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             title={t("tripForm.phoneNumberHint")}
             inputMode="tel"
             autoComplete="tel-national"
-            style={{ flex: "1 1 auto", minWidth: 0 }}
+            style={{ flex: "1 1 0%", minWidth: 0, width: "100%" }}
             className="px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
