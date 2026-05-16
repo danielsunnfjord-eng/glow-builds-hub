@@ -457,7 +457,7 @@ export default {
     duration: "Duração Estimada",
     durationPlaceholder: "ex. 7 dias",
     durationAutoPlaceholder: "Calculada automaticamente pelas datas",
-    budget: "Orçamento Estimado",
+    budget: "Orçamento Estimado (BRL R$)",
     budgetPlaceholder: "ex. R$ 5.000 – R$ 10.000",
     notes: "Algo mais que devemos saber?",
     notesPlaceholder: "Ocasiões especiais, pedidos específicos, outros detalhes...",
