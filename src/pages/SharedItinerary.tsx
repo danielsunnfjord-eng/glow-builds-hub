@@ -6,6 +6,7 @@ import type { ItineraryDay } from "@/lib/itineraryParser";
 import logo from "@/assets/logo.png";
 import logoWhite from "@/assets/logo-white.png";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
+import Seo from "@/components/Seo";
 
 interface SharedItinerary {
   id: string;
