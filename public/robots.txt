@@ -12,3 +12,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /reset-password
+Disallow: /unsubscribe
+Disallow: /trip/
+
+Sitemap: https://fjordwavestravel.com/sitemap.xml

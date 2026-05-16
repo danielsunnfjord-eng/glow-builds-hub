@@ -1,0 +1,18 @@
+# Fjord & Waves Travel
+
+> Bespoke concierge travel planning by Daniel Lira Figueiredo, a Fora Travel advisor (IATA accredited). Custom itineraries, flights, hotels and hidden-gem experiences designed around you, plus a small catalog of ready-made PDF itineraries.
+
+Fjord & Waves Travel is a Norway-registered travel advisory (Org.nr 928804860) serving clients in English, Portuguese (pt-BR) and Norwegian. Pricing is presented up front: a fixed planning fee based on group size and trip length plus a 7% service fee on bookings.
+
+## Pages
+
+- [Home](/): Overview of the advisory, how it works, sample trips and how to request a quote.
+- [About](/about): Daniel Lira Figueiredo's background, languages and travel philosophy.
+- [Plan My Trip](/plan-my-trip): Enquiry form to brief a custom itinerary, with the option to book a Calendly call.
+- [Ready-Made Itineraries](/itineraries-shop): Catalog of paid PDF itineraries delivered instantly via Stripe checkout.
+- [Privacy & Terms](/legal): GDPR-aligned privacy policy and service terms under Norwegian law.
+
+## Optional
+
+- [Unsubscribe](/unsubscribe): Newsletter unsubscribe form.
+- [Advisor Login](/login): Private dashboard for the travel advisor.
