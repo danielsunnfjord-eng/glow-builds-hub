@@ -25,6 +25,7 @@ const Legal = () => {
         path="/legal"
       />
       <Navbar />
+      <main>
       <main className="pt-32 pb-20 px-6 md:px-16 max-w-3xl mx-auto">
         <header className="mb-12">
           <p className="text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">Legal</p>
@@ -175,6 +176,7 @@ const Legal = () => {
             </a>
           </p>
         </section>
+      </main>
       </main>
       <Footer />
     </div>

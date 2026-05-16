@@ -70,6 +70,7 @@ const ItineraryShopSuccess = () => {
     <div className="min-h-screen bg-parchment flex flex-col">
       <Seo title="Purchase confirmed — Fjord & Waves Travel" description="Your itinerary purchase is being prepared for download." path="/itineraries-shop/success" noindex />
       <Navbar />
+      <main>
       <main className="flex-1 pt-32 pb-20 px-6 flex items-center justify-center max-md:pt-24">
         <div className="bg-voyage-white border border-ink/[0.06] rounded-lg shadow-sm p-10 max-w-lg w-full text-center">
           {status === "loading" && (
@@ -120,6 +121,7 @@ const ItineraryShopSuccess = () => {
             </>
           )}
         </div>
+      </main>
       </main>
       <Footer />
     </div>

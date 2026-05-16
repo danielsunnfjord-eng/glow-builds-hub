@@ -27,11 +27,13 @@ const Index = () => {
         path="/"
       />
       <Navbar />
-      <CuratedSection />
-      <MeetDaniel />
-      <ItineraryExamples />
-      <Reviews />
-      <PlanMyTrip />
+      <main>
+        <CuratedSection />
+        <MeetDaniel />
+        <ItineraryExamples />
+        <Reviews />
+        <PlanMyTrip />
+      </main>
       <Footer />
     </div>
   );

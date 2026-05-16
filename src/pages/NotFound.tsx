@@ -10,7 +10,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
+    <main className="flex min-h-screen items-center justify-center bg-muted">
       <Seo
         title="Page not found — Fjord & Waves Travel"
         description="The page you're looking for doesn't exist. Return to Fjord & Waves Travel."
@@ -24,7 +24,7 @@ const NotFound = () => {
           Return to Home
         </a>
       </div>
-    </div>
+    </main>
   );
 };
 
