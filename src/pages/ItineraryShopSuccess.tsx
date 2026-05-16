@@ -4,6 +4,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
+import Seo from "@/components/Seo";
 
 const ItineraryShopSuccess = () => {
   const { t } = useTranslation();

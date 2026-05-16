@@ -63,6 +63,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink px-6">
+      <Seo title="Advisor Login — Fjord & Waves Travel" description="Sign in to the Fjord & Waves Travel advisor dashboard." path="/login" noindex />
       <div className="absolute top-5 right-6">
         <LanguageSelector variant="dark" />
       </div>
