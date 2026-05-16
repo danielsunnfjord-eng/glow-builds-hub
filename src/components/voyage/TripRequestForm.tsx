@@ -240,17 +240,17 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       {/* Phone */}
       <div>
         <label className={labelClass}>{t("tripForm.phone")} *</label>
-        <div className="flex gap-2">
+        <div className="grid gap-2" style={{ gridTemplateColumns: "9rem 1fr" }}>
           <select
             required
             value={phoneCountry}
             onChange={(e) => setPhoneCountry(e.target.value)}
             aria-label={t("tripForm.countryCode")}
-            className={`${inputClass} w-auto min-w-[8rem] flex-shrink-0 pr-2`}
+            className="w-full px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
-                {c.flag} {c.label} ({c.code})
+                {c.flag} {c.code}
               </option>
             ))}
           </select>
@@ -264,7 +264,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             title={t("tripForm.phoneNumberHint")}
             inputMode="tel"
             autoComplete="tel-national"
-            className={`${inputClass} flex-1`}
+            className="w-full min-w-0 px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
