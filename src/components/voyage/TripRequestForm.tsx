@@ -240,14 +240,13 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       {/* Phone */}
       <div>
         <label className={labelClass}>{t("tripForm.phone")} *</label>
-        <div className="flex gap-2 items-stretch">
+        <div className="grid gap-2" style={{ gridTemplateColumns: "9rem 1fr" }}>
           <select
             required
             value={phoneCountry}
             onChange={(e) => setPhoneCountry(e.target.value)}
             aria-label={t("tripForm.countryCode")}
-            style={{ width: "9rem", flexShrink: 0 }}
-            className="px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all truncate"
+            className="w-full px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
@@ -265,8 +264,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             title={t("tripForm.phoneNumberHint")}
             inputMode="tel"
             autoComplete="tel-national"
-            style={{ flex: "1 1 0%", minWidth: 0, width: "100%" }}
-            className="px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="w-full min-w-0 px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
