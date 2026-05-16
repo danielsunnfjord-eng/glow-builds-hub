@@ -240,17 +240,18 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       {/* Phone */}
       <div>
         <label className={labelClass}>{t("tripForm.phone")} *</label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-stretch">
           <select
             required
             value={phoneCountry}
             onChange={(e) => setPhoneCountry(e.target.value)}
             aria-label={t("tripForm.countryCode")}
-            className="flex-shrink-0 w-32 px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            style={{ width: "9rem", flexShrink: 0 }}
+            className="px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all truncate"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
-                {c.flag} {c.label} ({c.code})
+                {c.flag} {c.code}
               </option>
             ))}
           </select>
