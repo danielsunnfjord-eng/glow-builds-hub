@@ -15,34 +15,48 @@ serve(async (req) => {
     const payload = await req.json();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     const idempotencyKey = `trip-request-${payload.clientEmail || 'unknown'}-${Date.now()}`;
+    const messageId = crypto.randomUUID();
 
-    const resp = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${anonKey}`,
-        apikey: anonKey,
-      },
-      body: JSON.stringify({
-        templateName: "trip-request-notification",
-        idempotencyKey,
-        templateData: payload,
-      }),
+    // Enqueue directly to the transactional_emails pgmq queue, bypassing
+    // the send-transactional-email gateway (which requires a JWT-format key).
+    // The process-email-queue dispatcher will pick this up and send it.
+    const queuePayload = {
+      message_id: messageId,
+      template_name: "trip-request-notification",
+      recipient_email: "daniel.lirafigueiredo@fora.travel",
+      idempotency_key: idempotencyKey,
+      template_data: payload,
+      purpose: "transactional",
+      enqueued_at: new Date().toISOString(),
+    };
+
+    const { error: enqueueError } = await supabase.rpc("enqueue_email", {
+      queue_name: "transactional_emails",
+      payload: queuePayload,
     });
 
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.error("send-transactional-email error:", resp.status, errText);
-      return new Response(JSON.stringify({ error: errText || "send failed" }), {
+    if (enqueueError) {
+      console.error("enqueue_email error:", enqueueError);
+      return new Response(JSON.stringify({ error: enqueueError.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    // Log the pending send so process-email-queue can correlate it.
+    await supabase.from("email_send_log").insert({
+      message_id: messageId,
+      template_name: "trip-request-notification",
+      recipient_email: "daniel.lirafigueiredo@fora.travel",
+      idempotency_key: idempotencyKey,
+      status: "pending",
+    });
+
+    return new Response(JSON.stringify({ success: true, messageId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
