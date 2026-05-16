@@ -179,6 +179,12 @@ const SharedItinerary = () => {
 
   return (
     <div className="min-h-screen bg-parchment pb-20">
+      <Seo
+        title={`${data.destination || "Itinerary"} — Fjord & Waves Travel`}
+        description={`Private itinerary prepared for ${data.client_first_name} by Fjord & Waves Travel.`}
+        path={`/trip/${token}`}
+        noindex
+      />
       {/* Install banner */}
       {showInstall && (
         <div className="sticky top-0 z-50 bg-ink text-voyage-white px-4 py-2.5 flex items-center justify-between gap-3 text-xs">
