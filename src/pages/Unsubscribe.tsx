@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import Seo from "@/components/Seo";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
@@ -53,6 +54,7 @@ export default function Unsubscribe() {
 
   return (
     <main className="min-h-screen bg-parchment flex items-center justify-center px-6 py-16">
+      <Seo title="Email preferences — Fjord & Waves Travel" description="Manage your Fjord & Waves Travel newsletter subscription." path="/unsubscribe" noindex />
       <div className="max-w-md w-full bg-white border border-gold/20 rounded-sm p-10 text-center">
         <h1 className="text-2xl font-serif text-ink mb-4">Email preferences</h1>
 

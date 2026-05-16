@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
+import Seo from "@/components/Seo";
 
 const Legal = () => {
   const { hash } = useLocation();
@@ -18,6 +19,11 @@ const Legal = () => {
 
   return (
     <div className="bg-parchment min-h-screen">
+      <Seo
+        title="Privacy Policy & Terms — Fjord & Waves Travel"
+        description="Privacy policy and terms of service for Fjord & Waves Travel — how we handle your data under GDPR and the terms that govern our travel advisory."
+        path="/legal"
+      />
       <Navbar />
       <main className="pt-32 pb-20 px-6 md:px-16 max-w-3xl mx-auto">
         <header className="mb-12">

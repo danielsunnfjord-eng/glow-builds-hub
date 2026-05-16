@@ -4,6 +4,7 @@ import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import danielProfile from "@/assets/daniel-profile.jpg";
+import Seo from "@/components/Seo";
 import { useTranslation } from "react-i18next";
 
 const About = () => {
@@ -12,6 +13,11 @@ const About = () => {
 
   return (
     <div>
+      <Seo
+        title="About Daniel Lira Figueiredo — Fjord & Waves Travel"
+        description="Meet Daniel Lira Figueiredo, founder of Fjord & Waves Travel and Fora Travel advisor (IATA accredited). Multilingual concierge travel planning."
+        path="/about"
+      />
       <Navbar />
 
       <section className="pt-44 pb-20 px-16 bg-ink relative overflow-hidden max-lg:px-10 max-md:px-6 max-md:pt-36 max-md:pb-14">

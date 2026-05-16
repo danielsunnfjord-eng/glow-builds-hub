@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "@/components/voyage/LanguageSelector";
+import Seo from "@/components/Seo";
 
 type View = "login" | "signup" | "forgot";
 
@@ -62,6 +63,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink px-6">
+      <Seo title="Advisor Login — Fjord & Waves Travel" description="Sign in to the Fjord & Waves Travel advisor dashboard." path="/login" noindex />
       <div className="absolute top-5 right-6">
         <LanguageSelector variant="dark" />
       </div>

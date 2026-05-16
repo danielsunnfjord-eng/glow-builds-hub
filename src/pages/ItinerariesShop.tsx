@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import Seo from "@/components/Seo";
 import { Slider } from "@/components/ui/slider";
 
 interface CatalogItem {
@@ -142,6 +143,11 @@ const ItinerariesShop = () => {
 
   return (
     <div className="min-h-screen bg-parchment">
+      <Seo
+        title="Ready-Made Itinerary Shop — Fjord & Waves Travel"
+        description="Browse curated, ready-made PDF travel itineraries by Daniel Lira Figueiredo. Instant download after secure checkout."
+        path="/itineraries-shop"
+      />
       <Navbar />
       <main className="pt-32 pb-20 px-16 max-md:px-6 max-md:pt-24">
         <ScrollReveal>

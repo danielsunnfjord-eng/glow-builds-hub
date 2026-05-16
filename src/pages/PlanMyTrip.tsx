@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
+import Seo from "@/components/Seo";
 import TripRequestForm from "@/components/voyage/TripRequestForm";
 import { useState } from "react";
 import { Video } from "lucide-react";
@@ -14,6 +15,11 @@ const PlanMyTripPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="Plan My Trip — Fjord & Waves Travel"
+        description="Brief your custom itinerary. Tell us destinations, dates and travel style, and Daniel will design a bespoke trip around you."
+        path="/plan-my-trip"
+      />
       <Navbar />
       <main className="flex-1 py-28 px-6 max-md:py-20">
         <div className="max-w-2xl mx-auto">

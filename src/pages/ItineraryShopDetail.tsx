@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
+import Seo from "@/components/Seo";
 
 interface CatalogItem {
   id: string;
@@ -137,8 +138,32 @@ const ItineraryShopDetail = () => {
 
   const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: title,
+    description: summary || description?.slice(0, 200),
+    image: data.hero_image_url || undefined,
+    brand: { "@type": "Brand", name: "Fjord & Waves Travel" },
+    offers: {
+      "@type": "Offer",
+      price: Number(data.price_eur).toFixed(2),
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      url: `https://fjordwavestravel.com/itineraries-shop/${data.slug}`,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-parchment">
+      <Seo
+        title={`${title} — Fjord & Waves Travel`}
+        description={(summary || description || "").slice(0, 160)}
+        path={`/itineraries-shop/${data.slug}`}
+        image={data.hero_image_url || undefined}
+        type="product"
+        jsonLd={productJsonLd}
+      />
       <Navbar />
       <main className="pt-28 pb-20 max-md:pt-24">
         {/* Hero */}
