@@ -15,14 +15,12 @@ serve(async (req) => {
     const payload = await req.json();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     const idempotencyKey = `trip-request-${payload.clientEmail || 'unknown'}-${Date.now()}`;
 
     const { error } = await supabase.functions.invoke("send-transactional-email", {
-      headers: { Authorization: `Bearer ${anonKey}` },
       body: {
         templateName: "trip-request-notification",
         idempotencyKey,
