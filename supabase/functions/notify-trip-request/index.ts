@@ -15,24 +15,28 @@ serve(async (req) => {
     const payload = await req.json();
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     const idempotencyKey = `trip-request-${payload.clientEmail || 'unknown'}-${Date.now()}`;
 
-    const { error } = await supabase.functions.invoke("send-transactional-email", {
-      headers: { Authorization: `Bearer ${anonKey}` },
-      body: {
+    const resp = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
+      },
+      body: JSON.stringify({
         templateName: "trip-request-notification",
         idempotencyKey,
         templateData: payload,
-      },
+      }),
     });
 
-    if (error) {
-      console.error("send-transactional-email error:", error);
-      return new Response(JSON.stringify({ error: error.message || "send failed" }), {
+    if (!resp.ok) {
+      const errText = await resp.text();
+      console.error("send-transactional-email error:", resp.status, errText);
+      return new Response(JSON.stringify({ error: errText || "send failed" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
