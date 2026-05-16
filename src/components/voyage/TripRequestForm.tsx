@@ -265,7 +265,8 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             title={t("tripForm.phoneNumberHint")}
             inputMode="tel"
             autoComplete="tel-national"
-            className={`${inputClass} flex-1`}
+            style={{ flex: "1 1 auto", minWidth: 0 }}
+            className="px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
