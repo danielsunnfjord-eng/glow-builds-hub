@@ -470,7 +470,7 @@ export default {
     duration: "Estimated Duration",
     durationPlaceholder: "e.g. 7 days",
     durationAutoPlaceholder: "Auto-calculated from dates",
-    budget: "Estimated Budget",
+    budget: "Estimated Budget (EUR €)",
     budgetPlaceholder: "e.g. €2,000 – €3,000",
     notes: "Anything else we should know?",
     notesPlaceholder: "Special occasions, specific requests, any other details...",

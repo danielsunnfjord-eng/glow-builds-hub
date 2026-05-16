@@ -455,7 +455,7 @@ export default {
     duration: "Estimert Varighet",
     durationPlaceholder: "f.eks. 7 dager",
     durationAutoPlaceholder: "Beregnes automatisk fra datoene",
-    budget: "Estimert Budsjett",
+    budget: "Estimert Budsjett (NOK kr)",
     budgetPlaceholder: "f.eks. kr 20 000 – kr 30 000",
     notes: "Noe annet vi bør vite?",
     notesPlaceholder: "Spesielle anledninger, spesifikke ønsker, andre detaljer...",
