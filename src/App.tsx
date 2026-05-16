@@ -16,6 +16,7 @@ import Unsubscribe from "./pages/Unsubscribe.tsx";
 import ItinerariesShop from "./pages/ItinerariesShop.tsx";
 import ItineraryShopDetail from "./pages/ItineraryShopDetail.tsx";
 import ItineraryShopSuccess from "./pages/ItineraryShopSuccess.tsx";
+import DestinationNorway from "./pages/DestinationNorway.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import CookieConsent from "./components/voyage/CookieConsent.tsx";
 import CalendlyBadge from "./components/voyage/CalendlyBadge.tsx";
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/itineraries-shop" element={<ItinerariesShop />} />
           <Route path="/itineraries-shop/success" element={<ItineraryShopSuccess />} />
           <Route path="/itineraries-shop/:slug" element={<ItineraryShopDetail />} />
+          <Route path="/destinations/norway" element={<DestinationNorway />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
