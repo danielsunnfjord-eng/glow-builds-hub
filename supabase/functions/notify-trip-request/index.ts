@@ -19,44 +19,24 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceKey);
 
     const idempotencyKey = `trip-request-${payload.clientEmail || 'unknown'}-${Date.now()}`;
-    const messageId = crypto.randomUUID();
 
-    // Enqueue directly to the transactional_emails pgmq queue, bypassing
-    // the send-transactional-email gateway (which requires a JWT-format key).
-    // The process-email-queue dispatcher will pick this up and send it.
-    const queuePayload = {
-      message_id: messageId,
-      template_name: "trip-request-notification",
-      recipient_email: "daniel.lirafigueiredo@fora.travel",
-      idempotency_key: idempotencyKey,
-      template_data: payload,
-      purpose: "transactional",
-      enqueued_at: new Date().toISOString(),
-    };
-
-    const { error: enqueueError } = await supabase.rpc("enqueue_email", {
-      queue_name: "transactional_emails",
-      payload: queuePayload,
+    const { error } = await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "trip-request-notification",
+        idempotencyKey,
+        templateData: payload,
+      },
     });
 
-    if (enqueueError) {
-      console.error("enqueue_email error:", enqueueError);
-      return new Response(JSON.stringify({ error: enqueueError.message }), {
+    if (error) {
+      console.error("send-transactional-email error:", error);
+      return new Response(JSON.stringify({ error: error.message || "send failed" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Log the pending send so process-email-queue can correlate it.
-    await supabase.from("email_send_log").insert({
-      message_id: messageId,
-      template_name: "trip-request-notification",
-      recipient_email: "daniel.lirafigueiredo@fora.travel",
-      idempotency_key: idempotencyKey,
-      status: "pending",
-    });
-
-    return new Response(JSON.stringify({ success: true, messageId }), {
+    return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
