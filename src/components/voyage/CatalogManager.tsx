@@ -101,6 +101,17 @@ const CatalogManager = () => {
     },
   });
 
+  const { data: draftIds = new Set<string>() } = useQuery({
+    queryKey: ["catalog-draft-ids"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catalog_itinerary_drafts")
+        .select("itinerary_id");
+      if (error) throw error;
+      return new Set<string>((data || []).map((r: any) => r.itinerary_id));
+    },
+  });
+
   const { data: salesMap = {} } = useQuery({
     queryKey: ["catalog-sales-counts-admin"],
     queryFn: async () => {
@@ -113,6 +124,7 @@ const CatalogManager = () => {
       return map;
     },
   });
+
 
   const togglePublishMutation = useMutation({
     mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
@@ -287,6 +299,44 @@ const CatalogManager = () => {
     }
   };
 
+  const [renderingDraftFor, setRenderingDraftFor] = useState<string | null>(null);
+
+  const openFromDraft = async (itineraryId: string, mode: "open" | "download" = "open") => {
+    setRenderingDraftFor(itineraryId);
+    try {
+      const { data: draftRes, error: dErr } = await supabase.functions.invoke(
+        "generate-catalog-pdf",
+        { body: { mode: "get_draft", itinerary_id: itineraryId } },
+      );
+      if (dErr) throw dErr;
+      if (!draftRes?.draft) throw new Error("No draft saved yet.");
+
+      const { data: renderRes, error: rErr } = await supabase.functions.invoke(
+        "generate-catalog-pdf",
+        {
+          body: {
+            mode: "render",
+            draft: draftRes.draft,
+            language: draftRes.language || "en",
+          },
+        },
+      );
+      if (rErr) throw rErr;
+      if (!renderRes?.pdf_path) throw new Error("Render failed");
+
+      await openPdf(renderRes.pdf_path, mode);
+    } catch (err) {
+      toast({
+        title: "Could not open draft PDF",
+        description: String(err instanceof Error ? err.message : err),
+        variant: "destructive",
+      });
+    } finally {
+      setRenderingDraftFor(null);
+    }
+  };
+
+
   return (
     <div>
       <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
@@ -347,6 +397,26 @@ const CatalogManager = () => {
                     <div className="flex gap-2 text-[0.72rem]">
                       <button onClick={() => openPdf(it.pdf_path, "open")} className="text-gold hover:underline">Open</button>
                       <button onClick={() => openPdf(it.pdf_path, "download")} className="text-voyage-muted hover:text-ink hover:underline">Download</button>
+                    </div>
+                  ) : draftIds.has(it.id!) ? (
+                    <div className="flex flex-col gap-0.5 text-[0.72rem]">
+                      <span className="text-[0.65rem] uppercase tracking-[0.08em] text-voyage-muted">Draft</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openFromDraft(it.id!, "open")}
+                          disabled={renderingDraftFor === it.id}
+                          className="text-gold hover:underline disabled:opacity-50"
+                        >
+                          {renderingDraftFor === it.id ? "Rendering…" : "Open"}
+                        </button>
+                        <button
+                          onClick={() => openFromDraft(it.id!, "download")}
+                          disabled={renderingDraftFor === it.id}
+                          className="text-voyage-muted hover:text-ink hover:underline disabled:opacity-50"
+                        >
+                          Download
+                        </button>
+                      </div>
                     </div>
                   ) : "—"}
                 </td>
