@@ -73,6 +73,8 @@ const CatalogManager = () => {
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [previewSlug, setPreviewSlug] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"catalog" | "detail">("catalog");
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewName, setPdfPreviewName] = useState<string>("");
 
   const { data: items = [] } = useQuery({
     queryKey: ["catalog-admin"],
@@ -273,10 +275,13 @@ const CatalogManager = () => {
         document.body.appendChild(a);
         a.click();
         a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
       } else {
-        window.open(blobUrl, "_blank", "noopener,noreferrer");
+        // Open inline in modal (Edge SmartScreen blocks blob: URLs in new tabs)
+        if (pdfPreviewUrl) URL.revokeObjectURL(pdfPreviewUrl);
+        setPdfPreviewUrl(blobUrl);
+        setPdfPreviewName(path.split("/").pop() || "itinerary.pdf");
       }
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (err) {
       toast({ title: "Could not open PDF", description: String(err), variant: "destructive" });
     }
@@ -651,6 +656,48 @@ const CatalogManager = () => {
             }
             className="flex-1 w-full bg-voyage-white rounded-b-lg border-0"
           />
+        </div>
+      )}
+
+      {pdfPreviewUrl && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center p-4"
+          onClick={() => {
+            URL.revokeObjectURL(pdfPreviewUrl);
+            setPdfPreviewUrl(null);
+          }}
+        >
+          <div
+            className="bg-white rounded-lg w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-2 border-b">
+              <span className="text-sm font-medium truncate">{pdfPreviewName}</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={pdfPreviewUrl}
+                  download={pdfPreviewName}
+                  className="text-xs px-3 py-1.5 rounded bg-voyage-gold text-white hover:opacity-90"
+                >
+                  Download
+                </a>
+                <button
+                  onClick={() => {
+                    URL.revokeObjectURL(pdfPreviewUrl);
+                    setPdfPreviewUrl(null);
+                  }}
+                  className="text-xs px-3 py-1.5 rounded border hover:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={pdfPreviewUrl}
+              title={pdfPreviewName}
+              className="flex-1 w-full border-0"
+            />
+          </div>
         </div>
       )}
     </div>
