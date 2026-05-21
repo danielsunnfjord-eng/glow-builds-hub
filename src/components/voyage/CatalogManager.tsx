@@ -101,6 +101,17 @@ const CatalogManager = () => {
     },
   });
 
+  const { data: draftIds = new Set<string>() } = useQuery({
+    queryKey: ["catalog-draft-ids"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catalog_itinerary_drafts")
+        .select("itinerary_id");
+      if (error) throw error;
+      return new Set<string>((data || []).map((r: any) => r.itinerary_id));
+    },
+  });
+
   const { data: salesMap = {} } = useQuery({
     queryKey: ["catalog-sales-counts-admin"],
     queryFn: async () => {
@@ -113,6 +124,7 @@ const CatalogManager = () => {
       return map;
     },
   });
+
 
   const togglePublishMutation = useMutation({
     mutationFn: async ({ id, is_published }: { id: string; is_published: boolean }) => {
