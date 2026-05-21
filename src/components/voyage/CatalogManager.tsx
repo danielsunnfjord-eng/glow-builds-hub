@@ -255,9 +255,28 @@ const CatalogManager = () => {
     try {
       const { data, error } = await supabase.storage
         .from("catalog-pdfs")
-        .createSignedUrl(path, 600, mode === "download" ? { download: true } : undefined);
+        .createSignedUrl(path, 600);
       if (error || !data?.signedUrl) throw error || new Error("No URL");
-      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+
+      // Fetch as blob to bypass ad blockers that block raw storage URLs (ERR_BLOCKED_BY_CLIENT)
+      const res = await fetch(data.signedUrl);
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(
+        new Blob([blob], { type: "application/pdf" }),
+      );
+
+      if (mode === "download") {
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = path.split("/").pop() || "itinerary.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        window.open(blobUrl, "_blank", "noopener,noreferrer");
+      }
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (err) {
       toast({ title: "Could not open PDF", description: String(err), variant: "destructive" });
     }
