@@ -336,7 +336,7 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: SYSTEM(langName) },
             { role: "user", content: ctxBlocks.join("\n\n---\n\n") + `\n\nNow write the complete itinerary document in ${langName}. Return STRICT JSON only.` },
