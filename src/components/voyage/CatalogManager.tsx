@@ -73,6 +73,8 @@ const CatalogManager = () => {
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [previewSlug, setPreviewSlug] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"catalog" | "detail">("catalog");
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [pdfPreviewName, setPdfPreviewName] = useState<string>("");
 
   const { data: items = [] } = useQuery({
     queryKey: ["catalog-admin"],
