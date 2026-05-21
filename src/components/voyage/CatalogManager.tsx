@@ -250,6 +250,19 @@ const CatalogManager = () => {
     }
   };
 
+  const openPdf = async (path: string | null, mode: "open" | "download" = "open") => {
+    if (!path) return;
+    try {
+      const { data, error } = await supabase.storage
+        .from("catalog-pdfs")
+        .createSignedUrl(path, 600, mode === "download" ? { download: true } : undefined);
+      if (error || !data?.signedUrl) throw error || new Error("No URL");
+      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      toast({ title: "Could not open PDF", description: String(err), variant: "destructive" });
+    }
+  };
+
   return (
     <div>
       <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
@@ -305,7 +318,14 @@ const CatalogManager = () => {
                 <td className="p-3">€{Number(it.price_eur).toFixed(0)}</td>
                 <td className="p-3 text-voyage-muted">{it.view_count ?? 0}</td>
                 <td className="p-3 text-voyage-muted">{salesMap[it.id!] ?? 0}</td>
-                <td className="p-3">{it.pdf_path ? "✓" : "—"}</td>
+                <td className="p-3">
+                  {it.pdf_path ? (
+                    <div className="flex gap-2 text-[0.72rem]">
+                      <button onClick={() => openPdf(it.pdf_path, "open")} className="text-gold hover:underline">Open</button>
+                      <button onClick={() => openPdf(it.pdf_path, "download")} className="text-voyage-muted hover:text-ink hover:underline">Download</button>
+                    </div>
+                  ) : "—"}
+                </td>
                 <td className="p-3">
                   <button
                     onClick={() =>
@@ -535,9 +555,13 @@ const CatalogManager = () => {
               {/* PDF */}
               <div>
                 <label className={label}>Itinerary PDF (private — shown only after purchase)</label>
-                <div className="flex gap-3 items-center">
+                <div className="flex gap-3 items-center flex-wrap">
                   {editing.pdf_path && (
-                    <span className="text-[0.78rem] text-sage">✓ {editing.pdf_path}</span>
+                    <>
+                      <span className="text-[0.78rem] text-sage truncate max-w-[260px]">✓ {editing.pdf_path}</span>
+                      <button type="button" onClick={() => openPdf(editing.pdf_path!, "open")} className="text-[0.72rem] text-gold hover:underline">Open in new tab</button>
+                      <button type="button" onClick={() => openPdf(editing.pdf_path!, "download")} className="text-[0.72rem] text-voyage-muted hover:text-ink hover:underline">Download</button>
+                    </>
                   )}
                   <input type="file" accept=".pdf" onChange={onPdfUpload} className="text-[0.78rem]" disabled={uploadingPdf} />
                   {uploadingPdf && <span className="text-[0.7rem] text-voyage-muted">Uploading…</span>}
