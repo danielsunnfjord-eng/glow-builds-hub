@@ -398,6 +398,26 @@ const CatalogManager = () => {
                       <button onClick={() => openPdf(it.pdf_path, "open")} className="text-gold hover:underline">Open</button>
                       <button onClick={() => openPdf(it.pdf_path, "download")} className="text-voyage-muted hover:text-ink hover:underline">Download</button>
                     </div>
+                  ) : draftIds.has(it.id!) ? (
+                    <div className="flex flex-col gap-0.5 text-[0.72rem]">
+                      <span className="text-[0.65rem] uppercase tracking-[0.08em] text-voyage-muted">Draft</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openFromDraft(it.id!, "open")}
+                          disabled={renderingDraftFor === it.id}
+                          className="text-gold hover:underline disabled:opacity-50"
+                        >
+                          {renderingDraftFor === it.id ? "Rendering…" : "Open"}
+                        </button>
+                        <button
+                          onClick={() => openFromDraft(it.id!, "download")}
+                          disabled={renderingDraftFor === it.id}
+                          className="text-voyage-muted hover:text-ink hover:underline disabled:opacity-50"
+                        >
+                          Download
+                        </button>
+                      </div>
+                    </div>
                   ) : "—"}
                 </td>
                 <td className="p-3">
