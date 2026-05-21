@@ -318,7 +318,14 @@ const CatalogManager = () => {
                 <td className="p-3">€{Number(it.price_eur).toFixed(0)}</td>
                 <td className="p-3 text-voyage-muted">{it.view_count ?? 0}</td>
                 <td className="p-3 text-voyage-muted">{salesMap[it.id!] ?? 0}</td>
-                <td className="p-3">{it.pdf_path ? "✓" : "—"}</td>
+                <td className="p-3">
+                  {it.pdf_path ? (
+                    <div className="flex gap-2 text-[0.72rem]">
+                      <button onClick={() => openPdf(it.pdf_path, "open")} className="text-gold hover:underline">Open</button>
+                      <button onClick={() => openPdf(it.pdf_path, "download")} className="text-voyage-muted hover:text-ink hover:underline">Download</button>
+                    </div>
+                  ) : "—"}
+                </td>
                 <td className="p-3">
                   <button
                     onClick={() =>
