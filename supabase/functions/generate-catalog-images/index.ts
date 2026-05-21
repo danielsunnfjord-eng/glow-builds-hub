@@ -7,28 +7,51 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-async function genImage(prompt: string, apiKey: string): Promise<Uint8Array> {
-  const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash-image",
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    }),
-  });
-  if (!r.ok) {
-    const t = await r.text();
-    throw new Error(`Image gen failed [${r.status}]: ${t.slice(0, 200)}`);
+async function genImage(prompt: string, apiKey: string): Promise<Uint8Array | null> {
+  const models = [
+    "google/gemini-2.5-flash-image",
+    "google/gemini-3.1-flash-image-preview",
+  ];
+  let lastErr = "";
+  for (const model of models) {
+    try {
+      const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: "user", content: prompt }],
+          modalities: ["image", "text"],
+        }),
+      });
+      if (!r.ok) {
+        lastErr = `[${model}] ${r.status}: ${(await r.text()).slice(0, 200)}`;
+        console.error(lastErr);
+        continue;
+      }
+      const data = await r.json();
+      const msg = data.choices?.[0]?.message;
+      const url: string | undefined =
+        msg?.images?.[0]?.image_url?.url ||
+        msg?.images?.[0]?.url ||
+        (typeof msg?.content === "string" && msg.content.startsWith("data:image") ? msg.content : undefined);
+      if (!url) {
+        lastErr = `[${model}] No image in response: ${JSON.stringify(data).slice(0, 300)}`;
+        console.error(lastErr);
+        continue;
+      }
+      const b64 = url.split(",")[1] ?? url;
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes;
+    } catch (e) {
+      lastErr = `[${model}] ${e instanceof Error ? e.message : String(e)}`;
+      console.error(lastErr);
+    }
   }
-  const data = await r.json();
-  const url: string | undefined = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-  if (!url) throw new Error("No image returned");
-  const b64 = url.split(",")[1] ?? url;
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+  console.error("All image models failed:", lastErr);
+  return null;
 }
 
 serve(async (req) => {
@@ -63,18 +86,26 @@ serve(async (req) => {
     let hero_image_url: string | null = null;
     if (hero_prompt) {
       const bytes = await genImage(stylePrefix + hero_prompt + ". Wide cinematic 16:9 framing.", LOVABLE_API_KEY);
-      hero_image_url = await upload(bytes);
+      if (bytes) hero_image_url = await upload(bytes);
     }
 
     const gallery_image_urls: string[] = [];
     for (const p of (gallery_prompts as string[]).slice(0, 6)) {
       try {
         const bytes = await genImage(stylePrefix + p, LOVABLE_API_KEY);
-        gallery_image_urls.push(await upload(bytes));
+        if (bytes) gallery_image_urls.push(await upload(bytes));
       } catch (e) {
-        console.error("gallery image failed:", e);
+        console.error("gallery image upload failed:", e);
       }
     }
+
+    if (!hero_image_url && gallery_image_urls.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Image generation is temporarily unavailable. Please try again in a moment.", fallback: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
 
     return new Response(JSON.stringify({ hero_image_url, gallery_image_urls }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
