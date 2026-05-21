@@ -253,7 +253,7 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
         method: "POST",
         headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: refineSystem },
             { role: "user", content: userMsg + "\n\nReturn the full updated JSON document." },
