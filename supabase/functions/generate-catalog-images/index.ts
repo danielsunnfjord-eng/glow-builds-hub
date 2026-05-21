@@ -86,18 +86,26 @@ serve(async (req) => {
     let hero_image_url: string | null = null;
     if (hero_prompt) {
       const bytes = await genImage(stylePrefix + hero_prompt + ". Wide cinematic 16:9 framing.", LOVABLE_API_KEY);
-      hero_image_url = await upload(bytes);
+      if (bytes) hero_image_url = await upload(bytes);
     }
 
     const gallery_image_urls: string[] = [];
     for (const p of (gallery_prompts as string[]).slice(0, 6)) {
       try {
         const bytes = await genImage(stylePrefix + p, LOVABLE_API_KEY);
-        gallery_image_urls.push(await upload(bytes));
+        if (bytes) gallery_image_urls.push(await upload(bytes));
       } catch (e) {
-        console.error("gallery image failed:", e);
+        console.error("gallery image upload failed:", e);
       }
     }
+
+    if (!hero_image_url && gallery_image_urls.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Image generation is temporarily unavailable. Please try again in a moment.", fallback: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
 
     return new Response(JSON.stringify({ hero_image_url, gallery_image_urls }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
