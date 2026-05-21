@@ -299,6 +299,44 @@ const CatalogManager = () => {
     }
   };
 
+  const [renderingDraftFor, setRenderingDraftFor] = useState<string | null>(null);
+
+  const openFromDraft = async (itineraryId: string, mode: "open" | "download" = "open") => {
+    setRenderingDraftFor(itineraryId);
+    try {
+      const { data: draftRes, error: dErr } = await supabase.functions.invoke(
+        "generate-catalog-pdf",
+        { body: { mode: "get_draft", itinerary_id: itineraryId } },
+      );
+      if (dErr) throw dErr;
+      if (!draftRes?.draft) throw new Error("No draft saved yet.");
+
+      const { data: renderRes, error: rErr } = await supabase.functions.invoke(
+        "generate-catalog-pdf",
+        {
+          body: {
+            mode: "render",
+            draft: draftRes.draft,
+            language: draftRes.language || "en",
+          },
+        },
+      );
+      if (rErr) throw rErr;
+      if (!renderRes?.pdf_path) throw new Error("Render failed");
+
+      await openPdf(renderRes.pdf_path, mode);
+    } catch (err) {
+      toast({
+        title: "Could not open draft PDF",
+        description: String(err instanceof Error ? err.message : err),
+        variant: "destructive",
+      });
+    } finally {
+      setRenderingDraftFor(null);
+    }
+  };
+
+
   return (
     <div>
       <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
