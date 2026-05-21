@@ -275,10 +275,13 @@ const CatalogManager = () => {
         document.body.appendChild(a);
         a.click();
         a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
       } else {
-        window.open(blobUrl, "_blank", "noopener,noreferrer");
+        // Open inline in modal (Edge SmartScreen blocks blob: URLs in new tabs)
+        if (pdfPreviewUrl) URL.revokeObjectURL(pdfPreviewUrl);
+        setPdfPreviewUrl(blobUrl);
+        setPdfPreviewName(path.split("/").pop() || "itinerary.pdf");
       }
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (err) {
       toast({ title: "Could not open PDF", description: String(err), variant: "destructive" });
     }
