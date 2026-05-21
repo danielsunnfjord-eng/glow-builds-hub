@@ -250,6 +250,19 @@ const CatalogManager = () => {
     }
   };
 
+  const openPdf = async (path: string | null, mode: "open" | "download" = "open") => {
+    if (!path) return;
+    try {
+      const { data, error } = await supabase.storage
+        .from("catalog-pdfs")
+        .createSignedUrl(path, 600, mode === "download" ? { download: true } : undefined);
+      if (error || !data?.signedUrl) throw error || new Error("No URL");
+      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      toast({ title: "Could not open PDF", description: String(err), variant: "destructive" });
+    }
+  };
+
   return (
     <div>
       <div className="mb-8 flex justify-between items-end gap-4 flex-wrap">
