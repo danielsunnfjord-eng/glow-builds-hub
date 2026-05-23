@@ -425,6 +425,35 @@ Avoid:
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 12 — Packing List Generator
+ * Input variables: itinerary
+ * Output: structured packing guide organized by category
+ */
+export const PROMPT_PACKING_LIST = `PACKING LIST GENERATOR
+
+Generate a practical packing guide for this itinerary.
+
+Consider:
+- climate
+- season
+- activities
+- transportation style
+- comfort
+- local conditions
+
+Organize by:
+- clothing
+- footwear
+- travel essentials
+- technology
+- optional gear
+
+Keep recommendations practical and realistic.
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
