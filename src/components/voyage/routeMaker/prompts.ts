@@ -291,6 +291,38 @@ Itinerary:
 Traveler profile:
 {{traveler_profile}}`;
 
+/**
+ * Prompt 8 — Itinerary Quality Checker
+ * Input variables: itinerary
+ * Output: structured JSON with quality score, issues, and improvement suggestions
+ */
+export const PROMPT_QUALITY_CHECKER = `ITINERARY QUALITY CHECKER
+
+Review this itinerary for quality, realism and traveler experience.
+
+Check for:
+- unrealistic travel times
+- poor pacing
+- repetitive experiences
+- geographic inefficiencies
+- insufficient recovery time
+- inconsistent tone
+- missing logistical clarity
+- activity overload
+- weak flow between destinations
+
+Return:
+- quality score
+- key issues
+- improvement suggestions
+- pacing observations
+- logistical concerns
+
+Return structured JSON only.
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
