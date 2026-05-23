@@ -395,6 +395,36 @@ Avoid keyword stuffing.
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 11 — PDF Intro Generator
+ * Input variables: itinerary
+ * Output: editorial-style prose intro for the PDF guide (free text, not JSON)
+ */
+export const PROMPT_PDF_INTRO = `PDF INTRO GENERATOR
+
+Write a premium editorial-style introduction for this travel guide PDF.
+
+The introduction should:
+- emotionally immerse the traveler
+- establish the feeling of the journey
+- communicate the travel philosophy
+- inspire confidence and excitement
+
+Tone:
+- cinematic
+- elegant
+- experiential
+- human
+- authentic
+
+Avoid:
+- clichés
+- exaggerated promises
+- generic tourism language
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
