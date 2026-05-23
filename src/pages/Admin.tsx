@@ -453,7 +453,7 @@ const AdminDashboard = () => {
               🖼 Image Bank
             </button>
             <button onClick={() => setActiveTab("shop")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "shop" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              🛒 Shop
+              🗺 Route Maker
             </button>
           </div>
         </div>
