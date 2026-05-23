@@ -389,6 +389,78 @@ export type Database = {
           },
         ]
       }
+      route_maker_itineraries: {
+        Row: {
+          accommodations: Json | null
+          brief_analysis: Json | null
+          brief_text: string
+          budget: Json | null
+          created_at: string
+          days: Json | null
+          experiences: Json | null
+          id: string
+          logistics: Json | null
+          packing: Json | null
+          pdf_intro: string | null
+          quality: Json | null
+          route: Json | null
+          route_approved_at: string | null
+          sales_copy: Json | null
+          seo: Json | null
+          status: string
+          title: string
+          updated_at: string
+          upsell: string | null
+          user_id: string
+        }
+        Insert: {
+          accommodations?: Json | null
+          brief_analysis?: Json | null
+          brief_text?: string
+          budget?: Json | null
+          created_at?: string
+          days?: Json | null
+          experiences?: Json | null
+          id?: string
+          logistics?: Json | null
+          packing?: Json | null
+          pdf_intro?: string | null
+          quality?: Json | null
+          route?: Json | null
+          route_approved_at?: string | null
+          sales_copy?: Json | null
+          seo?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+          upsell?: string | null
+          user_id: string
+        }
+        Update: {
+          accommodations?: Json | null
+          brief_analysis?: Json | null
+          brief_text?: string
+          budget?: Json | null
+          created_at?: string
+          days?: Json | null
+          experiences?: Json | null
+          id?: string
+          logistics?: Json | null
+          packing?: Json | null
+          pdf_intro?: string | null
+          quality?: Json | null
+          route?: Json | null
+          route_approved_at?: string | null
+          sales_copy?: Json | null
+          seo?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+          upsell?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       shared_itineraries: {
         Row: {
           client_name: string
