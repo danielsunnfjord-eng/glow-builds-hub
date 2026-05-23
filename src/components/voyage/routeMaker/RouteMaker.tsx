@@ -340,21 +340,49 @@ const RouteMaker = () => {
                     <Button variant="ghost" size="sm" onClick={() => remove(current.id)}>Delete</Button>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
                     <Label className="text-xs">Title (internal)</Label>
                     <Input value={title} onChange={(e) => setTitle(e.target.value)} />
                   </div>
-                  <div>
-                    <Label className="text-xs">Travel brief</Label>
-                    <Textarea
-                      rows={6}
-                      value={brief}
-                      onChange={(e) => setBrief(e.target.value)}
-                      placeholder="Describe the trip: travelers, destinations, length, season, style, constraints, must-haves…"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {BRIEF_FIELDS.map((f) => {
+                      const val = (briefData[f.key] ?? "") as string;
+                      const common = {
+                        value: val,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+                          setBriefField(f.key, e.target.value),
+                        placeholder: f.placeholder,
+                      };
+                      return (
+                        <div key={f.key} className={f.full ? "md:col-span-2" : ""}>
+                          <Label className="text-xs">{f.label}</Label>
+                          {f.type === "textarea" ? (
+                            <Textarea rows={3} {...common} />
+                          ) : f.type === "select" ? (
+                            <select
+                              {...common}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            >
+                              {f.options?.map((o) => (
+                                <option key={o} value={o}>{o || "—"}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Input type={f.type ?? "text"} {...common} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
+                  <details className="text-xs text-voyage-muted">
+                    <summary className="cursor-pointer">Preview compiled brief sent to AI</summary>
+                    <pre className="mt-2 bg-parchment/40 border border-parchment-3 rounded p-2 whitespace-pre-wrap break-words">
+{composeBriefText(briefData) || "(empty)"}
+                    </pre>
+                  </details>
                 </div>
+
               </div>
 
               {/* Staged steps */}
