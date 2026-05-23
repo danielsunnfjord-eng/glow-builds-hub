@@ -387,6 +387,38 @@ const RouteMaker = () => {
                   </div>
                 </div>
                 <div className="space-y-4">
+                  <div className="rounded-md border border-parchment-3 bg-parchment/40 p-3">
+                    <Label className="text-xs">Prefill brief from a customer intake form</Label>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <select
+                        defaultValue=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            importFromTripRequest(e.target.value);
+                            e.target.value = "";
+                          }
+                        }}
+                        className="flex h-9 flex-1 min-w-[240px] rounded-md border border-input bg-background px-2 py-1 text-sm"
+                      >
+                        <option value="">— Select a trip request to import —</option>
+                        {tripRequests.map((tr: any) => (
+                          <option key={tr.id} value={tr.id}>
+                            {(tr.client_name ?? "?")} · {(tr.destination ?? "?")} · {new Date(tr.created_at).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setBriefData(EMPTY_BRIEF); toast.success("Brief cleared — start a manual route."); }}
+                      >
+                        Clear (manual)
+                      </Button>
+                    </div>
+                    <p className="mt-1 text-[0.7rem] text-voyage-muted">
+                      Import a customer enquiry to prefill all fields, or leave empty and fill manually to build a generic catalog route.
+                    </p>
+                  </div>
                   <div>
                     <Label className="text-xs">Title (internal)</Label>
                     <Input value={title} onChange={(e) => setTitle(e.target.value)} />
