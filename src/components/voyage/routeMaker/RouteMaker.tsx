@@ -177,13 +177,17 @@ const RouteMaker = () => {
 
   // Local editable mirrors for fields we save explicitly.
   const [title, setTitle] = useState("");
-  const [brief, setBrief] = useState("");
+  const [briefData, setBriefData] = useState<BriefData>(EMPTY_BRIEF);
   useEffect(() => {
     if (current) {
       setTitle(current.title);
-      setBrief(current.brief_text);
+      setBriefData(current.brief_data ?? EMPTY_BRIEF);
     }
   }, [current?.id]);
+
+  const setBriefField = (key: keyof BriefData, value: string) => {
+    setBriefData((prev) => ({ ...prev, [key]: value }));
+  };
 
   const createNew = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -212,12 +216,19 @@ const RouteMaker = () => {
     qc.invalidateQueries({ queryKey: ["route-maker-list"] });
   };
 
-  const saveMeta = async () => {
+  const persistBrief = async () => {
     if (!current) return;
+    const composed = composeBriefText(briefData);
     const { error } = await supabase
       .from("route_maker_itineraries")
-      .update({ title, brief_text: brief })
+      .update({ title, brief_text: composed, brief_data: briefData as never })
       .eq("id", current.id);
+    return error;
+  };
+
+  const saveMeta = async () => {
+    if (!current) return;
+    const error = await persistBrief();
     if (error) return toast.error(error.message);
     toast.success("Saved");
     qc.invalidateQueries({ queryKey: ["route-maker-list"] });
@@ -227,12 +238,8 @@ const RouteMaker = () => {
   const runStep = async (stepId: string) => {
     if (!current) return;
     // Always persist brief/title before running so the edge function reads fresh data.
-    if (title !== current.title || brief !== current.brief_text) {
-      await supabase
-        .from("route_maker_itineraries")
-        .update({ title, brief_text: brief })
-        .eq("id", current.id);
-    }
+    await persistBrief();
+
     setRunningStep(stepId);
     try {
       const { data, error } = await supabase.functions.invoke("route-maker-step", {
