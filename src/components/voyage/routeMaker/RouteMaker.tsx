@@ -8,12 +8,108 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ROUTE_MAKER_STEPS } from "./prompts";
 
+interface BriefData {
+  destinations?: string;
+  origin?: string;
+  start_date?: string;
+  end_date?: string;
+  duration_nights?: string;
+  travelers_adults?: string;
+  travelers_children?: string;
+  children_ages?: string;
+  season?: string;
+  travel_style?: string;
+  pacing?: string;
+  budget_level?: string;
+  budget_amount?: string;
+  currency?: string;
+  accommodation_pref?: string;
+  transport_pref?: string;
+  interests?: string;
+  must_haves?: string;
+  avoid?: string;
+  dietary?: string;
+  mobility?: string;
+  prior_visits?: string;
+  occasion?: string;
+  notes?: string;
+}
+
+const EMPTY_BRIEF: BriefData = {};
+
+const BRIEF_FIELDS: Array<{
+  key: keyof BriefData;
+  label: string;
+  type?: "text" | "textarea" | "date" | "number" | "select";
+  placeholder?: string;
+  options?: string[];
+  full?: boolean;
+}> = [
+  { key: "destinations", label: "Destination(s)", placeholder: "e.g. Norway — Oslo, Bergen, Lofoten", full: true },
+  { key: "origin", label: "Origin / departure city", placeholder: "e.g. São Paulo" },
+  { key: "occasion", label: "Occasion", placeholder: "honeymoon, family trip, milestone…" },
+  { key: "start_date", label: "Start date", type: "date" },
+  { key: "end_date", label: "End date", type: "date" },
+  { key: "duration_nights", label: "Duration (nights)", type: "number", placeholder: "10" },
+  { key: "season", label: "Season / month", placeholder: "June, winter…" },
+  { key: "travelers_adults", label: "Adults", type: "number", placeholder: "2" },
+  { key: "travelers_children", label: "Children", type: "number", placeholder: "0" },
+  { key: "children_ages", label: "Children ages", placeholder: "5, 8" },
+  { key: "travel_style", label: "Travel style", type: "select", options: ["", "Luxury", "Boutique", "Premium comfort", "Mid-range", "Adventure", "Backpacker"] },
+  { key: "pacing", label: "Pacing", type: "select", options: ["", "Slow & immersive", "Balanced", "Fast / cover-a-lot"] },
+  { key: "budget_level", label: "Budget level", type: "select", options: ["", "Entry", "Mid", "Premium", "Luxury", "Ultra-luxury"] },
+  { key: "currency", label: "Currency", type: "select", options: ["", "EUR", "USD", "NOK", "BRL", "GBP"] },
+  { key: "budget_amount", label: "Total budget (approx.)", placeholder: "e.g. 12 000" },
+  { key: "accommodation_pref", label: "Accommodation preferences", placeholder: "design hotels, lodges, cabins…", full: true },
+  { key: "transport_pref", label: "Transport preferences", placeholder: "rental car, train, private driver…", full: true },
+  { key: "interests", label: "Interests", type: "textarea", placeholder: "nature, food, history, photography…", full: true },
+  { key: "must_haves", label: "Must-have experiences", type: "textarea", placeholder: "fjord cruise, northern lights…", full: true },
+  { key: "avoid", label: "Things to avoid", type: "textarea", placeholder: "long drives, crowds…", full: true },
+  { key: "dietary", label: "Dietary restrictions", placeholder: "vegetarian, gluten-free…", full: true },
+  { key: "mobility", label: "Mobility / accessibility", placeholder: "limited walking, stroller…", full: true },
+  { key: "prior_visits", label: "Prior visits", placeholder: "first time / been before to…", full: true },
+  { key: "notes", label: "Other notes for the planner", type: "textarea", full: true },
+];
+
+const composeBriefText = (b: BriefData): string => {
+  const parts: string[] = [];
+  const add = (label: string, val?: string) => {
+    if (val && val.trim()) parts.push(`- ${label}: ${val.trim()}`);
+  };
+  add("Destination(s)", b.destinations);
+  add("Origin", b.origin);
+  add("Occasion", b.occasion);
+  if (b.start_date || b.end_date) add("Dates", `${b.start_date ?? "?"} → ${b.end_date ?? "?"}`);
+  add("Duration (nights)", b.duration_nights);
+  add("Season", b.season);
+  const travelers = [
+    b.travelers_adults ? `${b.travelers_adults} adults` : "",
+    b.travelers_children ? `${b.travelers_children} children${b.children_ages ? ` (ages ${b.children_ages})` : ""}` : "",
+  ].filter(Boolean).join(", ");
+  if (travelers) parts.push(`- Travelers: ${travelers}`);
+  add("Travel style", b.travel_style);
+  add("Pacing", b.pacing);
+  add("Budget level", b.budget_level);
+  if (b.budget_amount) add("Budget amount", `${b.budget_amount}${b.currency ? ` ${b.currency}` : ""}`);
+  add("Accommodation preferences", b.accommodation_pref);
+  add("Transport preferences", b.transport_pref);
+  add("Interests", b.interests);
+  add("Must-have experiences", b.must_haves);
+  add("Things to avoid", b.avoid);
+  add("Dietary", b.dietary);
+  add("Mobility", b.mobility);
+  add("Prior visits", b.prior_visits);
+  add("Other notes", b.notes);
+  return parts.join("\n");
+};
+
 interface RouteMakerRow {
   id: string;
   user_id: string;
   title: string;
   status: string;
   brief_text: string;
+  brief_data: BriefData | null;
   brief_analysis: unknown;
   route: unknown;
   days: unknown;
@@ -81,13 +177,17 @@ const RouteMaker = () => {
 
   // Local editable mirrors for fields we save explicitly.
   const [title, setTitle] = useState("");
-  const [brief, setBrief] = useState("");
+  const [briefData, setBriefData] = useState<BriefData>(EMPTY_BRIEF);
   useEffect(() => {
     if (current) {
       setTitle(current.title);
-      setBrief(current.brief_text);
+      setBriefData(current.brief_data ?? EMPTY_BRIEF);
     }
   }, [current?.id]);
+
+  const setBriefField = (key: keyof BriefData, value: string) => {
+    setBriefData((prev) => ({ ...prev, [key]: value }));
+  };
 
   const createNew = async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -116,12 +216,19 @@ const RouteMaker = () => {
     qc.invalidateQueries({ queryKey: ["route-maker-list"] });
   };
 
-  const saveMeta = async () => {
+  const persistBrief = async () => {
     if (!current) return;
+    const composed = composeBriefText(briefData);
     const { error } = await supabase
       .from("route_maker_itineraries")
-      .update({ title, brief_text: brief })
+      .update({ title, brief_text: composed, brief_data: briefData as never })
       .eq("id", current.id);
+    return error;
+  };
+
+  const saveMeta = async () => {
+    if (!current) return;
+    const error = await persistBrief();
     if (error) return toast.error(error.message);
     toast.success("Saved");
     qc.invalidateQueries({ queryKey: ["route-maker-list"] });
@@ -131,12 +238,8 @@ const RouteMaker = () => {
   const runStep = async (stepId: string) => {
     if (!current) return;
     // Always persist brief/title before running so the edge function reads fresh data.
-    if (title !== current.title || brief !== current.brief_text) {
-      await supabase
-        .from("route_maker_itineraries")
-        .update({ title, brief_text: brief })
-        .eq("id", current.id);
-    }
+    await persistBrief();
+
     setRunningStep(stepId);
     try {
       const { data, error } = await supabase.functions.invoke("route-maker-step", {
@@ -237,21 +340,49 @@ const RouteMaker = () => {
                     <Button variant="ghost" size="sm" onClick={() => remove(current.id)}>Delete</Button>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
                     <Label className="text-xs">Title (internal)</Label>
                     <Input value={title} onChange={(e) => setTitle(e.target.value)} />
                   </div>
-                  <div>
-                    <Label className="text-xs">Travel brief</Label>
-                    <Textarea
-                      rows={6}
-                      value={brief}
-                      onChange={(e) => setBrief(e.target.value)}
-                      placeholder="Describe the trip: travelers, destinations, length, season, style, constraints, must-haves…"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {BRIEF_FIELDS.map((f) => {
+                      const val = (briefData[f.key] ?? "") as string;
+                      const common = {
+                        value: val,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+                          setBriefField(f.key, e.target.value),
+                        placeholder: f.placeholder,
+                      };
+                      return (
+                        <div key={f.key} className={f.full ? "md:col-span-2" : ""}>
+                          <Label className="text-xs">{f.label}</Label>
+                          {f.type === "textarea" ? (
+                            <Textarea rows={3} {...common} />
+                          ) : f.type === "select" ? (
+                            <select
+                              {...common}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            >
+                              {f.options?.map((o) => (
+                                <option key={o} value={o}>{o || "—"}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Input type={f.type ?? "text"} {...common} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
+                  <details className="text-xs text-voyage-muted">
+                    <summary className="cursor-pointer">Preview compiled brief sent to AI</summary>
+                    <pre className="mt-2 bg-parchment/40 border border-parchment-3 rounded p-2 whitespace-pre-wrap break-words">
+{composeBriefText(briefData) || "(empty)"}
+                    </pre>
+                  </details>
                 </div>
+
               </div>
 
               {/* Staged steps */}
