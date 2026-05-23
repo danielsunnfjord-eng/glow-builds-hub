@@ -151,6 +151,43 @@ Return structured JSON only.
 Approved route:
 {{approved_route}}`;
 
+/**
+ * Prompt 4 — Experience Recommendation Generator
+ * Input variables: itinerary, traveler_profile
+ * Output: structured JSON array of curated experience recommendations
+ */
+export const PROMPT_EXPERIENCE_RECOMMENDER = `EXPERIENCE RECOMMENDATION GENERATOR
+
+Recommend curated travel experiences that fit this itinerary.
+
+Prioritize:
+- authentic local experiences
+- memorable moments
+- strong destination identity
+- realistic logistics
+- traveler compatibility
+
+Avoid:
+- generic tourist attractions unless iconic
+- unrealistic detours
+- repetitive experiences
+
+For each recommendation include:
+- experience title
+- category
+- why it fits the itinerary
+- ideal traveler type
+- duration estimate
+- seasonal relevance
+
+Return structured JSON only.
+
+Itinerary:
+{{itinerary}}
+
+Traveler profile:
+{{traveler_profile}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
