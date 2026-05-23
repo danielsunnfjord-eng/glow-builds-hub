@@ -161,6 +161,52 @@ const RouteMaker = () => {
     },
   });
 
+  const { data: tripRequests = [] } = useQuery({
+    queryKey: ["route-maker-trip-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trip_requests")
+        .select("id,client_name,destination,start_date,end_date,created_at,departure,trip_duration,estimated_budget,adults,children_count,children_ages,accommodation_type,dietary_restrictions,mobility_notes,must_have_experiences,travel_pace,visited_before,interests,notes")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const mapTripRequestToBrief = (tr: any): { brief: BriefData; title: string } => {
+    const brief: BriefData = {
+      destinations: tr.destination ?? "",
+      origin: tr.departure ?? "",
+      start_date: tr.start_date ?? "",
+      end_date: tr.end_date ?? "",
+      duration_nights: tr.trip_duration ?? "",
+      travelers_adults: tr.adults != null ? String(tr.adults) : "",
+      travelers_children: tr.children_count != null ? String(tr.children_count) : "",
+      children_ages: Array.isArray(tr.children_ages) ? tr.children_ages.join(", ") : "",
+      accommodation_pref: tr.accommodation_type ?? "",
+      pacing: tr.travel_pace ?? "",
+      budget_amount: tr.estimated_budget ?? "",
+      interests: Array.isArray(tr.interests) ? tr.interests.join(", ") : "",
+      must_haves: tr.must_have_experiences ?? "",
+      dietary: tr.dietary_restrictions ?? "",
+      mobility: tr.mobility_notes ?? "",
+      prior_visits: tr.visited_before ? "Yes — has visited before" : "First-time visitor",
+      notes: tr.notes ?? "",
+    };
+    const title = `${tr.client_name ?? "Client"} — ${tr.destination ?? "trip"}`;
+    return { brief, title };
+  };
+
+  const importFromTripRequest = (trId: string) => {
+    const tr = tripRequests.find((t: any) => t.id === trId);
+    if (!tr) return;
+    const { brief, title: newTitle } = mapTripRequestToBrief(tr);
+    setBriefData(brief);
+    setTitle(newTitle);
+    toast.success("Imported from intake form — review and Save.");
+  };
+
   const { data: current } = useQuery({
     queryKey: ["route-maker-row", selectedId],
     enabled: !!selectedId,
