@@ -71,7 +71,88 @@ Return structured JSON only.
 Travel brief:
 {{travel_brief}}`;
 
+/**
+ * Prompt 2 — Route Generator
+ * Input variables: traveler_context, destination_context, trip_constraints
+ * Output: structured JSON (high-level route only — no descriptions, no hotels, no copy)
+ */
+export const PROMPT_ROUTE_GENERATOR = `ROUTE GENERATOR
+
+Create a high-level travel route structure.
+
+Focus ONLY on:
+- destination sequence
+- pacing
+- transportation logic
+- geographic efficiency
+- overnight distribution
+- balancing activity and recovery
+- seasonal suitability
+
+Do NOT:
+- write detailed descriptions
+- recommend specific hotels
+- create marketing copy
+- create packing lists
+
+Return:
+- itinerary title
+- short concept summary
+- destination sequence
+- nights per location
+- transport logic
+- key experiences per stop
+
+Return structured JSON only.
+
+Traveler context:
+{{traveler_context}}
+
+Destination context:
+{{destination_context}}
+
+Trip constraints:
+{{trip_constraints}}`;
+
+/**
+ * Prompt 3 — Day-by-Day Generator
+ * Input variables: approved_route
+ * Output: structured JSON with one entry per day
+ */
+export const PROMPT_DAY_BY_DAY_GENERATOR = `DAY-BY-DAY GENERATOR: Expand the approved itinerary structure into a detailed day-by-day travel itinerary.
+
+For each day include:
+- day title
+- location
+- experience summary
+- recommended activities
+- transport notes
+- pacing guidance
+- meal suggestions
+- optional experiences
+- practical travel considerations
+
+Tone:
+- immersive
+- practical
+- premium
+- clear
+- emotionally engaging
+
+Avoid:
+- exaggerated marketing language
+- unrealistic schedules
+- repetitive wording
+
+Maintain realistic timing and geography.
+
+Return structured JSON only.
+
+Approved route:
+{{approved_route}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
 }
+
