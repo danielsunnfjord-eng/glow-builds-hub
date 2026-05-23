@@ -367,6 +367,34 @@ Generate:
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 10 — SEO Generator
+ * Input variables: itinerary
+ * Output: structured JSON with SEO title, meta description, slug, keywords, alt text, content summary
+ */
+export const PROMPT_SEO_GENERATOR = `SEO GENERATOR
+
+Generate SEO content for this travel itinerary page.
+
+Include:
+- SEO title
+- meta description
+- URL slug
+- keyword targets
+- image alt text suggestions
+- structured content summary
+
+Optimize for:
+- organic search
+- travel intent
+- clarity
+- click-through rate
+
+Avoid keyword stuffing.
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
