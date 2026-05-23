@@ -161,6 +161,52 @@ const RouteMaker = () => {
     },
   });
 
+  const { data: tripRequests = [] } = useQuery({
+    queryKey: ["route-maker-trip-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("trip_requests")
+        .select("id,client_name,destination,start_date,end_date,created_at,departure,trip_duration,estimated_budget,adults,children_count,children_ages,accommodation_type,dietary_restrictions,mobility_notes,must_have_experiences,travel_pace,visited_before,interests,notes")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const mapTripRequestToBrief = (tr: any): { brief: BriefData; title: string } => {
+    const brief: BriefData = {
+      destinations: tr.destination ?? "",
+      origin: tr.departure ?? "",
+      start_date: tr.start_date ?? "",
+      end_date: tr.end_date ?? "",
+      duration_nights: tr.trip_duration ?? "",
+      travelers_adults: tr.adults != null ? String(tr.adults) : "",
+      travelers_children: tr.children_count != null ? String(tr.children_count) : "",
+      children_ages: Array.isArray(tr.children_ages) ? tr.children_ages.join(", ") : "",
+      accommodation_pref: tr.accommodation_type ?? "",
+      pacing: tr.travel_pace ?? "",
+      budget_amount: tr.estimated_budget ?? "",
+      interests: Array.isArray(tr.interests) ? tr.interests.join(", ") : "",
+      must_haves: tr.must_have_experiences ?? "",
+      dietary: tr.dietary_restrictions ?? "",
+      mobility: tr.mobility_notes ?? "",
+      prior_visits: tr.visited_before ? "Yes — has visited before" : "First-time visitor",
+      notes: tr.notes ?? "",
+    };
+    const title = `${tr.client_name ?? "Client"} — ${tr.destination ?? "trip"}`;
+    return { brief, title };
+  };
+
+  const importFromTripRequest = (trId: string) => {
+    const tr = tripRequests.find((t: any) => t.id === trId);
+    if (!tr) return;
+    const { brief, title: newTitle } = mapTripRequestToBrief(tr);
+    setBriefData(brief);
+    setTitle(newTitle);
+    toast.success("Imported from intake form — review and Save.");
+  };
+
   const { data: current } = useQuery({
     queryKey: ["route-maker-row", selectedId],
     enabled: !!selectedId,
@@ -341,6 +387,38 @@ const RouteMaker = () => {
                   </div>
                 </div>
                 <div className="space-y-4">
+                  <div className="rounded-md border border-parchment-3 bg-parchment/40 p-3">
+                    <Label className="text-xs">Prefill brief from a customer intake form</Label>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <select
+                        defaultValue=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            importFromTripRequest(e.target.value);
+                            e.target.value = "";
+                          }
+                        }}
+                        className="flex h-9 flex-1 min-w-[240px] rounded-md border border-input bg-background px-2 py-1 text-sm"
+                      >
+                        <option value="">— Select a trip request to import —</option>
+                        {tripRequests.map((tr: any) => (
+                          <option key={tr.id} value={tr.id}>
+                            {(tr.client_name ?? "?")} · {(tr.destination ?? "?")} · {new Date(tr.created_at).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setBriefData(EMPTY_BRIEF); toast.success("Brief cleared — start a manual route."); }}
+                      >
+                        Clear (manual)
+                      </Button>
+                    </div>
+                    <p className="mt-1 text-[0.7rem] text-voyage-muted">
+                      Import a customer enquiry to prefill all fields, or leave empty and fill manually to build a generic catalog route.
+                    </p>
+                  </div>
                   <div>
                     <Label className="text-xs">Title (internal)</Label>
                     <Input value={title} onChange={(e) => setTitle(e.target.value)} />
