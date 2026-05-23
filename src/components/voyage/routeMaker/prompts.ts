@@ -188,6 +188,43 @@ Itinerary:
 Traveler profile:
 {{traveler_profile}}`;
 
+/**
+ * Prompt 5 — Accommodation Matcher
+ * Input variables: itinerary, accommodation_preferences
+ * Output: structured JSON array of accommodation recommendations
+ */
+export const PROMPT_ACCOMMODATION_MATCHER = `ACCOMMODATION MATCHER
+
+Recommend accommodations that match the travel style, pacing and destination flow of this itinerary.
+
+Prioritize:
+- location efficiency
+- experience quality
+- atmosphere
+- aesthetic alignment
+- traveler compatibility
+
+Avoid:
+- generic chain hotels unless strategically useful
+- unrealistic luxury mismatches
+- poorly located accommodations
+
+For each recommendation include:
+- accommodation name
+- accommodation type
+- atmosphere/style
+- why it fits this itinerary
+- ideal traveler type
+- recommended stay duration
+
+Return structured JSON only.
+
+Itinerary:
+{{itinerary}}
+
+Accommodation preferences:
+{{accommodation_preferences}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
