@@ -478,6 +478,63 @@ Focus on:
 
 Keep it concise and conversion-focused.`;
 
+/**
+ * ====================================================================
+ * ROUTE MAKER ORCHESTRATION
+ * ====================================================================
+ *
+ * IMPORTANT — do NOT chain all prompts automatically in one run.
+ * Do NOT generate a full itinerary in a single call.
+ * Do NOT allow unrestricted autonomous AI writing.
+ *
+ * The Route Maker is staged, with a mandatory human approval gate
+ * between the route and the day generator. Each step is a separate
+ * AI call the advisor explicitly triggers.
+ *
+ * Recommended flow:
+ *
+ *   STEP 1  Brief Analyzer            (PROMPT_BRIEF_ANALYZER)
+ *      ↓
+ *   STEP 2  Route Generator           (PROMPT_ROUTE_GENERATOR)
+ *      ↓
+ *   ── HUMAN APPROVAL ──              (advisor edits / accepts route)
+ *      ↓
+ *   STEP 3  Day Generator             (PROMPT_DAY_BY_DAY_GENERATOR)
+ *      ↓
+ *   STEP 4  Enrich in parallel:
+ *             Experiences             (PROMPT_EXPERIENCE_RECOMMENDER)
+ *             Accommodations          (PROMPT_ACCOMMODATION_MATCHER)
+ *             Transport & Logistics   (PROMPT_TRANSPORT_LOGISTICS)
+ *      ↓
+ *   STEP 5  Quality Checker           (PROMPT_QUALITY_CHECKER)
+ *      ↓
+ *   STEP 6  Publish package:
+ *             Sales Copy              (PROMPT_SALES_COPY)
+ *             SEO                     (PROMPT_SEO_GENERATOR)
+ *             PDF Intro               (PROMPT_PDF_INTRO)
+ *             Packing List            (PROMPT_PACKING_LIST)
+ *             Upsell                  (PROMPT_PERSONALIZATION_UPSELL)
+ *             Budget Estimator        (PROMPT_BUDGET_ESTIMATOR)
+ *
+ * Each step persists its output to the draft so the advisor can re-run
+ * any single step without re-running the whole pipeline.
+ */
+export const ROUTE_MAKER_STEPS = [
+  { id: "brief",          step: 1, label: "Brief Analyzer",        prompt: "PROMPT_BRIEF_ANALYZER",        requiresApproval: false },
+  { id: "route",          step: 2, label: "Route Generator",       prompt: "PROMPT_ROUTE_GENERATOR",       requiresApproval: true  },
+  { id: "days",           step: 3, label: "Day-by-Day",            prompt: "PROMPT_DAY_BY_DAY_GENERATOR",  requiresApproval: false },
+  { id: "experiences",    step: 4, label: "Experiences",           prompt: "PROMPT_EXPERIENCE_RECOMMENDER",requiresApproval: false },
+  { id: "accommodations", step: 4, label: "Accommodations",        prompt: "PROMPT_ACCOMMODATION_MATCHER", requiresApproval: false },
+  { id: "logistics",      step: 4, label: "Transport & Logistics", prompt: "PROMPT_TRANSPORT_LOGISTICS",   requiresApproval: false },
+  { id: "quality",        step: 5, label: "Quality Check",         prompt: "PROMPT_QUALITY_CHECKER",       requiresApproval: false },
+  { id: "sales",          step: 6, label: "Sales Copy",            prompt: "PROMPT_SALES_COPY",            requiresApproval: false },
+  { id: "seo",            step: 6, label: "SEO",                   prompt: "PROMPT_SEO_GENERATOR",         requiresApproval: false },
+  { id: "pdf_intro",      step: 6, label: "PDF Intro",             prompt: "PROMPT_PDF_INTRO",             requiresApproval: false },
+  { id: "packing",        step: 6, label: "Packing List",          prompt: "PROMPT_PACKING_LIST",          requiresApproval: false },
+  { id: "upsell",         step: 6, label: "Upsell",                prompt: "PROMPT_PERSONALIZATION_UPSELL",requiresApproval: false },
+  { id: "budget",         step: 6, label: "Budget Estimator",      prompt: "PROMPT_BUDGET_ESTIMATOR",      requiresApproval: false },
+] as const;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
