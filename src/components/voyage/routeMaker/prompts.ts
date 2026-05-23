@@ -258,6 +258,39 @@ Return structured JSON only.
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 7 — Budget Estimator
+ * Input variables: itinerary, traveler_profile
+ * Output: structured JSON with budget/mid-range/premium tiers
+ */
+export const PROMPT_BUDGET_ESTIMATOR = `BUDGET ESTIMATOR
+
+Estimate realistic travel budget ranges for this itinerary.
+
+Include estimated:
+- accommodation costs
+- transportation costs
+- food budget
+- activity budget
+- optional upgrades
+
+Provide:
+- budget tier
+- mid-range tier
+- premium tier
+
+Avoid:
+- exact pricing guarantees
+- unrealistic low-budget assumptions
+
+Return structured JSON only.
+
+Itinerary:
+{{itinerary}}
+
+Traveler profile:
+{{traveler_profile}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
