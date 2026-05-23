@@ -1,0 +1,1 @@
+ALTER TABLE public.route_maker_itineraries ADD COLUMN IF NOT EXISTS brief_data jsonb NOT NULL DEFAULT '{}'::jsonb;

@@ -393,6 +393,7 @@ export type Database = {
         Row: {
           accommodations: Json | null
           brief_analysis: Json | null
+          brief_data: Json
           brief_text: string
           budget: Json | null
           created_at: string
@@ -416,6 +417,7 @@ export type Database = {
         Insert: {
           accommodations?: Json | null
           brief_analysis?: Json | null
+          brief_data?: Json
           brief_text?: string
           budget?: Json | null
           created_at?: string
@@ -439,6 +441,7 @@ export type Database = {
         Update: {
           accommodations?: Json | null
           brief_analysis?: Json | null
+          brief_data?: Json
           brief_text?: string
           budget?: Json | null
           created_at?: string
