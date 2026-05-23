@@ -8,12 +8,108 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ROUTE_MAKER_STEPS } from "./prompts";
 
+interface BriefData {
+  destinations?: string;
+  origin?: string;
+  start_date?: string;
+  end_date?: string;
+  duration_nights?: string;
+  travelers_adults?: string;
+  travelers_children?: string;
+  children_ages?: string;
+  season?: string;
+  travel_style?: string;
+  pacing?: string;
+  budget_level?: string;
+  budget_amount?: string;
+  currency?: string;
+  accommodation_pref?: string;
+  transport_pref?: string;
+  interests?: string;
+  must_haves?: string;
+  avoid?: string;
+  dietary?: string;
+  mobility?: string;
+  prior_visits?: string;
+  occasion?: string;
+  notes?: string;
+}
+
+const EMPTY_BRIEF: BriefData = {};
+
+const BRIEF_FIELDS: Array<{
+  key: keyof BriefData;
+  label: string;
+  type?: "text" | "textarea" | "date" | "number" | "select";
+  placeholder?: string;
+  options?: string[];
+  full?: boolean;
+}> = [
+  { key: "destinations", label: "Destination(s)", placeholder: "e.g. Norway — Oslo, Bergen, Lofoten", full: true },
+  { key: "origin", label: "Origin / departure city", placeholder: "e.g. São Paulo" },
+  { key: "occasion", label: "Occasion", placeholder: "honeymoon, family trip, milestone…" },
+  { key: "start_date", label: "Start date", type: "date" },
+  { key: "end_date", label: "End date", type: "date" },
+  { key: "duration_nights", label: "Duration (nights)", type: "number", placeholder: "10" },
+  { key: "season", label: "Season / month", placeholder: "June, winter…" },
+  { key: "travelers_adults", label: "Adults", type: "number", placeholder: "2" },
+  { key: "travelers_children", label: "Children", type: "number", placeholder: "0" },
+  { key: "children_ages", label: "Children ages", placeholder: "5, 8" },
+  { key: "travel_style", label: "Travel style", type: "select", options: ["", "Luxury", "Boutique", "Premium comfort", "Mid-range", "Adventure", "Backpacker"] },
+  { key: "pacing", label: "Pacing", type: "select", options: ["", "Slow & immersive", "Balanced", "Fast / cover-a-lot"] },
+  { key: "budget_level", label: "Budget level", type: "select", options: ["", "Entry", "Mid", "Premium", "Luxury", "Ultra-luxury"] },
+  { key: "currency", label: "Currency", type: "select", options: ["", "EUR", "USD", "NOK", "BRL", "GBP"] },
+  { key: "budget_amount", label: "Total budget (approx.)", placeholder: "e.g. 12 000" },
+  { key: "accommodation_pref", label: "Accommodation preferences", placeholder: "design hotels, lodges, cabins…", full: true },
+  { key: "transport_pref", label: "Transport preferences", placeholder: "rental car, train, private driver…", full: true },
+  { key: "interests", label: "Interests", type: "textarea", placeholder: "nature, food, history, photography…", full: true },
+  { key: "must_haves", label: "Must-have experiences", type: "textarea", placeholder: "fjord cruise, northern lights…", full: true },
+  { key: "avoid", label: "Things to avoid", type: "textarea", placeholder: "long drives, crowds…", full: true },
+  { key: "dietary", label: "Dietary restrictions", placeholder: "vegetarian, gluten-free…", full: true },
+  { key: "mobility", label: "Mobility / accessibility", placeholder: "limited walking, stroller…", full: true },
+  { key: "prior_visits", label: "Prior visits", placeholder: "first time / been before to…", full: true },
+  { key: "notes", label: "Other notes for the planner", type: "textarea", full: true },
+];
+
+const composeBriefText = (b: BriefData): string => {
+  const parts: string[] = [];
+  const add = (label: string, val?: string) => {
+    if (val && val.trim()) parts.push(`- ${label}: ${val.trim()}`);
+  };
+  add("Destination(s)", b.destinations);
+  add("Origin", b.origin);
+  add("Occasion", b.occasion);
+  if (b.start_date || b.end_date) add("Dates", `${b.start_date ?? "?"} → ${b.end_date ?? "?"}`);
+  add("Duration (nights)", b.duration_nights);
+  add("Season", b.season);
+  const travelers = [
+    b.travelers_adults ? `${b.travelers_adults} adults` : "",
+    b.travelers_children ? `${b.travelers_children} children${b.children_ages ? ` (ages ${b.children_ages})` : ""}` : "",
+  ].filter(Boolean).join(", ");
+  if (travelers) parts.push(`- Travelers: ${travelers}`);
+  add("Travel style", b.travel_style);
+  add("Pacing", b.pacing);
+  add("Budget level", b.budget_level);
+  if (b.budget_amount) add("Budget amount", `${b.budget_amount}${b.currency ? ` ${b.currency}` : ""}`);
+  add("Accommodation preferences", b.accommodation_pref);
+  add("Transport preferences", b.transport_pref);
+  add("Interests", b.interests);
+  add("Must-have experiences", b.must_haves);
+  add("Things to avoid", b.avoid);
+  add("Dietary", b.dietary);
+  add("Mobility", b.mobility);
+  add("Prior visits", b.prior_visits);
+  add("Other notes", b.notes);
+  return parts.join("\n");
+};
+
 interface RouteMakerRow {
   id: string;
   user_id: string;
   title: string;
   status: string;
   brief_text: string;
+  brief_data: BriefData | null;
   brief_analysis: unknown;
   route: unknown;
   days: unknown;
