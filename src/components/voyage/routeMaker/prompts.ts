@@ -323,6 +323,50 @@ Return structured JSON only.
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 9 — Website Sales Copy Generator
+ * Input variables: itinerary
+ * Output: structured JSON with headline, subheadline, short/long description, highlights, ideal-for, expectations
+ * Used separately from itinerary generation — for the product page in /itineraries-shop.
+ */
+export const PROMPT_SALES_COPY = `WEBSITE SALES COPY GENERATOR
+
+Purpose:
+Generate itinerary product page copy.
+
+Separate from itinerary generation. Create premium travel sales page copy for this itinerary.
+
+Tone:
+- cinematic
+- elegant
+- adventurous
+- emotionally immersive
+- premium but approachable
+
+The copy should:
+- inspire confidence
+- communicate authenticity
+- create emotional connection
+- explain the uniqueness of the route
+- feel curated and expert-led
+
+Avoid:
+- exaggerated luxury language
+- generic travel clichés
+- overly aggressive sales language
+
+Generate:
+- headline
+- subheadline
+- short description
+- long description
+- highlights section
+- who this trip is ideal for
+- practical expectations
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
