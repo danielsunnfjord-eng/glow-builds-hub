@@ -225,6 +225,39 @@ Itinerary:
 Accommodation preferences:
 {{accommodation_preferences}}`;
 
+/**
+ * Prompt 6 — Transport & Logistics Generator
+ * Input variables: itinerary
+ * Output: structured JSON with transport/logistics guidance per leg
+ */
+export const PROMPT_TRANSPORT_LOGISTICS = `TRANSPORT & LOGISTICS GENERATOR
+
+Generate practical transportation and logistics guidance for this itinerary.
+
+Focus on:
+- realistic travel times
+- transportation modes
+- transfer logic
+- route efficiency
+- seasonal considerations
+- traveler convenience
+
+Include:
+- recommended transport methods
+- estimated transfer times
+- important logistical notes
+- transportation warnings if relevant
+- optimization suggestions
+
+Avoid:
+- exact live schedules
+- unreliable timing claims
+
+Return structured JSON only.
+
+Itinerary:
+{{itinerary}}`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
