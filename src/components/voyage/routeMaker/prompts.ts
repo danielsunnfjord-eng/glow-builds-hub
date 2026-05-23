@@ -454,6 +454,30 @@ Keep recommendations practical and realistic.
 Itinerary:
 {{itinerary}}`;
 
+/**
+ * Prompt 13 — Personalization Call Upsell
+ * Input variables: (none)
+ * Output: short premium upsell copy inviting a personalized consultation
+ */
+export const PROMPT_PERSONALIZATION_UPSELL = `PERSONALIZATION CALL UPSELL
+
+Create a short premium upsell section inviting travelers to book a personalized itinerary consultation.
+
+The tone should feel:
+- expert-led
+- approachable
+- premium
+- helpful
+
+Focus on:
+- personalization
+- insider knowledge
+- stress reduction
+- unique experiences
+- travel optimization
+
+Keep it concise and conversion-focused.`;
+
 /** Simple template renderer for {{var}} placeholders. */
 export function renderPrompt(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] ?? "");
