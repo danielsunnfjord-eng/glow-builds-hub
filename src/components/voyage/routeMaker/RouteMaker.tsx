@@ -444,6 +444,88 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
             </div>
           ) : (
             <div className="space-y-8">
+              {/* Publish */}
+              <div className="border border-parchment-3 rounded-md bg-voyage-white p-5">
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <div>
+                    <h2 className="font-serif text-lg">Publish to catalogue</h2>
+                    <p className="text-[0.78rem] text-voyage-muted">
+                      These fields control how the route appears on the public <code className="bg-parchment px-1 rounded">/routes</code> page.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {publishData.is_published && publishData.slug && (
+                      <a
+                        href={`/routes/${publishData.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[0.72rem] uppercase tracking-[0.1em] text-ink hover:text-gold underline underline-offset-4"
+                      >
+                        View live ↗
+                      </a>
+                    )}
+                    <Button size="sm" onClick={savePublish}>Save publish settings</Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="md:col-span-2 flex items-center gap-3 p-3 rounded-md border border-parchment-3 bg-parchment/40">
+                    <input
+                      id="rm-pub"
+                      type="checkbox"
+                      checked={publishData.is_published}
+                      onChange={(e) => setPubField("is_published", e.target.checked)}
+                      className="w-4 h-4 accent-fjord"
+                    />
+                    <Label htmlFor="rm-pub" className="text-sm cursor-pointer flex-1">
+                      Published — visible to the public on /routes
+                    </Label>
+                    {publishData.is_published ? (
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded">Live</span>
+                    ) : (
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded">Draft</span>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs">Slug (URL)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={publishData.slug}
+                        onChange={(e) => setPubField("slug", e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+                        placeholder="auto-generated from title"
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={() => setPubField("slug", slugify(title))}>
+                        From title
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Destination (display)</Label>
+                    <Input value={publishData.destination} onChange={(e) => setPubField("destination", e.target.value)} placeholder="Norway" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Duration label</Label>
+                    <Input value={publishData.duration_label} onChange={(e) => setPubField("duration_label", e.target.value)} placeholder="10 nights" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Price (EUR, planning fee)</Label>
+                    <Input type="number" value={publishData.price_eur} onChange={(e) => setPubField("price_eur", e.target.value)} placeholder="0" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Hero image URL</Label>
+                    <Input value={publishData.hero_image_url} onChange={(e) => setPubField("hero_image_url", e.target.value)} placeholder="https://…" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label className="text-xs">Short summary (1–2 sentences for cards)</Label>
+                    <Textarea rows={2} value={publishData.summary} onChange={(e) => setPubField("summary", e.target.value)} placeholder="A short, evocative pitch for the route." />
+                  </div>
+                  {publishData.hero_image_url && (
+                    <div className="md:col-span-2">
+                      <img src={publishData.hero_image_url} alt="" className="w-full max-h-48 object-cover rounded-md border border-parchment-3" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Brief */}
               <div className="border border-parchment-3 rounded-md bg-voyage-white p-5">
                 <div className="flex items-center justify-between mb-3">
