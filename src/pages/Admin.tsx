@@ -449,30 +449,15 @@ const AdminDashboard = () => {
             <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.assistant")}
             </button>
-            <button onClick={() => setActiveTab("images")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "images" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              🖼 Image Bank
-            </button>
-            <button onClick={() => setActiveTab("shop")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "shop" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              🗺 Route Maker
-            </button>
           </div>
         </div>
 
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
-          {activeTab === "shop" ? (
-            <CatalogManager />
-          ) : activeTab === "images" ? (
-            <div>
-              <div className="mb-8">
-                <h1 className="font-serif text-3xl font-bold mb-1">Image Bank</h1>
-                <p className="text-[0.85rem] text-voyage-muted">Browse, organize, and reuse every photo you've added to client itineraries — grouped by destination.</p>
-              </div>
-              <ImageBank />
-            </div>
-          ) : activeTab === "assistant" ? (
+          {activeTab === "assistant" ? (
             <div>
               <div className="mb-8">
                 <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.assistantTitle")}</h1>
+
                 <p className="text-[0.85rem] text-voyage-muted">{t("admin.assistantDesc")}</p>
               </div>
               <AdvisorAssistant projects={projects as any} />
