@@ -144,10 +144,13 @@ const COLUMN_FOR_STEP: Record<string, keyof RouteMakerRow> = {
   budget: "budget",
 };
 
-const RouteMaker = () => {
+const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string | null } = {}) => {
   const qc = useQueryClient();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialSelectedId);
   const [runningStep, setRunningStep] = useState<string | null>(null);
+  useEffect(() => {
+    if (initialSelectedId) setSelectedId(initialSelectedId);
+  }, [initialSelectedId]);
 
   const { data: itineraries = [] } = useQuery({
     queryKey: ["route-maker-list"],
