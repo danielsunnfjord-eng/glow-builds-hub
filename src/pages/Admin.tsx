@@ -14,6 +14,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
+import CatalogManager from "@/components/voyage/CatalogManager";
+import RouteMaker from "@/components/voyage/routeMaker/RouteMaker";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
@@ -84,7 +86,8 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
-  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant">("requests");
+  const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant" | "routes" | "creator">("requests");
+  const [creatorOpenId, setCreatorOpenId] = useState<string | null>(null);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [sendProject, setSendProject] = useState<ClientProject | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState("welcome");
@@ -447,11 +450,21 @@ const AdminDashboard = () => {
             <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
               {t("admin.assistant")}
             </button>
+            <button onClick={() => setActiveTab("routes")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "routes" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+              🗺 Routes
+            </button>
+            <button onClick={() => setActiveTab("creator")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "creator" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+              ✨ Creator
+            </button>
           </div>
         </div>
 
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
-          {activeTab === "assistant" ? (
+          {activeTab === "routes" ? (
+            <CatalogManager onEdit={(id) => { setCreatorOpenId(id); setActiveTab("creator"); }} />
+          ) : activeTab === "creator" ? (
+            <RouteMaker initialSelectedId={creatorOpenId} />
+          ) : activeTab === "assistant" ? (
             <div>
               <div className="mb-8">
                 <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.assistantTitle")}</h1>

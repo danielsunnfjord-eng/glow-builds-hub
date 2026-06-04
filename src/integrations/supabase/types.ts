@@ -398,21 +398,31 @@ export type Database = {
           budget: Json | null
           created_at: string
           days: Json | null
+          destination: string | null
+          duration_label: string | null
           experiences: Json | null
+          gallery_images: Json
+          hero_image_url: string | null
           id: string
+          is_published: boolean
           logistics: Json | null
           packing: Json | null
           pdf_intro: string | null
+          price_eur: number
           quality: Json | null
           route: Json | null
           route_approved_at: string | null
           sales_copy: Json | null
           seo: Json | null
+          slug: string | null
+          sort_order: number
           status: string
+          summary: string
           title: string
           updated_at: string
           upsell: string | null
           user_id: string
+          view_count: number
         }
         Insert: {
           accommodations?: Json | null
@@ -422,21 +432,31 @@ export type Database = {
           budget?: Json | null
           created_at?: string
           days?: Json | null
+          destination?: string | null
+          duration_label?: string | null
           experiences?: Json | null
+          gallery_images?: Json
+          hero_image_url?: string | null
           id?: string
+          is_published?: boolean
           logistics?: Json | null
           packing?: Json | null
           pdf_intro?: string | null
+          price_eur?: number
           quality?: Json | null
           route?: Json | null
           route_approved_at?: string | null
           sales_copy?: Json | null
           seo?: Json | null
+          slug?: string | null
+          sort_order?: number
           status?: string
+          summary?: string
           title?: string
           updated_at?: string
           upsell?: string | null
           user_id: string
+          view_count?: number
         }
         Update: {
           accommodations?: Json | null
@@ -446,21 +466,31 @@ export type Database = {
           budget?: Json | null
           created_at?: string
           days?: Json | null
+          destination?: string | null
+          duration_label?: string | null
           experiences?: Json | null
+          gallery_images?: Json
+          hero_image_url?: string | null
           id?: string
+          is_published?: boolean
           logistics?: Json | null
           packing?: Json | null
           pdf_intro?: string | null
+          price_eur?: number
           quality?: Json | null
           route?: Json | null
           route_approved_at?: string | null
           sales_copy?: Json | null
           seo?: Json | null
+          slug?: string | null
+          sort_order?: number
           status?: string
+          summary?: string
           title?: string
           updated_at?: string
           upsell?: string | null
           user_id?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -744,6 +774,10 @@ export type Database = {
       }
       increment_catalog_view: { Args: { _slug: string }; Returns: undefined }
       increment_itinerary_view: { Args: { _token: string }; Returns: undefined }
+      increment_route_maker_view: {
+        Args: { _slug: string }
+        Returns: undefined
+      }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
