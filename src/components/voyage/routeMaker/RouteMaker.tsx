@@ -126,7 +126,32 @@ interface RouteMakerRow {
   route_approved_at: string | null;
   created_at: string;
   updated_at: string;
+  // Publish fields
+  slug: string | null;
+  is_published: boolean;
+  hero_image_url: string | null;
+  gallery_images: string[];
+  price_eur: number;
+  destination: string | null;
+  duration_label: string | null;
+  summary: string;
+  view_count: number;
 }
+
+interface PublishData {
+  slug: string;
+  destination: string;
+  duration_label: string;
+  summary: string;
+  price_eur: string;
+  hero_image_url: string;
+  is_published: boolean;
+}
+const EMPTY_PUBLISH: PublishData = {
+  slug: "", destination: "", duration_label: "", summary: "", price_eur: "", hero_image_url: "", is_published: false,
+};
+const slugify = (s: string) =>
+  s.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 80);
 
 const COLUMN_FOR_STEP: Record<string, keyof RouteMakerRow> = {
   brief: "brief_analysis",
