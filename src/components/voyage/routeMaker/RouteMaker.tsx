@@ -252,15 +252,54 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
   // Local editable mirrors for fields we save explicitly.
   const [title, setTitle] = useState("");
   const [briefData, setBriefData] = useState<BriefData>(EMPTY_BRIEF);
+  const [publishData, setPublishData] = useState<PublishData>(EMPTY_PUBLISH);
   useEffect(() => {
     if (current) {
       setTitle(current.title);
       setBriefData(current.brief_data ?? EMPTY_BRIEF);
+      setPublishData({
+        slug: current.slug ?? "",
+        destination: current.destination ?? "",
+        duration_label: current.duration_label ?? "",
+        summary: current.summary ?? "",
+        price_eur: current.price_eur != null ? String(current.price_eur) : "",
+        hero_image_url: current.hero_image_url ?? "",
+        is_published: !!current.is_published,
+      });
     }
   }, [current?.id]);
 
   const setBriefField = (key: keyof BriefData, value: string) => {
     setBriefData((prev) => ({ ...prev, [key]: value }));
+  };
+  const setPubField = <K extends keyof PublishData>(key: K, value: PublishData[K]) => {
+    setPublishData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const savePublish = async () => {
+    if (!current) return;
+    const slug = publishData.slug.trim() || slugify(title || current.title);
+    if (publishData.is_published && !slug) {
+      toast.error("Set a title or slug before publishing.");
+      return;
+    }
+    const { error } = await supabase
+      .from("route_maker_itineraries")
+      .update({
+        slug: slug || null,
+        destination: publishData.destination || null,
+        duration_label: publishData.duration_label || null,
+        summary: publishData.summary,
+        price_eur: Number(publishData.price_eur) || 0,
+        hero_image_url: publishData.hero_image_url || null,
+        is_published: publishData.is_published,
+      })
+      .eq("id", current.id);
+    if (error) return toast.error(error.message);
+    toast.success(publishData.is_published ? "Published" : "Saved");
+    qc.invalidateQueries({ queryKey: ["route-maker-row", current.id] });
+    qc.invalidateQueries({ queryKey: ["route-maker-list"] });
+    qc.invalidateQueries({ queryKey: ["catalog-manager-list"] });
   };
 
   const createNew = async () => {
