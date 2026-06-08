@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
 import CuratedSection from "@/components/voyage/CuratedSection";
-import MeetDaniel from "@/components/voyage/MeetDaniel";
-import ItineraryExamples from "@/components/voyage/ItineraryExamples";
-import Reviews from "@/components/voyage/Reviews";
-import PlanMyTrip from "@/components/voyage/PlanMyTrip";
-import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
+
+// Below-the-fold sections are code-split to keep the initial JS small.
+const MeetDaniel = lazy(() => import("@/components/voyage/MeetDaniel"));
+const ItineraryExamples = lazy(() => import("@/components/voyage/ItineraryExamples"));
+const Reviews = lazy(() => import("@/components/voyage/Reviews"));
+const PlanMyTrip = lazy(() => import("@/components/voyage/PlanMyTrip"));
+const Footer = lazy(() => import("@/components/voyage/Footer"));
 
 const Index = () => {
   const { hash } = useLocation();
@@ -29,12 +31,16 @@ const Index = () => {
       <Navbar />
       <main>
         <CuratedSection />
-        <MeetDaniel />
-        <ItineraryExamples />
-        <Reviews />
-        <PlanMyTrip />
+        <Suspense fallback={null}>
+          <MeetDaniel />
+          <ItineraryExamples />
+          <Reviews />
+          <PlanMyTrip />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };
