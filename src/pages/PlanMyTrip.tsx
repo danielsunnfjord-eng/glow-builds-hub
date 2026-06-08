@@ -16,9 +16,17 @@ const PlanMyTripPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title="Plan My Trip — Fjord & Waves Travel"
-        description="Brief your custom itinerary. Tell us destinations, dates and travel style, and Daniel will design a bespoke trip around you."
+        title="Plan My Trip — Bespoke Itinerary Brief | Fjord & Waves"
+        description="Brief your bespoke itinerary in 3 minutes. Share dates, destinations and travel style — Daniel will design a tailored proposal for you."
         path="/plan-my-trip"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "Plan My Trip — Fjord & Waves Travel",
+          url: "https://fjordwavestravel.com/plan-my-trip",
+          description: "Submit a trip brief to Fjord & Waves Travel.",
+          provider: { "@type": "TravelAgency", name: "Fjord & Waves Travel", url: "https://fjordwavestravel.com" },
+        }}
       />
       <Navbar />
       <main>

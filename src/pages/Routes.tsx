@@ -96,9 +96,16 @@ const Routes = () => {
   return (
     <div className="min-h-screen bg-voyage-white">
       <Seo
-        title="All Routes — Fjord & Waves Travel"
+        title="All Routes — Curated Norway Journeys | Fjord & Waves"
         description="A handpicked collection of curated journeys across Norway and beyond. Book as they are, or adapt them with us to make them your own."
         path="/routes"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "All Routes — Fjord & Waves Travel",
+          url: "https://fjordwavestravel.com/routes",
+          description: "Curated travel routes designed by Fjord & Waves Travel.",
+        }}
       />
       <Navbar />
 

@@ -65,8 +65,8 @@ const DestinationNorway = () => {
   return (
     <div>
       <Seo
-        title="Norway Itinerary — 7-Day Bespoke Trip Plan | Fjord & Waves Travel"
-        description="A bespoke 7-day Norway itinerary covering Oslo, the fjords, Bergen and Lofoten. Designed by Daniel Lira Figueiredo, Fora Travel advisor (IATA accredited)."
+        title="7-Day Norway Itinerary — Oslo, Fjords, Bergen & Lofoten"
+        description="A bespoke 7-day Norway trip plan covering Oslo, the fjords, Bergen and Lofoten. Designed by Daniel Lira Figueiredo, Fora Travel advisor (IATA accredited)."
         path="/destinations/norway"
         jsonLd={jsonLd}
       />
