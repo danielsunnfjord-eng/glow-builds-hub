@@ -79,7 +79,7 @@
     scroll-padding-top: 180px;
   }
   @media (max-width: 768px) {
-    html { scroll-padding-top: 130px; }
+    html { scroll-padding-top: 90px; }
   }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: hsl(var(--parchment2)); }

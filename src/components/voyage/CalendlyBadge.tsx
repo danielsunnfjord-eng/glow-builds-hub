@@ -22,6 +22,9 @@ const CalendlyBadge = () => {
         right: auto !important;
         left: 20px !important;
       }
+      @media (max-width: 767px) {
+        .calendly-badge-widget { display: none !important; }
+      }
     `;
     document.head.appendChild(style);
 
