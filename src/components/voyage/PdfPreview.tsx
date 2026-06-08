@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { markdownToHtml } from "./ItineraryEditor";
+import { markdownToHtml } from "./editor/markdownHelpers";
 
 interface PdfPreviewProps {
   content: string;
