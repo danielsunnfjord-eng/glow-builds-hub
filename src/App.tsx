@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,7 +7,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import CookieConsent from "./components/voyage/CookieConsent.tsx";
-import CalendlyBadge from "./components/voyage/CalendlyBadge.tsx";
 
 // Code-split everything except the landing page
 const Admin = lazy(() => import("./pages/Admin.tsx"));
@@ -26,7 +25,28 @@ const DestinationNorway = lazy(() => import("./pages/DestinationNorway.tsx"));
 const Routes_ = lazy(() => import("./pages/Routes.tsx"));
 const RouteDetail = lazy(() => import("./pages/RouteDetail.tsx"));
 
+// Defer non-critical 3rd-party widget so it doesn't block first paint.
+const CalendlyBadge = lazy(() => import("./components/voyage/CalendlyBadge.tsx"));
+
 const queryClient = new QueryClient();
+
+const DeferredCalendly = () => {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const idle = (window as any).requestIdleCallback || ((cb: () => void) => setTimeout(cb, 2000));
+    const handle = idle(() => setShow(true));
+    return () => {
+      const cancel = (window as any).cancelIdleCallback || clearTimeout;
+      cancel(handle);
+    };
+  }, []);
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <CalendlyBadge />
+    </Suspense>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -35,7 +55,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <CookieConsent />
-        <CalendlyBadge />
+        <DeferredCalendly />
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<Index />} />
