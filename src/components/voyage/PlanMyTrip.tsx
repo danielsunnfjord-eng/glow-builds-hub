@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
-import planTripImg from "@/assets/plan-trip-card.jpg";
+import planTripImg from "@/assets/plan-trip-card.webp";
 import { useTranslation } from "react-i18next";
 import { Video } from "lucide-react";
 import {
