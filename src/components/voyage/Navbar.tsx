@@ -27,7 +27,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-parchment/90 backdrop-blur-lg border-b border-gold/15 transition-all">
       <div className="flex justify-between items-center px-16 py-5 max-md:px-6 max-md:py-4">
         <a href="/" className="cursor-pointer no-underline">
-          <img src={logo} alt="Fjord & Waves Travel" className="h-40 max-md:h-14 w-auto [filter:contrast(1.4)_saturate(1.2)]" />
+          <img src={logo} alt="Fjord & Waves Travel" width={800} height={537} className="h-40 max-md:h-14 w-auto [filter:contrast(1.4)_saturate(1.2)]" />
         </a>
         <div className="hidden md:flex gap-10 items-center">
           <a href="/about" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
