@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { openCookieSettings } from "@/components/voyage/CookieConsent";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import logo from "@/assets/logo-badge.png";
+import logo from "@/assets/logo-badge.webp";
 
 const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });

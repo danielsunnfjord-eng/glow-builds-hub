@@ -1,5 +1,5 @@
 import { useState, useRef, lazy, Suspense } from "react";
-import logo from "@/assets/logo-horizontal.png";
+import logo from "@/assets/logo-horizontal.webp";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import danielProfile from "@/assets/daniel-profile.jpg";
+import danielProfile from "@/assets/daniel-profile.webp";
 import ScrollReveal from "./ScrollReveal";
 
 const MeetDaniel = () => {

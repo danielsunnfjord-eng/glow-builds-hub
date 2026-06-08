@@ -3,7 +3,7 @@ import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import danielProfile from "@/assets/daniel-profile.jpg";
+import danielProfile from "@/assets/daniel-profile.webp";
 import Seo from "@/components/Seo";
 import { useTranslation } from "react-i18next";
 

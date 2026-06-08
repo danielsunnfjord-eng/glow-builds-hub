@@ -3,8 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import type { ItineraryDay } from "@/lib/itineraryParser";
-import logo from "@/assets/logo.png";
-import logoWhite from "@/assets/logo-white.png";
+import logo from "@/assets/logo.webp";
+import logoWhite from "@/assets/logo-white.webp";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import Seo from "@/components/Seo";
 
