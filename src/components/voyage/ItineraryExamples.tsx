@@ -127,6 +127,8 @@ const ItineraryExamples = () => {
                     .map((w) => `${trip.image.replace("w_1600", `w_${w}`)} ${w}w`)
                     .join(", ")}
                   sizes="(max-width: 768px) 100vw, 33vw"
+                  width={1600}
+                  height={1000}
                   alt={trip.title}
                   loading="lazy"
                   decoding="async"

@@ -154,7 +154,7 @@ const SharedItinerary = () => {
   if (error || !data) {
     return (
       <div className="min-h-screen bg-parchment flex flex-col items-center justify-center p-6 text-center">
-        <img src={logo} alt="Fjord & Waves Travel" className="h-14 mb-6 opacity-90" />
+        <img src={logo} alt="Fjord & Waves Travel" width={400} height={224} className="h-14 mb-6 opacity-90" />
         <h1 className="font-serif text-2xl text-ink mb-2">
           {t("share.notFoundTitle", "Itinerary not found")}
         </h1>
@@ -222,6 +222,8 @@ const SharedItinerary = () => {
             <img
               src={logoWhite}
               alt="Fjord & Waves Travel"
+              width={400}
+              height={224}
               className="self-start h-12 w-auto block drop-shadow-md"
             />
             <div className="text-voyage-white">
@@ -280,7 +282,7 @@ const SharedItinerary = () => {
 
         {/* Footer */}
         <footer className="text-center pt-8 pb-4">
-          <img src={logo} alt="Fjord & Waves Travel" className="h-12 w-auto mx-auto mb-3 opacity-90" />
+          <img src={logo} alt="Fjord & Waves Travel" width={400} height={224} className="h-12 w-auto mx-auto mb-3 opacity-90" />
           <p className="text-[0.65rem] tracking-[0.2em] uppercase text-voyage-muted">
             Fjord &amp; Waves Travel · Org.nr 928804860
           </p>

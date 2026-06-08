@@ -12,7 +12,7 @@ const MeetDaniel = () => {
       <ScrollReveal>
         <div className="max-w-5xl mx-auto grid grid-cols-[auto_1fr] gap-10 items-center max-md:grid-cols-1 max-md:gap-6 max-md:text-center">
           <div className="w-44 h-44 rounded-full overflow-hidden border border-gold/30 shadow-elegant flex-shrink-0 max-md:w-36 max-md:h-36 max-md:mx-auto">
-            <img src={danielProfile} alt="Daniel Lira Figueiredo" className="w-full h-full object-cover" loading="lazy" />
+            <img src={danielProfile} alt="Daniel Lira Figueiredo" width={800} height={783} className="w-full h-full object-cover" loading="lazy" />
           </div>
           <div>
             <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">

@@ -420,7 +420,7 @@ const AdminDashboard = () => {
 
         <nav className="bg-ink px-10 py-4 flex justify-between items-center border-b border-voyage-white/[0.08] max-md:px-6 max-md:flex-wrap max-md:gap-3">
           <div>
-            <img src={logo} alt="Fjord & Waves Travel" className="h-24 max-md:h-16 w-auto brightness-0 invert opacity-90" />
+            <img src={logo} alt="Fjord & Waves Travel" width={400} height={224} className="h-24 max-md:h-16 w-auto brightness-0 invert opacity-90" />
             <small className="block text-[0.62rem] tracking-[0.1em] uppercase text-voyage-white/35 mt-0.5">{t("admin.projectTracker")}</small>
           </div>
           <div className="flex gap-2 items-center">

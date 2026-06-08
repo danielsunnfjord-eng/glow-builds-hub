@@ -16,7 +16,7 @@ const Footer = () => {
     <>
       <footer className="bg-ink text-voyage-white p-16 grid grid-cols-[1.5fr_1fr_1fr] gap-16 max-md:grid-cols-1 max-md:p-8">
         <div>
-          <img src={logo} alt="Fjord & Waves Travel" className="h-40 w-auto mb-3 brightness-0 invert [filter:brightness(0)_invert(1)_contrast(1.3)]" />
+          <img src={logo} alt="Fjord & Waves Travel" width={600} height={600} className="h-40 w-auto mb-3 brightness-0 invert [filter:brightness(0)_invert(1)_contrast(1.3)]" />
           <p className="text-[0.78rem] text-voyage-white/40 leading-relaxed">
             {t("footer.tagline")}
           </p>
