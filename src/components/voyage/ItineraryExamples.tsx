@@ -121,7 +121,17 @@ const ItineraryExamples = () => {
               className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer"
             >
               <div className="aspect-[16/10] overflow-hidden">
-                <img src={trip.image} alt={trip.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                <img
+                  src={trip.image.replace("w_1600", "w_800")}
+                  srcSet={[400, 600, 800, 1200, 1600]
+                    .map((w) => `${trip.image.replace("w_1600", `w_${w}`)} ${w}w`)
+                    .join(", ")}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  alt={trip.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
               <div className="p-6 flex items-start justify-between gap-3">
                 <div>
