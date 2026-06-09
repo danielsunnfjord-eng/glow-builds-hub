@@ -914,6 +914,25 @@ const AdminDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <RequestItineraryDialog
+        open={genOpen}
+        onOpenChange={setGenOpen}
+        request={genRequest}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["trip_requests"] });
+          queryClient.invalidateQueries({ queryKey: ["client_projects"] });
+          setActiveModule("custom");
+          setActiveTab("projects");
+        }}
+      />
+
+      <ProjectItineraryDialog
+        open={itinOpen}
+        onOpenChange={setItinOpen}
+        project={itinProject as any}
+        onSaved={() => queryClient.invalidateQueries({ queryKey: ["client_projects"] })}
+      />
     </>
   );
 };
