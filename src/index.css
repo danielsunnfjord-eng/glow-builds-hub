@@ -153,3 +153,109 @@
 .image-resizer:hover .resize-trigger {
   opacity: 1;
 }
+
+/* ============================================================
+   Premium PDF / WYSIWYG shared styles
+   The TipTap editor (.fjw-editor-wysiwyg) and the PDF preview
+   (.pdf-preview-content) render identically — WYSIWYG.
+   ============================================================ */
+.fjw-editor-wysiwyg,
+.pdf-preview-content {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  color: #1E2D3D;
+  line-height: 1.75;
+  font-size: 14px;
+}
+.fjw-editor-wysiwyg h1,
+.fjw-editor-wysiwyg h2,
+.fjw-editor-wysiwyg h3,
+.fjw-editor-wysiwyg h4,
+.pdf-preview-content h1,
+.pdf-preview-content h2,
+.pdf-preview-content h3,
+.pdf-preview-content h4 {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+  color: #1E2D3D;
+  font-weight: 600;
+}
+.fjw-editor-wysiwyg h1,
+.pdf-preview-content h1 {
+  font-size: 26px;
+  border-bottom: 2px solid #DCCEB8;
+  padding-bottom: 10px;
+  margin: 28px 0 16px;
+  letter-spacing: 0.02em;
+}
+.fjw-editor-wysiwyg h2,
+.pdf-preview-content h2 {
+  font-size: 21px;
+  color: #4C6F75;
+  margin: 26px 0 10px;
+}
+.fjw-editor-wysiwyg h3,
+.pdf-preview-content h3 {
+  font-size: 17px;
+  margin: 18px 0 8px;
+}
+.fjw-editor-wysiwyg p,
+.pdf-preview-content p { margin: 8px 0; }
+.fjw-editor-wysiwyg ul,
+.fjw-editor-wysiwyg ol,
+.pdf-preview-content ul,
+.pdf-preview-content ol { margin: 8px 0; padding-left: 24px; }
+.fjw-editor-wysiwyg li,
+.pdf-preview-content li { margin: 4px 0; }
+.fjw-editor-wysiwyg hr,
+.pdf-preview-content hr { border: none; border-top: 1px solid #DCCEB8; margin: 24px 0; }
+.fjw-editor-wysiwyg img,
+.pdf-preview-content img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 16px auto;
+  display: block;
+  box-shadow: 0 4px 16px rgba(30,45,61,0.12);
+}
+.fjw-editor-wysiwyg em,
+.pdf-preview-content em {
+  font-style: italic;
+  color: #4C6F75;
+}
+.fjw-editor-wysiwyg blockquote,
+.pdf-preview-content blockquote {
+  border-left: 3px solid #DCCEB8;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #4C6F75;
+  font-style: italic;
+}
+.fjw-editor-wysiwyg figure,
+.pdf-preview-content figure { margin: 16px 0; }
+.fjw-editor-wysiwyg figcaption,
+.pdf-preview-content figcaption {
+  font-size: 11px;
+  color: #4C6F75;
+  text-align: center;
+  margin-top: 6px;
+  font-style: italic;
+}
+.fjw-editor-wysiwyg strong,
+.pdf-preview-content strong { color: #1E2D3D; font-weight: 600; }
+
+/* ---------- Print: cover + back full bleed ---------- */
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff; }
+  .fjw-print-page {
+    width: 210mm;
+    min-height: 297mm;
+    page-break-after: always;
+    break-after: page;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  .fjw-print-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  .fjw-no-print { display: none !important; }
+}
