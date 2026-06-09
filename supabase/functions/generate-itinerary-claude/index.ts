@@ -21,13 +21,15 @@ IMPORTANT RULES:
 
 NEVER overload days.
 
+NEVER include specific clock times (e.g., 9:00am, 14:00, 15:30). Use only Morning / Afternoon / Evening sections.
+
 ALWAYS consider transportation times and energy levels.
 
 ALWAYS alternate high-energy and low-energy experiences.
 
 INCLUDE insider recommendations and local tips.
 
-INCLUDE realistic timing guidance.
+
 
 WARN about tourist traps, weather issues, crowds, reservations, and logistics.
 
@@ -49,7 +51,7 @@ INCLUDE premium touches that reduce decision fatigue.
 
 BALANCE inspiration with practical usability.
 
-Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Estimated pacing, Important logistics, and Reservation guidance where relevant.
+Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Important logistics, and Reservation guidance where relevant.
 
 Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
 
@@ -59,7 +61,17 @@ Write in the language that matches the customer's profile or as instructed (Engl
 
 Now create a fully personalized day-by-day itinerary for the following traveler:
 
-CRITICAL: You must create a complete day-by-day itinerary covering EVERY single day of the trip from the start date to the end date. Do not stop early. If the trip is 19 days, write all 19 days. Never truncate or summarize the remaining days.
+CRITICAL: You must cover EVERY single day of the trip from start date to end date without exception. Never stop early. Never truncate. If the trip is 19 days, all 19 days must be written in full.
+
+FORMAT EACH DAY exactly like this — no specific clock times, only Morning / Afternoon / Evening sections:
+
+## Day 1 — [Date] — [Theme or Title]
+Morning: ...
+Afternoon: ...
+Evening: ...
+Dining tip: ...
+Insider tip: ...
+---
 
 Name: ${v(r.client_name)}
 Departure city: ${v(r.departure)}
@@ -112,7 +124,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 4096,
+        max_tokens: 8000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
