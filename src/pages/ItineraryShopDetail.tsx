@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
+import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 
 interface CatalogItem {
   id: string;
