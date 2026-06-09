@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
+import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 
 interface CatalogItem {
   id: string;
@@ -31,6 +32,9 @@ interface CatalogItem {
   gallery_images: string[];
   price_eur: number;
   is_published: boolean;
+  itinerary_content_en: string | null;
+  itinerary_content_pt: string | null;
+  itinerary_content_no: string | null;
 }
 
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
@@ -65,6 +69,8 @@ const ItineraryShopDetail = () => {
   const summary = data ? pick(lang, data.summary_en, data.summary_pt, data.summary_no) : "";
   const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no) : "";
   const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no) : "";
+  const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no) : "";
+  const itineraryHtml = useMemo(() => (itineraryMd ? markdownToHtml(itineraryMd) : ""), [itineraryMd]);
 
   const wygItems = useMemo(
     () =>
@@ -208,6 +214,13 @@ const ItineraryShopDetail = () => {
                   {description}
                 </div>
               </div>
+            )}
+
+            {itineraryHtml && (
+              <div
+                className="mb-10 prose prose-sm md:prose-base max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-[1.8rem] prose-h2:text-[1.3rem] prose-h3:text-[1.05rem] prose-p:text-ink/80 prose-li:text-ink/80 prose-strong:text-ink"
+                dangerouslySetInnerHTML={{ __html: itineraryHtml }}
+              />
             )}
 
             {gallery.length > 0 && (
