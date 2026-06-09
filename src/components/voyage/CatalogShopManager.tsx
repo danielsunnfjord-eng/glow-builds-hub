@@ -80,6 +80,7 @@ const CatalogShopManager = () => {
   const [sectionPrompt, setSectionPrompt] = useState("");
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["catalog-shop-list"],
