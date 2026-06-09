@@ -225,21 +225,21 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               </button>
             </div>
           </div>
+
+          {showPdf && project && (
+            <PdfPreview
+              content={content}
+              project={{
+                ...(project as any),
+                hero_image_url: heroUrl,
+                cover_tagline: tagline,
+              }}
+              onClose={() => setShowPdf(false)}
+              onExport={doPrint}
+            />
+          )}
         </DialogContent>
       </Dialog>
-
-      {showPdf && project && (
-        <PdfPreview
-          content={content}
-          project={{
-            ...(project as any),
-            hero_image_url: heroUrl,
-            cover_tagline: tagline,
-          }}
-          onClose={() => setShowPdf(false)}
-          onExport={doPrint}
-        />
-      )}
     </>
   );
 };
