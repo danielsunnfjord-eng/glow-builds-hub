@@ -560,9 +560,17 @@ const AdminDashboard = () => {
                             </button>
                           )}
                           {req.status !== "converted" && (
-                            <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
-                              {t("requests.createProject")}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => { setGenRequest(req); setGenOpen(true); }}
+                                className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                              >
+                                <Sparkles className="w-3.5 h-3.5" /> Generate Itinerary
+                              </button>
+                              <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
+                                {t("requests.createProject")}
+                              </button>
+                            </>
                           )}
                           <button onClick={() => { if (confirm(t("requests.deleteConfirm"))) deleteRequest.mutate(req.id); }} className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">
                             {t("admin.delete")}
