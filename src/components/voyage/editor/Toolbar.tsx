@@ -1,18 +1,64 @@
 import { Editor } from "@tiptap/react";
 import { useTranslation } from "react-i18next";
+import { useRef } from "react";
 import ToolbarButton, { ToolbarSep } from "./ToolbarButton";
 import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
+
+
 
 const Toolbar = ({ editor }: { editor: Editor }) => {
   const { t } = useTranslation();
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const currentTextColor = editor.getAttributes("textStyle").color || "";
   const currentHighlight = editor.getAttributes("highlight").color || "";
   const linkHref = editor.getAttributes("link").href || "";
 
+  const handleImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be smaller than 10MB");
+      return;
+    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+      const path = `${user.id}/editor/${Date.now()}-${safeName}`;
+      const { error } = await supabase.storage
+        .from("itinerary-images")
+        .upload(path, file, { contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("itinerary-images").getPublicUrl(path);
+      const caption = window.prompt("Optional caption (leave blank for none):", "") || "";
+      (editor.chain().focus() as any).setImage({ src: data.publicUrl, alt: caption || "Image" }).run();
+      if (caption.trim()) {
+        editor
+          .chain()
+          .focus()
+          .createParagraphNear()
+          .insertContent(`<p><em>${caption.replace(/</g, "&lt;")}</em></p>`)
+          .run();
+      }
+      toast.success("Image inserted");
+    } catch (err: any) {
+      toast.error(err?.message || "Upload failed");
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
   return (
     <div className="flex items-center gap-0.5 flex-wrap px-3 py-1.5 border-b border-parchment-3 bg-parchment/60">
+
       {/* Headings */}
       <ToolbarButton
         active={editor.isActive("heading", { level: 1 })}
@@ -176,6 +222,26 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       )}
 
       <ToolbarSep />
+
+      {/* Image upload */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImagePick}
+        className="hidden"
+      />
+      <ToolbarButton
+        onClick={() => fileRef.current?.click()}
+        title="Insert image"
+        className="inline-flex items-center gap-1"
+      >
+        <ImagePlus className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
+      <ToolbarSep />
+
+
 
       {/* Undo/Redo */}
       <ToolbarButton

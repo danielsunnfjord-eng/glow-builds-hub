@@ -59,9 +59,10 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       editorProps: {
         attributes: {
           class:
-            "prose prose-sm max-w-none p-4 min-h-[360px] focus:outline-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-xl prose-h1:border-b prose-h1:border-gold/30 prose-h1:pb-2 prose-h2:text-gold prose-h2:text-base prose-p:text-ink-2 prose-strong:text-ink prose-li:text-ink-2 prose-hr:border-parchment-3 prose-img:rounded-lg prose-img:shadow-md prose-blockquote:border-l-gold prose-blockquote:text-voyage-muted",
+            "fjw-editor-wysiwyg max-w-none p-10 min-h-[420px] focus:outline-none",
         },
       },
+
       onUpdate: ({ editor }) => {
         isInternalUpdate.current = true;
         const html = editor.getHTML();
