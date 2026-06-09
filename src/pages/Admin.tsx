@@ -16,6 +16,9 @@ import {
 import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
 import CatalogManager from "@/components/voyage/CatalogManager";
 import RouteMaker from "@/components/voyage/routeMaker/RouteMaker";
+import RequestItineraryDialog from "@/components/voyage/RequestItineraryDialog";
+import ProjectItineraryDialog from "@/components/voyage/ProjectItineraryDialog";
+import { Sparkles, FileText } from "lucide-react";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
