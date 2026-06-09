@@ -108,7 +108,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="relative max-w-6xl w-[96vw] h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] !flex flex-col overflow-hidden p-5"
+          className="fixed left-1/2 top-2 bottom-2 max-w-6xl w-[96vw] h-auto max-h-none translate-y-0 !flex flex-col overflow-hidden p-5 gap-3"
           onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
@@ -200,7 +200,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             </div>
           </div>
 
-          <div className="flex shrink-0 justify-between gap-2 pt-3">
+          <div className="flex shrink-0 justify-between gap-2 border-t border-parchment-3 bg-background pt-3">
             <button
               onClick={handleExportPdf}
               disabled={!content.trim()}
