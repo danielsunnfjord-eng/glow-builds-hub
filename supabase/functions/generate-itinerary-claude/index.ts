@@ -21,6 +21,8 @@ IMPORTANT RULES:
 
 NEVER overload days.
 
+NEVER include specific clock times (e.g., 9:00am, 14:00, 15:30). Use only Morning / Afternoon / Evening sections.
+
 ALWAYS consider transportation times and energy levels.
 
 ALWAYS alternate high-energy and low-energy experiences.
