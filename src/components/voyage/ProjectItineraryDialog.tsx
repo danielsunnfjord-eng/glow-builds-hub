@@ -107,7 +107,12 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-6xl w-[96vw] max-h-[94vh] flex flex-col">
+        <DialogContent
+          className="max-w-6xl w-[96vw] max-h-[94vh] flex flex-col"
+          onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
+          onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
+          onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
+        >
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">
               {project?.client_name} {project?.destination ? `· ${project.destination}` : ""}
