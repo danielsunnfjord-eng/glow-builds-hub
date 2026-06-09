@@ -113,42 +113,121 @@ Deno.serve(async (req) => {
     }
 
     const systemPrompt = buildSystemPrompt(request);
-    const userPrompt = 'Please generate the complete day-by-day itinerary now in markdown.';
 
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 16000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-        stream: true,
-      }),
+    // Figure out total number of days for chunking.
+    const totalDays = computeTotalDays(request);
+
+    // Chunk plan: 1-7 → 1 call, 8-14 → 2, 15-21 → 3, 22+ → 4.
+    const numChunks = totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
+    const ranges = splitDayRanges(totalDays, numChunks);
+
+    const userPrompts: string[] = ranges.length
+      ? ranges.map(([start, end], idx) => {
+          if (idx === 0 && ranges.length === 1) {
+            return 'Please generate the complete day-by-day itinerary now in markdown.';
+          }
+          if (idx === 0) {
+            return (
+              `Please generate the itinerary in markdown. ` +
+              `Include the introduction (if any) followed by Day ${start} through Day ${end} in full ` +
+              `using Morning / Afternoon / Evening structure (no clock times). ` +
+              `Stop writing immediately after Day ${end} — do not write Day ${end + 1} or any later days. ` +
+              `Do not add a closing summary; the itinerary will be continued in a follow-up call.`
+            );
+          }
+          return (
+            `Continue the itinerary from Day ${start}. Do not repeat the introduction or any previous days. ` +
+            `Start directly with Day ${start} Morning. ` +
+            `Write Day ${start} through Day ${end} in full using the same Morning / Afternoon / Evening structure ` +
+            `(no clock times).` +
+            (idx === ranges.length - 1
+              ? ` Complete every single day through to Day ${end} without truncating.`
+              : ` Stop immediately after Day ${end} — do not write Day ${end + 1} or any later days.`)
+          );
+        })
+      : ['Please generate the complete day-by-day itinerary now in markdown.'];
+
+    return streamSequentialCalls({ apiKey, systemPrompt, userPrompts });
+  } catch (err: any) {
+    console.error('generate-itinerary-claude error', err);
+    return new Response(JSON.stringify({ error: err?.message || 'Unknown error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+  }
+});
 
-    if (!anthropicRes.ok || !anthropicRes.body) {
-      const errText = await anthropicRes.text();
-      console.error('Anthropic API error', anthropicRes.status, errText);
-      return new Response(
-        JSON.stringify({ error: `Anthropic API error (${anthropicRes.status})`, detail: errText }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
-    }
+function computeTotalDays(r: any): number {
+  // Prefer start/end dates if both present and parseable.
+  const s = r?.start_date ? Date.parse(String(r.start_date)) : NaN;
+  const e = r?.end_date ? Date.parse(String(r.end_date)) : NaN;
+  if (Number.isFinite(s) && Number.isFinite(e) && e >= s) {
+    return Math.round((e - s) / 86400000) + 1;
+  }
+  // Fall back to first integer found in trip_duration string.
+  const m = String(r?.trip_duration ?? '').match(/\d+/);
+  return m ? parseInt(m[0], 10) : 0;
+}
 
-    // Stream text deltas back to the client as plain text to avoid the 150s idle timeout.
-    const upstream = anthropicRes.body;
-    const stream = new ReadableStream({
-      async start(controller) {
-        const reader = upstream.getReader();
-        const decoder = new TextDecoder();
-        const encoder = new TextEncoder();
-        let buffer = '';
-        try {
+function splitDayRanges(totalDays: number, numChunks: number): Array<[number, number]> {
+  if (totalDays <= 0 || numChunks <= 0) return [];
+  if (numChunks === 1) return [[1, totalDays]];
+  const base = Math.floor(totalDays / numChunks);
+  const remainder = totalDays % numChunks;
+  const ranges: Array<[number, number]> = [];
+  let cursor = 1;
+  for (let i = 0; i < numChunks; i++) {
+    const size = base + (i < remainder ? 1 : 0);
+    if (size <= 0) continue;
+    const end = cursor + size - 1;
+    ranges.push([cursor, end]);
+    cursor = end + 1;
+  }
+  return ranges;
+}
+
+function streamSequentialCalls(opts: {
+  apiKey: string;
+  systemPrompt: string;
+  userPrompts: string[];
+}): Response {
+  const { apiKey, systemPrompt, userPrompts } = opts;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        for (let i = 0; i < userPrompts.length; i++) {
+          const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-5',
+              max_tokens: 8192,
+              stream: true,
+              system: systemPrompt,
+              messages: [{ role: 'user', content: userPrompts[i] }],
+            }),
+          });
+
+          if (!res.ok || !res.body) {
+            const errText = await res.text().catch(() => '');
+            console.error('Anthropic API error', res.status, errText);
+            controller.enqueue(
+              encoder.encode(`\n\n[Error from upstream model (${res.status}): ${errText}]\n`),
+            );
+            break;
+          }
+
+          if (i > 0) controller.enqueue(encoder.encode('\n\n'));
+
+          const reader = res.body.getReader();
+          let buffer = '';
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
@@ -168,22 +247,21 @@ Deno.serve(async (req) => {
               } catch { /* ignore parse errors */ }
             }
           }
-        } catch (e) {
-          console.error('stream error', e);
-        } finally {
-          controller.close();
         }
-      },
-    });
+      } catch (e) {
+        console.error('stream error', e);
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-    return new Response(stream, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/plain; charset=utf-8' },
-    });
-  } catch (err: any) {
-    console.error('generate-itinerary-claude error', err);
-    return new Response(JSON.stringify({ error: err?.message || 'Unknown error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  return new Response(stream, {
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': 'no-cache, no-transform',
+    },
+  });
+}
