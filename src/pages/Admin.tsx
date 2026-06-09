@@ -14,8 +14,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
-import CatalogManager from "@/components/voyage/CatalogManager";
-import RouteMaker from "@/components/voyage/routeMaker/RouteMaker";
+import CatalogShopManager from "@/components/voyage/CatalogShopManager";
 import RequestItineraryDialog from "@/components/voyage/RequestItineraryDialog";
 import ProjectItineraryDialog from "@/components/voyage/ProjectItineraryDialog";
 import { Sparkles, FileText } from "lucide-react";
