@@ -24,12 +24,35 @@ const RequestItineraryDialog = ({ open, onOpenChange, request, onSaved }: Props)
     setPhase("generating");
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("generate-itinerary-claude", {
-          body: { request },
-        });
-        if (error) throw error;
-        if (!data?.itinerary) throw new Error("Empty response from AI");
-        setContent(data.itinerary);
+        const { data: { session } } = await supabase.auth.getSession();
+        const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+        const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        const res = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/generate-itinerary-claude`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              apikey: anonKey,
+              Authorization: `Bearer ${session?.access_token ?? anonKey}`,
+            },
+            body: JSON.stringify({ request }),
+          },
+        );
+        if (!res.ok || !res.body) {
+          const txt = await res.text();
+          throw new Error(txt || `Request failed (${res.status})`);
+        }
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          acc += decoder.decode(value, { stream: true });
+          setContent(acc);
+        }
+        if (!acc) throw new Error("Empty response from AI");
         setPhase("ready");
       } catch (e: any) {
         setError(e?.message || "Failed to generate itinerary");
