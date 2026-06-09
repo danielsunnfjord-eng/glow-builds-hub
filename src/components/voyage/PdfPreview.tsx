@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { markdownToHtml } from "./editor/markdownHelpers";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
+import logoHorizontalHd from "@/assets/logo-horizontal-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
 
 interface PdfPreviewProps {
