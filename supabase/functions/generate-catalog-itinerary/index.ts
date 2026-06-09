@@ -41,6 +41,8 @@ BALANCE inspiration with practical usability.
 
 Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Estimated pacing, Important logistics, and Reservation guidance where relevant.
 
+CRITICAL: You must cover EVERY single day of the trip from day 1 to the last day without exception. Never stop early. Never truncate. If the itinerary is 10 days, all 10 days must be written in full using Morning / Afternoon / Evening structure with no clock times.
+
 Begin with a compelling 2-3 paragraph editorial introduction that captures the soul of the destination and sets the emotional tone for the journey.
 
 Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
@@ -152,7 +154,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 4096,
+        max_tokens: 8192,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
