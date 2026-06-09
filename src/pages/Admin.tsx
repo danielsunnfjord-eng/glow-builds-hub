@@ -455,7 +455,7 @@ const AdminDashboard = () => {
             <button
               onClick={() => {
                 setActiveModule("catalogue");
-                if (activeTab !== "routes" && activeTab !== "creator") setActiveTab("routes");
+                setActiveTab("routes");
               }}
               className={`px-5 py-3 text-[0.78rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${activeModule === "catalogue" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}
             >
@@ -477,24 +477,13 @@ const AdminDashboard = () => {
                   {t("admin.projects")}
                 </button>
               </>
-            ) : (
-              <>
-                <button onClick={() => setActiveTab("routes")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "routes" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-                  {t("admin.catalogueManage", "Manage")}
-                </button>
-                <button onClick={() => setActiveTab("creator")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "creator" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-                  {t("admin.catalogueCreator", "Creator")}
-                </button>
-              </>
-            )}
+            ) : null}
           </div>
         </div>
 
         <div className="p-10 max-w-[1200px] mx-auto max-md:p-6">
-          {activeTab === "routes" ? (
-            <CatalogManager onEdit={(id) => { setCreatorOpenId(id); setActiveTab("creator"); }} />
-          ) : activeTab === "creator" ? (
-            <RouteMaker initialSelectedId={creatorOpenId} />
+          {activeModule === "catalogue" ? (
+            <CatalogShopManager />
           ) : activeTab === "assistant" ? (
             <div>
               <div className="mb-8">
