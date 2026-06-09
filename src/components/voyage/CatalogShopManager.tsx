@@ -42,7 +42,7 @@ interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string;
+  experienceType: string[];
   duration: string;
   language: Lang;
   brief: string;
@@ -57,7 +57,7 @@ const blankEditor: EditorState = {
   id: null,
   title: "",
   destination: "",
-  experienceType: "",
+  experienceType: [],
   duration: "",
   language: "en",
   brief: "",
@@ -112,7 +112,7 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: "",
+      experienceType: [],
       duration: r.duration || "",
       language: lang,
       brief: "",
@@ -137,7 +137,7 @@ const CatalogShopManager = () => {
         body: {
           title: state.title,
           destination: state.destination,
-          experience_type: state.experienceType,
+          experience_type: state.experienceType.join(", "),
           duration: state.duration,
           language: state.language,
           brief: state.brief,
@@ -353,12 +353,32 @@ const CatalogShopManager = () => {
             </div>
             <div>
               <Label>Type of experience</Label>
-              <Select value={state.experienceType} onValueChange={(v) => setState({ ...state, experienceType: v })}>
-                <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
-                <SelectContent>
-                  {EXPERIENCE_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-2 mt-1.5 p-2 rounded-md border border-input bg-background min-h-10">
+                {EXPERIENCE_TYPES.map((t) => {
+                  const active = state.experienceType.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() =>
+                        setState({
+                          ...state,
+                          experienceType: active
+                            ? state.experienceType.filter((x) => x !== t)
+                            : [...state.experienceType, t],
+                        })
+                      }
+                      className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-input hover:bg-muted"
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div>
               <Label>Duration</Label>
