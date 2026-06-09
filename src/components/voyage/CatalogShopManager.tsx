@@ -42,7 +42,7 @@ interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string;
+  experienceType: string[];
   duration: string;
   language: Lang;
   brief: string;
