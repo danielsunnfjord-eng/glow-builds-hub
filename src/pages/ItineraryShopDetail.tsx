@@ -31,6 +31,9 @@ interface CatalogItem {
   gallery_images: string[];
   price_eur: number;
   is_published: boolean;
+  itinerary_content_en: string | null;
+  itinerary_content_pt: string | null;
+  itinerary_content_no: string | null;
 }
 
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
