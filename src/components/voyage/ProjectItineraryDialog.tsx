@@ -108,7 +108,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="max-w-6xl w-[96vw] max-h-[94vh] flex flex-col"
+          className="relative max-w-6xl w-[96vw] h-[94vh] max-h-[94vh] flex flex-col overflow-hidden"
           onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
