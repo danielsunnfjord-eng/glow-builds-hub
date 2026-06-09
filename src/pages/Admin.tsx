@@ -678,7 +678,13 @@ const AdminDashboard = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3.5 border-b border-parchment-3">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          <button
+                            onClick={() => { setItinProject(p); setItinOpen(true); }}
+                            className="px-2.5 py-1 rounded-sm border border-ink/30 text-[0.68rem] font-medium text-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-1"
+                          >
+                            <FileText className="w-3 h-3" /> Itinerary
+                          </button>
                           <button onClick={() => openEdit(p)} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-gold hover:text-gold transition-all">{t("admin.edit")}</button>
                           {p.itinerary_pdf_path && p.client_email && (
                             <button onClick={() => openSendDialog(p)} className="px-2.5 py-1 rounded-sm border border-sage/30 text-[0.68rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">{t("admin.send")}</button>
