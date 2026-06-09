@@ -155,13 +155,14 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 8192,
+        stream: true,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
     });
 
-    if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
+    if (!anthropicRes.ok || !anthropicRes.body) {
+      const errText = await anthropicRes.text().catch(() => '');
       console.error('Anthropic API error', anthropicRes.status, errText);
       return new Response(
         JSON.stringify({ error: `Anthropic API error (${anthropicRes.status})`, detail: errText }),
@@ -169,13 +170,52 @@ Deno.serve(async (req) => {
       );
     }
 
-    const data = await anthropicRes.json();
-    const text = Array.isArray(data?.content)
-      ? data.content.filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n\n')
-      : '';
+    // Stream SSE from Anthropic, extract text deltas, forward as plain text chunks.
+    // Keeps the edge-function idle timer alive (resets on each byte sent).
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    const reader = anthropicRes.body.getReader();
+    let buffer = '';
 
-    return new Response(JSON.stringify({ content: text }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const stream = new ReadableStream({
+      async pull(controller) {
+        try {
+          const { value, done } = await reader.read();
+          if (done) {
+            controller.close();
+            return;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const payload = trimmed.slice(5).trim();
+            if (!payload || payload === '[DONE]') continue;
+            try {
+              const evt = JSON.parse(payload);
+              if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+                controller.enqueue(encoder.encode(evt.delta.text));
+              }
+            } catch { /* ignore parse errors */ }
+          }
+        } catch (e) {
+          controller.error(e);
+        }
+      },
+      cancel() {
+        reader.cancel().catch(() => {});
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'no-cache, no-transform',
+      },
     });
   } catch (err: any) {
     console.error('generate-catalog-itinerary error', err);
