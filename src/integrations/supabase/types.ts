@@ -208,6 +208,7 @@ export type Database = {
         Row: {
           client_email: string | null
           client_name: string
+          cover_tagline: string | null
           created_at: string
           currency: string
           departure: string | null
@@ -215,6 +216,7 @@ export type Database = {
           end_date: string | null
           estimated_budget: string | null
           group_size: number
+          hero_image_url: string | null
           id: string
           internal_notes: string | null
           itinerary_content: string | null
@@ -231,6 +233,7 @@ export type Database = {
         Insert: {
           client_email?: string | null
           client_name: string
+          cover_tagline?: string | null
           created_at?: string
           currency?: string
           departure?: string | null
@@ -238,6 +241,7 @@ export type Database = {
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
+          hero_image_url?: string | null
           id?: string
           internal_notes?: string | null
           itinerary_content?: string | null
@@ -254,6 +258,7 @@ export type Database = {
         Update: {
           client_email?: string | null
           client_name?: string
+          cover_tagline?: string | null
           created_at?: string
           currency?: string
           departure?: string | null
@@ -261,6 +266,7 @@ export type Database = {
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
+          hero_image_url?: string | null
           id?: string
           internal_notes?: string | null
           itinerary_content?: string | null
