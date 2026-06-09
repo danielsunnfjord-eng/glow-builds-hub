@@ -43,7 +43,11 @@ Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dinin
 
 CRITICAL: You must cover EVERY single day of the trip from day 1 to the last day without exception. Never stop early. Never truncate. If the itinerary is 10 days, all 10 days must be written in full using Morning / Afternoon / Evening structure with no clock times.
 
-Begin with a compelling 2-3 paragraph editorial introduction that captures the soul of the destination and sets the emotional tone for the journey.
+Keep the introduction to a maximum of 2 short paragraphs. Do not over-elaborate the introduction — the priority is the complete day-by-day itinerary. Start the day-by-day section immediately after the introduction.
+
+CRITICAL: Never stop writing mid-sentence or mid-section. If you are running out of space, shorten descriptions slightly but always complete every single day through to the last day of the itinerary.
+
+Begin with a compelling editorial introduction that captures the soul of the destination and sets the emotional tone for the journey.
 
 Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
 
