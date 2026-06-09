@@ -223,6 +223,26 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
 
       <ToolbarSep />
 
+      {/* Image upload */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImagePick}
+        className="hidden"
+      />
+      <ToolbarButton
+        onClick={() => fileRef.current?.click()}
+        title="Insert image"
+        className="inline-flex items-center gap-1"
+      >
+        <ImagePlus className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
+      <ToolbarSep />
+
+
+
       {/* Undo/Redo */}
       <ToolbarButton
         onClick={() => editor.chain().focus().undo().run()}
