@@ -28,6 +28,9 @@ export type Database = {
           hero_image_url: string | null
           id: string
           is_published: boolean
+          itinerary_content_en: string | null
+          itinerary_content_no: string | null
+          itinerary_content_pt: string | null
           pdf_path: string | null
           price_eur: number
           slug: string
@@ -57,6 +60,9 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_published?: boolean
+          itinerary_content_en?: string | null
+          itinerary_content_no?: string | null
+          itinerary_content_pt?: string | null
           pdf_path?: string | null
           price_eur?: number
           slug: string
@@ -86,6 +92,9 @@ export type Database = {
           hero_image_url?: string | null
           id?: string
           is_published?: boolean
+          itinerary_content_en?: string | null
+          itinerary_content_no?: string | null
+          itinerary_content_pt?: string | null
           pdf_path?: string | null
           price_eur?: number
           slug?: string
