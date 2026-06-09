@@ -87,7 +87,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
             {/* Top logo bar */}
             <div
               style={{
-                padding: "26mm 20mm 0",
+                padding: "14mm 20mm 0",
                 display: "flex",
                 justifyContent: "center",
               }}
@@ -95,7 +95,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
               <img
                 src={logoHorizontal}
                 alt="Fjord & Waves Travel"
-                style={{ height: "68px", objectFit: "contain" }}
+                style={{ height: "272px", objectFit: "contain" }}
               />
             </div>
 
