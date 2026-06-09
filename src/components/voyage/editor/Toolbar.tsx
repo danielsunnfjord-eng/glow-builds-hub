@@ -1,8 +1,14 @@
 import { Editor } from "@tiptap/react";
 import { useTranslation } from "react-i18next";
+import { useRef } from "react";
 import ToolbarButton, { ToolbarSep } from "./ToolbarButton";
 import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
+
+
 
 const Toolbar = ({ editor }: { editor: Editor }) => {
   const { t } = useTranslation();
