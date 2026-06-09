@@ -56,6 +56,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
+      onWheel={(e) => e.stopPropagation()}
     >
       <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] h-full min-h-0 flex flex-col overflow-hidden">
         {/* Header bar */}
@@ -80,7 +81,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
         </div>
 
         {/* Preview pages */}
-        <div className="flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain p-6 bg-[#e8e0d0] fjw-print-root">
+        <div className="flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y p-6 bg-[#e8e0d0] fjw-print-root">
           {/* ============ COVER PAGE ============ */}
           <div className="fjw-print-page" style={pageStyle}>
             {/* Top logo bar */}
