@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Upload, Wand2 } from "lucide-react";
+import { Sparkles, Loader2, Upload, Wand2, Eye } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
+import PdfPreview from "./PdfPreview";
 
 type Lang = "en" | "pt" | "no";
 
