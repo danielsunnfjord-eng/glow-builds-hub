@@ -120,107 +120,55 @@ Deno.serve(async (req) => {
 
     const langName = LANG_NAMES[language] || 'English';
 
-    let systemPrompt: string;
-    let userPrompt: string;
+    const systemPrompt = buildSystemPrompt({
+      language: langName,
+      destination,
+      experience_type,
+      duration,
+      notes: brief,
+    });
+
+    // Build the sequence of user prompts (one per Anthropic call).
+    const userPrompts: string[] = [];
 
     if (mode === 'section') {
-      systemPrompt = buildSystemPrompt({
-        language: langName,
-        destination,
-        experience_type,
-        duration,
-        notes: brief,
-      });
-      userPrompt =
+      userPrompts.push(
         `Write the response entirely in ${langName}.\n\n` +
-        `Here is an existing itinerary draft (markdown):\n\n` +
-        `"""\n${existing_content}\n"""\n\n` +
-        `Please regenerate ONLY the section described below, keeping the same overall style and tone. ` +
-        `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
-        `Section instruction: ${section_instruction}`;
-    } else {
-      systemPrompt = buildSystemPrompt({
-        language: langName,
-        destination,
-        experience_type,
-        duration,
-        notes: brief,
-      });
-      userPrompt = `Produce the complete premium editorial travel itinerary now in markdown.`;
-    }
-
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 16000,
-        stream: true,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-    });
-
-    if (!anthropicRes.ok || !anthropicRes.body) {
-      const errText = await anthropicRes.text().catch(() => '');
-      console.error('Anthropic API error', anthropicRes.status, errText);
-      return new Response(
-        JSON.stringify({ error: `Anthropic API error (${anthropicRes.status})`, detail: errText }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          `Here is an existing itinerary draft (markdown):\n\n` +
+          `"""\n${existing_content}\n"""\n\n` +
+          `Please regenerate ONLY the section described below, keeping the same overall style and tone. ` +
+          `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
+          `Section instruction: ${section_instruction}`,
       );
+    } else {
+      // Parse the number of days from the duration string (e.g. "10 days" → 10).
+      const daysMatch = String(duration).match(/\d+/);
+      const totalDays = daysMatch ? parseInt(daysMatch[0], 10) : 0;
+
+      if (totalDays >= 2) {
+        // Split into two calls: intro + first half, then second half.
+        const firstHalfEnd = Math.ceil(totalDays / 2);
+        const secondHalfStart = firstHalfEnd + 1;
+
+        userPrompts.push(
+          `Produce the premium editorial travel itinerary now in markdown. ` +
+            `Write the introduction (max 2 short paragraphs) followed by Day 1 through Day ${firstHalfEnd} in full ` +
+            `(using Morning / Afternoon / Evening structure, no clock times). ` +
+            `Stop writing immediately after Day ${firstHalfEnd} completes — do not write Day ${secondHalfStart} or any later days. ` +
+            `Do not write any closing remarks or summary; the itinerary will be continued in a follow-up call.`,
+        );
+        userPrompts.push(
+          `Continue the itinerary from Day ${secondHalfStart}. Do not repeat the introduction or any previous days. ` +
+            `Start directly with Day ${secondHalfStart} Morning. ` +
+            `Write Day ${secondHalfStart} through Day ${totalDays} in full using the same Morning / Afternoon / Evening structure ` +
+            `(no clock times). Complete every single day through to Day ${totalDays} without truncating.`,
+        );
+      } else {
+        userPrompts.push(`Produce the complete premium editorial travel itinerary now in markdown.`);
+      }
     }
 
-    // Stream SSE from Anthropic, extract text deltas, forward as plain text chunks.
-    // Keeps the edge-function idle timer alive (resets on each byte sent).
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-    const reader = anthropicRes.body.getReader();
-    let buffer = '';
-
-    const stream = new ReadableStream({
-      async pull(controller) {
-        try {
-          const { value, done } = await reader.read();
-          if (done) {
-            controller.close();
-            return;
-          }
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? '';
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith('data:')) continue;
-            const payload = trimmed.slice(5).trim();
-            if (!payload || payload === '[DONE]') continue;
-            try {
-              const evt = JSON.parse(payload);
-              if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
-                controller.enqueue(encoder.encode(evt.delta.text));
-              }
-            } catch { /* ignore parse errors */ }
-          }
-        } catch (e) {
-          controller.error(e);
-        }
-      },
-      cancel() {
-        reader.cancel().catch(() => {});
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'text/plain; charset=utf-8',
-        'X-Content-Type-Options': 'nosniff',
-        'Cache-Control': 'no-cache, no-transform',
-      },
-    });
+    return streamSequentialCalls({ apiKey, systemPrompt, userPrompts });
   } catch (err: any) {
     console.error('generate-catalog-itinerary error', err);
     return new Response(JSON.stringify({ error: err?.message || 'Unknown error' }), {
@@ -229,3 +177,88 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+// Run multiple Anthropic streaming calls sequentially, forwarding text deltas
+// from each as plain-text chunks to the client. Keeps the edge-function idle
+// timer alive because bytes flow continuously.
+function streamSequentialCalls(opts: {
+  apiKey: string;
+  systemPrompt: string;
+  userPrompts: string[];
+}): Response {
+  const { apiKey, systemPrompt, userPrompts } = opts;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        for (let i = 0; i < userPrompts.length; i++) {
+          const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-5',
+              max_tokens: 8192,
+              stream: true,
+              system: systemPrompt,
+              messages: [{ role: 'user', content: userPrompts[i] }],
+            }),
+          });
+
+          if (!res.ok || !res.body) {
+            const errText = await res.text().catch(() => '');
+            console.error('Anthropic API error', res.status, errText);
+            controller.enqueue(
+              encoder.encode(`\n\n[Error from upstream model (${res.status}): ${errText}]\n`),
+            );
+            break;
+          }
+
+          // Separate chunks with a blank line so the second call doesn't glue
+          // onto the last line of the first call.
+          if (i > 0) controller.enqueue(encoder.encode('\n\n'));
+
+          const reader = res.body.getReader();
+          let buffer = '';
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() ?? '';
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed.startsWith('data:')) continue;
+              const payload = trimmed.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const evt = JSON.parse(payload);
+                if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+                  controller.enqueue(encoder.encode(evt.delta.text));
+                }
+              } catch { /* ignore parse errors */ }
+            }
+          }
+        }
+      } catch (e) {
+        console.error('stream error', e);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': 'no-cache, no-transform',
+    },
+  });
+}
