@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { markdownToHtml } from "./editor/markdownHelpers";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
+import logoHorizontalHd from "@/assets/logo-horizontal-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
 
 interface PdfPreviewProps {
@@ -93,9 +94,9 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
               }}
             >
               <img
-                src={logoHorizontal}
+                src={logoHorizontalHd}
                 alt="Fjord & Waves Travel"
-                style={{ height: "132px", maxWidth: "120mm", objectFit: "contain", display: "block" }}
+                style={{ height: "150px", width: "auto", maxWidth: "150mm", objectFit: "contain", display: "block" }}
               />
             </div>
 
