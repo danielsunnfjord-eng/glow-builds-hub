@@ -51,7 +51,7 @@ INCLUDE premium touches that reduce decision fatigue.
 
 BALANCE inspiration with practical usability.
 
-Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Estimated pacing, Important logistics, and Reservation guidance where relevant.
+Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Important logistics, and Reservation guidance where relevant.
 
 Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
 
