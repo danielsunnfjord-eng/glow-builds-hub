@@ -52,12 +52,13 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
 
   return (
     <div
-      className="fixed inset-0 z-[9998] bg-ink/60 flex items-center justify-center p-4 fjw-pdf-shell"
+      className="absolute inset-0 z-[60] bg-ink/60 flex items-stretch justify-center p-4 fjw-pdf-shell"
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
+      onWheel={(e) => e.stopPropagation()}
     >
-      <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] h-[94vh] flex flex-col overflow-hidden">
+      <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] h-full min-h-0 flex flex-col overflow-hidden">
         {/* Header bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-parchment-3 bg-voyage-white fjw-no-print">
           <h3 className="text-sm font-serif font-semibold text-ink">
@@ -80,7 +81,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
         </div>
 
         {/* Preview pages */}
-        <div className="flex-1 min-h-0 overflow-y-scroll p-6 bg-[#e8e0d0] fjw-print-root">
+        <div className="flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y p-6 bg-[#e8e0d0] fjw-print-root">
           {/* ============ COVER PAGE ============ */}
           <div className="fjw-print-page" style={pageStyle}>
             {/* Top logo bar */}
