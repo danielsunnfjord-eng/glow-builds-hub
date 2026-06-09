@@ -98,38 +98,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Compose a clear, structured prompt from the customer's submission.
-    const lines: string[] = [];
-    const push = (label: string, val: any) => {
-      if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) return;
-      lines.push(`- **${label}:** ${Array.isArray(val) ? val.join(', ') : val}`);
-    };
-    push('Client name', request.client_name);
-    push('Email', request.client_email);
-    push('Phone', request.phone);
-    push('Departing from', request.departure);
-    push('Destination', request.destination);
-    push('Group size', request.group_size);
-    push('Adults', request.adults);
-    push('Children', request.children_count);
-    push('Children ages', request.children_ages);
-    push('Trip duration', request.trip_duration);
-    push('Start date', request.start_date);
-    push('End date', request.end_date);
-    push('Estimated budget', request.estimated_budget);
-    push('Travel pace', request.travel_pace);
-    push('Accommodation preference', request.accommodation_type);
-    push('Interests', request.interests);
-    push('Must-have experiences', request.must_have_experiences);
-    push('Dietary restrictions', request.dietary_restrictions);
-    push('Mobility / accessibility', request.mobility_notes);
-    push('Visited before', request.visited_before ? 'Yes' : null);
-    push('Additional notes', request.notes);
-
-    const userPrompt =
-      "Please craft a complete day-by-day itinerary for the following customer:\n\n" +
-      lines.join('\n') +
-      "\n\nProduce the itinerary now in markdown.";
+    const systemPrompt = buildSystemPrompt(request);
+    const userPrompt = 'Please generate the complete day-by-day itinerary now in markdown.';
 
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
