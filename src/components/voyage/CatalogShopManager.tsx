@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Upload, Wand2 } from "lucide-react";
+import { Sparkles, Loader2, Upload, Wand2, Eye } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
+import PdfPreview from "./PdfPreview";
 
 type Lang = "en" | "pt" | "no";
 
@@ -79,6 +80,7 @@ const CatalogShopManager = () => {
   const [sectionPrompt, setSectionPrompt] = useState("");
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["catalog-shop-list"],
@@ -324,6 +326,9 @@ const CatalogShopManager = () => {
                   {r.is_published && r.slug && (
                     <a href={`/itineraries-shop/${r.slug}`} target="_blank" rel="noreferrer" className="text-[0.72rem] uppercase tracking-wider text-voyage-muted hover:text-ink px-2">View</a>
                   )}
+                  <Button size="sm" variant="ghost" onClick={() => setPreviewRow(r)} title="Preview PDF">
+                    <Eye className="w-4 h-4 mr-1" /> Preview PDF
+                  </Button>
                   <Button size="sm" variant="ghost" onClick={() => openEdit(r)}>Edit</Button>
                   <Button size="sm" variant={r.is_published ? "outline" : "default"} onClick={() => togglePublish(r)}>
                     {r.is_published ? "Unpublish" : "Publish"}
@@ -469,6 +474,26 @@ const CatalogShopManager = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {previewRow && (
+        <PdfPreview
+          content={
+            previewRow.itinerary_content_en ||
+            previewRow.itinerary_content_pt ||
+            previewRow.itinerary_content_no ||
+            ""
+          }
+          project={{
+            client_name: previewRow.title_en || "",
+            destination: previewRow.destination,
+            trip_duration: previewRow.duration,
+            hero_image_url: previewRow.hero_image_url,
+            cover_tagline: previewRow.summary_en || null,
+          }}
+          onClose={() => setPreviewRow(null)}
+          onExport={() => window.print()}
+        />
+      )}
     </div>
   );
 };
