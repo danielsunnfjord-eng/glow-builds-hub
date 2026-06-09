@@ -216,6 +216,13 @@ const ItineraryShopDetail = () => {
               </div>
             )}
 
+            {itineraryHtml && (
+              <div
+                className="mb-10 prose prose-sm md:prose-base max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-[1.8rem] prose-h2:text-[1.3rem] prose-h3:text-[1.05rem] prose-p:text-ink/80 prose-li:text-ink/80 prose-strong:text-ink"
+                dangerouslySetInnerHTML={{ __html: itineraryHtml }}
+              />
+            )}
+
             {gallery.length > 0 && (
               <div className="grid grid-cols-2 gap-3 mb-10">
                 {gallery.map((url, i) => (
