@@ -112,7 +112,7 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: "",
+      experienceType: [],
       duration: r.duration || "",
       language: lang,
       brief: "",
