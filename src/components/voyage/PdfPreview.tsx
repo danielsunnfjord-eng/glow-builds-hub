@@ -51,8 +51,13 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
   };
 
   return (
-    <div className="fixed inset-0 z-[9998] bg-ink/60 flex items-center justify-center p-4 fjw-pdf-shell">
-      <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] max-h-[94vh] flex flex-col overflow-hidden">
+    <div
+      className="fixed inset-0 z-[9998] bg-ink/60 flex items-center justify-center p-4 fjw-pdf-shell"
+      onPointerDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] h-[94vh] flex flex-col overflow-hidden">
         {/* Header bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-parchment-3 bg-voyage-white fjw-no-print">
           <h3 className="text-sm font-serif font-semibold text-ink">
