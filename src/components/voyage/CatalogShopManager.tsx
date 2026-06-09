@@ -474,6 +474,26 @@ const CatalogShopManager = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {previewRow && (
+        <PdfPreview
+          content={
+            previewRow.itinerary_content_en ||
+            previewRow.itinerary_content_pt ||
+            previewRow.itinerary_content_no ||
+            ""
+          }
+          project={{
+            client_name: previewRow.title_en || "",
+            destination: previewRow.destination,
+            trip_duration: previewRow.duration,
+            hero_image_url: previewRow.hero_image_url,
+            cover_tagline: previewRow.summary_en || null,
+          }}
+          onClose={() => setPreviewRow(null)}
+          onExport={() => window.print()}
+        />
+      )}
     </div>
   );
 };
