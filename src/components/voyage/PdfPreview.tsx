@@ -95,7 +95,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
               <img
                 src={logoHorizontal}
                 alt="Fjord & Waves Travel"
-                style={{ height: "44px", objectFit: "contain" }}
+                style={{ height: "68px", objectFit: "contain" }}
               />
             </div>
 
