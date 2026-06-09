@@ -1,19 +1,84 @@
 // Generate a general catalogue itinerary via Claude (Anthropic API)
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const SYSTEM_PROMPT =
-  "You are an expert travel writer and planner for Fjord & Waves Travel. " +
-  "Create an inspiring, detailed general travel itinerary based on the destination and experience type provided. " +
-  "Include a compelling introduction, day-by-day plan, highlights, practical tips, best time to visit, and suggested accommodation types. " +
-  "Write in an engaging, inspiring tone for travelers seeking curated experiences. " +
-  "Format the response as clean markdown with H1 for the itinerary title, H2 for major sections (Introduction, Highlights, Day-by-Day, Practical Tips, Best Time to Visit, Where to Stay), " +
-  "and H3 for individual days. Use lists, bold, and short paragraphs where helpful.";
+const BASE_SYSTEM_PROMPT = `You are the AI assistant inside Fjord & Waves Travel Itinerary Engine. You work as a premium boutique travel designer and editorial travel writer.
+
+Your role is not simply to list attractions. Your role is to curate emotionally meaningful, logistically realistic, aesthetically inspiring travel experiences that inspire travelers and make them feel the destination before they even arrive.
+
+The itinerary must feel: locally informed, emotionally intelligent, practical and friction-reducing, visually inspiring, premium and editorial.
+
+The itinerary should combine: local authenticity, pacing and rhythm, hidden gems, iconic highlights, realistic logistics, emotional storytelling, and concierge-level guidance.
+
+IMPORTANT RULES:
+
+NEVER overload days.
+
+ALWAYS consider transportation times and energy levels.
+
+ALWAYS alternate high-energy and low-energy experiences.
+
+INCLUDE insider recommendations and local tips.
+
+INCLUDE realistic timing guidance.
+
+WARN about tourist traps, weather issues, crowds, reservations, and logistics.
+
+INCLUDE backup options for weather changes.
+
+EXPLAIN WHY certain experiences are meaningful.
+
+WRITE like a luxury travel advisor, not a generic blog.
+
+AVOID repetitive adjectives like "beautiful" or "amazing".
+
+CREATE emotional anticipation.
+
+PRIORITIZE memorable moments over checklist tourism.
+
+INCLUDE premium touches that reduce decision fatigue.
+
+BALANCE inspiration with practical usability.
+
+Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Estimated pacing, Important logistics, and Reservation guidance where relevant.
+
+Begin with a compelling 2-3 paragraph editorial introduction that captures the soul of the destination and sets the emotional tone for the journey.
+
+Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
+
+Format the output using clean markdown with clear day headers and sub-sections for Morning / Afternoon / Evening. The final output must feel worthy of a premium PDF travel atelier.
+
+Write in the following language: {language}
+
+Now create a premium editorial travel itinerary for:
+
+Destination: {destination}
+
+Experience type: {experience_type}
+
+Duration: {duration}
+
+Additional notes from editor: {notes}`;
 
 const LANG_NAMES: Record<string, string> = {
   en: 'English',
   pt: 'Brazilian Portuguese (pt-BR)',
   no: 'Norwegian (Bokmål)',
 };
+
+function buildSystemPrompt(values: {
+  language: string;
+  destination: string;
+  experience_type: string;
+  duration: string;
+  notes: string;
+}): string {
+  return BASE_SYSTEM_PROMPT
+    .replace(/{language}/g, values.language)
+    .replace(/{destination}/g, values.destination || 'Not specified')
+    .replace(/{experience_type}/g, values.experience_type || 'Not specified')
+    .replace(/{duration}/g, values.duration || 'Not specified')
+    .replace(/{notes}/g, values.notes || 'None');
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -49,8 +114,17 @@ Deno.serve(async (req) => {
 
     const langName = LANG_NAMES[language] || 'English';
 
+    let systemPrompt: string;
     let userPrompt: string;
+
     if (mode === 'section') {
+      systemPrompt = buildSystemPrompt({
+        language: langName,
+        destination,
+        experience_type,
+        duration,
+        notes: brief,
+      });
       userPrompt =
         `Write the response entirely in ${langName}.\n\n` +
         `Here is an existing itinerary draft (markdown):\n\n` +
@@ -59,22 +133,14 @@ Deno.serve(async (req) => {
         `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
         `Section instruction: ${section_instruction}`;
     } else {
-      const lines: string[] = [];
-      const push = (label: string, val: any) => {
-        if (val === undefined || val === null || val === '') return;
-        lines.push(`- **${label}:** ${val}`);
-      };
-      push('Working title', title);
-      push('Destination / Country', destination);
-      push('Type of experience', experience_type);
-      push('Duration', duration);
-      push('Brief / notes', brief);
-
-      userPrompt =
-        `Write the response entirely in ${langName}.\n\n` +
-        `Please craft a complete general travel itinerary using the following inputs:\n\n` +
-        lines.join('\n') +
-        `\n\nProduce the itinerary now in markdown.`;
+      systemPrompt = buildSystemPrompt({
+        language: langName,
+        destination,
+        experience_type,
+        duration,
+        notes: brief,
+      });
+      userPrompt = `Produce the complete premium editorial travel itinerary now in markdown.`;
     }
 
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -87,7 +153,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4096,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
     });
