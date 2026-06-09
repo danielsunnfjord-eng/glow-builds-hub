@@ -61,7 +61,17 @@ Write in the language that matches the customer's profile or as instructed (Engl
 
 Now create a fully personalized day-by-day itinerary for the following traveler:
 
-CRITICAL: You must create a complete day-by-day itinerary covering EVERY single day of the trip from the start date to the end date. Do not stop early. If the trip is 19 days, write all 19 days. Never truncate or summarize the remaining days.
+CRITICAL: You must cover EVERY single day of the trip from start date to end date without exception. Never stop early. Never truncate. If the trip is 19 days, all 19 days must be written in full.
+
+FORMAT EACH DAY exactly like this — no specific clock times, only Morning / Afternoon / Evening sections:
+
+## Day 1 — [Date] — [Theme or Title]
+Morning: ...
+Afternoon: ...
+Evening: ...
+Dining tip: ...
+Insider tip: ...
+---
 
 Name: ${v(r.client_name)}
 Departure city: ${v(r.departure)}
