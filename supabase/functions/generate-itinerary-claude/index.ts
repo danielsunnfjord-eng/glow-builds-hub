@@ -27,7 +27,7 @@ ALWAYS alternate high-energy and low-energy experiences.
 
 INCLUDE insider recommendations and local tips.
 
-INCLUDE realistic timing guidance.
+
 
 WARN about tourist traps, weather issues, crowds, reservations, and logistics.
 
