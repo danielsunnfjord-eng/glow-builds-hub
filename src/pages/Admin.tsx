@@ -16,6 +16,9 @@ import {
 import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
 import CatalogManager from "@/components/voyage/CatalogManager";
 import RouteMaker from "@/components/voyage/routeMaker/RouteMaker";
+import RequestItineraryDialog from "@/components/voyage/RequestItineraryDialog";
+import ProjectItineraryDialog from "@/components/voyage/ProjectItineraryDialog";
+import { Sparkles, FileText } from "lucide-react";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
@@ -96,6 +99,10 @@ const AdminDashboard = () => {
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingUploadProjectId, setPendingUploadProjectId] = useState<string | null>(null);
+  const [genRequest, setGenRequest] = useState<any | null>(null);
+  const [genOpen, setGenOpen] = useState(false);
+  const [itinProject, setItinProject] = useState<ClientProject | null>(null);
+  const [itinOpen, setItinOpen] = useState(false);
 
   const STATUS_LABELS: Record<ItineraryStatus, string> = {
     new: t("admin.new"),
@@ -553,9 +560,17 @@ const AdminDashboard = () => {
                             </button>
                           )}
                           {req.status !== "converted" && (
-                            <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
-                              {t("requests.createProject")}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => { setGenRequest(req); setGenOpen(true); }}
+                                className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                              >
+                                <Sparkles className="w-3.5 h-3.5" /> Generate Itinerary
+                              </button>
+                              <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
+                                {t("requests.createProject")}
+                              </button>
+                            </>
                           )}
                           <button onClick={() => { if (confirm(t("requests.deleteConfirm"))) deleteRequest.mutate(req.id); }} className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">
                             {t("admin.delete")}
@@ -663,7 +678,13 @@ const AdminDashboard = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3.5 border-b border-parchment-3">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
+                          <button
+                            onClick={() => { setItinProject(p); setItinOpen(true); }}
+                            className="px-2.5 py-1 rounded-sm border border-ink/30 text-[0.68rem] font-medium text-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-1"
+                          >
+                            <FileText className="w-3 h-3" /> Itinerary
+                          </button>
                           <button onClick={() => openEdit(p)} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-gold hover:text-gold transition-all">{t("admin.edit")}</button>
                           {p.itinerary_pdf_path && p.client_email && (
                             <button onClick={() => openSendDialog(p)} className="px-2.5 py-1 rounded-sm border border-sage/30 text-[0.68rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">{t("admin.send")}</button>
@@ -893,6 +914,25 @@ const AdminDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <RequestItineraryDialog
+        open={genOpen}
+        onOpenChange={setGenOpen}
+        request={genRequest}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["trip_requests"] });
+          queryClient.invalidateQueries({ queryKey: ["client_projects"] });
+          setActiveModule("custom");
+          setActiveTab("projects");
+        }}
+      />
+
+      <ProjectItineraryDialog
+        open={itinOpen}
+        onOpenChange={setItinOpen}
+        project={itinProject as any}
+        onSaved={() => queryClient.invalidateQueries({ queryKey: ["client_projects"] })}
+      />
     </>
   );
 };

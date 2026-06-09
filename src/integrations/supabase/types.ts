@@ -207,6 +207,8 @@ export type Database = {
           estimated_budget: string | null
           group_size: number
           id: string
+          internal_notes: string | null
+          itinerary_content: string | null
           itinerary_pdf_path: string | null
           itinerary_status: string
           notes: string | null
@@ -228,6 +230,8 @@ export type Database = {
           estimated_budget?: string | null
           group_size?: number
           id?: string
+          internal_notes?: string | null
+          itinerary_content?: string | null
           itinerary_pdf_path?: string | null
           itinerary_status?: string
           notes?: string | null
@@ -249,6 +253,8 @@ export type Database = {
           estimated_budget?: string | null
           group_size?: number
           id?: string
+          internal_notes?: string | null
+          itinerary_content?: string | null
           itinerary_pdf_path?: string | null
           itinerary_status?: string
           notes?: string | null
