@@ -128,6 +128,36 @@ const CatalogShopManager = () => {
     setEditorOpen(true);
   };
 
+  const callCatalogStream = async (body: Record<string, unknown>): Promise<string> => {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess?.session?.access_token;
+    const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/generate-catalog-itinerary`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok || !res.body) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(errText || `Edge function error (${res.status})`);
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+      setState((s) => ({ ...s, content: text }));
+    }
+    text += decoder.decode();
+    return text;
+  };
+
   const runGenerate = async () => {
     if (!state.destination && !state.title) {
       toast.error("Add at least a title or destination first.");
@@ -135,19 +165,15 @@ const CatalogShopManager = () => {
     }
     setGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-catalog-itinerary", {
-        body: {
-          title: state.title,
-          destination: state.destination,
-          experience_type: state.experienceType.join(", "),
-          duration: state.duration,
-          language: state.language,
-          brief: state.brief,
-          mode: "full",
-        },
+      const text = await callCatalogStream({
+        title: state.title,
+        destination: state.destination,
+        experience_type: state.experienceType.join(", "),
+        duration: state.duration,
+        language: state.language,
+        brief: state.brief,
+        mode: "full",
       });
-      if (error) throw error;
-      const text = (data as any)?.content;
       if (!text) throw new Error("No content returned");
       setState((s) => ({ ...s, content: text }));
       toast.success("Itinerary generated. Edit freely before saving.");
@@ -168,19 +194,43 @@ const CatalogShopManager = () => {
       return;
     }
     setRegenerating(true);
+    const baseContent = state.content;
     try {
-      const { data, error } = await supabase.functions.invoke("generate-catalog-itinerary", {
-        body: {
+      // Stream into a temporary buffer; appended at end so we don't overwrite base.
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess?.session?.access_token;
+      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/generate-catalog-itinerary`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
           mode: "section",
           language: state.language,
-          existing_content: state.content,
+          existing_content: baseContent,
           section_instruction: sectionPrompt,
-        },
+        }),
       });
-      if (error) throw error;
-      const text = ((data as any)?.content || "").trim();
-      if (!text) throw new Error("No content returned");
-      setState((s) => ({ ...s, content: `${s.content}\n\n${text}` }));
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(errText || `Edge function error (${res.status})`);
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let section = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        section += decoder.decode(value, { stream: true });
+        setState((s) => ({ ...s, content: `${baseContent}\n\n${section}` }));
+      }
+      section += decoder.decode();
+      const finalText = section.trim();
+      if (!finalText) throw new Error("No content returned");
+      setState((s) => ({ ...s, content: `${baseContent}\n\n${finalText}` }));
       setSectionPrompt("");
       toast.success("New section appended to the end — drag it into place in the editor.");
     } catch (e: any) {
@@ -189,6 +239,7 @@ const CatalogShopManager = () => {
       setRegenerating(false);
     }
   };
+
 
   const handleUploadCover = async (file: File) => {
     setUploading(true);
