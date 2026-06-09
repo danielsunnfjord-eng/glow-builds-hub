@@ -75,7 +75,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
         </div>
 
         {/* Preview pages */}
-        <div className="flex-1 overflow-auto p-6 bg-[#e8e0d0] fjw-print-root">
+        <div className="flex-1 min-h-0 overflow-y-scroll p-6 bg-[#e8e0d0] fjw-print-root">
           {/* ============ COVER PAGE ============ */}
           <div className="fjw-print-page" style={pageStyle}>
             {/* Top logo bar */}
