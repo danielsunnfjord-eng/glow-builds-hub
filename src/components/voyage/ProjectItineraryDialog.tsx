@@ -108,12 +108,12 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="relative max-w-6xl w-[96vw] h-[94vh] max-h-[94vh] !flex flex-col overflow-hidden"
+          className="relative max-w-6xl w-[96vw] h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] !flex flex-col overflow-hidden p-5"
           onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
           onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
         >
-          <DialogHeader>
+          <DialogHeader className="shrink-0">
             <DialogTitle className="font-serif text-xl">
               {project?.client_name} {project?.destination ? `· ${project.destination}` : ""}
             </DialogTitle>
@@ -122,15 +122,15 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-3 gap-4 flex-1 overflow-hidden">
-            <div className="col-span-2 flex flex-col overflow-hidden">
+          <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
+            <div className="col-span-2 flex min-h-0 flex-col overflow-hidden">
               <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1.5">Itinerary (WYSIWYG)</div>
-              <div className="flex-1 overflow-auto border border-parchment-3 rounded-md bg-voyage-white">
+              <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
                 <ItineraryEditor content={content} onContentChange={setContent} />
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 overflow-auto">
+            <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-1">
               {/* Hero image */}
               <div>
                 <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1.5">PDF Cover Hero Image</div>
@@ -200,7 +200,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             </div>
           </div>
 
-          <div className="flex justify-between gap-2 pt-3">
+          <div className="flex shrink-0 justify-between gap-2 pt-3">
             <button
               onClick={handleExportPdf}
               disabled={!content.trim()}
