@@ -86,6 +86,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProject);
   const [filter, setFilter] = useState<ItineraryStatus | "all">("all");
+  const [activeModule, setActiveModule] = useState<"custom" | "catalogue">("custom");
   const [activeTab, setActiveTab] = useState<"projects" | "requests" | "assistant" | "routes" | "creator">("requests");
   const [creatorOpenId, setCreatorOpenId] = useState<string | null>(null);
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -436,26 +437,50 @@ const AdminDashboard = () => {
 
         <div className="bg-voyage-white border-b border-parchment-3 px-10 max-md:px-6">
           <div className="max-w-[1200px] mx-auto flex gap-1">
-            <button onClick={() => setActiveTab("requests")} className={`relative px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "requests" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              {t("requests.tab")}
-              {tripRequests.filter((r: any) => r.status === "new").length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-voyage-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">
-                  {tripRequests.filter((r: any) => r.status === "new").length}
-                </span>
-              )}
+            <button
+              onClick={() => {
+                setActiveModule("custom");
+                if (activeTab !== "requests" && activeTab !== "projects") setActiveTab("requests");
+              }}
+              className={`px-5 py-3 text-[0.78rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${activeModule === "custom" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}
+            >
+              {t("admin.moduleCustom", "Custom Itineraries")}
             </button>
-            <button onClick={() => setActiveTab("projects")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              {t("admin.projects")}
+            <button
+              onClick={() => {
+                setActiveModule("catalogue");
+                if (activeTab !== "routes" && activeTab !== "creator") setActiveTab("routes");
+              }}
+              className={`px-5 py-3 text-[0.78rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${activeModule === "catalogue" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}
+            >
+              {t("admin.moduleCatalogue", "Itinerary Catalogue")}
             </button>
-            <button onClick={() => setActiveTab("assistant")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "assistant" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              {t("admin.assistant")}
-            </button>
-            <button onClick={() => setActiveTab("routes")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "routes" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              🗺 Routes
-            </button>
-            <button onClick={() => setActiveTab("creator")} className={`px-5 py-3 text-[0.72rem] font-semibold tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "creator" ? "border-gold text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
-              ✨ Creator
-            </button>
+          </div>
+          <div className="max-w-[1200px] mx-auto flex gap-1 border-t border-parchment-3/60">
+            {activeModule === "custom" ? (
+              <>
+                <button onClick={() => setActiveTab("requests")} className={`relative px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "requests" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+                  {t("requests.tab")}
+                  {tripRequests.filter((r: any) => r.status === "new").length > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-destructive text-voyage-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">
+                      {tripRequests.filter((r: any) => r.status === "new").length}
+                    </span>
+                  )}
+                </button>
+                <button onClick={() => setActiveTab("projects")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+                  {t("admin.projects")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={() => setActiveTab("routes")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "routes" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+                  {t("admin.catalogueManage", "Manage")}
+                </button>
+                <button onClick={() => setActiveTab("creator")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "creator" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+                  {t("admin.catalogueCreator", "Creator")}
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -468,7 +493,6 @@ const AdminDashboard = () => {
             <div>
               <div className="mb-8">
                 <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.assistantTitle")}</h1>
-
                 <p className="text-[0.85rem] text-voyage-muted">{t("admin.assistantDesc")}</p>
               </div>
               <AdvisorAssistant projects={projects as any} />
