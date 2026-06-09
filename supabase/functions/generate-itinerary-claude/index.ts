@@ -127,10 +127,11 @@ Deno.serve(async (req) => {
         max_tokens: 8000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
+        stream: true,
       }),
     });
 
-    if (!anthropicRes.ok) {
+    if (!anthropicRes.ok || !anthropicRes.body) {
       const errText = await anthropicRes.text();
       console.error('Anthropic API error', anthropicRes.status, errText);
       return new Response(
@@ -139,13 +140,44 @@ Deno.serve(async (req) => {
       );
     }
 
-    const data = await anthropicRes.json();
-    const text = Array.isArray(data?.content)
-      ? data.content.filter((c: any) => c.type === 'text').map((c: any) => c.text).join('\n\n')
-      : '';
+    // Stream text deltas back to the client as plain text to avoid the 150s idle timeout.
+    const upstream = anthropicRes.body;
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = upstream.getReader();
+        const decoder = new TextDecoder();
+        const encoder = new TextEncoder();
+        let buffer = '';
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() ?? '';
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed.startsWith('data:')) continue;
+              const payload = trimmed.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const evt = JSON.parse(payload);
+                if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+                  controller.enqueue(encoder.encode(evt.delta.text));
+                }
+              } catch { /* ignore parse errors */ }
+            }
+          }
+        } catch (e) {
+          console.error('stream error', e);
+        } finally {
+          controller.close();
+        }
+      },
+    });
 
-    return new Response(JSON.stringify({ itinerary: text }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    return new Response(stream, {
+      headers: { ...corsHeaders, 'Content-Type': 'text/plain; charset=utf-8' },
     });
   } catch (err: any) {
     console.error('generate-itinerary-claude error', err);
