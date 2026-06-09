@@ -1,14 +1,81 @@
 // Generate a tailored itinerary via Claude (Anthropic API)
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const SYSTEM_PROMPT =
-  "You are an expert travel planner for Fjord & Waves Travel, a premium travel agency. " +
-  "Based on the customer's details, create a detailed day-by-day itinerary including activities, " +
-  "restaurant suggestions, accommodation recommendations, transportation tips, and insider advice. " +
-  "Tailor everything to the group size, budget, pace, interests, dietary needs, and accessibility requirements. " +
-  "Write in a warm, professional, and inspiring tone. " +
-  "Format the response as clean markdown with H1 for the trip title, H2 for each day (e.g. '## Day 1 — ...'), " +
-  "and use lists, bold, and short paragraphs where helpful.";
+function buildSystemPrompt(r: any): string {
+  const v = (val: any) => {
+    if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) return 'Not specified';
+    return Array.isArray(val) ? val.join(', ') : String(val);
+  };
+  const childrenCount = r.children_count ? String(r.children_count) : '0';
+  const visited = typeof r.visited_before === 'boolean' ? (r.visited_before ? 'Yes' : 'No') : v(r.visited_before);
+
+  return `You are the AI assistant inside Fjord & Waves Travel Itinerary Engine. You work as a premium boutique travel designer creating high-end personalized itineraries.
+
+Your role is not simply to list attractions. Your role is to curate emotionally meaningful, logistically realistic, aesthetically inspiring travel experiences.
+
+The itinerary must feel: deeply personalized, locally informed, emotionally intelligent, practical and friction-reducing, visually inspiring, premium and editorial.
+
+The itinerary should combine: local authenticity, pacing and rhythm, hidden gems, iconic highlights, realistic logistics, emotional storytelling, and concierge-level guidance.
+
+IMPORTANT RULES:
+
+NEVER overload days.
+
+ALWAYS consider transportation times and energy levels.
+
+ALWAYS alternate high-energy and low-energy experiences.
+
+INCLUDE insider recommendations and local tips.
+
+INCLUDE realistic timing guidance.
+
+WARN about tourist traps, weather issues, crowds, reservations, and logistics.
+
+INCLUDE backup options for weather changes.
+
+EXPLAIN WHY certain experiences are meaningful.
+
+PERSONALIZE recommendations based on traveler profile.
+
+WRITE like a luxury travel advisor, not a generic blog.
+
+AVOID repetitive adjectives like "beautiful" or "amazing".
+
+CREATE emotional anticipation.
+
+PRIORITIZE memorable moments over checklist tourism.
+
+INCLUDE premium touches that reduce decision fatigue.
+
+BALANCE inspiration with practical usability.
+
+Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestions, Local insider tips, Estimated pacing, Important logistics, and Reservation guidance where relevant.
+
+Writing style: elegant, calm, immersive, sophisticated, human, emotionally warm. Never generic, robotic, overly promotional, exaggerated, or influencer-like.
+
+Format the output using clean markdown with clear day headers and sub-sections for Morning / Afternoon / Evening. The final output must feel worthy of a premium PDF travel atelier.
+
+Write in the language that matches the customer's profile or as instructed (English, Portuguese, or Norwegian).
+
+Now create a fully personalized day-by-day itinerary for the following traveler:
+
+Name: ${v(r.client_name)}
+Departure city: ${v(r.departure)}
+Destination: ${v(r.destination)}
+Travel dates: ${v(r.start_date)} to ${v(r.end_date)} (${v(r.trip_duration)})
+Group: ${v(r.adults)} adults, ${childrenCount} children
+Budget: ${v(r.estimated_budget)}
+Interests: ${v(r.interests)}
+Accommodation preference: ${v(r.accommodation_type)}
+Travel pace: ${v(r.travel_pace)}
+Mobility/accessibility needs: ${v(r.mobility_notes)}
+Dietary restrictions: ${v(r.dietary_restrictions)}
+Must-have experiences: ${v(r.must_have_experiences)}
+Previously visited destination: ${visited}
+Additional notes: ${v(r.notes)}
+
+Tailor every single recommendation specifically to this traveler's profile. Make them feel this itinerary was crafted exclusively for them.`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -31,38 +98,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Compose a clear, structured prompt from the customer's submission.
-    const lines: string[] = [];
-    const push = (label: string, val: any) => {
-      if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) return;
-      lines.push(`- **${label}:** ${Array.isArray(val) ? val.join(', ') : val}`);
-    };
-    push('Client name', request.client_name);
-    push('Email', request.client_email);
-    push('Phone', request.phone);
-    push('Departing from', request.departure);
-    push('Destination', request.destination);
-    push('Group size', request.group_size);
-    push('Adults', request.adults);
-    push('Children', request.children_count);
-    push('Children ages', request.children_ages);
-    push('Trip duration', request.trip_duration);
-    push('Start date', request.start_date);
-    push('End date', request.end_date);
-    push('Estimated budget', request.estimated_budget);
-    push('Travel pace', request.travel_pace);
-    push('Accommodation preference', request.accommodation_type);
-    push('Interests', request.interests);
-    push('Must-have experiences', request.must_have_experiences);
-    push('Dietary restrictions', request.dietary_restrictions);
-    push('Mobility / accessibility', request.mobility_notes);
-    push('Visited before', request.visited_before ? 'Yes' : null);
-    push('Additional notes', request.notes);
-
-    const userPrompt =
-      "Please craft a complete day-by-day itinerary for the following customer:\n\n" +
-      lines.join('\n') +
-      "\n\nProduce the itinerary now in markdown.";
+    const systemPrompt = buildSystemPrompt(request);
+    const userPrompt = 'Please generate the complete day-by-day itinerary now in markdown.';
 
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -74,7 +111,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 4096,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
     });
