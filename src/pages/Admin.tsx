@@ -99,6 +99,10 @@ const AdminDashboard = () => {
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingUploadProjectId, setPendingUploadProjectId] = useState<string | null>(null);
+  const [genRequest, setGenRequest] = useState<any | null>(null);
+  const [genOpen, setGenOpen] = useState(false);
+  const [itinProject, setItinProject] = useState<ClientProject | null>(null);
+  const [itinOpen, setItinOpen] = useState(false);
 
   const STATUS_LABELS: Record<ItineraryStatus, string> = {
     new: t("admin.new"),
