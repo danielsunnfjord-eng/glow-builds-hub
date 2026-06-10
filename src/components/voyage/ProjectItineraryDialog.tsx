@@ -4,7 +4,7 @@ import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, FileText, ImagePlus, X } from "lucide-react";
+import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2 } from "lucide-react";
 
 interface Project {
   id: string;
@@ -36,6 +36,9 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const [auditing, setAuditing] = useState(false);
+  const [auditReport, setAuditReport] = useState<string | null>(null);
+  const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -44,7 +47,43 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setNotes(project?.internal_notes || "");
     setHeroUrl(project?.hero_image_url || null);
     setTagline(project?.cover_tagline || "");
+    setAuditReport(null);
+    setPreviousContent(null);
   }, [open, project]);
+
+  const runAudit = async () => {
+    if (!content.trim()) {
+      toast.error("Itinerary is empty");
+      return;
+    }
+    setAuditing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
+        body: { content },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const audit = (data?.audit || "").trim();
+      const improved = (data?.improved || "").trim();
+      if (!audit && !improved) throw new Error("No audit returned");
+      setPreviousContent(content);
+      setAuditReport(audit || "(No audit notes returned)");
+      if (improved) setContent(improved);
+      toast.success("Audit complete — review and save if you like the result.");
+    } catch (e: any) {
+      toast.error(e?.message || "Audit failed");
+    } finally {
+      setAuditing(false);
+    }
+  };
+
+  const keepOriginal = () => {
+    if (previousContent === null) return;
+    setContent(previousContent);
+    setAuditReport(null);
+    setPreviousContent(null);
+    toast.success("Original itinerary restored");
+  };
 
   const handleSave = async () => {
     if (!project) return;
@@ -125,10 +164,29 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
             <div className="col-span-2 flex min-h-0 flex-col overflow-hidden">
               <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1.5">Itinerary (WYSIWYG)</div>
+              {auditReport && (
+                <div className="mb-2 rounded-md border border-gold/60 bg-gold/10 p-3 max-h-48 overflow-y-auto">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-ink inline-flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Audit Report
+                    </div>
+                    {previousContent !== null && (
+                      <button
+                        onClick={keepOriginal}
+                        className="text-[0.65rem] uppercase tracking-wider text-ink hover:text-gold inline-flex items-center gap-1"
+                      >
+                        <Undo2 className="w-3 h-3" /> Keep Original
+                      </button>
+                    )}
+                  </div>
+                  <pre className="whitespace-pre-wrap font-sans text-[0.78rem] text-ink leading-relaxed">{auditReport}</pre>
+                </div>
+              )}
               <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
                 <ItineraryEditor content={content} onContentChange={setContent} />
               </div>
             </div>
+
 
             <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-1">
               {/* Hero image */}
@@ -201,13 +259,32 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           </div>
 
           <div className="flex shrink-0 justify-between gap-2 border-t border-parchment-3 bg-background pt-3">
-            <button
-              onClick={handleExportPdf}
-              disabled={!content.trim()}
-              className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
-            >
-              <FileText className="w-3.5 h-3.5" /> Export PDF
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleExportPdf}
+                disabled={!content.trim()}
+                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                <FileText className="w-3.5 h-3.5" /> Export PDF
+              </button>
+              <button
+                onClick={runAudit}
+                disabled={auditing || !content.trim()}
+                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                {auditing ? "Auditing…" : "Audit Itinerary"}
+              </button>
+              {previousContent !== null && (
+                <button
+                  onClick={keepOriginal}
+                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2"
+                >
+                  <Undo2 className="w-3.5 h-3.5" /> Keep Original
+                </button>
+              )}
+            </div>
+
             <div className="flex gap-2">
               <button
                 onClick={() => onOpenChange(false)}
