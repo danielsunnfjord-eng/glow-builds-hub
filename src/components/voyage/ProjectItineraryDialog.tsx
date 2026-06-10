@@ -47,7 +47,43 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setNotes(project?.internal_notes || "");
     setHeroUrl(project?.hero_image_url || null);
     setTagline(project?.cover_tagline || "");
+    setAuditReport(null);
+    setPreviousContent(null);
   }, [open, project]);
+
+  const runAudit = async () => {
+    if (!content.trim()) {
+      toast.error("Itinerary is empty");
+      return;
+    }
+    setAuditing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
+        body: { content },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const audit = (data?.audit || "").trim();
+      const improved = (data?.improved || "").trim();
+      if (!audit && !improved) throw new Error("No audit returned");
+      setPreviousContent(content);
+      setAuditReport(audit || "(No audit notes returned)");
+      if (improved) setContent(improved);
+      toast.success("Audit complete — review and save if you like the result.");
+    } catch (e: any) {
+      toast.error(e?.message || "Audit failed");
+    } finally {
+      setAuditing(false);
+    }
+  };
+
+  const keepOriginal = () => {
+    if (previousContent === null) return;
+    setContent(previousContent);
+    setAuditReport(null);
+    setPreviousContent(null);
+    toast.success("Original itinerary restored");
+  };
 
   const handleSave = async () => {
     if (!project) return;
