@@ -36,6 +36,9 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
+  const [auditing, setAuditing] = useState(false);
+  const [auditReport, setAuditReport] = useState<string | null>(null);
+  const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
