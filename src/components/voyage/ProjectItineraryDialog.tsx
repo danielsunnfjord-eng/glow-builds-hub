@@ -259,13 +259,32 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           </div>
 
           <div className="flex shrink-0 justify-between gap-2 border-t border-parchment-3 bg-background pt-3">
-            <button
-              onClick={handleExportPdf}
-              disabled={!content.trim()}
-              className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
-            >
-              <FileText className="w-3.5 h-3.5" /> Export PDF
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleExportPdf}
+                disabled={!content.trim()}
+                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                <FileText className="w-3.5 h-3.5" /> Export PDF
+              </button>
+              <button
+                onClick={runAudit}
+                disabled={auditing || !content.trim()}
+                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                {auditing ? "Auditing…" : "Audit Itinerary"}
+              </button>
+              {previousContent !== null && (
+                <button
+                  onClick={keepOriginal}
+                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2"
+                >
+                  <Undo2 className="w-3.5 h-3.5" /> Keep Original
+                </button>
+              )}
+            </div>
+
             <div className="flex gap-2">
               <button
                 onClick={() => onOpenChange(false)}
