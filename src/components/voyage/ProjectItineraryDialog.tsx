@@ -40,6 +40,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [saving, setSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
   const [auditing, setAuditing] = useState(false);
+  const [applying, setApplying] = useState(false);
   const [auditReport, setAuditReport] = useState<string | null>(null);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -62,21 +63,67 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setAuditing(true);
     try {
       const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content },
+        body: { content, mode: "audit" },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const audit = (data?.audit || "").trim();
-      const improved = (data?.improved || "").trim();
-      if (!audit && !improved) throw new Error("No audit returned");
-      setPreviousContent(content);
-      setAuditReport(audit || "(No audit notes returned)");
-      if (improved) setContent(improved);
-      toast.success("Audit complete — review and save if you like the result.");
+      if (!audit) throw new Error("No audit returned");
+      setAuditReport(audit);
+      toast.success("Audit complete — review and apply improvements if you like.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
       setAuditing(false);
+    }
+  };
+
+  const applyImprovements = async () => {
+    if (!content.trim() || !auditReport) return;
+    setApplying(true);
+    const original = content;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            content: original,
+            mode: "rewrite",
+            audit: auditReport,
+            start_date: project?.start_date,
+            end_date: project?.end_date,
+            trip_duration: project?.trip_duration,
+          }),
+        },
+      );
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`Rewrite failed: ${errText || res.status}`);
+      }
+      setPreviousContent(original);
+      setContent("");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setContent(acc);
+      }
+      toast.success("Improvements applied — review and save.");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to apply improvements");
+      setContent(original);
+    } finally {
+      setApplying(false);
     }
   };
 
