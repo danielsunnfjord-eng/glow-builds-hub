@@ -1,5 +1,7 @@
-// Audit an existing itinerary with Claude and produce an improved version.
-// Split into two sequential calls to stay under the 150s edge idle timeout.
+// Audit an existing itinerary with Claude.
+// Two modes:
+//   - mode: "audit"   → single short call returning JSON { audit }
+//   - mode: "rewrite" → chunked streaming text/plain response with the rewritten itinerary
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify any issues including: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
@@ -9,6 +11,38 @@ Output ONLY a concise Audit Report as a markdown bullet list. Do not rewrite the
 const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
 
 Output ONLY the complete improved itinerary in markdown. Do not include an audit section, preamble, or commentary. Never stop mid-sentence — if space is tight, shorten descriptions slightly but always finish every day through the last day.`;
+
+function computeTotalDays(content: string, startDate?: string, endDate?: string, tripDuration?: string): number {
+  const s = startDate ? Date.parse(startDate) : NaN;
+  const e = endDate ? Date.parse(endDate) : NaN;
+  if (Number.isFinite(s) && Number.isFinite(e) && e >= s) {
+    return Math.round((e - s) / 86400000) + 1;
+  }
+  if (tripDuration) {
+    const m = String(tripDuration).match(/\d+/);
+    if (m) return parseInt(m[0], 10);
+  }
+  // Fallback: count "Day N" markers in the original content.
+  const matches = content.match(/##\s*Day\s+\d+/gi) || content.match(/\bDay\s+\d+\b/gi);
+  return matches ? matches.length : 0;
+}
+
+function splitDayRanges(totalDays: number, numChunks: number): Array<[number, number]> {
+  if (totalDays <= 0 || numChunks <= 0) return [];
+  if (numChunks === 1) return [[1, totalDays]];
+  const base = Math.floor(totalDays / numChunks);
+  const remainder = totalDays % numChunks;
+  const ranges: Array<[number, number]> = [];
+  let cursor = 1;
+  for (let i = 0; i < numChunks; i++) {
+    const size = base + (i < remainder ? 1 : 0);
+    if (size <= 0) continue;
+    const end = cursor + size - 1;
+    ranges.push([cursor, end]);
+    cursor = end + 1;
+  }
+  return ranges;
+}
 
 async function callClaude(apiKey: string, system: string, user: string, maxTokens: number) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -33,6 +67,113 @@ async function callClaude(apiKey: string, system: string, user: string, maxToken
   return (data?.content?.[0]?.text || '').trim();
 }
 
+function streamRewrite(opts: {
+  apiKey: string;
+  content: string;
+  audit: string;
+  totalDays: number;
+}): Response {
+  const { apiKey, content, audit, totalDays } = opts;
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+
+  const numChunks = totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
+  const ranges = totalDays > 0 ? splitDayRanges(totalDays, numChunks) : [];
+
+  const baseContext =
+    `Original itinerary:\n\n${content}\n\n---\n\nAudit notes to address:\n\n${audit || '(no audit notes provided — improve based on general best practices)'}\n\n---\n\n`;
+
+  const userPrompts: string[] = ranges.length
+    ? ranges.map(([start, end], idx) => {
+        if (ranges.length === 1) {
+          return baseContext + 'Now output the complete improved itinerary in markdown.';
+        }
+        if (idx === 0) {
+          return (
+            baseContext +
+            `Output the improved itinerary in markdown. Write Day ${start} through Day ${end} in full ` +
+            `using Morning / Afternoon / Evening structure (no clock times), with Dining tip and Insider tip per day. ` +
+            `Stop immediately after Day ${end} — do not write Day ${end + 1} or later. No closing summary; it will continue in a follow-up call.`
+          );
+        }
+        return (
+          `Continue the improved itinerary from Day ${start}. Do not repeat previous days. ` +
+          `Start directly with "## Day ${start}". Write Day ${start} through Day ${end} in full using the same structure.` +
+          (idx === ranges.length - 1
+            ? ` Complete every day through Day ${end} without truncating.`
+            : ` Stop immediately after Day ${end} — do not write later days.`)
+        );
+      })
+    : [baseContext + 'Now output the complete improved itinerary in markdown.'];
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        for (let i = 0; i < userPrompts.length; i++) {
+          const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-5',
+              max_tokens: 8192,
+              stream: true,
+              system: IMPROVE_SYSTEM,
+              messages: [{ role: 'user', content: userPrompts[i] }],
+            }),
+          });
+
+          if (!res.ok || !res.body) {
+            const errText = await res.text().catch(() => '');
+            controller.enqueue(encoder.encode(`\n\n[Error from upstream (${res.status}): ${errText}]\n`));
+            break;
+          }
+
+          if (i > 0) controller.enqueue(encoder.encode('\n\n'));
+
+          const reader = res.body.getReader();
+          let buffer = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() ?? '';
+            for (const line of lines) {
+              const t = line.trim();
+              if (!t.startsWith('data:')) continue;
+              const payload = t.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const evt = JSON.parse(payload);
+                if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+                  controller.enqueue(encoder.encode(evt.delta.text));
+                }
+              } catch { /* ignore */ }
+            }
+          }
+        }
+      } catch (e) {
+        console.error('rewrite stream error', e);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'text/plain; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': 'no-cache, no-transform',
+    },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -44,33 +185,30 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { content } = await req.json();
+    const body = await req.json();
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration } = body || {};
     if (!content || typeof content !== 'string' || !content.trim()) {
       return new Response(JSON.stringify({ error: 'Missing itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Call 1 — audit only (short)
-    const audit = await callClaude(
+    if (mode === 'rewrite') {
+      const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
+      return streamRewrite({ apiKey, content, audit, totalDays });
+    }
+
+    // Default: audit-only (short, fast)
+    const auditText = await callClaude(
       apiKey,
       AUDIT_SYSTEM,
       `Here is the itinerary to audit:\n\n${content}`,
-      2048,
+      2000,
     );
 
-    // Call 2 — full improved itinerary
-    const improved = await callClaude(
-      apiKey,
-      IMPROVE_SYSTEM,
-      `Original itinerary:\n\n${content}\n\n---\n\nAudit notes to address:\n\n${audit}\n\n---\n\nNow output the complete improved itinerary.`,
-      8192,
-    );
-
-    return new Response(
-      JSON.stringify({ audit, improved, raw: `# Audit Report\n\n${audit}\n\n# Improved Itinerary\n\n${improved}` }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return new Response(JSON.stringify({ audit: auditText }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },

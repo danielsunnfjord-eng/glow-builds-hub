@@ -4,7 +4,10 @@ import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2 } from "lucide-react";
+import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
+
+const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
 
 interface Project {
   id: string;
@@ -37,6 +40,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [saving, setSaving] = useState(false);
   const [showPdf, setShowPdf] = useState(false);
   const [auditing, setAuditing] = useState(false);
+  const [applying, setApplying] = useState(false);
   const [auditReport, setAuditReport] = useState<string | null>(null);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -59,21 +63,67 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setAuditing(true);
     try {
       const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content },
+        body: { content, mode: "audit" },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       const audit = (data?.audit || "").trim();
-      const improved = (data?.improved || "").trim();
-      if (!audit && !improved) throw new Error("No audit returned");
-      setPreviousContent(content);
-      setAuditReport(audit || "(No audit notes returned)");
-      if (improved) setContent(improved);
-      toast.success("Audit complete — review and save if you like the result.");
+      if (!audit) throw new Error("No audit returned");
+      setAuditReport(audit);
+      toast.success("Audit complete — review and apply improvements if you like.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
       setAuditing(false);
+    }
+  };
+
+  const applyImprovements = async () => {
+    if (!content.trim() || !auditReport) return;
+    setApplying(true);
+    const original = content;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            content: original,
+            mode: "rewrite",
+            audit: auditReport,
+            start_date: project?.start_date,
+            end_date: project?.end_date,
+            trip_duration: project?.trip_duration,
+          }),
+        },
+      );
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`Rewrite failed: ${errText || res.status}`);
+      }
+      setPreviousContent(original);
+      setContent("");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setContent(acc);
+      }
+      toast.success("Improvements applied — review and save.");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to apply improvements");
+      setContent(original);
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -269,16 +319,27 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               </button>
               <button
                 onClick={runAudit}
-                disabled={auditing || !content.trim()}
+                disabled={auditing || applying || !content.trim()}
                 className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
               >
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
               </button>
+              {auditReport && previousContent === null && (
+                <button
+                  onClick={applyImprovements}
+                  disabled={applying}
+                  className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                >
+                  {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  {applying ? "Rewriting…" : "Apply Improvements"}
+                </button>
+              )}
               {previousContent !== null && (
                 <button
                   onClick={keepOriginal}
-                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2"
+                  disabled={applying}
+                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   <Undo2 className="w-3.5 h-3.5" /> Keep Original
                 </button>
