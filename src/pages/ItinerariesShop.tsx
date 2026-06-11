@@ -146,7 +146,7 @@ const ItinerariesShop = () => {
       <Seo
         title="Ready-Made Itinerary Shop — Fjord & Waves Travel"
         description="Browse curated, ready-made PDF travel itineraries by Daniel Lira Figueiredo. Instant download after secure checkout."
-        path="/itineraries-shop"
+        path="/catalogue"
       />
       <Navbar />
       <main>
@@ -300,7 +300,7 @@ const ItinerariesShop = () => {
             return (
               <ScrollReveal key={trip.id}>
                 <Link
-                  to={`/itineraries-shop/${trip.slug}`}
+                  to={`/catalogue/${trip.slug}`}
                   className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left"
                 >
                   <div className="aspect-[4/5] overflow-hidden bg-parchment-2">

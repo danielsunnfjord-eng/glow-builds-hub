@@ -375,7 +375,7 @@ const CatalogShopManager = () => {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {r.is_published && r.slug && (
-                    <a href={`/itineraries-shop/${r.slug}`} target="_blank" rel="noreferrer" className="text-[0.72rem] uppercase tracking-wider text-voyage-muted hover:text-ink px-2">View</a>
+                    <a href={`/catalogue/${r.slug}`} target="_blank" rel="noreferrer" className="text-[0.72rem] uppercase tracking-wider text-voyage-muted hover:text-ink px-2">View</a>
                   )}
                   <Button size="sm" variant="ghost" onClick={() => setPreviewRow(r)} title="Preview PDF">
                     <Eye className="w-4 h-4 mr-1" /> Preview PDF
