@@ -16,8 +16,8 @@ export default {
     shop: "Catálogo",
   },
   shop: {
-    badge: "Roteiros Prontos para Comprar",
-    title: "Roteiros de Viagem Pré-Elaborados",
+    badge: "Catálogo de Roteiros",
+    title: "Catálogo de Viagens",
     subtitle: "Roteiros em PDF cuidadosamente elaborados que você pode comprar, baixar na hora e seguir no seu ritmo.",
     from: "a partir de",
     viewItinerary: "Ver Roteiro",
