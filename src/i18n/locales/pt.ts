@@ -13,7 +13,7 @@ export default {
     pricing: "Preços",
     planMyTrip: "Planeje Sua Viagem",
     bookCall: "Agendar Videochamada",
-    shop: "Roteiros Prontos",
+    shop: "Catálogo",
   },
   shop: {
     badge: "Roteiros Prontos para Comprar",

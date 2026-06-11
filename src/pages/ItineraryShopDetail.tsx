@@ -133,7 +133,7 @@ const ItineraryShopDetail = () => {
         <Navbar />
         <main className="pt-32 px-16 max-md:px-6 max-md:pt-24 min-h-[60vh]">
           <p className="text-voyage-muted mb-4">{t("shop.notFound")}</p>
-          <Link to="/itineraries-shop" className="text-gold hover:underline">
+          <Link to="/catalogue" className="text-gold hover:underline">
             {t("shop.backToShop")}
           </Link>
         </main>
@@ -156,7 +156,7 @@ const ItineraryShopDetail = () => {
       price: Number(data.price_eur).toFixed(2),
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
-      url: `https://fjordwavestravel.com/itineraries-shop/${data.slug}`,
+      url: `https://fjordwavestravel.com/catalogue/${data.slug}`,
     },
   };
 
@@ -165,7 +165,7 @@ const ItineraryShopDetail = () => {
       <Seo
         title={`${title} — Fjord & Waves Travel`}
         description={(summary || description || "").slice(0, 160)}
-        path={`/itineraries-shop/${data.slug}`}
+        path={`/catalogue/${data.slug}`}
         image={data.hero_image_url || undefined}
         type="product"
         jsonLd={productJsonLd}
@@ -175,7 +175,7 @@ const ItineraryShopDetail = () => {
         {/* Hero */}
         <section className="px-16 max-md:px-6 mb-10">
           <Link
-            to="/itineraries-shop"
+            to="/catalogue"
             className="text-[0.75rem] text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("shop.backToShop")}

@@ -68,7 +68,7 @@ const ItineraryShopSuccess = () => {
 
   return (
     <div className="min-h-screen bg-parchment flex flex-col">
-      <Seo title="Purchase confirmed — Fjord & Waves Travel" description="Your itinerary purchase is being prepared for download." path="/itineraries-shop/success" noindex />
+      <Seo title="Purchase confirmed — Fjord & Waves Travel" description="Your itinerary purchase is being prepared for download." path="/catalogue/success" noindex />
       <Navbar />
       <main>
       <main className="flex-1 pt-32 pb-20 px-6 flex items-center justify-center max-md:pt-24">
@@ -100,7 +100,7 @@ const ItineraryShopSuccess = () => {
                 {t("shop.downloadHint")}
               </p>
               <Link
-                to="/itineraries-shop"
+                to="/catalogue"
                 className="block mt-6 text-[0.78rem] text-gold hover:underline"
               >
                 {t("shop.backToShop")}
@@ -113,7 +113,7 @@ const ItineraryShopSuccess = () => {
               <div className="text-4xl mb-4">⚠️</div>
               <p className="text-voyage-muted mb-4">{t("shop.paymentFailed")}</p>
               <Link
-                to="/itineraries-shop"
+                to="/catalogue"
                 className="text-gold hover:underline"
               >
                 {t("shop.backToShop")}

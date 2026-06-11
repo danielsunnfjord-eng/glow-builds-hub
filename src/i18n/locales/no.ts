@@ -13,7 +13,7 @@ export default {
     pricing: "Priser",
     planMyTrip: "Planlegg Min Reise",
     bookCall: "Book Videosamtale",
-    shop: "Ferdige Reiseruter",
+    shop: "Katalog",
   },
   shop: {
     badge: "Ferdige Reiseruter til Salgs",
