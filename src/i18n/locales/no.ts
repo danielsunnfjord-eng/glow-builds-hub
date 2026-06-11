@@ -16,8 +16,8 @@ export default {
     shop: "Katalog",
   },
   shop: {
-    badge: "Ferdige Reiseruter til Salgs",
-    title: "Forhåndsdesignede Reiseruter",
+    badge: "Reisekatalog",
+    title: "Reisekatalog",
     subtitle: "Vakkert utformede PDF-reiseruter du kan kjøpe, laste ned med en gang og følge i ditt eget tempo.",
     from: "fra",
     viewItinerary: "Se Reiserute",
