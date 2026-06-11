@@ -68,9 +68,13 @@ const App = () => (
             <Route path="/privacy" element={<Legal />} />
             <Route path="/terms" element={<Legal />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/itineraries-shop" element={<ItinerariesShop />} />
-            <Route path="/itineraries-shop/success" element={<ItineraryShopSuccess />} />
-            <Route path="/itineraries-shop/:slug" element={<ItineraryShopDetail />} />
+            <Route path="/catalogue" element={<ItinerariesShop />} />
+            <Route path="/catalogue/success" element={<ItineraryShopSuccess />} />
+            <Route path="/catalogue/:slug" element={<ItineraryShopDetail />} />
+            {/* Legacy redirects from previous /itineraries-shop URLs */}
+            <Route path="/itineraries-shop" element={<Navigate to="/catalogue" replace />} />
+            <Route path="/itineraries-shop/success" element={<Navigate to="/catalogue/success" replace />} />
+            <Route path="/itineraries-shop/:slug" element={<LegacyShopRedirect />} />
             <Route path="/destinations/norway" element={<DestinationNorway />} />
             <Route path="/routes" element={<Routes_ />} />
             <Route path="/routes/:slug" element={<RouteDetail />} />
