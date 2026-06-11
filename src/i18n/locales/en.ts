@@ -17,8 +17,8 @@ export default {
     shop: "Catalogue",
   },
   shop: {
-    badge: "Ready-to-Buy Itineraries",
-    title: "Pre-Designed Travel Routes",
+    badge: "Itinerary Catalogue",
+    title: "Travel Catalogue",
     subtitle: "Beautifully crafted PDF itineraries you can purchase, download instantly and follow at your own pace.",
     from: "from",
     viewItinerary: "View Itinerary",
