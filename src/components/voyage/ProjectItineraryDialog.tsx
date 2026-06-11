@@ -4,7 +4,10 @@ import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2 } from "lucide-react";
+import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
+
+const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
 
 interface Project {
   id: string;
