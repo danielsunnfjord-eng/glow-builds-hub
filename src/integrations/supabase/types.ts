@@ -28,6 +28,8 @@ export type Database = {
           experience_type: string[] | null
           gallery_images: Json
           group_size_label: string | null
+          hero_image_caption: string | null
+          hero_image_credit: string | null
           hero_image_url: string | null
           hotels: Json
           id: string
@@ -65,6 +67,8 @@ export type Database = {
           experience_type?: string[] | null
           gallery_images?: Json
           group_size_label?: string | null
+          hero_image_caption?: string | null
+          hero_image_credit?: string | null
           hero_image_url?: string | null
           hotels?: Json
           id?: string
@@ -102,6 +106,8 @@ export type Database = {
           experience_type?: string[] | null
           gallery_images?: Json
           group_size_label?: string | null
+          hero_image_caption?: string | null
+          hero_image_credit?: string | null
           hero_image_url?: string | null
           hotels?: Json
           id?: string
@@ -231,6 +237,8 @@ export type Database = {
           end_date: string | null
           estimated_budget: string | null
           group_size: number
+          hero_image_caption: string | null
+          hero_image_credit: string | null
           hero_image_url: string | null
           id: string
           internal_notes: string | null
@@ -256,6 +264,8 @@ export type Database = {
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
+          hero_image_caption?: string | null
+          hero_image_credit?: string | null
           hero_image_url?: string | null
           id?: string
           internal_notes?: string | null
@@ -281,6 +291,8 @@ export type Database = {
           end_date?: string | null
           estimated_budget?: string | null
           group_size?: number
+          hero_image_caption?: string | null
+          hero_image_credit?: string | null
           hero_image_url?: string | null
           id?: string
           internal_notes?: string | null
