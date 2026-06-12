@@ -429,19 +429,12 @@ const CatalogShopManager = () => {
               <Label>Type of experience</Label>
               <div className="flex flex-wrap gap-2 mt-1.5 p-2 rounded-md border border-input bg-background min-h-10">
                 {EXPERIENCE_TYPES.map((t) => {
-                  const active = state.experienceType.includes(t);
+                  const active = state.experienceType === t;
                   return (
                     <button
                       key={t}
                       type="button"
-                      onClick={() =>
-                        setState({
-                          ...state,
-                          experienceType: active
-                            ? state.experienceType.filter((x) => x !== t)
-                            : [...state.experienceType, t],
-                        })
-                      }
+                      onClick={() => setState({ ...state, experienceType: active ? "" : t })}
                       className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
                         active
                           ? "bg-primary text-primary-foreground border-primary"
@@ -453,6 +446,16 @@ const CatalogShopManager = () => {
                   );
                 })}
               </div>
+            </div>
+            <div>
+              <Label>Season</Label>
+              <Select value={state.season || "any"} onValueChange={(v) => setState({ ...state, season: v === "any" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="Any season" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any season</SelectItem>
+                  {SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Duration</Label>
