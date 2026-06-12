@@ -9,7 +9,6 @@ import {
   Users,
   Wallet,
   Sun,
-  Lock,
   FileDown,
   Compass,
   Sparkles,
