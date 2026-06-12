@@ -26,7 +26,7 @@ interface CatalogItem {
   hero_image_url: string | null;
   price_eur: number;
   sort_order: number;
-  experience_type: string | null;
+  experience_type: string[] | null;
   season: string | null;
 }
 
@@ -88,7 +88,7 @@ const ItinerariesShop = () => {
     const q = search.trim().toLowerCase();
     return data.filter((d) => {
       if (destination && d.destination !== destination) return false;
-      if (experience && (d.experience_type || "").toLowerCase() !== experience.toLowerCase()) return false;
+      if (experience && !(d.experience_type || []).some((x) => x.toLowerCase() === experience.toLowerCase())) return false;
       if (season && (d.season || "").toLowerCase() !== season.toLowerCase()) return false;
       if (duration) {
         const days = parseDurationDays(d.duration);
@@ -101,7 +101,7 @@ const ItinerariesShop = () => {
         const hay = [
           d.title_en, d.title_pt, d.title_no,
           d.summary_en, d.summary_pt, d.summary_no,
-          d.destination, d.duration, d.experience_type, d.season,
+          d.destination, d.duration, (d.experience_type || []).join(" "), d.season,
         ].filter(Boolean).join(" ").toLowerCase();
         if (!hay.includes(q)) return false;
       }
@@ -305,11 +305,11 @@ const ItinerariesShop = () => {
                           {trip.destination}
                         </span>
                       )}
-                      {trip.experience_type && (
+                      {trip.experience_type && trip.experience_type.length > 0 && (
                         <>
                           <span className="text-voyage-muted/40 text-[0.62rem]">·</span>
                           <span className="text-[0.62rem] font-medium tracking-[0.12em] uppercase text-voyage-muted">
-                            {trip.experience_type}
+                            {trip.experience_type.join(" · ")}
                           </span>
                         </>
                       )}

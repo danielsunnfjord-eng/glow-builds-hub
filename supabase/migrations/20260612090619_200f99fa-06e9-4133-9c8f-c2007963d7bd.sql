@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_itineraries ALTER COLUMN experience_type TYPE text[] USING CASE WHEN experience_type IS NOT NULL THEN ARRAY[experience_type] ELSE NULL END;

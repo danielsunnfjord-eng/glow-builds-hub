@@ -53,7 +53,7 @@ interface CatalogRow {
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
-  experience_type: string | null;
+  experience_type: string[] | null;
   season: string | null;
   hotels: HotelRec[] | null;
   audit_report: string | null;
@@ -94,7 +94,7 @@ interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string;
+  experienceType: string[];
   season: string;
   duration: string;
   language: Lang;
@@ -117,7 +117,7 @@ const blankEditor: EditorState = {
   id: null,
   title: "",
   destination: "",
-  experienceType: "",
+  experienceType: [],
   season: "",
   duration: "",
   language: "en",
@@ -223,7 +223,7 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: r.experience_type || "",
+      experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: r.season || "",
       duration: r.duration || "",
       language: lang,
@@ -285,7 +285,7 @@ const CatalogShopManager = () => {
       const text = await callCatalogStream({
         title: state.title,
         destination: state.destination,
-        experience_type: state.experienceType,
+        experience_type: state.experienceType.join(", "),
         duration: state.duration,
         language: state.language,
         brief: state.brief,
@@ -559,7 +559,7 @@ const CatalogShopManager = () => {
         [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
-        experience_type: state.experienceType || null,
+        experience_type: state.experienceType.length ? state.experienceType : null,
         season: state.season || null,
         price_eur: Number(state.priceEur) || 0,
         hero_image_url: state.heroImageUrl || null,
@@ -814,12 +814,19 @@ const CatalogShopManager = () => {
               <Label>Type of experience</Label>
               <div className="flex flex-wrap gap-2 mt-1.5 p-2 rounded-md border border-input bg-background min-h-10">
                 {EXPERIENCE_TYPES.map((t) => {
-                  const active = state.experienceType === t;
+                  const active = state.experienceType.includes(t);
                   return (
                     <button
                       key={t}
                       type="button"
-                      onClick={() => setState({ ...state, experienceType: active ? "" : t })}
+                      onClick={() =>
+                        setState({
+                          ...state,
+                          experienceType: active
+                            ? state.experienceType.filter((x) => x !== t)
+                            : [...state.experienceType, t],
+                        })
+                      }
                       className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
                         active
                           ? "bg-primary text-primary-foreground border-primary"
