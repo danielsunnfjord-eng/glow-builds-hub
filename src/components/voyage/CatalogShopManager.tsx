@@ -94,7 +94,7 @@ interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string;
+  experienceType: string[];
   season: string;
   duration: string;
   language: Lang;
