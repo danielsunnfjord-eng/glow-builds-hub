@@ -458,15 +458,18 @@ const ItineraryShopDetail = () => {
                         </span>
                       </li>
                     )}
-                    <li className="flex items-start gap-3">
-                      <Sun className="w-4 h-4 mt-0.5 text-gold shrink-0" />
-                      <span>
-                        <span className="block text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted">
-                          {t("shop.bestSeason", "Best season")}
+                    {data.season && data.season.length > 0 && (
+                      <li className="flex items-start gap-3">
+                        <Sun className="w-4 h-4 mt-0.5 text-gold shrink-0" />
+                        <span>
+                          <span className="block text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted">
+                            {t("shop.bestSeason", "Best season")}
+                          </span>
+                          {data.season.join(" · ")}
                         </span>
-                        {t("shop.bestSeasonValue", "Year-round · ask us for ideal months")}
-                      </span>
-                    </li>
+                      </li>
+                    )}
+
                   </ul>
                 </div>
 
