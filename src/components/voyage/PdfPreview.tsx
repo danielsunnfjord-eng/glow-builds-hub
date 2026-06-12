@@ -58,11 +58,12 @@ const formatDateRange = (start?: string | null, end?: string | null) => {
   return fmt((start || end) as string);
 };
 
-const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) => {
+const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewProps) => {
   const { t } = useTranslation();
   const htmlContent = markdownToHtml(content);
   const tagline = project?.cover_tagline?.trim() || "Your Journey, Curated.";
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
+  const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
 
   const pageStyle: React.CSSProperties = {
     width: "210mm",
