@@ -307,6 +307,8 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
     const urls: string[] = Array.isArray(body.urls) ? body.urls.slice(0, 5) : [];
     const documentsText: string = (body.documents_text || "").toString().slice(0, 16000);
     const heroImageUrl: string | null = body.hero_image_url || null;
+    const heroImageCredit: string = (body.hero_image_credit || "").toString();
+    const heroImageCaption: string = (body.hero_image_caption || "").toString();
     const itineraryContext: any = body.itinerary_context || null; // existing fields the editor already filled
 
     let doc: any;
@@ -373,18 +375,30 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       }
     }
 
-    // --- Hotel recommendations: pull from body or DB row ---
+    // --- Hotel recommendations & hero credit/caption: pull from body or DB row ---
     let hotels: any[] = Array.isArray(body.hotels) ? body.hotels : [];
+    let heroCredit = heroImageCredit;
+    let heroCaption = heroImageCaption;
     const itineraryId: string | null = (body.itinerary_id || "").toString() || null;
-    if (!hotels.length && itineraryId) {
+    if (itineraryId && (!hotels.length || !heroCredit || !heroCaption)) {
       const { data: row } = await supaService
         .from("catalog_itineraries")
-        .select("hotels")
+        .select("hotels, hero_image_credit, hero_image_caption")
         .eq("id", itineraryId)
         .maybeSingle();
-      if (row && Array.isArray((row as any).hotels)) hotels = (row as any).hotels;
+      if (row) {
+        if (!hotels.length && Array.isArray((row as any).hotels)) hotels = (row as any).hotels;
+        if (!heroCredit) heroCredit = (row as any).hero_image_credit || "";
+        if (!heroCaption) heroCaption = (row as any).hero_image_caption || "";
+      }
     }
     const visibleHotels = hotels.filter((h: any) => h && h.visible !== false && (h.name || "").trim());
+
+    // Normalize photos: legacy string[] → [{url, credit, caption}]
+    const normPhoto = (p: any) =>
+      typeof p === "string" ? { url: p, credit: "", caption: "" }
+      : p && typeof p === "object" ? { url: p.url || "", credit: p.credit || "", caption: p.caption || "" }
+      : null;
 
     // --- Render PDF (premium layout) ---
     const coverImageUrl = doc.cover_image_url || heroImageUrl;
