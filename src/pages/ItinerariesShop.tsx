@@ -27,8 +27,9 @@ interface CatalogItem {
   price_eur: number;
   sort_order: number;
   experience_type: string[] | null;
-  season: string | null;
+  season: string[] | null;
 }
+
 
 const pickLang = <T extends string | null>(
   lang: string,
@@ -89,8 +90,9 @@ const ItinerariesShop = () => {
     return data.filter((d) => {
       if (destination && d.destination !== destination) return false;
       if (experience && !(d.experience_type || []).some((x) => x.toLowerCase() === experience.toLowerCase())) return false;
-      if (season && (d.season || "").toLowerCase() !== season.toLowerCase()) return false;
+      if (season && !(d.season || []).some((s) => s.toLowerCase() === season.toLowerCase())) return false;
       if (duration) {
+
         const days = parseDurationDays(d.duration);
         if (days === null) return false;
         if (duration === "short" && !(days >= 1 && days <= 4)) return false;
@@ -101,8 +103,9 @@ const ItinerariesShop = () => {
         const hay = [
           d.title_en, d.title_pt, d.title_no,
           d.summary_en, d.summary_pt, d.summary_no,
-          d.destination, d.duration, (d.experience_type || []).join(" "), d.season,
+          d.destination, d.duration, (d.experience_type || []).join(" "), (d.season || []).join(" "),
         ].filter(Boolean).join(" ").toLowerCase();
+
         if (!hay.includes(q)) return false;
       }
       return true;
