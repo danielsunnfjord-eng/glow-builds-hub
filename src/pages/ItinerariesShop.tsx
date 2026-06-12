@@ -26,7 +26,7 @@ interface CatalogItem {
   hero_image_url: string | null;
   price_eur: number;
   sort_order: number;
-  experience_type: string | null;
+  experience_type: string[] | null;
   season: string | null;
 }
 
