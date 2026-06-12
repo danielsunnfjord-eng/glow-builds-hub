@@ -201,7 +201,7 @@ Deno.serve(async (req) => {
       return streamRewrite({ apiKey, content, audit, totalDays });
     }
 
-    // Default: audit-only (short, fast)
+    // Default: audit-only (short, fast). Returns JSON items.
     const auditText = await callClaude(
       apiKey,
       AUDIT_SYSTEM,
@@ -209,7 +209,24 @@ Deno.serve(async (req) => {
       2000,
     );
 
-    return new Response(JSON.stringify({ audit: auditText }), {
+    let items: Array<{ title: string; why: string }> = [];
+    try {
+      const cleaned = auditText.replace(/^```json\s*|\s*```$/gi, '').trim();
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      const parsed = JSON.parse(match ? match[0] : cleaned);
+      if (Array.isArray(parsed?.items)) {
+        items = parsed.items
+          .map((it: any) => ({
+            title: String(it?.title || it?.suggestion || '').trim(),
+            why: String(it?.why || it?.reason || it?.explanation || '').trim(),
+          }))
+          .filter((it: any) => it.title);
+      }
+    } catch {
+      // fall through — leave items empty, client will fallback parse the text
+    }
+
+    return new Response(JSON.stringify({ audit: auditText, items }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
