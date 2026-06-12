@@ -1244,6 +1244,7 @@ const CatalogShopManager = () => {
             hero_image_caption: previewRow.hero_image_caption,
             cover_tagline: previewRow.summary_en || null,
           }}
+          hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
           onClose={() => setPreviewRow(null)}
           onExport={() => window.print()}
         />
