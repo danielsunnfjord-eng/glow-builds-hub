@@ -368,19 +368,26 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      const audit = (data?.audit || "").toString().trim();
-      if (!audit) throw new Error("No audit returned");
+      const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
+      if (!parsed.length) throw new Error("No audit suggestions returned");
+      const items: SelectableAuditItem[] = parsed.map((i) => ({ ...i, selected: true }));
+      const serialized = serializeAuditItems(items);
       const now = new Date().toISOString();
-      setState((s) => ({ ...s, auditReport: audit, auditedAt: now }));
-      // Persist audit immediately so it survives reloads (if saved row exists)
+      setState((s) => ({
+        ...s,
+        auditItems: items,
+        auditReport: serialized,
+        auditedAt: now,
+        previousContent: null,
+      }));
       if (state.id) {
         await supabase
           .from("catalog_itineraries")
-          .update({ audit_report: audit, audited_at: now })
+          .update({ audit_report: serialized, audited_at: now })
           .eq("id", state.id);
         qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
       }
-      toast.success("Audit complete — review the report below.");
+      toast.success("Audit complete — pick which improvements to apply.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
@@ -388,12 +395,31 @@ const CatalogShopManager = () => {
     }
   };
 
+  const toggleAuditItem = (id: string) =>
+    setState((s) => ({
+      ...s,
+      auditItems: s.auditItems.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)),
+    }));
+  const selectAllAudit = () =>
+    setState((s) => ({ ...s, auditItems: s.auditItems.map((i) => ({ ...i, selected: true })) }));
+  const deselectAllAudit = () =>
+    setState((s) => ({ ...s, auditItems: s.auditItems.map((i) => ({ ...i, selected: false })) }));
+  const keepOriginalAudit = () => {
+    setState((s) =>
+      s.previousContent === null ? s : { ...s, content: s.previousContent, previousContent: null },
+    );
+    toast.success("Original itinerary restored");
+  };
+
   const applyAudit = async () => {
-    if (!state.auditReport.trim() || !state.content.trim()) {
-      toast.error("Run the audit first.");
+    const selected = state.auditItems.filter((i) => i.selected);
+    if (!selected.length || !state.content.trim()) {
+      toast.error("Select at least one improvement to apply.");
       return;
     }
     setApplyingAudit(true);
+    const original = state.content;
+    const auditText = itemsToPromptText(selected);
     try {
       const { data: sess } = await supabase.auth.getSession();
       const token = sess?.session?.access_token;
@@ -407,8 +433,8 @@ const CatalogShopManager = () => {
         },
         body: JSON.stringify({
           mode: "rewrite",
-          content: state.content,
-          audit: state.auditReport,
+          content: original,
+          audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
           trip_duration: state.duration,
         }),
       });
@@ -416,6 +442,7 @@ const CatalogShopManager = () => {
         const errText = await res.text().catch(() => "");
         throw new Error(errText || `Rewrite failed (${res.status})`);
       }
+      setState((s) => ({ ...s, previousContent: original, content: "" }));
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let rewritten = "";
@@ -431,6 +458,7 @@ const CatalogShopManager = () => {
       toast.success("Improvements applied. Review the rewritten itinerary.");
     } catch (e: any) {
       toast.error(e?.message || "Failed to apply improvements");
+      setState((s) => ({ ...s, content: original, previousContent: null }));
     } finally {
       setApplyingAudit(false);
     }
