@@ -217,11 +217,27 @@ const ItineraryShopDetail = () => {
               </div>
             )}
 
-            {itineraryHtml && (
-              <div
-                className="mb-10 prose prose-sm md:prose-base max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-[1.8rem] prose-h2:text-[1.3rem] prose-h3:text-[1.05rem] prose-p:text-ink/80 prose-li:text-ink/80 prose-strong:text-ink"
-                dangerouslySetInnerHTML={{ __html: itineraryHtml }}
-              />
+            {teaserHtml && (
+              <div className="mb-10">
+                <div className="relative overflow-hidden rounded-lg border border-ink/[0.08] bg-voyage-white">
+                  <div
+                    className="p-6 prose prose-sm md:prose-base max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-[1.8rem] prose-h2:text-[1.3rem] prose-h3:text-[1.05rem] prose-p:text-ink/80 prose-li:text-ink/80 prose-strong:text-ink"
+                    dangerouslySetInnerHTML={{ __html: teaserHtml }}
+                  />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-voyage-white via-voyage-white/90 to-transparent" />
+                </div>
+                <div className="mt-4 text-center bg-parchment-2 border border-dashed border-ink/15 rounded-lg p-6">
+                  <p className="text-[0.85rem] text-ink/80 mb-3">
+                    🔒 {t("shop.unlockTeaser", "Purchase to unlock the full itinerary")}
+                  </p>
+                  <a
+                    href="#buy"
+                    className="inline-block px-6 py-3 rounded-sm bg-ink text-voyage-white text-[0.78rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+                  >
+                    {t("shop.purchaseItinerary", "Purchase Itinerary")} — €{Number(data.price_eur).toFixed(0)}
+                  </a>
+                </div>
+              </div>
             )}
 
             {gallery.length > 0 && (
