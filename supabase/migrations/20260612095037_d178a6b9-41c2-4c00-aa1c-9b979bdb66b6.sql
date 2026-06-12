@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_itineraries ALTER COLUMN season TYPE text[] USING CASE WHEN season IS NOT NULL THEN ARRAY[season] ELSE NULL END;
