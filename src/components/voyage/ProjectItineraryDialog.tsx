@@ -332,14 +332,14 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
               </button>
-              {auditReport && previousContent === null && (
+              {auditItems.length > 0 && previousContent === null && (
                 <button
                   onClick={applyImprovements}
-                  disabled={applying}
+                  disabled={applying || !auditItems.some((i) => i.selected)}
                   className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                  {applying ? "Rewriting…" : "Apply Improvements"}
+                  {applying ? "Rewriting…" : `Apply Selected (${auditItems.filter((i) => i.selected).length})`}
                 </button>
               )}
               {previousContent !== null && (
