@@ -4,9 +4,12 @@
 //   - mode: "rewrite" → chunked streaming text/plain response with the rewritten itinerary
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify any issues including: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
 
-Output ONLY a concise Audit Report as a markdown bullet list. Do not rewrite the itinerary. Be specific and actionable. Keep it under ~400 words.`;
+Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
+{ "items": [ { "title": "Short actionable suggestion (max ~12 words, ideally referencing the specific day)", "why": "One sentence explaining why this improvement matters." } ] }
+
+Provide between 4 and 10 distinct items. Each item must be a single specific, actionable improvement. Do not rewrite the itinerary.`;
 
 const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
 
