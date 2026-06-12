@@ -380,6 +380,105 @@ const CatalogShopManager = () => {
 
   return (
     <div>
+      <div className="flex gap-1 border-b border-parchment-3 mb-6">
+        <button
+          onClick={() => setTab("itineraries")}
+          className={`px-4 py-2.5 text-[0.72rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${
+            tab === "itineraries" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"
+          }`}
+        >
+          Itineraries
+        </button>
+        <button
+          onClick={() => setTab("suggestions")}
+          className={`relative px-4 py-2.5 text-[0.72rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${
+            tab === "suggestions" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"
+          }`}
+        >
+          {t("adminSuggestions.tab")}
+          {newSuggestionsCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-voyage-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">
+              {newSuggestionsCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {tab === "suggestions" ? (
+        <div>
+          <div className="mb-6">
+            <h1 className="font-serif text-3xl font-bold mb-1">{t("adminSuggestions.title")}</h1>
+            <p className="text-[0.85rem] text-voyage-muted">{t("adminSuggestions.desc")}</p>
+          </div>
+          {suggestionsLoading ? (
+            <div className="p-8 text-center text-sm text-voyage-muted">Loading…</div>
+          ) : suggestions.length === 0 ? (
+            <div className="border border-parchment-3 rounded-md bg-voyage-white p-12 text-center text-sm text-voyage-muted">
+              {t("adminSuggestions.empty")}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {suggestions.map((s) => {
+                const statusColors: Record<string, string> = {
+                  new: "bg-gold/10 text-gold border-gold/30",
+                  reviewed: "bg-sage/10 text-sage border-sage/30",
+                  archived: "bg-ink/[0.06] text-voyage-muted border-parchment-3",
+                };
+                const statusLabel =
+                  s.status === "reviewed" ? t("adminSuggestions.statusReviewed")
+                  : s.status === "archived" ? t("adminSuggestions.statusArchived")
+                  : t("adminSuggestions.statusNew");
+                return (
+                  <div key={s.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-serif text-lg font-bold text-ink">{s.destination}</span>
+                        <span className={`text-[0.6rem] uppercase tracking-wider px-2 py-0.5 rounded border ${statusColors[s.status] || statusColors.new}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+                      <div className="text-[0.72rem] text-voyage-muted">
+                        {new Date(s.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 text-[0.82rem]">
+                      <div>
+                        <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.experience")}</span>
+                        <span className="text-ink">{s.experience_type || "—"}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.email")}</span>
+                        <a href={`mailto:${s.email}`} className="text-ink hover:text-gold transition-colors">{s.email}</a>
+                      </div>
+                    </div>
+                    {s.details && (
+                      <div className="bg-parchment rounded-sm p-3 mb-3 text-[0.82rem] text-ink-2 whitespace-pre-wrap">
+                        {s.details}
+                      </div>
+                    )}
+                    <div className="flex gap-2 flex-wrap">
+                      {s.status === "new" && (
+                        <Button size="sm" variant="outline" onClick={() => updateSuggestionStatus(s.id, "reviewed")}>
+                          {t("adminSuggestions.markReviewed")}
+                        </Button>
+                      )}
+                      {s.status !== "archived" && (
+                        <Button size="sm" variant="ghost" onClick={() => updateSuggestionStatus(s.id, "archived")}>
+                          {t("adminSuggestions.archive")}
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => deleteSuggestion(s.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+      <>
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-serif text-3xl font-bold mb-1">Itinerary catalogue</h1>
