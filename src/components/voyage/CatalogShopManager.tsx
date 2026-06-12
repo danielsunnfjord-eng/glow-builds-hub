@@ -11,10 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon,
+  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
+import AuditChecklist from "./AuditChecklist";
+import {
+  parseAuditItems,
+  serializeAuditItems,
+  itemsToPromptText,
+  type SelectableAuditItem,
+} from "@/lib/auditParser";
 
 type Lang = "en" | "pt" | "no";
 
@@ -101,7 +108,9 @@ interface EditorState {
   isPublished: boolean;
   hotels: HotelRec[];
   auditReport: string;
+  auditItems: SelectableAuditItem[];
   auditedAt: string | null;
+  previousContent: string | null;
 }
 
 const blankEditor: EditorState = {
@@ -122,7 +131,9 @@ const blankEditor: EditorState = {
   isPublished: false,
   hotels: [],
   auditReport: "",
+  auditItems: [],
   auditedAt: null,
+  previousContent: null,
 };
 
 const CatalogShopManager = () => {
@@ -226,7 +237,9 @@ const CatalogShopManager = () => {
       isPublished: r.is_published,
       hotels,
       auditReport: r.audit_report || "",
+      auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
+      previousContent: null,
     });
     setSectionPrompt("");
     setEditorOpen(true);
