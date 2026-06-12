@@ -223,7 +223,7 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: r.experience_type || "",
+      experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: r.season || "",
       duration: r.duration || "",
       language: lang,
