@@ -226,22 +226,17 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
             <div className="col-span-2 flex min-h-0 flex-col overflow-hidden">
               <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1.5">Itinerary (WYSIWYG)</div>
-              {auditReport && (
-                <div className="mb-2 rounded-md border border-gold/60 bg-gold/10 p-3 max-h-48 overflow-y-auto">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-ink inline-flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Audit Report
-                    </div>
-                    {previousContent !== null && (
-                      <button
-                        onClick={keepOriginal}
-                        className="text-[0.65rem] uppercase tracking-wider text-ink hover:text-gold inline-flex items-center gap-1"
-                      >
-                        <Undo2 className="w-3 h-3" /> Keep Original
-                      </button>
-                    )}
-                  </div>
-                  <pre className="whitespace-pre-wrap font-sans text-[0.78rem] text-ink leading-relaxed">{auditReport}</pre>
+              {auditItems.length > 0 && (
+                <div className="mb-2">
+                  <AuditChecklist
+                    items={auditItems}
+                    onToggle={toggleItem}
+                    onSelectAll={selectAll}
+                    onDeselectAll={deselectAll}
+                    canKeepOriginal={previousContent !== null}
+                    onKeepOriginal={keepOriginal}
+                    compact
+                  />
                 </div>
               )}
               <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
