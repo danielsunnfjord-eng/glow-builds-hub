@@ -305,11 +305,11 @@ const ItinerariesShop = () => {
                           {trip.destination}
                         </span>
                       )}
-                      {trip.experience_type && (
+                      {trip.experience_type && trip.experience_type.length > 0 && (
                         <>
                           <span className="text-voyage-muted/40 text-[0.62rem]">·</span>
                           <span className="text-[0.62rem] font-medium tracking-[0.12em] uppercase text-voyage-muted">
-                            {trip.experience_type}
+                            {trip.experience_type.join(" · ")}
                           </span>
                         </>
                       )}
