@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,7 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const STRIPE_KEY = Deno.env.get("STRIPE_SANDBOX_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -52,7 +52,6 @@ Deno.serve(async (req) => {
       (lang === "no" && itin.title_no) ||
       itin.title_en;
 
-    // Create pending purchase row to get the download_token
     const { data: purchase, error: purchaseErr } = await supabase
       .from("catalog_purchases")
       .insert({
@@ -70,47 +69,36 @@ Deno.serve(async (req) => {
       return json({ error: "Could not create purchase" }, 500);
     }
 
-    const successUrl = `${body.origin}/itineraries-shop/success?token=${purchase.download_token}&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${body.origin}/itineraries-shop/${itin.slug}?canceled=1`;
+    const successUrl = `${body.origin}/catalogue/success?token=${purchase.download_token}&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${body.origin}/catalogue/${itin.slug}?canceled=1`;
 
-    // Build Stripe Checkout session
-    const params = new URLSearchParams();
-    params.append("mode", "payment");
-    params.append("success_url", successUrl);
-    params.append("cancel_url", cancelUrl);
-    params.append("customer_email", body.email);
-    params.append("line_items[0][price_data][currency]", "eur");
-    params.append("line_items[0][price_data][product_data][name]", title);
-    params.append(
-      "line_items[0][price_data][unit_amount]",
-      String(Math.round(Number(itin.price_eur) * 100)),
-    );
-    if (itin.hero_image_url) {
-      params.append(
-        "line_items[0][price_data][product_data][images][0]",
-        itin.hero_image_url,
-      );
-    }
-    params.append("line_items[0][quantity]", "1");
-    params.append("automatic_tax[enabled]", "true");
-    params.append("metadata[purchase_id]", purchase.id);
-    params.append("metadata[itinerary_id]", itin.id);
-    params.append("metadata[download_token]", purchase.download_token);
+    const stripe = createStripeClient("sandbox");
 
-    const stripeRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${STRIPE_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded",
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: body.email,
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: Math.round(Number(itin.price_eur) * 100),
+            product_data: {
+              name: title,
+              ...(itin.hero_image_url ? { images: [itin.hero_image_url] } : {}),
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      payment_intent_data: { description: title },
+      metadata: {
+        purchase_id: purchase.id,
+        itinerary_id: itin.id,
+        download_token: purchase.download_token,
       },
-      body: params.toString(),
     });
-
-    const session = await stripeRes.json();
-    if (!stripeRes.ok) {
-      console.error("Stripe error", session);
-      return json({ error: session?.error?.message ?? "Stripe error" }, 500);
-    }
 
     await supabase
       .from("catalog_purchases")
@@ -119,7 +107,7 @@ Deno.serve(async (req) => {
 
     return json({ url: session.url });
   } catch (e) {
-    console.error(e);
-    return json({ error: String(e) }, 500);
+    console.error("checkout error", e);
+    return json({ error: String((e as Error).message ?? e) }, 500);
   }
 });

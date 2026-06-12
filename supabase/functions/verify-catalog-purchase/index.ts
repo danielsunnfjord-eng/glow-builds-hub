@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createStripeClient } from "../_shared/stripe.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,7 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const STRIPE_KEY = Deno.env.get("STRIPE_SANDBOX_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: purchase } = await supabase
       .from("catalog_purchases")
-      .select("id, status, itinerary_id, stripe_session_id, download_expires_at")
+      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total")
       .eq("download_token", token)
       .maybeSingle();
 
@@ -36,46 +36,70 @@ Deno.serve(async (req) => {
       return json({ error: "Mismatched session" }, 400);
     }
 
-    // If already paid, return ready
-    if (purchase.status === "paid") {
-      const { data: itin } = await supabase
+    const fetchItin = () =>
+      supabase
         .from("catalog_itineraries")
-        .select("title_en, title_pt, title_no, slug")
+        .select("title_en, title_pt, title_no, slug, pdf_path")
         .eq("id", purchase.itinerary_id)
         .single();
+
+    if (purchase.status === "paid") {
+      const { data: itin } = await fetchItin();
       return json({ status: "paid", itinerary: itin });
     }
 
-    // Check Stripe session status
-    const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${session_id}`, {
-      headers: { Authorization: `Bearer ${STRIPE_KEY}` },
-    });
-    const session = await res.json();
-    if (!res.ok) return json({ error: "Stripe error" }, 500);
+    const stripe = createStripeClient("sandbox");
+    const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.payment_status === "paid") {
       const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      const customerName = session.customer_details?.name ?? null;
       await supabase
         .from("catalog_purchases")
         .update({
           status: "paid",
           download_expires_at: expires,
-          customer_name: session.customer_details?.name ?? null,
+          customer_name: customerName,
         })
         .eq("id", purchase.id);
 
-      const { data: itin } = await supabase
-        .from("catalog_itineraries")
-        .select("title_en, title_pt, title_no, slug")
-        .eq("id", purchase.itinerary_id)
-        .single();
+      const { data: itin } = await fetchItin();
+
+      // Send confirmation email with PDF download link
+      try {
+        const title = itin?.title_en ?? "your itinerary";
+        let downloadUrl: string | null = null;
+        if (itin?.pdf_path) {
+          const { data: signed } = await supabase.storage
+            .from("catalog-pdfs")
+            .createSignedUrl(itin.pdf_path, 60 * 60 * 24 * 7, {
+              download: `${title}.pdf`.replace(/[^\w.\- ]/g, ""),
+            });
+          downloadUrl = signed?.signedUrl ?? null;
+        }
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "catalog-purchase-confirmation",
+            recipientEmail: purchase.customer_email,
+            idempotencyKey: `catalog-purchase-${purchase.id}`,
+            templateData: {
+              customerName,
+              itineraryTitle: title,
+              downloadUrl,
+              amount: purchase.amount_total ? String(purchase.amount_total) : undefined,
+            },
+          },
+        });
+      } catch (mailErr) {
+        console.error("send confirmation email failed", mailErr);
+      }
 
       return json({ status: "paid", itinerary: itin });
     }
 
     return json({ status: session.payment_status ?? "pending" });
   } catch (e) {
-    console.error(e);
-    return json({ error: String(e) }, 500);
+    console.error("verify error", e);
+    return json({ error: String((e as Error).message ?? e) }, 500);
   }
 });
