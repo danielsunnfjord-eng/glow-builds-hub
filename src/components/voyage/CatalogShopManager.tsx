@@ -89,6 +89,8 @@ const blankEditor: EditorState = {
 
 const CatalogShopManager = () => {
   const qc = useQueryClient();
+  const { t } = useTranslation();
+  const [tab, setTab] = useState<"itineraries" | "suggestions">("itineraries");
   const [search, setSearch] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
   const [state, setState] = useState<EditorState>(blankEditor);
@@ -99,6 +101,33 @@ const CatalogShopManager = () => {
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
+
+  const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
+    queryKey: ["customer-suggestions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customer_suggestions" as any)
+        .select("id, destination, experience_type, details, email, status, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as SuggestionRow[];
+    },
+  });
+
+  const updateSuggestionStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("customer_suggestions" as any).update({ status } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["customer-suggestions"] });
+  };
+
+  const deleteSuggestion = async (id: string) => {
+    if (!confirm(t("adminSuggestions.deleteConfirm"))) return;
+    const { error } = await supabase.from("customer_suggestions" as any).delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["customer-suggestions"] });
+  };
+
+  const newSuggestionsCount = suggestions.filter((s) => s.status === "new").length;
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["catalog-shop-list"],
