@@ -43,7 +43,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [showPdf, setShowPdf] = useState(false);
   const [auditing, setAuditing] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [auditReport, setAuditReport] = useState<string | null>(null);
+  const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,7 +53,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setNotes(project?.internal_notes || "");
     setHeroUrl(project?.hero_image_url || null);
     setTagline(project?.cover_tagline || "");
-    setAuditReport(null);
+    setAuditItems([]);
     setPreviousContent(null);
   }, [open, project]);
 
@@ -69,10 +69,10 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      const audit = (data?.audit || "").trim();
-      if (!audit) throw new Error("No audit returned");
-      setAuditReport(audit);
-      toast.success("Audit complete — review and apply improvements if you like.");
+      const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
+      if (!parsed.length) throw new Error("No audit suggestions returned");
+      setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
+      toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
@@ -80,10 +80,20 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     }
   };
 
+  const toggleItem = (id: string) =>
+    setAuditItems((arr) => arr.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)));
+  const selectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: true })));
+  const deselectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: false })));
+
   const applyImprovements = async () => {
-    if (!content.trim() || !auditReport) return;
+    const selected = auditItems.filter((i) => i.selected);
+    if (!content.trim() || !selected.length) {
+      toast.error("Select at least one improvement to apply.");
+      return;
+    }
     setApplying(true);
     const original = content;
+    const auditText = itemsToPromptText(selected);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(
@@ -98,7 +108,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           body: JSON.stringify({
             content: original,
             mode: "rewrite",
-            audit: auditReport,
+            audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
             start_date: project?.start_date,
             end_date: project?.end_date,
             trip_duration: project?.trip_duration,
@@ -132,10 +142,10 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const keepOriginal = () => {
     if (previousContent === null) return;
     setContent(previousContent);
-    setAuditReport(null);
     setPreviousContent(null);
     toast.success("Original itinerary restored");
   };
+
 
   const handleSave = async () => {
     if (!project) return;
