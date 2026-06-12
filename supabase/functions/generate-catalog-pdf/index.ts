@@ -398,57 +398,78 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
     const MUTED: [number, number, number] = [110, 110, 110];
 
     // ============ COVER ============
+    // Cream background
+    pdf.setFillColor(248, 244, 236);
+    pdf.rect(0, 0, W, H, "F");
+
+    // Hero image: top ~55% of page
     let heroData: string | null = null;
     if (coverImageUrl) heroData = await fetchImageDataUrl(coverImageUrl);
+    const heroH = H * 0.55;
     if (heroData) {
-      try { pdf.addImage(heroData, "JPEG", 0, 0, W, H, undefined, "FAST"); } catch {}
-      // Dark gradient overlay (bottom 60%)
-      pdf.setFillColor(0, 0, 0);
-      // Approximate gradient with stacked translucent rects
-      for (let i = 0; i < 30; i++) {
-        const alpha = 0.02 + i * 0.018;
-        try { (pdf as any).setGState(new (pdf as any).GState({ opacity: alpha })); } catch {}
-        const top = H * (0.4 + i * 0.02);
-        pdf.rect(0, top, W, H - top, "F");
-      }
-      try { (pdf as any).setGState(new (pdf as any).GState({ opacity: 1 })); } catch {}
+      try { pdf.addImage(heroData, "JPEG", 0, 0, W, heroH, undefined, "FAST"); } catch {}
     } else {
       pdf.setFillColor(20, 24, 30);
-      pdf.rect(0, 0, W, H, "F");
+      pdf.rect(0, 0, W, heroH, "F");
     }
 
-    // Top brand line
+    // Content block below hero — stacked top-down with explicit spacing
+    let y = heroH + 50;
+
+    // Small label
     pdf.setTextColor(...GOLD);
-    pdf.setFont("times", "italic");
-    pdf.setFontSize(11);
-    pdf.text("FJORD & WAVES TRAVEL", M, M + 10);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text("PREPARED EXCLUSIVELY FOR YOU", W / 2, y, { align: "center" });
+    y += 32;
 
-    // Title block bottom
-    pdf.setTextColor(255, 255, 255);
+    // Title (serif, large)
+    pdf.setTextColor(...INK);
     pdf.setFont("times", "bold");
-    pdf.setFontSize(40);
+    pdf.setFontSize(30);
     const titleLines = pdf.splitTextToSize(doc.title || "Itinerary", contentW);
-    const titleBlockHeight = titleLines.length * 44;
-    let y = H - M - 80 - titleBlockHeight;
-    titleLines.forEach((l: string) => { pdf.text(l, M, y); y += 44; });
+    titleLines.forEach((l: string) => {
+      pdf.text(l, W / 2, y, { align: "center" });
+      y += 34;
+    });
+    y += 12;
 
-    // Destination + duration
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    pdf.setTextColor(220, 220, 220);
-    const destDur = [doc.trip_overview?.destination, doc.trip_overview?.duration].filter(Boolean).join(" · ");
-    if (destDur) { pdf.text(destDur, M, y + 8); y += 22; }
-
-    // Gold divider
+    // Divider line
     pdf.setDrawColor(...GOLD);
-    pdf.setLineWidth(1);
-    pdf.line(M, y + 14, M + 60, y + 14);
+    pdf.setLineWidth(0.6);
+    pdf.line(W / 2 - 40, y, W / 2 + 40, y);
+    y += 22;
 
-    // Tagline
-    pdf.setFont("times", "italic");
-    pdf.setFontSize(13);
-    pdf.setTextColor(230, 220, 200);
-    pdf.text("Your Journey, Curated by Fjord & Waves Travel", M, y + 38);
+    // Destination — small uppercase
+    const destination = doc.trip_overview?.destination || "";
+    if (destination) {
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(10);
+      pdf.setTextColor(...MUTED);
+      pdf.text(String(destination).toUpperCase(), W / 2, y, { align: "center", charSpace: 2 });
+      y += 20;
+    }
+
+    // Second divider
+    pdf.setDrawColor(...GOLD);
+    pdf.setLineWidth(0.6);
+    pdf.line(W / 2 - 40, y, W / 2 + 40, y);
+    y += 24;
+
+    // Italic description paragraph
+    const desc = doc.subtitle || doc.intro || "";
+    if (desc) {
+      pdf.setFont("times", "italic");
+      pdf.setFontSize(12);
+      pdf.setTextColor(...INK);
+      const descW = contentW - 40;
+      const descLines = pdf.splitTextToSize(String(desc), descW);
+      const maxLines = Math.min(descLines.length, Math.floor((H - M - y) / 16));
+      for (let i = 0; i < maxLines; i++) {
+        pdf.text(descLines[i], W / 2, y, { align: "center" });
+        y += 16;
+      }
+    }
 
     // ============ INTRODUCTION ============
     pdf.addPage();
