@@ -57,7 +57,8 @@ interface CatalogRow {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   experience_type: string[] | null;
-  season: string | null;
+  season: string[] | null;
+
   hotels: any[] | null;
   audit_report: string | null;
   audited_at: string | null;
@@ -98,7 +99,8 @@ interface EditorState {
   title: string;
   destination: string;
   experienceType: string[];
-  season: string;
+  season: string[];
+
   duration: string;
   language: Lang;
   brief: string;
@@ -123,8 +125,9 @@ const blankEditor: EditorState = {
   title: "",
   destination: "",
   experienceType: [],
-  season: "",
+  season: [],
   duration: "",
+
   language: "en",
   brief: "",
   summary: "",
@@ -231,8 +234,9 @@ const CatalogShopManager = () => {
       title: r.title_en || "",
       destination: r.destination || "",
       experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
-      season: r.season || "",
+      season: Array.isArray(r.season) ? r.season : r.season ? [r.season] : [],
       duration: r.duration || "",
+
       language: lang,
       brief: "",
       summary: r.summary_en || "",
@@ -581,8 +585,9 @@ const CatalogShopManager = () => {
         destination: state.destination || null,
         duration: state.duration || null,
         experience_type: state.experienceType.length ? state.experienceType : null,
-        season: state.season || null,
+        season: state.season.length ? state.season : null,
         price_eur: Number(state.priceEur) || 0,
+
         hero_image_url: state.heroImageUrl || null,
         hero_image_credit: state.heroImageCredit || null,
         hero_image_caption: state.heroImageCaption || null,
@@ -864,14 +869,34 @@ const CatalogShopManager = () => {
             </div>
             <div>
               <Label>Season</Label>
-              <Select value={state.season || "any"} onValueChange={(v) => setState({ ...state, season: v === "any" ? "" : v })}>
-                <SelectTrigger><SelectValue placeholder="Any season" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Any season</SelectItem>
-                  {SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-2 mt-1.5 p-2 rounded-md border border-input bg-background min-h-10">
+                {SEASONS.map((s) => {
+                  const active = state.season.includes(s);
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() =>
+                        setState({
+                          ...state,
+                          season: active
+                            ? state.season.filter((x) => x !== s)
+                            : [...state.season, s],
+                        })
+                      }
+                      className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-input hover:bg-muted"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
             <div>
               <Label>Duration</Label>
               <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
