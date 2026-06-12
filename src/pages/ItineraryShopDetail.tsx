@@ -70,7 +70,8 @@ const ItineraryShopDetail = () => {
   const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no) : "";
   const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no) : "";
   const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no) : "";
-  const itineraryHtml = useMemo(() => (itineraryMd ? markdownToHtml(itineraryMd) : ""), [itineraryMd]);
+  const teaserMd = useMemo(() => extractDay1MorningTeaser(itineraryMd), [itineraryMd]);
+  const teaserHtml = useMemo(() => (teaserMd ? markdownToHtml(teaserMd) : ""), [teaserMd]);
 
   const wygItems = useMemo(
     () =>
