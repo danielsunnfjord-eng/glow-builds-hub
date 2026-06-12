@@ -303,6 +303,8 @@ const CatalogShopManager = () => {
         [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
+        experience_type: state.experienceType || null,
+        season: state.season || null,
         price_eur: Number(state.priceEur) || 0,
         hero_image_url: state.heroImageUrl || null,
         is_published: publish !== undefined ? publish : state.isPublished,
