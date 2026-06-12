@@ -117,7 +117,7 @@ const blankEditor: EditorState = {
   id: null,
   title: "",
   destination: "",
-  experienceType: "",
+  experienceType: [],
   season: "",
   duration: "",
   language: "en",
