@@ -697,6 +697,8 @@ const CatalogShopManager = () => {
           onExport={() => window.print()}
         />
       )}
+      </>
+      )}
     </div>
   );
 };
