@@ -214,13 +214,13 @@ const CatalogShopManager = () => {
     const content =
       (lang === "no" ? r.itinerary_content_no : lang === "pt" ? r.itinerary_content_pt : r.itinerary_content_en) || "";
     const hotels = Array.isArray(r.hotels)
-      ? r.hotels.map((h) => ({
+      ? r.hotels.map((h: any) => ({
           id: h.id || crypto.randomUUID(),
           name: h.name || "",
           location: h.location || "",
           description: h.description || "",
           perks: Array.isArray(h.perks) ? h.perks : [],
-          photos: Array.isArray(h.photos) ? h.photos.slice(0, 3) : [],
+          photos: normalizePhotos(h.photos).slice(0, 3),
           visible: h.visible !== false,
         }))
       : [];
@@ -239,6 +239,8 @@ const CatalogShopManager = () => {
       content,
       priceEur: String(r.price_eur ?? 0),
       heroImageUrl: r.hero_image_url || "",
+      heroImageCredit: (r as any).hero_image_credit || "",
+      heroImageCaption: (r as any).hero_image_caption || "",
       isPublished: r.is_published,
       hotels,
       auditReport: r.audit_report || "",
@@ -500,13 +502,25 @@ const CatalogShopManager = () => {
       setState((s) => ({
         ...s,
         hotels: s.hotels.map((h) =>
-          h.id === hotelId ? { ...h, photos: [...h.photos, data.publicUrl].slice(0, 3) } : h,
+          h.id === hotelId
+            ? { ...h, photos: [...h.photos, { url: data.publicUrl, credit: "", caption: "" }].slice(0, 3) }
+            : h,
         ),
       }));
     } catch (e: any) {
       toast.error(e?.message || "Photo upload failed");
     }
   };
+
+  const updateHotelPhoto = (hotelId: string, slot: number, patch: Partial<PhotoMeta>) =>
+    setState((s) => ({
+      ...s,
+      hotels: s.hotels.map((h) =>
+        h.id === hotelId
+          ? { ...h, photos: h.photos.map((p, i) => (i === slot ? { ...p, ...patch } : p)) }
+          : h,
+      ),
+    }));
 
   const updateHotel = (id: string, patch: Partial<HotelRec>) =>
     setState((s) => ({ ...s, hotels: s.hotels.map((h) => (h.id === id ? { ...h, ...patch } : h)) }));
@@ -568,6 +582,8 @@ const CatalogShopManager = () => {
         season: state.season || null,
         price_eur: Number(state.priceEur) || 0,
         hero_image_url: state.heroImageUrl || null,
+        hero_image_credit: state.heroImageCredit || null,
+        hero_image_caption: state.heroImageCaption || null,
         is_published: publish !== undefined ? publish : state.isPublished,
         slug,
         hotels: state.hotels,
