@@ -373,150 +373,276 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       }
     }
 
-    // --- Render PDF ---
+    // --- Hotel recommendations: pull from body or DB row ---
+    let hotels: any[] = Array.isArray(body.hotels) ? body.hotels : [];
+    const itineraryId: string | null = (body.itinerary_id || "").toString() || null;
+    if (!hotels.length && itineraryId) {
+      const { data: row } = await supaService
+        .from("catalog_itineraries")
+        .select("hotels")
+        .eq("id", itineraryId)
+        .maybeSingle();
+      if (row && Array.isArray((row as any).hotels)) hotels = (row as any).hotels;
+    }
+    const visibleHotels = hotels.filter((h: any) => h && h.visible !== false && (h.name || "").trim());
+
+    // --- Render PDF (premium layout) ---
     const coverImageUrl = doc.cover_image_url || heroImageUrl;
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const W = pdf.internal.pageSize.getWidth();
     const H = pdf.internal.pageSize.getHeight();
-    const M = 56; // margin
+    const M = 56;
     const contentW = W - M * 2;
+    const GOLD: [number, number, number] = [180, 140, 60];
+    const INK: [number, number, number] = [28, 32, 38];
+    const MUTED: [number, number, number] = [110, 110, 110];
 
-    // Cover
+    // ============ COVER ============
     let heroData: string | null = null;
     if (coverImageUrl) heroData = await fetchImageDataUrl(coverImageUrl);
     if (heroData) {
-      try { pdf.addImage(heroData, "JPEG", 0, 0, W, H * 0.55, undefined, "FAST"); } catch {}
-      pdf.setFillColor(20, 20, 20);
-      pdf.rect(0, H * 0.5, W, H * 0.5, "F");
+      try { pdf.addImage(heroData, "JPEG", 0, 0, W, H, undefined, "FAST"); } catch {}
+      // Dark gradient overlay (bottom 60%)
+      pdf.setFillColor(0, 0, 0);
+      // Approximate gradient with stacked translucent rects
+      for (let i = 0; i < 30; i++) {
+        const alpha = 0.02 + i * 0.018;
+        try { (pdf as any).setGState(new (pdf as any).GState({ opacity: alpha })); } catch {}
+        const top = H * (0.4 + i * 0.02);
+        pdf.rect(0, top, W, H - top, "F");
+      }
+      try { (pdf as any).setGState(new (pdf as any).GState({ opacity: 1 })); } catch {}
     } else {
-      pdf.setFillColor(245, 240, 230);
+      pdf.setFillColor(20, 24, 30);
       pdf.rect(0, 0, W, H, "F");
     }
 
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(34);
-    let y = heroData ? H * 0.62 : H * 0.35;
-    const titleLines = pdf.splitTextToSize(doc.title || "Itinerary", contentW);
-    titleLines.forEach((l: string) => { pdf.text(l, M, y); y += 38; });
-
-    pdf.setFont("helvetica", "italic");
-    pdf.setFontSize(14);
-    y = addWrapped(pdf, doc.subtitle || "", M, y + 6, contentW, 18);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
-    pdf.setTextColor(220, 200, 150);
-    pdf.text("FJORD & WAVES TRAVEL", M, H - M);
-    pdf.setTextColor(255, 255, 255);
-    pdf.text(langName, W - M, H - M, { align: "right" });
-
-    // Intro page
-    pdf.addPage();
-    pdf.setTextColor(30, 30, 30);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(20);
-    pdf.text("Overview", M, 80);
-
-    pdf.setFont("helvetica", "normal");
+    // Top brand line
+    pdf.setTextColor(...GOLD);
+    pdf.setFont("times", "italic");
     pdf.setFontSize(11);
-    y = addWrapped(pdf, doc.intro || "", M, 110, contentW, 16);
+    pdf.text("FJORD & WAVES TRAVEL", M, M + 10);
 
-    // Trip overview box
-    if (doc.trip_overview) {
-      y += 14;
-      const ov = doc.trip_overview;
-      const rows: [string, string][] = [
-        ["Destination", ov.destination || ""],
-        ["Duration", ov.duration || ""],
-        ["Best for", ov.best_for || ""],
-        ["Estimated budget", ov.estimated_budget || ""],
-        ["Best season", ov.best_season || ""],
-      ];
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(13);
-      pdf.text("Trip details", M, y); y += 18;
-      pdf.setFontSize(10);
-      for (const [k, v] of rows) {
-        if (!v) continue;
-        if (y > H - 80) { pdf.addPage(); y = 80; }
-        pdf.setFont("helvetica", "bold"); pdf.text(k, M, y);
-        pdf.setFont("helvetica", "normal");
-        y = addWrapped(pdf, v, M + 130, y, contentW - 130, 14);
-        y += 4;
-      }
-    }
+    // Title block bottom
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(40);
+    const titleLines = pdf.splitTextToSize(doc.title || "Itinerary", contentW);
+    const titleBlockHeight = titleLines.length * 44;
+    let y = H - M - 80 - titleBlockHeight;
+    titleLines.forEach((l: string) => { pdf.text(l, M, y); y += 44; });
 
-    // Highlights
+    // Destination + duration
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(12);
+    pdf.setTextColor(220, 220, 220);
+    const destDur = [doc.trip_overview?.destination, doc.trip_overview?.duration].filter(Boolean).join(" · ");
+    if (destDur) { pdf.text(destDur, M, y + 8); y += 22; }
+
+    // Gold divider
+    pdf.setDrawColor(...GOLD);
+    pdf.setLineWidth(1);
+    pdf.line(M, y + 14, M + 60, y + 14);
+
+    // Tagline
+    pdf.setFont("times", "italic");
+    pdf.setFontSize(13);
+    pdf.setTextColor(230, 220, 200);
+    pdf.text("Your Journey, Curated by Fjord & Waves Travel", M, y + 38);
+
+    // ============ INTRODUCTION ============
+    pdf.addPage();
+    pdf.setTextColor(...GOLD);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.text("INTRODUCTION", M, 70);
+    pdf.setDrawColor(...GOLD); pdf.line(M, 76, M + 30, 76);
+
+    pdf.setTextColor(...INK);
+    pdf.setFont("times", "bold");
+    pdf.setFontSize(26);
+    let iy = 110;
+    iy = addWrapped(pdf, doc.title || "", M, iy, contentW, 30);
+    iy += 6;
+
+    pdf.setFont("times", "normal");
+    pdf.setFontSize(11.5);
+    iy = addWrapped(pdf, doc.intro || "", M, iy + 6, contentW, 17);
+
+    // What to expect
     if (Array.isArray(doc.highlights) && doc.highlights.length) {
-      y += 10;
-      if (y > H - 120) { pdf.addPage(); y = 80; }
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(13);
-      pdf.text("Highlights", M, y); y += 18;
-      pdf.setFont("helvetica", "normal"); pdf.setFontSize(10);
+      iy += 18;
+      if (iy > H - 200) { pdf.addPage(); iy = 80; }
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.setTextColor(...GOLD);
+      pdf.text("WHAT TO EXPECT", M, iy);
+      pdf.setDrawColor(...GOLD); pdf.line(M, iy + 6, M + 30, iy + 6);
+      iy += 22;
+      pdf.setTextColor(...INK); pdf.setFont("times", "normal"); pdf.setFontSize(11);
       for (const h of doc.highlights) {
-        if (y > H - 60) { pdf.addPage(); y = 80; }
-        pdf.text("•", M, y);
-        y = addWrapped(pdf, String(h), M + 14, y, contentW - 14, 14);
-        y += 2;
+        if (iy > H - 80) { pdf.addPage(); iy = 80; }
+        pdf.setTextColor(...GOLD); pdf.text("◆", M, iy);
+        pdf.setTextColor(...INK);
+        iy = addWrapped(pdf, String(h), M + 16, iy, contentW - 16, 16);
+        iy += 4;
       }
     }
 
-    // Days
+    // Assistance note
+    iy += 18;
+    if (iy > H - 160) { pdf.addPage(); iy = 80; }
+    pdf.setFillColor(248, 244, 235);
+    const noteH = 90;
+    pdf.rect(M, iy, contentW, noteH, "F");
+    pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(9);
+    pdf.text("A NOTE FROM YOUR TRAVEL DESIGNER", M + 14, iy + 18);
+    pdf.setTextColor(...INK); pdf.setFont("times", "italic"); pdf.setFontSize(10.5);
+    addWrapped(
+      pdf,
+      "This itinerary is your inspiration and guide. Our team is available to assist you with hotel bookings, private transfers, exclusive experiences, restaurant reservations, and any other arrangements that will make your journey seamless and memorable.",
+      M + 14, iy + 34, contentW - 28, 14,
+    );
+
+    // ============ DAYS ============
     if (Array.isArray(doc.days)) {
       for (const d of doc.days) {
         pdf.addPage();
-        pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-        pdf.setTextColor(180, 140, 60);
-        pdf.text(`DAY ${d.day || ""}`, M, 70);
-        pdf.setTextColor(30, 30, 30);
-        pdf.setFontSize(22);
-        let yy = 96;
-        yy = addWrapped(pdf, d.title || "", M, yy, contentW, 26);
+        // Day header band
+        pdf.setFillColor(248, 244, 235);
+        pdf.rect(0, 0, W, 90, "F");
+        pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
+        pdf.text(`DAY ${d.day || ""}`, M, 42);
+        pdf.setDrawColor(...GOLD); pdf.line(M, 48, M + 24, 48);
+        pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(22);
+        pdf.text(d.title || "", M, 74);
+
+        let yy = 120;
         if (d.location) {
-          pdf.setFont("helvetica", "italic"); pdf.setFontSize(11);
-          pdf.setTextColor(120, 120, 120);
-          yy = addWrapped(pdf, d.location, M, yy + 4, contentW, 14);
-          pdf.setTextColor(30, 30, 30);
+          pdf.setFont("times", "italic"); pdf.setFontSize(11); pdf.setTextColor(...MUTED);
+          yy = addWrapped(pdf, d.location, M, yy, contentW, 14);
+          pdf.setTextColor(...INK);
+          yy += 6;
         }
-        yy += 10;
 
         if (d.image_url) {
           const dayImage = await fetchImageDataUrl(d.image_url);
           if (dayImage) {
             try {
-              pdf.addImage(dayImage, "JPEG", M, yy, contentW, 150, undefined, "FAST");
-              yy += 168;
+              pdf.addImage(dayImage, "JPEG", M, yy, contentW, 160, undefined, "FAST");
+              yy += 178;
             } catch {}
           }
         }
 
-        const sections: [string, string][] = [
+        const periods: [string, string][] = [
           ["Morning", d.morning || ""],
           ["Afternoon", d.afternoon || ""],
           ["Evening", d.evening || ""],
-          ["Where to stay", d.where_to_stay || ""],
-          ["Where to eat", d.where_to_eat || ""],
-          ["Tips", d.tips || ""],
         ];
-        for (const [h, v] of sections) {
+        for (const [h, v] of periods) {
           if (!v) continue;
           if (yy > H - 100) { pdf.addPage(); yy = 80; }
-          pdf.setFont("helvetica", "bold"); pdf.setFontSize(11);
-          pdf.text(h, M, yy); yy += 14;
-          pdf.setFont("helvetica", "normal"); pdf.setFontSize(10.5);
-          yy = addWrapped(pdf, v, M, yy, contentW, 14);
-          yy += 10;
+          pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5); pdf.setTextColor(...GOLD);
+          pdf.text(h.toUpperCase(), M, yy); yy += 14;
+          pdf.setFont("times", "normal"); pdf.setFontSize(11); pdf.setTextColor(...INK);
+          yy = addWrapped(pdf, v, M, yy, contentW, 15);
+          yy += 12;
+        }
+
+        const tips: [string, string][] = [
+          ["Dining tip", d.where_to_eat || ""],
+          ["Insider tip", d.tips || ""],
+        ];
+        for (const [h, v] of tips) {
+          if (!v) continue;
+          if (yy > H - 100) { pdf.addPage(); yy = 80; }
+          pdf.setFillColor(250, 246, 238);
+          const lines = pdf.splitTextToSize(v, contentW - 24);
+          const boxH = lines.length * 14 + 28;
+          pdf.rect(M, yy, contentW, boxH, "F");
+          pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...GOLD);
+          pdf.text(h.toUpperCase(), M + 12, yy + 16);
+          pdf.setFont("times", "italic"); pdf.setFontSize(10.5); pdf.setTextColor(...INK);
+          let ty = yy + 30;
+          for (const ln of lines) { pdf.text(ln, M + 12, ty); ty += 14; }
+          yy += boxH + 10;
         }
       }
     }
 
-    // Practical info
+    // ============ WHERE TO STAY ============
+    if (visibleHotels.length) {
+      pdf.addPage();
+      pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.text("WHERE TO STAY", M, 70);
+      pdf.setDrawColor(...GOLD); pdf.line(M, 76, M + 30, 76);
+      pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(26);
+      pdf.text("Hotel Recommendations", M, 110);
+
+      let hy = 140;
+      for (const h of visibleHotels) {
+        // Estimate space; new page if needed
+        if (hy > H - 280) { pdf.addPage(); hy = 80; }
+
+        pdf.setFont("times", "bold"); pdf.setFontSize(16); pdf.setTextColor(...INK);
+        pdf.text(h.name || "", M, hy); hy += 18;
+        if (h.location) {
+          pdf.setFont("times", "italic"); pdf.setFontSize(10.5); pdf.setTextColor(...MUTED);
+          pdf.text(h.location, M, hy); hy += 14;
+        }
+        if (h.description) {
+          pdf.setFont("times", "normal"); pdf.setFontSize(10.5); pdf.setTextColor(...INK);
+          hy = addWrapped(pdf, h.description, M, hy + 6, contentW, 14);
+          hy += 6;
+        }
+        if (Array.isArray(h.perks) && h.perks.length) {
+          pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...GOLD);
+          pdf.text("EXCLUSIVE PERKS", M, hy + 6); hy += 16;
+          pdf.setFont("times", "normal"); pdf.setFontSize(10.5); pdf.setTextColor(...INK);
+          for (const p of h.perks) {
+            if (hy > H - 80) { pdf.addPage(); hy = 80; }
+            pdf.setTextColor(...GOLD); pdf.text("✓", M, hy);
+            pdf.setTextColor(...INK);
+            hy = addWrapped(pdf, String(p), M + 14, hy, contentW - 14, 14);
+            hy += 2;
+          }
+        }
+        // Photos grid (3 side-by-side)
+        const photos = Array.isArray(h.photos) ? h.photos.slice(0, 3) : [];
+        if (photos.length) {
+          if (hy > H - 180) { pdf.addPage(); hy = 80; }
+          const gap = 8;
+          const cellW = (contentW - gap * 2) / 3;
+          const cellH = cellW * 0.72;
+          for (let i = 0; i < 3; i++) {
+            const url = photos[i];
+            if (!url) continue;
+            const data = await fetchImageDataUrl(url);
+            if (!data) continue;
+            try { pdf.addImage(data, "JPEG", M + i * (cellW + gap), hy + 8, cellW, cellH, undefined, "FAST"); } catch {}
+          }
+          hy += cellH + 24;
+        } else {
+          hy += 10;
+        }
+
+        // Divider
+        pdf.setDrawColor(220, 215, 205); pdf.setLineWidth(0.5);
+        pdf.line(M, hy, M + contentW, hy);
+        hy += 24;
+      }
+    }
+
+    // ============ PRACTICAL INFO ============
     if (doc.practical_info) {
       pdf.addPage();
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(22);
-      pdf.text("Practical information", M, 80);
-      let yy = 110;
+      pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.text("PRACTICAL INFORMATION", M, 70);
+      pdf.setDrawColor(...GOLD); pdf.line(M, 76, M + 30, 76);
+      pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(22);
+      pdf.text("Good to know", M, 110);
+
+      let yy = 140;
       const pi = doc.practical_info;
       const items: [string, string][] = [
         ["Getting there", pi.getting_there || ""],
@@ -529,31 +655,45 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       for (const [h, v] of items) {
         if (!v) continue;
         if (yy > H - 100) { pdf.addPage(); yy = 80; }
-        pdf.setFont("helvetica", "bold"); pdf.setFontSize(12);
-        pdf.text(h, M, yy); yy += 14;
-        pdf.setFont("helvetica", "normal"); pdf.setFontSize(10.5);
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5); pdf.setTextColor(...GOLD);
+        pdf.text(h.toUpperCase(), M, yy); yy += 14;
+        pdf.setFont("times", "normal"); pdf.setFontSize(10.5); pdf.setTextColor(...INK);
         yy = addWrapped(pdf, v, M, yy, contentW, 14);
-        yy += 10;
+        yy += 12;
       }
     }
 
-    // Closing
-    if (doc.closing) {
-      pdf.addPage();
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(20);
-      pdf.text("Bon voyage", M, 100);
-      pdf.setFont("helvetica", "italic"); pdf.setFontSize(12);
-      addWrapped(pdf, doc.closing, M, 134, contentW, 18);
-    }
+    // ============ BACK PAGE ============
+    pdf.addPage();
+    pdf.setFillColor(20, 24, 30);
+    pdf.rect(0, 0, W, H, "F");
+    pdf.setTextColor(...GOLD); pdf.setFont("times", "italic"); pdf.setFontSize(14);
+    pdf.text("FJORD & WAVES TRAVEL", W / 2, H / 2 - 80, { align: "center" });
+    pdf.setDrawColor(...GOLD); pdf.line(W / 2 - 30, H / 2 - 68, W / 2 + 30, H / 2 - 68);
 
-    // Footer page numbers
+    pdf.setTextColor(255, 255, 255); pdf.setFont("times", "italic"); pdf.setFontSize(13);
+    const closingMsg =
+      "We are here every step of your journey. Reach out to us for any assistance, personalisation, or simply to share your experience.";
+    const closingLines = pdf.splitTextToSize(closingMsg, contentW - 60);
+    let cy = H / 2 - 30;
+    for (const ln of closingLines) { pdf.text(ln, W / 2, cy, { align: "center" }); cy += 20; }
+
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(10);
+    pdf.setTextColor(220, 220, 220);
+    cy += 30;
+    pdf.text("hello@fjordwavestravel.com", W / 2, cy, { align: "center" }); cy += 16;
+    pdf.text("fjordwavestravel.com", W / 2, cy, { align: "center" }); cy += 16;
+    pdf.setTextColor(...GOLD);
+    pdf.text("@fjordwavestravel", W / 2, cy, { align: "center" });
+
+    // ============ FOOTERS ============
     const pageCount = (pdf as any).internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
+    for (let i = 2; i < pageCount; i++) {
       pdf.setPage(i);
       pdf.setFont("helvetica", "normal"); pdf.setFontSize(8);
       pdf.setTextColor(150, 150, 150);
       pdf.text(`${i} / ${pageCount}`, W - M, H - 24, { align: "right" });
-      pdf.text("fjordwavestravel.com", M, H - 24);
+      pdf.text("FJORD & WAVES TRAVEL", M, H - 24);
     }
 
     const bytes = renderPdf(pdf, coverImageUrl);

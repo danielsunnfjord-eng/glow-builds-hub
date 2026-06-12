@@ -9,11 +9,24 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Sparkles, Loader2, Upload, Wand2, Eye } from "lucide-react";
+import {
+  Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
+  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon,
+} from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 
 type Lang = "en" | "pt" | "no";
+
+interface HotelRec {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  perks: string[];
+  photos: string[]; // up to 3
+  visible: boolean;
+}
 
 interface CatalogRow {
   id: string;
@@ -27,12 +40,17 @@ interface CatalogRow {
   updated_at: string;
   view_count: number;
   summary_en: string;
+  summary_pt: string | null;
+  summary_no: string | null;
   description_en: string;
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   experience_type: string | null;
   season: string | null;
+  hotels: HotelRec[] | null;
+  audit_report: string | null;
+  audited_at: string | null;
 }
 
 interface SuggestionRow {
@@ -55,6 +73,16 @@ const EXPERIENCE_TYPES = [
 
 const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
 
+const newHotel = (): HotelRec => ({
+  id: crypto.randomUUID(),
+  name: "",
+  location: "",
+  description: "",
+  perks: [],
+  photos: [],
+  visible: true,
+});
+
 interface EditorState {
   id: string | null;
   title: string;
@@ -65,10 +93,15 @@ interface EditorState {
   language: Lang;
   brief: string;
   summary: string;
+  summaryPt: string;
+  summaryNo: string;
   content: string;
   priceEur: string;
   heroImageUrl: string;
   isPublished: boolean;
+  hotels: HotelRec[];
+  auditReport: string;
+  auditedAt: string | null;
 }
 
 const blankEditor: EditorState = {
@@ -81,10 +114,15 @@ const blankEditor: EditorState = {
   language: "en",
   brief: "",
   summary: "",
+  summaryPt: "",
+  summaryNo: "",
   content: "",
   priceEur: "0",
   heroImageUrl: "",
   isPublished: false,
+  hotels: [],
+  auditReport: "",
+  auditedAt: null,
 };
 
 const CatalogShopManager = () => {
@@ -101,6 +139,8 @@ const CatalogShopManager = () => {
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
+  const [auditing, setAuditing] = useState(false);
+  const [applyingAudit, setApplyingAudit] = useState(false);
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -134,7 +174,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season")
+        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -157,6 +197,17 @@ const CatalogShopManager = () => {
     const lang: Lang = r.itinerary_content_no ? "no" : r.itinerary_content_pt ? "pt" : "en";
     const content =
       (lang === "no" ? r.itinerary_content_no : lang === "pt" ? r.itinerary_content_pt : r.itinerary_content_en) || "";
+    const hotels = Array.isArray(r.hotels)
+      ? r.hotels.map((h) => ({
+          id: h.id || crypto.randomUUID(),
+          name: h.name || "",
+          location: h.location || "",
+          description: h.description || "",
+          perks: Array.isArray(h.perks) ? h.perks : [],
+          photos: Array.isArray(h.photos) ? h.photos.slice(0, 3) : [],
+          visible: h.visible !== false,
+        }))
+      : [];
     setState({
       id: r.id,
       title: r.title_en || "",
@@ -167,10 +218,15 @@ const CatalogShopManager = () => {
       language: lang,
       brief: "",
       summary: r.summary_en || "",
+      summaryPt: r.summary_pt || "",
+      summaryNo: r.summary_no || "",
       content,
       priceEur: String(r.price_eur ?? 0),
       heroImageUrl: r.hero_image_url || "",
       isPublished: r.is_published,
+      hotels,
+      auditReport: r.audit_report || "",
+      auditedAt: r.audited_at || null,
     });
     setSectionPrompt("");
     setEditorOpen(true);
@@ -244,7 +300,6 @@ const CatalogShopManager = () => {
     setRegenerating(true);
     const baseContent = state.content;
     try {
-      // Stream into a temporary buffer; appended at end so we don't overwrite base.
       const { data: sess } = await supabase.auth.getSession();
       const token = sess?.session?.access_token;
       const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/generate-catalog-itinerary`;
@@ -288,6 +343,85 @@ const CatalogShopManager = () => {
     }
   };
 
+  const runAudit = async () => {
+    if (!state.content.trim()) {
+      toast.error("Generate or write the itinerary first.");
+      return;
+    }
+    setAuditing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
+        body: { content: state.content, mode: "audit" },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const audit = (data?.audit || "").toString().trim();
+      if (!audit) throw new Error("No audit returned");
+      const now = new Date().toISOString();
+      setState((s) => ({ ...s, auditReport: audit, auditedAt: now }));
+      // Persist audit immediately so it survives reloads (if saved row exists)
+      if (state.id) {
+        await supabase
+          .from("catalog_itineraries")
+          .update({ audit_report: audit, audited_at: now })
+          .eq("id", state.id);
+        qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
+      }
+      toast.success("Audit complete — review the report below.");
+    } catch (e: any) {
+      toast.error(e?.message || "Audit failed");
+    } finally {
+      setAuditing(false);
+    }
+  };
+
+  const applyAudit = async () => {
+    if (!state.auditReport.trim() || !state.content.trim()) {
+      toast.error("Run the audit first.");
+      return;
+    }
+    setApplyingAudit(true);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess?.session?.access_token;
+      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          mode: "rewrite",
+          content: state.content,
+          audit: state.auditReport,
+          trip_duration: state.duration,
+        }),
+      });
+      if (!res.ok || !res.body) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(errText || `Rewrite failed (${res.status})`);
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let rewritten = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        rewritten += decoder.decode(value, { stream: true });
+        setState((s) => ({ ...s, content: rewritten }));
+      }
+      rewritten += decoder.decode();
+      if (!rewritten.trim()) throw new Error("Empty rewrite");
+      setState((s) => ({ ...s, content: rewritten.trim() }));
+      toast.success("Improvements applied. Review the rewritten itinerary.");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to apply improvements");
+    } finally {
+      setApplyingAudit(false);
+    }
+  };
 
   const handleUploadCover = async (file: File) => {
     setUploading(true);
@@ -308,8 +442,61 @@ const CatalogShopManager = () => {
     }
   };
 
+  const uploadHotelPhoto = async (hotelId: string, file: File) => {
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `hotels/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("catalog-images").upload(path, file, {
+        cacheControl: "3600", upsert: false, contentType: file.type,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+      setState((s) => ({
+        ...s,
+        hotels: s.hotels.map((h) =>
+          h.id === hotelId ? { ...h, photos: [...h.photos, data.publicUrl].slice(0, 3) } : h,
+        ),
+      }));
+    } catch (e: any) {
+      toast.error(e?.message || "Photo upload failed");
+    }
+  };
+
+  const updateHotel = (id: string, patch: Partial<HotelRec>) =>
+    setState((s) => ({ ...s, hotels: s.hotels.map((h) => (h.id === id ? { ...h, ...patch } : h)) }));
+
+  const removeHotel = (id: string) =>
+    setState((s) => ({ ...s, hotels: s.hotels.filter((h) => h.id !== id) }));
+
+  const addHotel = () => setState((s) => ({ ...s, hotels: [...s.hotels, newHotel()] }));
+
+  // Pre-publish checklist
+  type Check = { key: string; label: string; ok: boolean };
+  const buildChecklist = (s: EditorState): Check[] => [
+    { key: "audited", label: "Itinerary has been audited", ok: !!s.auditedAt },
+    { key: "cover", label: "Cover image has been uploaded", ok: !!s.heroImageUrl },
+    {
+      key: "hotels",
+      label: "At least one hotel recommendation has been added",
+      ok: s.hotels.some((h) => h.name.trim()),
+    },
+    { key: "price", label: "Price has been set", ok: Number(s.priceEur) > 0 },
+    {
+      key: "summaries",
+      label: "Short description filled in for EN / PT / NO",
+      ok: !!s.summary.trim() && !!s.summaryPt.trim() && !!s.summaryNo.trim(),
+    },
+  ];
+
+  const checklist = buildChecklist(state);
+  const canPublish = checklist.every((c) => c.ok);
+
   const save = async (publish?: boolean) => {
     if (!state.title.trim()) { toast.error("Title is required"); return; }
+    if (publish === true && !canPublish) {
+      toast.error("Complete the pre-publish checklist before publishing.");
+      return;
+    }
     setSaving(true);
     try {
       const slug = slugify(state.title) || crypto.randomUUID().slice(0, 8);
@@ -321,15 +508,13 @@ const CatalogShopManager = () => {
         state.language === "no" ? "title_no"
         : state.language === "pt" ? "title_pt"
         : "title_en";
-      const summaryField =
-        state.language === "no" ? "summary_no"
-        : state.language === "pt" ? "summary_pt"
-        : "summary_en";
 
       const payload: any = {
-        title_en: state.title, // always keep an English-side mirror so list/SEO never go blank
+        title_en: state.title,
         [titleField]: state.title,
-        [summaryField]: state.summary || "",
+        summary_en: state.summary || "",
+        summary_pt: state.summaryPt || "",
+        summary_no: state.summaryNo || "",
         [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
@@ -339,6 +524,9 @@ const CatalogShopManager = () => {
         hero_image_url: state.heroImageUrl || null,
         is_published: publish !== undefined ? publish : state.isPublished,
         slug,
+        hotels: state.hotels,
+        audit_report: state.auditReport || null,
+        audited_at: state.auditedAt,
       };
 
       if (state.id) {
@@ -359,6 +547,26 @@ const CatalogShopManager = () => {
   };
 
   const togglePublish = async (r: CatalogRow) => {
+    if (!r.is_published) {
+      // Re-run the same checklist for inline publish.
+      const stub: EditorState = {
+        ...blankEditor,
+        id: r.id,
+        title: r.title_en,
+        summary: r.summary_en || "",
+        summaryPt: r.summary_pt || "",
+        summaryNo: r.summary_no || "",
+        priceEur: String(r.price_eur ?? 0),
+        heroImageUrl: r.hero_image_url || "",
+        hotels: Array.isArray(r.hotels) ? r.hotels : [],
+        auditedAt: r.audited_at || null,
+      };
+      const missing = buildChecklist(stub).filter((c) => !c.ok);
+      if (missing.length) {
+        toast.error("Cannot publish — open Edit and complete: " + missing.map((m) => m.label).join("; "));
+        return;
+      }
+    }
     const { error } = await supabase
       .from("catalog_itineraries")
       .update({ is_published: !r.is_published })
@@ -516,6 +724,11 @@ const CatalogShopManager = () => {
                     ) : (
                       <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded">Draft</span>
                     )}
+                    {r.audited_at && (
+                      <span className="text-[0.6rem] uppercase tracking-wider bg-sage/10 text-sage px-2 py-0.5 rounded inline-flex items-center gap-1">
+                        <ClipboardCheck className="w-3 h-3" /> Audited
+                      </span>
+                    )}
                   </div>
                   <div className="text-[0.75rem] text-voyage-muted mt-0.5 truncate">
                     {[r.destination, r.duration].filter(Boolean).join(" · ") || "No metadata"} ·{" "}
@@ -611,9 +824,19 @@ const CatalogShopManager = () => {
               <Label>Short brief / notes for AI</Label>
               <Textarea rows={2} value={state.brief} onChange={(e) => setState({ ...state, brief: e.target.value })} placeholder="Any specific angle, audience, must-include experiences…" />
             </div>
-            <div className="md:col-span-2">
-              <Label>Short description (shown on shop card)</Label>
-              <Textarea rows={2} value={state.summary} onChange={(e) => setState({ ...state, summary: e.target.value })} />
+            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <Label>Short description (EN)</Label>
+                <Textarea rows={3} value={state.summary} onChange={(e) => setState({ ...state, summary: e.target.value })} />
+              </div>
+              <div>
+                <Label>Short description (PT)</Label>
+                <Textarea rows={3} value={state.summaryPt} onChange={(e) => setState({ ...state, summaryPt: e.target.value })} />
+              </div>
+              <div>
+                <Label>Short description (NO)</Label>
+                <Textarea rows={3} value={state.summaryNo} onChange={(e) => setState({ ...state, summaryNo: e.target.value })} />
+              </div>
             </div>
             <div className="md:col-span-2">
               <Label>Cover image</Label>
@@ -661,6 +884,178 @@ const CatalogShopManager = () => {
             <p className="text-[0.7rem] text-voyage-muted mt-1">The new section is appended at the bottom — paste it into place in the editor and delete the old one.</p>
           </div>
 
+          {/* AUDIT */}
+          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+              <div>
+                <div className="font-serif text-lg font-bold flex items-center gap-2">
+                  <ClipboardCheck className="w-4 h-4" /> Audit Itinerary
+                </div>
+                <p className="text-[0.78rem] text-voyage-muted">
+                  Senior luxury travel advisor review. Step 1: get the audit report. Step 2: apply improvements.
+                </p>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
+                  {auditing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
+                  {state.auditReport ? "Re-audit" : "Run Audit"}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={applyAudit}
+                  disabled={!state.auditReport || applyingAudit || auditing}
+                  className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
+                >
+                  {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
+                  Apply Improvements
+                </Button>
+              </div>
+            </div>
+            {state.auditReport ? (
+              <div className="mt-2 p-3 bg-parchment/40 border border-parchment-3 rounded whitespace-pre-wrap text-[0.85rem] text-ink-2 max-h-[300px] overflow-y-auto">
+                {state.auditReport}
+              </div>
+            ) : (
+              <p className="text-[0.78rem] text-voyage-muted italic">No audit yet — run it before publishing.</p>
+            )}
+            {state.auditedAt && (
+              <p className="text-[0.7rem] text-voyage-muted mt-2">Last audited: {new Date(state.auditedAt).toLocaleString()}</p>
+            )}
+          </div>
+
+          {/* HOTELS */}
+          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+              <div>
+                <div className="font-serif text-lg font-bold flex items-center gap-2">
+                  <HotelIcon className="w-4 h-4" /> Hotel Recommendations
+                </div>
+                <p className="text-[0.78rem] text-voyage-muted">
+                  Add hotels per destination or day. Appear in the published PDF and subpage if visible.
+                </p>
+              </div>
+              <Button variant="outline" size="sm" onClick={addHotel}>
+                <Plus className="w-4 h-4 mr-1" /> Add Hotel
+              </Button>
+            </div>
+
+            {state.hotels.length === 0 && (
+              <p className="text-[0.8rem] text-voyage-muted italic">No hotels yet — at least one is required to publish.</p>
+            )}
+
+            <div className="space-y-4">
+              {state.hotels.map((h, i) => (
+                <div key={h.id} className="border border-parchment-3 rounded p-3 bg-parchment/30">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="text-[0.7rem] uppercase tracking-wider text-voyage-muted">Hotel #{i + 1}</div>
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1.5 text-[0.75rem] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={h.visible}
+                          onChange={(e) => updateHotel(h.id, { visible: e.target.checked })}
+                        />
+                        Show in PDF & subpage
+                      </label>
+                      <Button variant="ghost" size="sm" onClick={() => removeHotel(h.id)} className="text-destructive hover:text-destructive">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <Label className="text-[0.75rem]">Hotel name</Label>
+                      <Input value={h.name} onChange={(e) => updateHotel(h.id, { name: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label className="text-[0.75rem]">Location / destination</Label>
+                      <Input value={h.location} onChange={(e) => updateHotel(h.id, { location: e.target.value })} placeholder="e.g. Bergen · Day 2" />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <Label className="text-[0.75rem]">Short description</Label>
+                    <Textarea
+                      rows={2}
+                      value={h.description}
+                      onChange={(e) => updateHotel(h.id, { description: e.target.value })}
+                      placeholder="2-3 sentences about character and atmosphere"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <Label className="text-[0.75rem]">Exclusive perks (one per line)</Label>
+                    <Textarea
+                      rows={3}
+                      value={h.perks.join("\n")}
+                      onChange={(e) => updateHotel(h.id, { perks: e.target.value.split("\n").map((p) => p.trim()).filter(Boolean) })}
+                      placeholder={"Complimentary breakfast\nEarly check-in\nRoom upgrade subject to availability"}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-[0.75rem]">Photos (up to 3)</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      {[0, 1, 2].map((slot) => {
+                        const photo = h.photos[slot];
+                        return (
+                          <div key={slot} className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
+                            {photo ? (
+                              <>
+                                <img src={photo} alt="" className="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
+                                  className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <XIcon className="w-3 h-3" />
+                                </button>
+                              </>
+                            ) : (
+                              <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
+                                <Upload className="w-4 h-4 mb-1" />
+                                Add photo
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                />
+                              </label>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CHECKLIST */}
+          <div className="mt-6 p-4 border border-parchment-3 rounded bg-parchment/30">
+            <div className="font-serif text-lg font-bold mb-2">Pre-publish checklist</div>
+            <ul className="space-y-1.5">
+              {checklist.map((c) => (
+                <li key={c.key} className="flex items-center gap-2 text-[0.85rem]">
+                  {c.ok ? (
+                    <CheckCircle2 className="w-4 h-4 text-sage" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-destructive" />
+                  )}
+                  <span className={c.ok ? "text-ink-2" : "text-destructive font-medium"}>{c.label}</span>
+                </li>
+              ))}
+            </ul>
+            {!canPublish && (
+              <p className="text-[0.75rem] text-destructive mt-2">
+                Complete all items above to enable publishing.
+              </p>
+            )}
+          </div>
+
           <div className="flex justify-between items-center mt-6 pt-4 border-t">
             <div className="text-[0.75rem] text-voyage-muted">
               Status: {state.isPublished ? <span className="text-fjord font-medium">Published</span> : <span>Draft</span>}
@@ -670,7 +1065,12 @@ const CatalogShopManager = () => {
               <Button variant="outline" onClick={() => save(false)} disabled={saving}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}Save as Draft
               </Button>
-              <Button onClick={() => save(true)} disabled={saving} className="bg-ink text-voyage-white hover:bg-gold hover:text-ink">
+              <Button
+                onClick={() => save(true)}
+                disabled={saving || !canPublish}
+                className="bg-ink text-voyage-white hover:bg-gold hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed"
+                title={!canPublish ? "Complete the pre-publish checklist first" : ""}
+              >
                 {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}Save & Publish
               </Button>
             </div>
