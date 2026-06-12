@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -30,20 +31,36 @@ interface CatalogRow {
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
+  experience_type: string | null;
+  season: string | null;
+}
+
+interface SuggestionRow {
+  id: string;
+  destination: string;
+  experience_type: string | null;
+  details: string | null;
+  email: string;
+  status: string;
+  created_at: string;
 }
 
 const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 80);
 
 const EXPERIENCE_TYPES = [
-  "City break", "Nature", "Adventure", "Gastronomy", "Cultural", "Beach", "Romantic", "Family", "Wellness", "Luxury",
+  "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
+  "Beach", "Romantic", "Family", "Wellness", "Luxury",
 ];
+
+const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
 
 interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string[];
+  experienceType: string;
+  season: string;
   duration: string;
   language: Lang;
   brief: string;
@@ -58,7 +75,8 @@ const blankEditor: EditorState = {
   id: null,
   title: "",
   destination: "",
-  experienceType: [],
+  experienceType: "",
+  season: "",
   duration: "",
   language: "en",
   brief: "",
@@ -71,6 +89,8 @@ const blankEditor: EditorState = {
 
 const CatalogShopManager = () => {
   const qc = useQueryClient();
+  const { t } = useTranslation();
+  const [tab, setTab] = useState<"itineraries" | "suggestions">("itineraries");
   const [search, setSearch] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
   const [state, setState] = useState<EditorState>(blankEditor);
@@ -82,12 +102,39 @@ const CatalogShopManager = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
 
+  const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
+    queryKey: ["customer-suggestions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customer_suggestions" as any)
+        .select("id, destination, experience_type, details, email, status, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as SuggestionRow[];
+    },
+  });
+
+  const updateSuggestionStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("customer_suggestions" as any).update({ status } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["customer-suggestions"] });
+  };
+
+  const deleteSuggestion = async (id: string) => {
+    if (!confirm(t("adminSuggestions.deleteConfirm"))) return;
+    const { error } = await supabase.from("customer_suggestions" as any).delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["customer-suggestions"] });
+  };
+
+  const newSuggestionsCount = suggestions.filter((s) => s.status === "new").length;
+
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["catalog-shop-list"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no")
+        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -114,7 +161,8 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: [],
+      experienceType: r.experience_type || "",
+      season: r.season || "",
       duration: r.duration || "",
       language: lang,
       brief: "",
@@ -168,7 +216,7 @@ const CatalogShopManager = () => {
       const text = await callCatalogStream({
         title: state.title,
         destination: state.destination,
-        experience_type: state.experienceType.join(", "),
+        experience_type: state.experienceType,
         duration: state.duration,
         language: state.language,
         brief: state.brief,
@@ -285,6 +333,8 @@ const CatalogShopManager = () => {
         [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
+        experience_type: state.experienceType || null,
+        season: state.season || null,
         price_eur: Number(state.priceEur) || 0,
         hero_image_url: state.heroImageUrl || null,
         is_published: publish !== undefined ? publish : state.isPublished,
@@ -330,6 +380,105 @@ const CatalogShopManager = () => {
 
   return (
     <div>
+      <div className="flex gap-1 border-b border-parchment-3 mb-6">
+        <button
+          onClick={() => setTab("itineraries")}
+          className={`px-4 py-2.5 text-[0.72rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${
+            tab === "itineraries" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"
+          }`}
+        >
+          Itineraries
+        </button>
+        <button
+          onClick={() => setTab("suggestions")}
+          className={`relative px-4 py-2.5 text-[0.72rem] font-semibold tracking-[0.1em] uppercase border-b-2 transition-all ${
+            tab === "suggestions" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"
+          }`}
+        >
+          {t("adminSuggestions.tab")}
+          {newSuggestionsCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-voyage-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">
+              {newSuggestionsCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {tab === "suggestions" ? (
+        <div>
+          <div className="mb-6">
+            <h1 className="font-serif text-3xl font-bold mb-1">{t("adminSuggestions.title")}</h1>
+            <p className="text-[0.85rem] text-voyage-muted">{t("adminSuggestions.desc")}</p>
+          </div>
+          {suggestionsLoading ? (
+            <div className="p-8 text-center text-sm text-voyage-muted">Loading…</div>
+          ) : suggestions.length === 0 ? (
+            <div className="border border-parchment-3 rounded-md bg-voyage-white p-12 text-center text-sm text-voyage-muted">
+              {t("adminSuggestions.empty")}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {suggestions.map((s) => {
+                const statusColors: Record<string, string> = {
+                  new: "bg-gold/10 text-gold border-gold/30",
+                  reviewed: "bg-sage/10 text-sage border-sage/30",
+                  archived: "bg-ink/[0.06] text-voyage-muted border-parchment-3",
+                };
+                const statusLabel =
+                  s.status === "reviewed" ? t("adminSuggestions.statusReviewed")
+                  : s.status === "archived" ? t("adminSuggestions.statusArchived")
+                  : t("adminSuggestions.statusNew");
+                return (
+                  <div key={s.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-serif text-lg font-bold text-ink">{s.destination}</span>
+                        <span className={`text-[0.6rem] uppercase tracking-wider px-2 py-0.5 rounded border ${statusColors[s.status] || statusColors.new}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+                      <div className="text-[0.72rem] text-voyage-muted">
+                        {new Date(s.created_at).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 text-[0.82rem]">
+                      <div>
+                        <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.experience")}</span>
+                        <span className="text-ink">{s.experience_type || "—"}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.email")}</span>
+                        <a href={`mailto:${s.email}`} className="text-ink hover:text-gold transition-colors">{s.email}</a>
+                      </div>
+                    </div>
+                    {s.details && (
+                      <div className="bg-parchment rounded-sm p-3 mb-3 text-[0.82rem] text-ink-2 whitespace-pre-wrap">
+                        {s.details}
+                      </div>
+                    )}
+                    <div className="flex gap-2 flex-wrap">
+                      {s.status === "new" && (
+                        <Button size="sm" variant="outline" onClick={() => updateSuggestionStatus(s.id, "reviewed")}>
+                          {t("adminSuggestions.markReviewed")}
+                        </Button>
+                      )}
+                      {s.status !== "archived" && (
+                        <Button size="sm" variant="ghost" onClick={() => updateSuggestionStatus(s.id, "archived")}>
+                          {t("adminSuggestions.archive")}
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => deleteSuggestion(s.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+      <>
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-serif text-3xl font-bold mb-1">Itinerary catalogue</h1>
@@ -411,19 +560,12 @@ const CatalogShopManager = () => {
               <Label>Type of experience</Label>
               <div className="flex flex-wrap gap-2 mt-1.5 p-2 rounded-md border border-input bg-background min-h-10">
                 {EXPERIENCE_TYPES.map((t) => {
-                  const active = state.experienceType.includes(t);
+                  const active = state.experienceType === t;
                   return (
                     <button
                       key={t}
                       type="button"
-                      onClick={() =>
-                        setState({
-                          ...state,
-                          experienceType: active
-                            ? state.experienceType.filter((x) => x !== t)
-                            : [...state.experienceType, t],
-                        })
-                      }
+                      onClick={() => setState({ ...state, experienceType: active ? "" : t })}
                       className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
                         active
                           ? "bg-primary text-primary-foreground border-primary"
@@ -435,6 +577,16 @@ const CatalogShopManager = () => {
                   );
                 })}
               </div>
+            </div>
+            <div>
+              <Label>Season</Label>
+              <Select value={state.season || "any"} onValueChange={(v) => setState({ ...state, season: v === "any" ? "" : v })}>
+                <SelectTrigger><SelectValue placeholder="Any season" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any season</SelectItem>
+                  {SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Duration</Label>
@@ -544,6 +696,8 @@ const CatalogShopManager = () => {
           onClose={() => setPreviewRow(null)}
           onExport={() => window.print()}
         />
+      )}
+      </>
       )}
     </div>
   );

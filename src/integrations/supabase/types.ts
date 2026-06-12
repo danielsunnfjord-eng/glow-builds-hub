@@ -23,6 +23,7 @@ export type Database = {
           destination: string | null
           duration: string | null
           estimated_trip_budget: string | null
+          experience_type: string | null
           gallery_images: Json
           group_size_label: string | null
           hero_image_url: string | null
@@ -33,6 +34,7 @@ export type Database = {
           itinerary_content_pt: string | null
           pdf_path: string | null
           price_eur: number
+          season: string | null
           slug: string
           sort_order: number
           summary_en: string
@@ -55,6 +57,7 @@ export type Database = {
           destination?: string | null
           duration?: string | null
           estimated_trip_budget?: string | null
+          experience_type?: string | null
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
@@ -65,6 +68,7 @@ export type Database = {
           itinerary_content_pt?: string | null
           pdf_path?: string | null
           price_eur?: number
+          season?: string | null
           slug: string
           sort_order?: number
           summary_en?: string
@@ -87,6 +91,7 @@ export type Database = {
           destination?: string | null
           duration?: string | null
           estimated_trip_budget?: string | null
+          experience_type?: string | null
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
@@ -97,6 +102,7 @@ export type Database = {
           itinerary_content_pt?: string | null
           pdf_path?: string | null
           price_eur?: number
+          season?: string | null
           slug?: string
           sort_order?: number
           summary_en?: string
@@ -279,6 +285,36 @@ export type Database = {
           trip_duration?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      customer_suggestions: {
+        Row: {
+          created_at: string
+          destination: string
+          details: string | null
+          email: string
+          experience_type: string | null
+          id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          details?: string | null
+          email: string
+          experience_type?: string | null
+          id?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          details?: string | null
+          email?: string
+          experience_type?: string | null
+          id?: string
+          status?: string
         }
         Relationships: []
       }
