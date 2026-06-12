@@ -131,7 +131,8 @@ const CatalogShopManager = () => {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
-      experienceType: [],
+      experienceType: r.experience_type || "",
+      season: r.season || "",
       duration: r.duration || "",
       language: lang,
       brief: "",
@@ -185,7 +186,7 @@ const CatalogShopManager = () => {
       const text = await callCatalogStream({
         title: state.title,
         destination: state.destination,
-        experience_type: state.experienceType.join(", "),
+        experience_type: state.experienceType,
         duration: state.duration,
         language: state.language,
         brief: state.brief,
