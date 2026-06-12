@@ -321,6 +321,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
           language: pdfLang,
           draft: parsed,
           hero_image_url: parsed.cover_image_url || editing.hero_image_url || null,
+          itinerary_id: editing.id || null,
         },
       });
       if (error) throw error;
