@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
+import AuditChecklist from "./AuditChecklist";
+import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
