@@ -39,15 +39,17 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
         .upload(path, file, { contentType: file.type });
       if (error) throw error;
       const { data } = supabase.storage.from("itinerary-images").getPublicUrl(path);
-      const caption = window.prompt("Optional caption (leave blank for none):", "") || "";
+      const caption = (window.prompt("Optional caption / description (e.g. 'Sunrise over Nærøyfjord'):", "") || "").trim();
+      const credit = (window.prompt("Optional photo credit (e.g. '© Visit Norway / Per Kvarting'):", "") || "").trim();
+      const safeCap = caption.replace(/</g, "&lt;").replace(/"/g, "&quot;");
+      const safeCred = credit.replace(/</g, "&lt;").replace(/"/g, "&quot;");
+      // Insert image (TipTap image extension)
       (editor.chain().focus() as any).setImage({ src: data.publicUrl, alt: caption || "Image" }).run();
-      if (caption.trim()) {
-        editor
-          .chain()
-          .focus()
-          .createParagraphNear()
-          .insertContent(`<p><em>${caption.replace(/</g, "&lt;")}</em></p>`)
-          .run();
+      if (caption || credit) {
+        const lines: string[] = [];
+        if (caption) lines.push(`<p class="fjw-img-caption"><em>${safeCap}</em></p>`);
+        if (credit) lines.push(`<p class="fjw-img-credit"><small>${safeCred}</small></p>`);
+        editor.chain().focus().createParagraphNear().insertContent(lines.join("")).run();
       }
       toast.success("Image inserted");
     } catch (err: any) {

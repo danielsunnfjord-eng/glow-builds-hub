@@ -46,6 +46,8 @@ interface CatalogItem {
   group_size_label: string | null;
   estimated_trip_budget: string | null;
   hero_image_url: string | null;
+  hero_image_credit: string | null;
+  hero_image_caption: string | null;
   gallery_images: string[];
   price_eur: number;
   is_published: boolean;
@@ -312,7 +314,20 @@ const ItineraryShopDetail = () => {
               </a>
             </div>
           </div>
+          {data.hero_image_credit && (
+            <div className="absolute bottom-3 right-4 max-md:right-3 text-[0.62rem] tracking-[0.08em] text-voyage-white/85 bg-ink/45 backdrop-blur-sm px-2 py-1 rounded-sm">
+              {data.hero_image_credit}
+            </div>
+          )}
         </section>
+
+        {data.hero_image_caption && (
+          <div className="px-16 max-md:px-6 py-4 bg-parchment border-b border-ink/[0.06]">
+            <p className="max-w-3xl mx-auto text-center font-serif italic text-[0.95rem] text-voyage-muted">
+              {data.hero_image_caption}
+            </p>
+          </div>
+        )}
 
         {/* 2. BREADCRUMB */}
         <nav

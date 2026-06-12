@@ -22,6 +22,7 @@ import {
   itemsToPromptText,
   type SelectableAuditItem,
 } from "@/lib/auditParser";
+import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
 type Lang = "en" | "pt" | "no";
 
@@ -31,7 +32,7 @@ interface HotelRec {
   location: string;
   description: string;
   perks: string[];
-  photos: string[]; // up to 3
+  photos: PhotoMeta[]; // up to 3
   visible: boolean;
 }
 
@@ -43,6 +44,8 @@ interface CatalogRow {
   duration: string | null;
   price_eur: number;
   hero_image_url: string | null;
+  hero_image_credit: string | null;
+  hero_image_caption: string | null;
   is_published: boolean;
   updated_at: string;
   view_count: number;
@@ -55,7 +58,7 @@ interface CatalogRow {
   itinerary_content_no: string | null;
   experience_type: string[] | null;
   season: string | null;
-  hotels: HotelRec[] | null;
+  hotels: any[] | null;
   audit_report: string | null;
   audited_at: string | null;
 }
@@ -105,6 +108,8 @@ interface EditorState {
   content: string;
   priceEur: string;
   heroImageUrl: string;
+  heroImageCredit: string;
+  heroImageCaption: string;
   isPublished: boolean;
   hotels: HotelRec[];
   auditReport: string;
@@ -128,6 +133,8 @@ const blankEditor: EditorState = {
   content: "",
   priceEur: "0",
   heroImageUrl: "",
+  heroImageCredit: "",
+  heroImageCaption: "",
   isPublished: false,
   hotels: [],
   auditReport: "",
@@ -185,7 +192,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
+        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -209,13 +216,13 @@ const CatalogShopManager = () => {
     const content =
       (lang === "no" ? r.itinerary_content_no : lang === "pt" ? r.itinerary_content_pt : r.itinerary_content_en) || "";
     const hotels = Array.isArray(r.hotels)
-      ? r.hotels.map((h) => ({
+      ? r.hotels.map((h: any) => ({
           id: h.id || crypto.randomUUID(),
           name: h.name || "",
           location: h.location || "",
           description: h.description || "",
           perks: Array.isArray(h.perks) ? h.perks : [],
-          photos: Array.isArray(h.photos) ? h.photos.slice(0, 3) : [],
+          photos: normalizePhotos(h.photos).slice(0, 3),
           visible: h.visible !== false,
         }))
       : [];
@@ -234,6 +241,8 @@ const CatalogShopManager = () => {
       content,
       priceEur: String(r.price_eur ?? 0),
       heroImageUrl: r.hero_image_url || "",
+      heroImageCredit: (r as any).hero_image_credit || "",
+      heroImageCaption: (r as any).hero_image_caption || "",
       isPublished: r.is_published,
       hotels,
       auditReport: r.audit_report || "",
@@ -495,13 +504,25 @@ const CatalogShopManager = () => {
       setState((s) => ({
         ...s,
         hotels: s.hotels.map((h) =>
-          h.id === hotelId ? { ...h, photos: [...h.photos, data.publicUrl].slice(0, 3) } : h,
+          h.id === hotelId
+            ? { ...h, photos: [...h.photos, { url: data.publicUrl, credit: "", caption: "" }].slice(0, 3) }
+            : h,
         ),
       }));
     } catch (e: any) {
       toast.error(e?.message || "Photo upload failed");
     }
   };
+
+  const updateHotelPhoto = (hotelId: string, slot: number, patch: Partial<PhotoMeta>) =>
+    setState((s) => ({
+      ...s,
+      hotels: s.hotels.map((h) =>
+        h.id === hotelId
+          ? { ...h, photos: h.photos.map((p, i) => (i === slot ? { ...p, ...patch } : p)) }
+          : h,
+      ),
+    }));
 
   const updateHotel = (id: string, patch: Partial<HotelRec>) =>
     setState((s) => ({ ...s, hotels: s.hotels.map((h) => (h.id === id ? { ...h, ...patch } : h)) }));
@@ -563,6 +584,8 @@ const CatalogShopManager = () => {
         season: state.season || null,
         price_eur: Number(state.priceEur) || 0,
         hero_image_url: state.heroImageUrl || null,
+        hero_image_credit: state.heroImageCredit || null,
+        hero_image_caption: state.heroImageCaption || null,
         is_published: publish !== undefined ? publish : state.isPublished,
         slug,
         hotels: state.hotels,
@@ -896,9 +919,29 @@ const CatalogShopManager = () => {
                   {state.heroImageUrl ? "Replace" : "Upload"}
                 </Button>
                 {state.heroImageUrl && (
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setState({ ...state, heroImageUrl: "" })}>Remove</Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setState({ ...state, heroImageUrl: "", heroImageCredit: "", heroImageCaption: "" })}>Remove</Button>
                 )}
               </div>
+              {state.heroImageUrl && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label className="text-[0.7rem] text-voyage-muted">Photo credit (optional)</Label>
+                    <Input
+                      value={state.heroImageCredit}
+                      onChange={(e) => setState({ ...state, heroImageCredit: e.target.value })}
+                      placeholder="© Visit Norway / Per Kvarting"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[0.7rem] text-voyage-muted">Caption / description (optional)</Label>
+                    <Input
+                      value={state.heroImageCaption}
+                      onChange={(e) => setState({ ...state, heroImageCaption: e.target.value })}
+                      placeholder="Sunrise over Nærøyfjord, one of Norway's most dramatic fjord landscapes"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1059,33 +1102,51 @@ const CatalogShopManager = () => {
 
                   <div>
                     <Label className="text-[0.75rem]">Photos (up to 3)</Label>
-                    <div className="grid grid-cols-3 gap-2 mt-1">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
                       {[0, 1, 2].map((slot) => {
                         const photo = h.photos[slot];
                         return (
-                          <div key={slot} className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
-                            {photo ? (
+                          <div key={slot} className="space-y-1.5">
+                            <div className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
+                              {photo ? (
+                                <>
+                                  <img src={photo.url} alt={photo.caption || ""} className="w-full h-full object-cover" />
+                                  <button
+                                    type="button"
+                                    onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
+                                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <XIcon className="w-3 h-3" />
+                                  </button>
+                                </>
+                              ) : (
+                                <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
+                                  <Upload className="w-4 h-4 mb-1" />
+                                  Add photo
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                  />
+                                </label>
+                              )}
+                            </div>
+                            {photo && (
                               <>
-                                <img src={photo} alt="" className="w-full h-full object-cover" />
-                                <button
-                                  type="button"
-                                  onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
-                                  className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <XIcon className="w-3 h-3" />
-                                </button>
-                              </>
-                            ) : (
-                              <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
-                                <Upload className="w-4 h-4 mb-1" />
-                                Add photo
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                <Input
+                                  className="h-7 text-[0.72rem]"
+                                  placeholder="Photo credit (optional)"
+                                  value={photo.credit || ""}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { credit: e.target.value })}
                                 />
-                              </label>
+                                <Input
+                                  className="h-7 text-[0.72rem]"
+                                  placeholder="Caption / description (optional)"
+                                  value={photo.caption || ""}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { caption: e.target.value })}
+                                />
+                              </>
                             )}
                           </div>
                         );
@@ -1154,6 +1215,8 @@ const CatalogShopManager = () => {
             destination: previewRow.destination,
             trip_duration: previewRow.duration,
             hero_image_url: previewRow.hero_image_url,
+            hero_image_credit: previewRow.hero_image_credit,
+            hero_image_caption: previewRow.hero_image_caption,
             cover_tagline: previewRow.summary_en || null,
           }}
           onClose={() => setPreviewRow(null)}

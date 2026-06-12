@@ -12,7 +12,14 @@ export function markdownToHtml(md: string): string {
   if (!md) return "";
   let cleaned = cleanMarkdown(md);
   let html = cleaned
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)\n\*Photo:\s*([^*]*)\*/g, '<figure><img src="$2" alt="$1"><figcaption>Photo: $3</figcaption></figure>')
+    // Image with markdown title attribute = photo credit. Caption taken from alt.
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)\s+"([^"]*)"\)/g, (_m, alt, src, credit) => {
+      const cap = alt ? `<figcaption class="fjw-img-caption">${alt}</figcaption>` : "";
+      const cr = credit ? `<div class="fjw-img-credit">${credit}</div>` : "";
+      return `<figure class="fjw-figure"><img src="${src}" alt="${alt}" title="${credit}">${cap}${cr}</figure>`;
+    })
+    // Legacy: image followed by "*Photo: …*" line on next line
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)\n\*Photo:\s*([^*]*)\*/g, '<figure class="fjw-figure"><img src="$2" alt="$1"><figcaption class="fjw-img-caption">$1</figcaption><div class="fjw-img-credit">$3</div></figure>')
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
     .replace(/^#{4}\s+(.+?)\s*$/gm, "<h4>$1</h4>")
     .replace(/^#{3}\s+(.+?)\s*$/gm, "<h3>$1</h3>")
@@ -63,13 +70,26 @@ turndownService.addRule("figure", {
     const el = node as HTMLElement;
     const img = el.querySelector("img");
     const cap = el.querySelector("figcaption");
+    const creditEl = el.querySelector(".fjw-img-credit");
     if (!img) return "";
-    const alt = img.getAttribute("alt") || "";
+    const alt = (cap?.textContent?.trim() || img.getAttribute("alt") || "").replace(/"/g, "'");
     const src = img.getAttribute("src") || "";
-    const credit = cap?.textContent?.replace(/^Photo:\s*/, "") || "";
+    const credit = (creditEl?.textContent?.trim() || img.getAttribute("title") || "").replace(/"/g, "'");
     return credit
-      ? `\n\n![${alt}](${src})\n*Photo: ${credit}*\n`
+      ? `\n\n![${alt}](${src} "${credit}")\n`
       : `\n\n![${alt}](${src})\n`;
+  },
+});
+
+// Plain <img> with title attribute → preserve credit via markdown title syntax
+turndownService.addRule("imageWithTitle", {
+  filter: (node) => node.nodeName === "IMG" && !!(node as HTMLElement).getAttribute("title"),
+  replacement: (_content, node) => {
+    const el = node as HTMLElement;
+    const alt = (el.getAttribute("alt") || "").replace(/"/g, "'");
+    const src = el.getAttribute("src") || "";
+    const title = (el.getAttribute("title") || "").replace(/"/g, "'");
+    return `\n\n![${alt}](${src} "${title}")\n`;
   },
 });
 
