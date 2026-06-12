@@ -43,8 +43,7 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       const credit = (window.prompt("Optional photo credit (e.g. '© Visit Norway / Per Kvarting'):", "") || "").trim();
       const safeCap = caption.replace(/</g, "&lt;").replace(/"/g, "&quot;");
       const safeCred = credit.replace(/</g, "&lt;").replace(/"/g, "&quot;");
-      const figureHtml = `<figure class="fjw-figure"><img src="${data.publicUrl}" alt="${safeCap || "Image"}"${credit ? ` title="${safeCred}"` : ""}>${caption ? `<figcaption class="fjw-img-caption">${safeCap}</figcaption>` : ""}${credit ? `<div class="fjw-img-credit">${safeCred}</div>` : ""}</figure>`;
-      // Fallback to plain image if figure node not registered — then add caption/credit as paragraphs
+      // Insert image (TipTap image extension)
       (editor.chain().focus() as any).setImage({ src: data.publicUrl, alt: caption || "Image" }).run();
       if (caption || credit) {
         const lines: string[] = [];
