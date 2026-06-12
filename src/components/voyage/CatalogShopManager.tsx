@@ -44,6 +44,8 @@ interface CatalogRow {
   duration: string | null;
   price_eur: number;
   hero_image_url: string | null;
+  hero_image_credit: string | null;
+  hero_image_caption: string | null;
   is_published: boolean;
   updated_at: string;
   view_count: number;
@@ -56,7 +58,7 @@ interface CatalogRow {
   itinerary_content_no: string | null;
   experience_type: string[] | null;
   season: string | null;
-  hotels: HotelRec[] | null;
+  hotels: any[] | null;
   audit_report: string | null;
   audited_at: string | null;
 }
@@ -190,7 +192,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
+        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
