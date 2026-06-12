@@ -14,6 +14,8 @@ interface PdfPreviewProps {
     end_date?: string | null;
     group_size?: number;
     hero_image_url?: string | null;
+    hero_image_credit?: string | null;
+    hero_image_caption?: string | null;
     cover_tagline?: string | null;
   } | null;
   onClose: () => void;
