@@ -30,20 +30,36 @@ interface CatalogRow {
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
+  experience_type: string | null;
+  season: string | null;
+}
+
+interface SuggestionRow {
+  id: string;
+  destination: string;
+  experience_type: string | null;
+  details: string | null;
+  email: string;
+  status: string;
+  created_at: string;
 }
 
 const slugify = (s: string) =>
   s.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 80);
 
 const EXPERIENCE_TYPES = [
-  "City break", "Nature", "Adventure", "Gastronomy", "Cultural", "Beach", "Romantic", "Family", "Wellness", "Luxury",
+  "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
+  "Beach", "Romantic", "Family", "Wellness", "Luxury",
 ];
+
+const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
 
 interface EditorState {
   id: string | null;
   title: string;
   destination: string;
-  experienceType: string[];
+  experienceType: string;
+  season: string;
   duration: string;
   language: Lang;
   brief: string;
@@ -58,7 +74,8 @@ const blankEditor: EditorState = {
   id: null,
   title: "",
   destination: "",
-  experienceType: [],
+  experienceType: "",
+  season: "",
   duration: "",
   language: "en",
   brief: "",
