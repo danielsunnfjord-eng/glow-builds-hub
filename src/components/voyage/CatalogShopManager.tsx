@@ -939,22 +939,37 @@ const CatalogShopManager = () => {
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
                   {auditing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                  {state.auditReport ? "Re-audit" : "Run Audit"}
+                  {state.auditItems.length ? "Re-audit" : "Run Audit"}
                 </Button>
                 <Button
                   size="sm"
                   onClick={applyAudit}
-                  disabled={!state.auditReport || applyingAudit || auditing}
+                  disabled={
+                    !state.auditItems.some((i) => i.selected) ||
+                    applyingAudit ||
+                    auditing ||
+                    state.previousContent !== null
+                  }
                   className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
                 >
                   {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                  Apply Improvements
+                  Apply Selected ({state.auditItems.filter((i) => i.selected).length})
                 </Button>
+                {state.previousContent !== null && (
+                  <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
+                    <Undo2 className="w-4 h-4 mr-2" /> Keep Original
+                  </Button>
+                )}
               </div>
             </div>
-            {state.auditReport ? (
-              <div className="mt-2 p-3 bg-parchment/40 border border-parchment-3 rounded whitespace-pre-wrap text-[0.85rem] text-ink-2 max-h-[300px] overflow-y-auto">
-                {state.auditReport}
+            {state.auditItems.length ? (
+              <div className="mt-2">
+                <AuditChecklist
+                  items={state.auditItems}
+                  onToggle={toggleAuditItem}
+                  onSelectAll={selectAllAudit}
+                  onDeselectAll={deselectAllAudit}
+                />
               </div>
             ) : (
               <p className="text-[0.78rem] text-voyage-muted italic">No audit yet — run it before publishing.</p>
