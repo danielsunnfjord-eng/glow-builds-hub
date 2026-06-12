@@ -296,6 +296,24 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     {uploadingHero ? "Uploading…" : "Upload cover image"}
                   </button>
                 )}
+                {heroUrl && (
+                  <div className="space-y-1.5 mt-2">
+                    <input
+                      type="text"
+                      value={heroCredit}
+                      onChange={(e) => setHeroCredit(e.target.value)}
+                      placeholder="Photo credit (optional) — e.g. © Visit Norway"
+                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-none focus:border-gold"
+                    />
+                    <input
+                      type="text"
+                      value={heroCaption}
+                      onChange={(e) => setHeroCaption(e.target.value)}
+                      placeholder="Caption / description (optional)"
+                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-none focus:border-gold"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Tagline */}
@@ -385,6 +403,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               project={{
                 ...(project as any),
                 hero_image_url: heroUrl,
+                hero_image_credit: heroCredit,
+                hero_image_caption: heroCaption,
                 cover_tagline: tagline,
               }}
               onClose={() => setShowPdf(false)}
