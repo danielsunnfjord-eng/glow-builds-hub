@@ -4,6 +4,22 @@ import logoHorizontal from "@/assets/logo-horizontal.webp";
 import logoHorizontalHd from "@/assets/logo-horizontal-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
 
+interface HotelPhoto {
+  url?: string;
+  credit?: string;
+  caption?: string;
+}
+
+interface HotelRecPreview {
+  id?: string;
+  name?: string;
+  location?: string;
+  description?: string;
+  perks?: string[];
+  photos?: Array<HotelPhoto | string>;
+  visible?: boolean;
+}
+
 interface PdfPreviewProps {
   content: string;
   project: {
@@ -18,9 +34,17 @@ interface PdfPreviewProps {
     hero_image_caption?: string | null;
     cover_tagline?: string | null;
   } | null;
+  hotels?: HotelRecPreview[];
   onClose: () => void;
   onExport: () => void;
 }
+
+const normalizePhoto = (p: HotelPhoto | string | undefined | null): HotelPhoto | null => {
+  if (!p) return null;
+  if (typeof p === "string") return { url: p, credit: "", caption: "" };
+  if (typeof p === "object" && p.url) return { url: p.url, credit: p.credit || "", caption: p.caption || "" };
+  return null;
+};
 
 const formatDateRange = (start?: string | null, end?: string | null) => {
   if (!start && !end) return "";
