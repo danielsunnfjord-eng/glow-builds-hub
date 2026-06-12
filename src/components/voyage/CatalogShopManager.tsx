@@ -11,10 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon,
+  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
+import AuditChecklist from "./AuditChecklist";
+import {
+  parseAuditItems,
+  serializeAuditItems,
+  itemsToPromptText,
+  type SelectableAuditItem,
+} from "@/lib/auditParser";
 
 type Lang = "en" | "pt" | "no";
 
@@ -101,7 +108,9 @@ interface EditorState {
   isPublished: boolean;
   hotels: HotelRec[];
   auditReport: string;
+  auditItems: SelectableAuditItem[];
   auditedAt: string | null;
+  previousContent: string | null;
 }
 
 const blankEditor: EditorState = {
@@ -122,7 +131,9 @@ const blankEditor: EditorState = {
   isPublished: false,
   hotels: [],
   auditReport: "",
+  auditItems: [],
   auditedAt: null,
+  previousContent: null,
 };
 
 const CatalogShopManager = () => {
@@ -226,7 +237,9 @@ const CatalogShopManager = () => {
       isPublished: r.is_published,
       hotels,
       auditReport: r.audit_report || "",
+      auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
+      previousContent: null,
     });
     setSectionPrompt("");
     setEditorOpen(true);
@@ -355,19 +368,26 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      const audit = (data?.audit || "").toString().trim();
-      if (!audit) throw new Error("No audit returned");
+      const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
+      if (!parsed.length) throw new Error("No audit suggestions returned");
+      const items: SelectableAuditItem[] = parsed.map((i) => ({ ...i, selected: true }));
+      const serialized = serializeAuditItems(items);
       const now = new Date().toISOString();
-      setState((s) => ({ ...s, auditReport: audit, auditedAt: now }));
-      // Persist audit immediately so it survives reloads (if saved row exists)
+      setState((s) => ({
+        ...s,
+        auditItems: items,
+        auditReport: serialized,
+        auditedAt: now,
+        previousContent: null,
+      }));
       if (state.id) {
         await supabase
           .from("catalog_itineraries")
-          .update({ audit_report: audit, audited_at: now })
+          .update({ audit_report: serialized, audited_at: now })
           .eq("id", state.id);
         qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
       }
-      toast.success("Audit complete — review the report below.");
+      toast.success("Audit complete — pick which improvements to apply.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
@@ -375,12 +395,31 @@ const CatalogShopManager = () => {
     }
   };
 
+  const toggleAuditItem = (id: string) =>
+    setState((s) => ({
+      ...s,
+      auditItems: s.auditItems.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)),
+    }));
+  const selectAllAudit = () =>
+    setState((s) => ({ ...s, auditItems: s.auditItems.map((i) => ({ ...i, selected: true })) }));
+  const deselectAllAudit = () =>
+    setState((s) => ({ ...s, auditItems: s.auditItems.map((i) => ({ ...i, selected: false })) }));
+  const keepOriginalAudit = () => {
+    setState((s) =>
+      s.previousContent === null ? s : { ...s, content: s.previousContent, previousContent: null },
+    );
+    toast.success("Original itinerary restored");
+  };
+
   const applyAudit = async () => {
-    if (!state.auditReport.trim() || !state.content.trim()) {
-      toast.error("Run the audit first.");
+    const selected = state.auditItems.filter((i) => i.selected);
+    if (!selected.length || !state.content.trim()) {
+      toast.error("Select at least one improvement to apply.");
       return;
     }
     setApplyingAudit(true);
+    const original = state.content;
+    const auditText = itemsToPromptText(selected);
     try {
       const { data: sess } = await supabase.auth.getSession();
       const token = sess?.session?.access_token;
@@ -394,8 +433,8 @@ const CatalogShopManager = () => {
         },
         body: JSON.stringify({
           mode: "rewrite",
-          content: state.content,
-          audit: state.auditReport,
+          content: original,
+          audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
           trip_duration: state.duration,
         }),
       });
@@ -403,6 +442,7 @@ const CatalogShopManager = () => {
         const errText = await res.text().catch(() => "");
         throw new Error(errText || `Rewrite failed (${res.status})`);
       }
+      setState((s) => ({ ...s, previousContent: original, content: "" }));
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let rewritten = "";
@@ -418,6 +458,7 @@ const CatalogShopManager = () => {
       toast.success("Improvements applied. Review the rewritten itinerary.");
     } catch (e: any) {
       toast.error(e?.message || "Failed to apply improvements");
+      setState((s) => ({ ...s, content: original, previousContent: null }));
     } finally {
       setApplyingAudit(false);
     }
@@ -898,22 +939,37 @@ const CatalogShopManager = () => {
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
                   {auditing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                  {state.auditReport ? "Re-audit" : "Run Audit"}
+                  {state.auditItems.length ? "Re-audit" : "Run Audit"}
                 </Button>
                 <Button
                   size="sm"
                   onClick={applyAudit}
-                  disabled={!state.auditReport || applyingAudit || auditing}
+                  disabled={
+                    !state.auditItems.some((i) => i.selected) ||
+                    applyingAudit ||
+                    auditing ||
+                    state.previousContent !== null
+                  }
                   className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
                 >
                   {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                  Apply Improvements
+                  Apply Selected ({state.auditItems.filter((i) => i.selected).length})
                 </Button>
+                {state.previousContent !== null && (
+                  <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
+                    <Undo2 className="w-4 h-4 mr-2" /> Keep Original
+                  </Button>
+                )}
               </div>
             </div>
-            {state.auditReport ? (
-              <div className="mt-2 p-3 bg-parchment/40 border border-parchment-3 rounded whitespace-pre-wrap text-[0.85rem] text-ink-2 max-h-[300px] overflow-y-auto">
-                {state.auditReport}
+            {state.auditItems.length ? (
+              <div className="mt-2">
+                <AuditChecklist
+                  items={state.auditItems}
+                  onToggle={toggleAuditItem}
+                  onSelectAll={selectAllAudit}
+                  onDeselectAll={deselectAllAudit}
+                />
               </div>
             ) : (
               <p className="text-[0.78rem] text-voyage-muted italic">No audit yet — run it before publishing.</p>

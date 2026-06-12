@@ -4,9 +4,12 @@
 //   - mode: "rewrite" → chunked streaming text/plain response with the rewritten itinerary
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify any issues including: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
 
-Output ONLY a concise Audit Report as a markdown bullet list. Do not rewrite the itinerary. Be specific and actionable. Keep it under ~400 words.`;
+Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
+{ "items": [ { "title": "Short actionable suggestion (max ~12 words, ideally referencing the specific day)", "why": "One sentence explaining why this improvement matters." } ] }
+
+Provide between 4 and 10 distinct items. Each item must be a single specific, actionable improvement. Do not rewrite the itinerary.`;
 
 const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
 
@@ -198,7 +201,7 @@ Deno.serve(async (req) => {
       return streamRewrite({ apiKey, content, audit, totalDays });
     }
 
-    // Default: audit-only (short, fast)
+    // Default: audit-only (short, fast). Returns JSON items.
     const auditText = await callClaude(
       apiKey,
       AUDIT_SYSTEM,
@@ -206,7 +209,24 @@ Deno.serve(async (req) => {
       2000,
     );
 
-    return new Response(JSON.stringify({ audit: auditText }), {
+    let items: Array<{ title: string; why: string }> = [];
+    try {
+      const cleaned = auditText.replace(/^```json\s*|\s*```$/gi, '').trim();
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      const parsed = JSON.parse(match ? match[0] : cleaned);
+      if (Array.isArray(parsed?.items)) {
+        items = parsed.items
+          .map((it: any) => ({
+            title: String(it?.title || it?.suggestion || '').trim(),
+            why: String(it?.why || it?.reason || it?.explanation || '').trim(),
+          }))
+          .filter((it: any) => it.title);
+      }
+    } catch {
+      // fall through — leave items empty, client will fallback parse the text
+    }
+
+    return new Response(JSON.stringify({ audit: auditText, items }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
+import AuditChecklist from "./AuditChecklist";
+import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
@@ -41,7 +43,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [showPdf, setShowPdf] = useState(false);
   const [auditing, setAuditing] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [auditReport, setAuditReport] = useState<string | null>(null);
+  const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
 
@@ -51,7 +53,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setNotes(project?.internal_notes || "");
     setHeroUrl(project?.hero_image_url || null);
     setTagline(project?.cover_tagline || "");
-    setAuditReport(null);
+    setAuditItems([]);
     setPreviousContent(null);
   }, [open, project]);
 
@@ -67,10 +69,10 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      const audit = (data?.audit || "").trim();
-      if (!audit) throw new Error("No audit returned");
-      setAuditReport(audit);
-      toast.success("Audit complete — review and apply improvements if you like.");
+      const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
+      if (!parsed.length) throw new Error("No audit suggestions returned");
+      setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
+      toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
       toast.error(e?.message || "Audit failed");
     } finally {
@@ -78,10 +80,20 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     }
   };
 
+  const toggleItem = (id: string) =>
+    setAuditItems((arr) => arr.map((i) => (i.id === id ? { ...i, selected: !i.selected } : i)));
+  const selectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: true })));
+  const deselectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: false })));
+
   const applyImprovements = async () => {
-    if (!content.trim() || !auditReport) return;
+    const selected = auditItems.filter((i) => i.selected);
+    if (!content.trim() || !selected.length) {
+      toast.error("Select at least one improvement to apply.");
+      return;
+    }
     setApplying(true);
     const original = content;
+    const auditText = itemsToPromptText(selected);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(
@@ -96,7 +108,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           body: JSON.stringify({
             content: original,
             mode: "rewrite",
-            audit: auditReport,
+            audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
             start_date: project?.start_date,
             end_date: project?.end_date,
             trip_duration: project?.trip_duration,
@@ -130,10 +142,10 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const keepOriginal = () => {
     if (previousContent === null) return;
     setContent(previousContent);
-    setAuditReport(null);
     setPreviousContent(null);
     toast.success("Original itinerary restored");
   };
+
 
   const handleSave = async () => {
     if (!project) return;
@@ -214,22 +226,17 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
             <div className="col-span-2 flex min-h-0 flex-col overflow-hidden">
               <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1.5">Itinerary (WYSIWYG)</div>
-              {auditReport && (
-                <div className="mb-2 rounded-md border border-gold/60 bg-gold/10 p-3 max-h-48 overflow-y-auto">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-ink inline-flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Audit Report
-                    </div>
-                    {previousContent !== null && (
-                      <button
-                        onClick={keepOriginal}
-                        className="text-[0.65rem] uppercase tracking-wider text-ink hover:text-gold inline-flex items-center gap-1"
-                      >
-                        <Undo2 className="w-3 h-3" /> Keep Original
-                      </button>
-                    )}
-                  </div>
-                  <pre className="whitespace-pre-wrap font-sans text-[0.78rem] text-ink leading-relaxed">{auditReport}</pre>
+              {auditItems.length > 0 && (
+                <div className="mb-2">
+                  <AuditChecklist
+                    items={auditItems}
+                    onToggle={toggleItem}
+                    onSelectAll={selectAll}
+                    onDeselectAll={deselectAll}
+                    canKeepOriginal={previousContent !== null}
+                    onKeepOriginal={keepOriginal}
+                    compact
+                  />
                 </div>
               )}
               <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
@@ -325,14 +332,14 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
               </button>
-              {auditReport && previousContent === null && (
+              {auditItems.length > 0 && previousContent === null && (
                 <button
                   onClick={applyImprovements}
-                  disabled={applying}
+                  disabled={applying || !auditItems.some((i) => i.selected)}
                   className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                  {applying ? "Rewriting…" : "Apply Improvements"}
+                  {applying ? "Rewriting…" : `Apply Selected (${auditItems.filter((i) => i.selected).length})`}
                 </button>
               )}
               {previousContent !== null && (
