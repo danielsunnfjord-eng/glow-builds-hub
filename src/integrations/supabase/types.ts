@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       catalog_itineraries: {
         Row: {
+          audit_report: string | null
+          audited_at: string | null
           created_at: string
           description_en: string
           description_no: string | null
@@ -27,6 +29,7 @@ export type Database = {
           gallery_images: Json
           group_size_label: string | null
           hero_image_url: string | null
+          hotels: Json
           id: string
           is_published: boolean
           itinerary_content_en: string | null
@@ -50,6 +53,8 @@ export type Database = {
           what_you_get_pt: string | null
         }
         Insert: {
+          audit_report?: string | null
+          audited_at?: string | null
           created_at?: string
           description_en?: string
           description_no?: string | null
@@ -61,6 +66,7 @@ export type Database = {
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
+          hotels?: Json
           id?: string
           is_published?: boolean
           itinerary_content_en?: string | null
@@ -84,6 +90,8 @@ export type Database = {
           what_you_get_pt?: string | null
         }
         Update: {
+          audit_report?: string | null
+          audited_at?: string | null
           created_at?: string
           description_en?: string
           description_no?: string | null
@@ -95,6 +103,7 @@ export type Database = {
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
+          hotels?: Json
           id?: string
           is_published?: boolean
           itinerary_content_en?: string | null
