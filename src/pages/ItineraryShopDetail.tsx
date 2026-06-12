@@ -9,7 +9,6 @@ import {
   Users,
   Wallet,
   Sun,
-  Lock,
   FileDown,
   Compass,
   Sparkles,
@@ -58,36 +57,6 @@ interface CatalogItem {
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
   (lang === "pt" && pt) || (lang === "no" && no) || en;
 
-// Extract only the Day 1 → Morning section as a teaser.
-function extractDay1MorningTeaser(md: string): string {
-  if (!md) return "";
-  const lines = md.split("\n");
-  const dayRe = /^#{1,3}\s*(?:day|dia|dag)\s*1\b/i;
-  const nextDayRe = /^#{1,3}\s*(?:day|dia|dag)\s*\d+\b/i;
-  const morningRe = /^#{1,4}\s*(morning|manhã|manha|morgen|morgon)\b/i;
-  const siblingRe = /^#{1,4}\s*(afternoon|evening|night|tarde|noite|ettermiddag|kveld|natt|dining|insider)\b/i;
-
-  let i = 0;
-  while (i < lines.length && !dayRe.test(lines[i])) i++;
-  if (i >= lines.length) {
-    return lines.slice(0, 25).join("\n");
-  }
-  const out: string[] = [lines[i]];
-  i++;
-  while (i < lines.length && !morningRe.test(lines[i]) && !nextDayRe.test(lines[i])) {
-    out.push(lines[i]);
-    i++;
-  }
-  if (i < lines.length && morningRe.test(lines[i])) {
-    out.push(lines[i]);
-    i++;
-    while (i < lines.length && !siblingRe.test(lines[i]) && !nextDayRe.test(lines[i])) {
-      out.push(lines[i]);
-      i++;
-    }
-  }
-  return out.join("\n").trim();
-}
 
 const ItineraryShopDetail = () => {
   const { slug } = useParams();
@@ -135,8 +104,6 @@ const ItineraryShopDetail = () => {
   const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no) : "";
   const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no) : "";
   const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no) : "";
-  const teaserMd = useMemo(() => extractDay1MorningTeaser(itineraryMd), [itineraryMd]);
-  const teaserHtml = useMemo(() => (teaserMd ? markdownToHtml(teaserMd) : ""), [teaserMd]);
 
   const wygItems = useMemo(
     () =>
@@ -589,38 +556,6 @@ const ItineraryShopDetail = () => {
                         }}
                       />
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Day 1 teaser */}
-              {teaserHtml && (
-                <div className="mb-4">
-                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
-                    {t("shop.day1Teaser", "A taste of Day One")}
-                  </h2>
-                  <div className="h-px w-12 bg-gold mb-7" />
-                  <div className="relative overflow-hidden rounded-lg border border-ink/[0.08] bg-voyage-white">
-                    <div
-                      className="p-8 max-h-[460px] overflow-hidden prose prose-sm md:prose-base max-w-none prose-headings:font-serif prose-headings:text-ink prose-h1:text-[1.6rem] prose-h2:text-[1.3rem] prose-h3:text-[1.05rem] prose-p:text-ink/80 prose-li:text-ink/80 prose-strong:text-ink"
-                      dangerouslySetInnerHTML={{ __html: teaserHtml }}
-                    />
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-voyage-white via-voyage-white/95 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-7 text-center">
-                      <Lock className="w-5 h-5 text-gold mx-auto mb-3" />
-                      <p className="font-serif text-[1.1rem] italic text-ink mb-4">
-                        {t(
-                          "shop.unlockEditorial",
-                          "The full journey awaits. Purchase to unlock your complete itinerary.",
-                        )}
-                      </p>
-                      <a
-                        href="#buy"
-                        className="inline-block px-6 py-3 rounded-sm bg-ink text-voyage-white text-[0.74rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors"
-                      >
-                        {t("shop.purchaseItinerary", "Purchase itinerary")} — {priceLabel}
-                      </a>
-                    </div>
                   </div>
                 </div>
               )}
