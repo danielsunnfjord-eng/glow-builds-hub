@@ -290,7 +290,7 @@ const ItineraryShopDetail = () => {
           </div>
 
           {/* Buy panel */}
-          <aside className="lg:sticky lg:top-28 self-start">
+          <aside id="buy" className="lg:sticky lg:top-28 self-start scroll-mt-28">
             <div className="bg-voyage-white border border-ink/[0.06] rounded-lg shadow-sm p-7">
               <div className="flex items-baseline justify-between mb-1">
                 <span className="text-[0.7rem] uppercase tracking-[0.12em] text-voyage-muted">
