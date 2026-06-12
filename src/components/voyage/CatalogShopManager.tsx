@@ -1215,6 +1215,8 @@ const CatalogShopManager = () => {
             destination: previewRow.destination,
             trip_duration: previewRow.duration,
             hero_image_url: previewRow.hero_image_url,
+            hero_image_credit: previewRow.hero_image_credit,
+            hero_image_caption: previewRow.hero_image_caption,
             cover_tagline: previewRow.summary_en || null,
           }}
           onClose={() => setPreviewRow(null)}
