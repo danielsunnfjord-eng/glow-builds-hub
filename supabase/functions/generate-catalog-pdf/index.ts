@@ -661,21 +661,45 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
             hy += 2;
           }
         }
-        // Photos grid (3 side-by-side)
-        const photos = Array.isArray(h.photos) ? h.photos.slice(0, 3) : [];
+        // Photos grid (3 side-by-side, with optional credit overlay + caption below)
+        const photos = (Array.isArray(h.photos) ? h.photos : []).map(normPhoto).filter(Boolean).slice(0, 3) as Array<{url:string,credit:string,caption:string}>;
         if (photos.length) {
-          if (hy > H - 180) { pdf.addPage(); hy = 80; }
+          if (hy > H - 220) { pdf.addPage(); hy = 80; }
           const gap = 8;
           const cellW = (contentW - gap * 2) / 3;
           const cellH = cellW * 0.72;
-          for (let i = 0; i < 3; i++) {
-            const url = photos[i];
-            if (!url) continue;
-            const data = await fetchImageDataUrl(url);
+          const imgTop = hy + 8;
+          for (let i = 0; i < photos.length; i++) {
+            const ph = photos[i];
+            if (!ph || !ph.url) continue;
+            const data = await fetchImageDataUrl(ph.url);
             if (!data) continue;
-            try { pdf.addImage(data, "JPEG", M + i * (cellW + gap), hy + 8, cellW, cellH, undefined, "FAST"); } catch {}
+            const x = M + i * (cellW + gap);
+            try { pdf.addImage(data, "JPEG", x, imgTop, cellW, cellH, undefined, "FAST"); } catch {}
+            if (ph.credit) {
+              pdf.setFont("helvetica", "normal"); pdf.setFontSize(6.5);
+              const cw = pdf.getTextWidth(ph.credit) + 8;
+              const cwClamped = Math.min(cw, cellW - 4);
+              pdf.setFillColor(0, 0, 0); pdf.setGState(new (pdf as any).GState({ opacity: 0.5 }));
+              pdf.rect(x + cellW - cwClamped - 4, imgTop + cellH - 12, cwClamped, 10, "F");
+              pdf.setGState(new (pdf as any).GState({ opacity: 1 }));
+              pdf.setTextColor(255, 255, 255);
+              pdf.text(ph.credit, x + cellW - 6, imgTop + cellH - 4, { align: "right", maxWidth: cwClamped - 4 });
+            }
           }
-          hy += cellH + 24;
+          let capY = imgTop + cellH + 10;
+          let maxCapH = 0;
+          for (let i = 0; i < photos.length; i++) {
+            const ph = photos[i];
+            if (!ph || !ph.caption) continue;
+            const x = M + i * (cellW + gap);
+            pdf.setFont("times", "italic"); pdf.setFontSize(8.5); pdf.setTextColor(...MUTED);
+            const capLines = pdf.splitTextToSize(ph.caption, cellW);
+            let cy = capY;
+            for (const ln of capLines.slice(0, 2)) { pdf.text(ln, x, cy); cy += 10; }
+            maxCapH = Math.max(maxCapH, cy - capY);
+          }
+          hy = imgTop + cellH + (maxCapH ? maxCapH + 14 : 14);
         } else {
           hy += 10;
         }
