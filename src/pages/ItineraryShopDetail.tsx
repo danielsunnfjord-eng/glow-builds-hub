@@ -16,8 +16,6 @@ import {
   Heart,
   Coffee,
   Moon as MoonIcon,
-  Utensils,
-  ShieldCheck,
   MessageCircle,
   Award,
 } from "lucide-react";
