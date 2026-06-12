@@ -426,9 +426,28 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       pdf.setFillColor(20, 24, 30);
       pdf.rect(0, 0, W, heroH, "F");
     }
+    // Hero credit overlay (bottom-right of image)
+    if (heroCredit) {
+      const text = String(heroCredit);
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5);
+      const tw = pdf.getTextWidth(text) + 12;
+      pdf.setFillColor(0, 0, 0); pdf.setGState(new (pdf as any).GState({ opacity: 0.45 }));
+      pdf.rect(W - tw - 10, heroH - 22, tw, 14, "F");
+      pdf.setGState(new (pdf as any).GState({ opacity: 1 }));
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(text, W - 16, heroH - 12, { align: "right" });
+    }
 
     // Content block below hero — stacked top-down with explicit spacing
     let y = heroH + 50;
+
+    // Hero caption (italic) right under the hero, above the label
+    if (heroCaption) {
+      pdf.setFont("times", "italic"); pdf.setFontSize(11); pdf.setTextColor(...MUTED);
+      const capLines = pdf.splitTextToSize(String(heroCaption), contentW - 60);
+      for (const ln of capLines.slice(0, 2)) { pdf.text(ln, W / 2, y, { align: "center" }); y += 14; }
+      y += 8;
+    }
 
     // Small label
     pdf.setTextColor(...GOLD);
