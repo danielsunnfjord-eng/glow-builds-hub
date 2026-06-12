@@ -105,7 +105,7 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
             {/* Hero image */}
             <div
               style={{
-                margin: "18mm 20mm 12mm",
+                margin: "18mm 20mm 4mm",
                 height: "120mm",
                 borderRadius: "4px",
                 overflow: "hidden",
@@ -134,7 +134,38 @@ const PdfPreview = ({ content, project, onClose, onExport }: PdfPreviewProps) =>
                   — A Journey Awaits —
                 </div>
               )}
+              {project?.hero_image_credit && (
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 6,
+                    right: 10,
+                    fontSize: "8px",
+                    color: "rgba(255,255,255,0.9)",
+                    background: "rgba(0,0,0,0.35)",
+                    padding: "2px 6px",
+                    borderRadius: "2px",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  {project.hero_image_credit}
+                </div>
+              )}
             </div>
+            {project?.hero_image_caption && (
+              <p
+                style={{
+                  margin: "0 20mm 10mm",
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontStyle: "italic",
+                  fontSize: "13px",
+                  color: "#4C6F75",
+                  textAlign: "center",
+                }}
+              >
+                {project.hero_image_caption}
+              </p>
+            )}
 
             {/* Client name + meta */}
             <div style={{ padding: "0 20mm", textAlign: "center" }}>
