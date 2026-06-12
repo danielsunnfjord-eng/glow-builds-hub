@@ -22,6 +22,7 @@ import {
   itemsToPromptText,
   type SelectableAuditItem,
 } from "@/lib/auditParser";
+import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
 type Lang = "en" | "pt" | "no";
 
@@ -31,7 +32,7 @@ interface HotelRec {
   location: string;
   description: string;
   perks: string[];
-  photos: string[]; // up to 3
+  photos: PhotoMeta[]; // up to 3
   visible: boolean;
 }
 
@@ -105,6 +106,8 @@ interface EditorState {
   content: string;
   priceEur: string;
   heroImageUrl: string;
+  heroImageCredit: string;
+  heroImageCaption: string;
   isPublished: boolean;
   hotels: HotelRec[];
   auditReport: string;
@@ -128,6 +131,8 @@ const blankEditor: EditorState = {
   content: "",
   priceEur: "0",
   heroImageUrl: "",
+  heroImageCredit: "",
+  heroImageCaption: "",
   isPublished: false,
   hotels: [],
   auditReport: "",
