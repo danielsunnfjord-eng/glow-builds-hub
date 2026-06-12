@@ -345,6 +345,80 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
             </div>
           </div>
 
+          {/* ============ WHERE TO STAY ============ */}
+          {visibleHotels.length > 0 && (
+            <div className="fjw-print-page" style={pageStyle}>
+              <div style={{ padding: "20mm 20mm 18mm" }}>
+                <div style={{ fontSize: "10px", letterSpacing: "0.2em", color: "#B48C3C", fontWeight: 700, textTransform: "uppercase" }}>
+                  Where to Stay
+                </div>
+                <div style={{ width: "30px", height: "1px", background: "#B48C3C", margin: "6px 0 14px" }} />
+                <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "30px", fontWeight: 600, color: "#1E2D3D", margin: "0 0 20px" }}>
+                  Hotel Recommendations
+                </h2>
+
+                {visibleHotels.map((h, idx) => {
+                  const photos = (h.photos || [])
+                    .map(normalizePhoto)
+                    .filter((p): p is HotelPhoto => !!p && !!p.url)
+                    .slice(0, 3);
+                  return (
+                    <div key={h.id || idx} style={{ marginBottom: "26px", paddingBottom: "20px", borderBottom: "1px solid #DCCEB8" }}>
+                      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 600, color: "#1E2D3D", margin: "0 0 4px" }}>
+                        {h.name}
+                      </h3>
+                      {h.location && (
+                        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "13px", color: "#6E6E6E", marginBottom: "8px" }}>
+                          {h.location}
+                        </div>
+                      )}
+                      {h.description && (
+                        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "13px", color: "#1E2D3D", lineHeight: 1.55, margin: "0 0 10px" }}>
+                          {h.description}
+                        </p>
+                      )}
+                      {Array.isArray(h.perks) && h.perks.length > 0 && (
+                        <div style={{ margin: "8px 0 12px" }}>
+                          <div style={{ fontSize: "9px", letterSpacing: "0.18em", color: "#B48C3C", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>
+                            Exclusive perks
+                          </div>
+                          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                            {h.perks.map((p, i) => (
+                              <li key={i} style={{ fontSize: "12px", color: "#1E2D3D", padding: "2px 0 2px 18px", position: "relative" }}>
+                                <span style={{ position: "absolute", left: 0, color: "#B48C3C", fontWeight: 700 }}>✓</span>
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {photos.length > 0 && (
+                        <div style={{ display: "grid", gridTemplateColumns: `repeat(${photos.length}, 1fr)`, gap: "6px", marginTop: "10px" }}>
+                          {photos.map((ph, i) => (
+                            <div key={i}>
+                              <div style={{ position: "relative", width: "100%", paddingBottom: "72%", borderRadius: "3px", overflow: "hidden", background: `#1E2D3D url(${ph.url}) center/cover no-repeat` }}>
+                                {ph.credit && (
+                                  <div style={{ position: "absolute", right: 0, bottom: 0, background: "rgba(0,0,0,0.45)", color: "#fff", fontSize: "7px", padding: "2px 5px", letterSpacing: "0.04em" }}>
+                                    {ph.credit}
+                                  </div>
+                                )}
+                              </div>
+                              {ph.caption && (
+                                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", fontSize: "9px", color: "#6E6E6E", marginTop: "4px", lineHeight: 1.35 }}>
+                                  {ph.caption}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* ============ BACK PAGE ============ */}
           <div
             className="fjw-print-page"
