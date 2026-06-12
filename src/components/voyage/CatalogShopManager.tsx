@@ -53,7 +53,7 @@ interface CatalogRow {
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
-  experience_type: string | null;
+  experience_type: string[] | null;
   season: string | null;
   hotels: HotelRec[] | null;
   audit_report: string | null;
