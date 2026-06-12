@@ -23,6 +23,8 @@ interface Project {
   itinerary_content?: string | null;
   internal_notes?: string | null;
   hero_image_url?: string | null;
+  hero_image_credit?: string | null;
+  hero_image_caption?: string | null;
   cover_tagline?: string | null;
 }
 
@@ -37,6 +39,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
   const [heroUrl, setHeroUrl] = useState<string | null>(null);
+  const [heroCredit, setHeroCredit] = useState("");
+  const [heroCaption, setHeroCaption] = useState("");
   const [tagline, setTagline] = useState("");
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -52,6 +56,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setContent(project?.itinerary_content || "");
     setNotes(project?.internal_notes || "");
     setHeroUrl(project?.hero_image_url || null);
+    setHeroCredit(project?.hero_image_credit || "");
+    setHeroCaption(project?.hero_image_caption || "");
     setTagline(project?.cover_tagline || "");
     setAuditItems([]);
     setPreviousContent(null);
@@ -157,6 +163,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           itinerary_content: content,
           internal_notes: notes,
           hero_image_url: heroUrl,
+          hero_image_credit: heroCredit || null,
+          hero_image_caption: heroCaption || null,
           cover_tagline: tagline || null,
         } as any)
         .eq("id", project.id);
