@@ -54,7 +54,9 @@ interface CatalogItem {
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
+  season: string[] | null;
 }
+
 
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
   (lang === "pt" && pt) || (lang === "no" && no) || en;

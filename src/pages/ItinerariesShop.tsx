@@ -103,8 +103,9 @@ const ItinerariesShop = () => {
         const hay = [
           d.title_en, d.title_pt, d.title_no,
           d.summary_en, d.summary_pt, d.summary_no,
-          d.destination, d.duration, (d.experience_type || []).join(" "), d.season,
+          d.destination, d.duration, (d.experience_type || []).join(" "), (d.season || []).join(" "),
         ].filter(Boolean).join(" ").toLowerCase();
+
         if (!hay.includes(q)) return false;
       }
       return true;
