@@ -917,9 +917,29 @@ const CatalogShopManager = () => {
                   {state.heroImageUrl ? "Replace" : "Upload"}
                 </Button>
                 {state.heroImageUrl && (
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setState({ ...state, heroImageUrl: "" })}>Remove</Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setState({ ...state, heroImageUrl: "", heroImageCredit: "", heroImageCaption: "" })}>Remove</Button>
                 )}
               </div>
+              {state.heroImageUrl && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label className="text-[0.7rem] text-voyage-muted">Photo credit (optional)</Label>
+                    <Input
+                      value={state.heroImageCredit}
+                      onChange={(e) => setState({ ...state, heroImageCredit: e.target.value })}
+                      placeholder="© Visit Norway / Per Kvarting"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[0.7rem] text-voyage-muted">Caption / description (optional)</Label>
+                    <Input
+                      value={state.heroImageCaption}
+                      onChange={(e) => setState({ ...state, heroImageCaption: e.target.value })}
+                      placeholder="Sunrise over Nærøyfjord, one of Norway's most dramatic fjord landscapes"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1080,33 +1100,51 @@ const CatalogShopManager = () => {
 
                   <div>
                     <Label className="text-[0.75rem]">Photos (up to 3)</Label>
-                    <div className="grid grid-cols-3 gap-2 mt-1">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
                       {[0, 1, 2].map((slot) => {
                         const photo = h.photos[slot];
                         return (
-                          <div key={slot} className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
-                            {photo ? (
+                          <div key={slot} className="space-y-1.5">
+                            <div className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
+                              {photo ? (
+                                <>
+                                  <img src={photo.url} alt={photo.caption || ""} className="w-full h-full object-cover" />
+                                  <button
+                                    type="button"
+                                    onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
+                                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <XIcon className="w-3 h-3" />
+                                  </button>
+                                </>
+                              ) : (
+                                <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
+                                  <Upload className="w-4 h-4 mb-1" />
+                                  Add photo
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                  />
+                                </label>
+                              )}
+                            </div>
+                            {photo && (
                               <>
-                                <img src={photo} alt="" className="w-full h-full object-cover" />
-                                <button
-                                  type="button"
-                                  onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
-                                  className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <XIcon className="w-3 h-3" />
-                                </button>
-                              </>
-                            ) : (
-                              <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
-                                <Upload className="w-4 h-4 mb-1" />
-                                Add photo
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                <Input
+                                  className="h-7 text-[0.72rem]"
+                                  placeholder="Photo credit (optional)"
+                                  value={photo.credit || ""}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { credit: e.target.value })}
                                 />
-                              </label>
+                                <Input
+                                  className="h-7 text-[0.72rem]"
+                                  placeholder="Caption / description (optional)"
+                                  value={photo.caption || ""}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { caption: e.target.value })}
+                                />
+                              </>
                             )}
                           </div>
                         );
