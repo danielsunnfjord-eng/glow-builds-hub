@@ -25,7 +25,7 @@ export type Database = {
           destination: string | null
           duration: string | null
           estimated_trip_budget: string | null
-          experience_type: string | null
+          experience_type: string[] | null
           gallery_images: Json
           group_size_label: string | null
           hero_image_url: string | null
@@ -62,7 +62,7 @@ export type Database = {
           destination?: string | null
           duration?: string | null
           estimated_trip_budget?: string | null
-          experience_type?: string | null
+          experience_type?: string[] | null
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
@@ -99,7 +99,7 @@ export type Database = {
           destination?: string | null
           duration?: string | null
           estimated_trip_budget?: string | null
-          experience_type?: string | null
+          experience_type?: string[] | null
           gallery_images?: Json
           group_size_label?: string | null
           hero_image_url?: string | null
