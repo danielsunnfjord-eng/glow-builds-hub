@@ -57,36 +57,6 @@ interface CatalogItem {
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
   (lang === "pt" && pt) || (lang === "no" && no) || en;
 
-// Extract only the Day 1 → Morning section as a teaser.
-function extractDay1MorningTeaser(md: string): string {
-  if (!md) return "";
-  const lines = md.split("\n");
-  const dayRe = /^#{1,3}\s*(?:day|dia|dag)\s*1\b/i;
-  const nextDayRe = /^#{1,3}\s*(?:day|dia|dag)\s*\d+\b/i;
-  const morningRe = /^#{1,4}\s*(morning|manhã|manha|morgen|morgon)\b/i;
-  const siblingRe = /^#{1,4}\s*(afternoon|evening|night|tarde|noite|ettermiddag|kveld|natt|dining|insider)\b/i;
-
-  let i = 0;
-  while (i < lines.length && !dayRe.test(lines[i])) i++;
-  if (i >= lines.length) {
-    return lines.slice(0, 25).join("\n");
-  }
-  const out: string[] = [lines[i]];
-  i++;
-  while (i < lines.length && !morningRe.test(lines[i]) && !nextDayRe.test(lines[i])) {
-    out.push(lines[i]);
-    i++;
-  }
-  if (i < lines.length && morningRe.test(lines[i])) {
-    out.push(lines[i]);
-    i++;
-    while (i < lines.length && !siblingRe.test(lines[i]) && !nextDayRe.test(lines[i])) {
-      out.push(lines[i]);
-      i++;
-    }
-  }
-  return out.join("\n").trim();
-}
 
 const ItineraryShopDetail = () => {
   const { slug } = useParams();
