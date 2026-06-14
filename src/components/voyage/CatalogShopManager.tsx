@@ -1039,7 +1039,7 @@ const CatalogShopManager = () => {
               <Input
                 value={sectionPrompt}
                 onChange={(e) => setSectionPrompt(e.target.value)}
-                placeholder='e.g. "Rewrite Day 2 with more focus on gastronomy"'
+                placeholder='e.g. "Rewrite the Food & Drink section with more focus on seafood"'
               />
               <Button variant="outline" onClick={runRegenerateSection} disabled={regenerating}>
                 {regenerating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}

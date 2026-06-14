@@ -120,11 +120,12 @@ const ItineraryShopDetail = () => {
 
   // Fallback "what you receive" checklist if catalog field is empty
   const defaultIncludes = [
-    t("shop.includes.daily", "Complete day-by-day itinerary"),
-    t("shop.includes.structure", "Morning, afternoon & evening structure"),
-    t("shop.includes.hidden", "Hidden gems and local insider tips"),
-    t("shop.includes.dining", "Dining & accommodation guidance"),
-    t("shop.includes.logistics", "Practical logistics and transport advice"),
+    t("shop.includes.thematic", "Thematic editorial guide to the destination"),
+    t("shop.includes.areas", "Where to stay — best neighbourhoods & areas"),
+    t("shop.includes.highlights", "Must-see highlights with insider context"),
+    t("shop.includes.hidden", "Hidden gems and local favourites"),
+    t("shop.includes.food", "Food & drink — specific places and dishes"),
+    t("shop.includes.practical", "Practical tips, logistics & best times to visit"),
     t("shop.includes.pdf", "Instant premium PDF download"),
   ];
   const includes = wygItems.length > 0 ? wygItems : defaultIncludes;
