@@ -528,17 +528,15 @@ const CatalogShopManager = () => {
     setApplyingAudit(true);
     const original = state.content;
     const auditText = itemsToPromptText(selected);
+    setAuditAction({ status: "running", message: "Applying selected improvements… Your current draft stays visible until the rewrite is complete." });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      const token = sess?.session?.access_token;
       const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`;
       const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: await getFunctionHeaders(),
+        signal: controller.signal,
         body: JSON.stringify({
           mode: "rewrite",
           content: original,
@@ -547,10 +545,8 @@ const CatalogShopManager = () => {
         }),
       });
       if (!res.ok || !res.body) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(errText || `Rewrite failed (${res.status})`);
+        throw new Error(await readFunctionError(res));
       }
-      setState((s) => ({ ...s, previousContent: original, content: "" }));
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let rewritten = "";
@@ -558,16 +554,20 @@ const CatalogShopManager = () => {
         const { value, done } = await reader.read();
         if (done) break;
         rewritten += decoder.decode(value, { stream: true });
-        setState((s) => ({ ...s, content: rewritten }));
       }
       rewritten += decoder.decode();
-      if (!rewritten.trim()) throw new Error("Empty rewrite");
-      setState((s) => ({ ...s, content: rewritten.trim() }));
+      if (rewritten.includes("[Error from upstream")) throw new Error(rewritten.trim());
+      if (!rewritten.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
+      setState((s) => ({ ...s, previousContent: original, content: rewritten.trim() }));
+      setAuditAction({ status: "idle", message: "" });
       toast.success("Improvements applied. Review the rewritten itinerary.");
     } catch (e: any) {
-      toast.error(e?.message || "Failed to apply improvements");
+      const message = e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements. Your original draft was preserved.";
+      setAuditAction({ status: "error", message, detail: "No editor content was replaced." });
+      toast.error(message);
       setState((s) => ({ ...s, content: original, previousContent: null }));
     } finally {
+      window.clearTimeout(timeout);
       setApplyingAudit(false);
     }
   };
