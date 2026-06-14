@@ -36,6 +36,8 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       extensions: [
         StarterKit.configure({
           heading: { levels: [1, 2, 3, 4] },
+          link: false,
+          underline: false,
         }),
         ImageResize.configure({ inline: false }),
         Underline,
