@@ -83,10 +83,13 @@ function streamRewrite(opts: {
   content: string;
   audit: string;
   totalDays: number;
+  structure?: string;
 }): Response {
-  const { apiKey, content, audit, totalDays } = opts;
+  const { apiKey, content, audit, totalDays, structure } = opts;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+
+  const isCatalogueGuide = structure === 'catalogue-thematic';
 
   const numChunks = totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
   const ranges = totalDays > 0 ? splitDayRanges(totalDays, numChunks) : [];
@@ -94,7 +97,9 @@ function streamRewrite(opts: {
   const baseContext =
     `Original itinerary:\n\n${content}\n\n---\n\nAudit notes to address:\n\n${audit || '(no audit notes provided — improve based on general best practices)'}\n\n---\n\n`;
 
-  const userPrompts: string[] = ranges.length
+  const userPrompts: string[] = isCatalogueGuide
+    ? [baseContext + 'Now output the complete improved thematic catalogue guide in markdown. Preserve ## thematic section headers. Do not use day numbering or Morning / Afternoon / Evening sections.']
+    : ranges.length
     ? ranges.map(([start, end], idx) => {
         if (ranges.length === 1) {
           return baseContext + 'Now output the complete improved itinerary in markdown.';
@@ -132,7 +137,7 @@ function streamRewrite(opts: {
               model: 'claude-sonnet-4-5',
               max_tokens: 8192,
               stream: true,
-              system: IMPROVE_SYSTEM,
+              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM : IMPROVE_SYSTEM,
               messages: [{ role: 'user', content: userPrompts[i] }],
             }),
           });
