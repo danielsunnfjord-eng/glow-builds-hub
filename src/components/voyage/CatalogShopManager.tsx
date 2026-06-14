@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
@@ -119,6 +119,14 @@ interface EditorState {
   auditedAt: string | null;
   previousContent: string | null;
 }
+
+type AuditActionState = {
+  status: "idle" | "running" | "error";
+  message: string;
+  detail?: string;
+};
+
+const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
 const blankEditor: EditorState = {
   id: null,
