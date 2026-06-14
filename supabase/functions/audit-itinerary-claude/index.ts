@@ -174,6 +174,7 @@ function streamRewrite(opts: {
         }
       } catch (e) {
         console.error('rewrite stream error', e);
+        controller.enqueue(encoder.encode(`\n\n[Error from upstream: ${(e as Error)?.message || 'Rewrite stream failed'}]\n`));
       } finally {
         controller.close();
       }
