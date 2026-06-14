@@ -457,12 +457,20 @@ const CatalogShopManager = () => {
       toast.error("Generate or write the itinerary first.");
       return;
     }
+    const currentContent = state.content;
     setAuditing(true);
+    setAuditAction({ status: "running", message: "Auditing itinerary… Your current draft is being kept in the editor." });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
     try {
-      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content: state.content, mode: "audit" },
+      const res = await fetch(`https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`, {
+        method: "POST",
+        headers: await getFunctionHeaders(),
+        signal: controller.signal,
+        body: JSON.stringify({ content: currentContent, mode: "audit" }),
       });
-      if (error) throw error;
+      if (!res.ok) throw new Error(await readFunctionError(res));
+      const data = await res.json().catch(() => null);
       if (data?.error) throw new Error(data.error);
       const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
       if (!parsed.length) throw new Error("No audit suggestions returned");
@@ -483,10 +491,14 @@ const CatalogShopManager = () => {
           .eq("id", state.id);
         qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
       }
+      setAuditAction({ status: "idle", message: "" });
       toast.success("Audit complete — pick which improvements to apply.");
     } catch (e: any) {
-      toast.error(e?.message || "Audit failed");
+      const message = e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed. Your draft was preserved.";
+      setAuditAction({ status: "error", message, detail: "No editor content was changed." });
+      toast.error(message);
     } finally {
+      window.clearTimeout(timeout);
       setAuditing(false);
     }
   };
