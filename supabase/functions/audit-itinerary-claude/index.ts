@@ -202,7 +202,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '' } = body || {};
     if (!content || typeof content !== 'string' || !content.trim()) {
       return new Response(JSON.stringify({ error: 'Missing itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -211,7 +211,7 @@ Deno.serve(async (req) => {
 
     if (mode === 'rewrite') {
       const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
-      return streamRewrite({ apiKey, content, audit, totalDays });
+      return streamRewrite({ apiKey, content, audit, totalDays, structure });
     }
 
     // Default: audit-only (short, fast). Returns JSON items.
