@@ -15,6 +15,14 @@ const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of 
 
 Output ONLY the complete improved itinerary in markdown. Do not include an audit section, preamble, or commentary. Never stop mid-sentence — if space is tight, shorten descriptions slightly but always finish every day through the last day.`;
 
+const CATALOGUE_IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+
+This is a catalogue guide, NOT a custom day-by-day itinerary. Preserve a thematic structure with markdown ## section headers such as Where to Stay, Getting Around, Must-See Highlights, Hidden Gems & Local Favourites, Food & Drink, Experiences & Activities, and Practical Tips. Adapt section titles to the destination and experience type.
+
+Never use Day 1, Day 2, Morning, Afternoon, Evening, or clock-time itinerary structure. Each section should contain concise, specific paragraphs with real places, logistics, restaurants, dishes, neighbourhoods, routes, hikes, and booking advice where relevant.
+
+Output ONLY the complete improved guide in markdown. Do not include an audit section, preamble, or commentary.`;
+
 function computeTotalDays(content: string, startDate?: string, endDate?: string, tripDuration?: string): number {
   const s = startDate ? Date.parse(startDate) : NaN;
   const e = endDate ? Date.parse(endDate) : NaN;
