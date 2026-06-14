@@ -539,6 +539,7 @@ const CatalogShopManager = () => {
         signal: controller.signal,
         body: JSON.stringify({
           mode: "rewrite",
+          structure: "catalogue-thematic",
           content: original,
           audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
           trip_duration: state.duration,
