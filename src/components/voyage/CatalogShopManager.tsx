@@ -217,6 +217,29 @@ const CatalogShopManager = () => {
     return [r.title_en, r.slug, r.destination].filter(Boolean).join(" ").toLowerCase().includes(q);
   });
 
+  const readFunctionError = async (res: Response) => {
+    const raw = await res.text().catch(() => "");
+    if (!raw) return `Request failed (${res.status})`;
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed?.error || parsed?.message || raw;
+    } catch {
+      return raw;
+    }
+  };
+
+  const getFunctionHeaders = async () => {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess?.session?.access_token;
+    return {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
+  const isAuditBusy = auditing || applyingAudit;
+
   const openCreate = () => {
     setState(blankEditor);
     setSectionPrompt("");
