@@ -918,10 +918,22 @@ const CatalogShopManager = () => {
         )}
       </div>
 
-      <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
+      <Dialog
+        open={editorOpen}
+        onOpenChange={(open) => {
+          if (!open && isAuditBusy) {
+            toast.info("Please wait for the audit action to finish before closing the editor.");
+            return;
+          }
+          setEditorOpen(open);
+        }}
+      >
         <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{state.id ? "Edit itinerary" : "Create new itinerary"}</DialogTitle>
+            <DialogDescription>
+              Create, audit and refine catalogue guide content. Draft text is preserved if AI actions fail.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
