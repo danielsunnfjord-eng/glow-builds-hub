@@ -15,6 +15,14 @@ const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of 
 
 Output ONLY the complete improved itinerary in markdown. Do not include an audit section, preamble, or commentary. Never stop mid-sentence — if space is tight, shorten descriptions slightly but always finish every day through the last day.`;
 
+const CATALOGUE_IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+
+This is a catalogue guide, NOT a custom day-by-day itinerary. Preserve a thematic structure with markdown ## section headers such as Where to Stay, Getting Around, Must-See Highlights, Hidden Gems & Local Favourites, Food & Drink, Experiences & Activities, and Practical Tips. Adapt section titles to the destination and experience type.
+
+Never use Day 1, Day 2, Morning, Afternoon, Evening, or clock-time itinerary structure. Each section should contain concise, specific paragraphs with real places, logistics, restaurants, dishes, neighbourhoods, routes, hikes, and booking advice where relevant.
+
+Output ONLY the complete improved guide in markdown. Do not include an audit section, preamble, or commentary.`;
+
 function computeTotalDays(content: string, startDate?: string, endDate?: string, tripDuration?: string): number {
   const s = startDate ? Date.parse(startDate) : NaN;
   const e = endDate ? Date.parse(endDate) : NaN;
@@ -75,10 +83,13 @@ function streamRewrite(opts: {
   content: string;
   audit: string;
   totalDays: number;
+  structure?: string;
 }): Response {
-  const { apiKey, content, audit, totalDays } = opts;
+  const { apiKey, content, audit, totalDays, structure } = opts;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
+
+  const isCatalogueGuide = structure === 'catalogue-thematic';
 
   const numChunks = totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
   const ranges = totalDays > 0 ? splitDayRanges(totalDays, numChunks) : [];
@@ -86,7 +97,9 @@ function streamRewrite(opts: {
   const baseContext =
     `Original itinerary:\n\n${content}\n\n---\n\nAudit notes to address:\n\n${audit || '(no audit notes provided — improve based on general best practices)'}\n\n---\n\n`;
 
-  const userPrompts: string[] = ranges.length
+  const userPrompts: string[] = isCatalogueGuide
+    ? [baseContext + 'Now output the complete improved thematic catalogue guide in markdown. Preserve ## thematic section headers. Do not use day numbering or Morning / Afternoon / Evening sections.']
+    : ranges.length
     ? ranges.map(([start, end], idx) => {
         if (ranges.length === 1) {
           return baseContext + 'Now output the complete improved itinerary in markdown.';
@@ -124,7 +137,7 @@ function streamRewrite(opts: {
               model: 'claude-sonnet-4-5',
               max_tokens: 8192,
               stream: true,
-              system: IMPROVE_SYSTEM,
+              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM : IMPROVE_SYSTEM,
               messages: [{ role: 'user', content: userPrompts[i] }],
             }),
           });
@@ -161,6 +174,7 @@ function streamRewrite(opts: {
         }
       } catch (e) {
         console.error('rewrite stream error', e);
+        controller.enqueue(encoder.encode(`\n\n[Error from upstream: ${(e as Error)?.message || 'Rewrite stream failed'}]\n`));
       } finally {
         controller.close();
       }
@@ -189,7 +203,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '' } = body || {};
     if (!content || typeof content !== 'string' || !content.trim()) {
       return new Response(JSON.stringify({ error: 'Missing itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -198,7 +212,7 @@ Deno.serve(async (req) => {
 
     if (mode === 'rewrite') {
       const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
-      return streamRewrite({ apiKey, content, audit, totalDays });
+      return streamRewrite({ apiKey, content, audit, totalDays, structure });
     }
 
     // Default: audit-only (short, fast). Returns JSON items.

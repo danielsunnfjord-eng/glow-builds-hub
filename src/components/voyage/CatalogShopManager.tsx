@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
@@ -120,6 +120,14 @@ interface EditorState {
   previousContent: string | null;
 }
 
+type AuditActionState = {
+  status: "idle" | "running" | "error";
+  message: string;
+  detail?: string;
+};
+
+const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
+
 const blankEditor: EditorState = {
   id: null,
   title: "",
@@ -162,6 +170,7 @@ const CatalogShopManager = () => {
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
+  const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -208,9 +217,33 @@ const CatalogShopManager = () => {
     return [r.title_en, r.slug, r.destination].filter(Boolean).join(" ").toLowerCase().includes(q);
   });
 
+  const readFunctionError = async (res: Response) => {
+    const raw = await res.text().catch(() => "");
+    if (!raw) return `Request failed (${res.status})`;
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed?.error || parsed?.message || raw;
+    } catch {
+      return raw;
+    }
+  };
+
+  const getFunctionHeaders = async () => {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess?.session?.access_token;
+    return {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
+  const isAuditBusy = auditing || applyingAudit;
+
   const openCreate = () => {
     setState(blankEditor);
     setSectionPrompt("");
+    setAuditAction({ status: "idle", message: "" });
     setEditorOpen(true);
   };
 
@@ -255,6 +288,7 @@ const CatalogShopManager = () => {
       previousContent: null,
     });
     setSectionPrompt("");
+    setAuditAction({ status: "idle", message: "" });
     setEditorOpen(true);
   };
 
@@ -423,12 +457,20 @@ const CatalogShopManager = () => {
       toast.error("Generate or write the itinerary first.");
       return;
     }
+    const currentContent = state.content;
     setAuditing(true);
+    setAuditAction({ status: "running", message: "Auditing itinerary… Your current draft is being kept in the editor." });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
     try {
-      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content: state.content, mode: "audit" },
+      const res = await fetch(`https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`, {
+        method: "POST",
+        headers: await getFunctionHeaders(),
+        signal: controller.signal,
+        body: JSON.stringify({ content: currentContent, mode: "audit" }),
       });
-      if (error) throw error;
+      if (!res.ok) throw new Error(await readFunctionError(res));
+      const data = await res.json().catch(() => null);
       if (data?.error) throw new Error(data.error);
       const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
       if (!parsed.length) throw new Error("No audit suggestions returned");
@@ -449,10 +491,14 @@ const CatalogShopManager = () => {
           .eq("id", state.id);
         qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
       }
+      setAuditAction({ status: "idle", message: "" });
       toast.success("Audit complete — pick which improvements to apply.");
     } catch (e: any) {
-      toast.error(e?.message || "Audit failed");
+      const message = e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed. Your draft was preserved.";
+      setAuditAction({ status: "error", message, detail: "No editor content was changed." });
+      toast.error(message);
     } finally {
+      window.clearTimeout(timeout);
       setAuditing(false);
     }
   };
@@ -482,29 +528,26 @@ const CatalogShopManager = () => {
     setApplyingAudit(true);
     const original = state.content;
     const auditText = itemsToPromptText(selected);
+    setAuditAction({ status: "running", message: "Applying selected improvements… Your current draft stays visible until the rewrite is complete." });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
     try {
-      const { data: sess } = await supabase.auth.getSession();
-      const token = sess?.session?.access_token;
       const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`;
       const res = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: await getFunctionHeaders(),
+        signal: controller.signal,
         body: JSON.stringify({
           mode: "rewrite",
+          structure: "catalogue-thematic",
           content: original,
           audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
           trip_duration: state.duration,
         }),
       });
       if (!res.ok || !res.body) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(errText || `Rewrite failed (${res.status})`);
+        throw new Error(await readFunctionError(res));
       }
-      setState((s) => ({ ...s, previousContent: original, content: "" }));
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let rewritten = "";
@@ -512,16 +555,20 @@ const CatalogShopManager = () => {
         const { value, done } = await reader.read();
         if (done) break;
         rewritten += decoder.decode(value, { stream: true });
-        setState((s) => ({ ...s, content: rewritten }));
       }
       rewritten += decoder.decode();
-      if (!rewritten.trim()) throw new Error("Empty rewrite");
-      setState((s) => ({ ...s, content: rewritten.trim() }));
+      if (rewritten.includes("[Error from upstream")) throw new Error(rewritten.trim());
+      if (!rewritten.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
+      setState((s) => ({ ...s, previousContent: original, content: rewritten.trim() }));
+      setAuditAction({ status: "idle", message: "" });
       toast.success("Improvements applied. Review the rewritten itinerary.");
     } catch (e: any) {
-      toast.error(e?.message || "Failed to apply improvements");
+      const message = e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements. Your original draft was preserved.";
+      setAuditAction({ status: "error", message, detail: "No editor content was replaced." });
+      toast.error(message);
       setState((s) => ({ ...s, content: original, previousContent: null }));
     } finally {
+      window.clearTimeout(timeout);
       setApplyingAudit(false);
     }
   };
@@ -872,10 +919,22 @@ const CatalogShopManager = () => {
         )}
       </div>
 
-      <Dialog open={editorOpen} onOpenChange={setEditorOpen}>
+      <Dialog
+        open={editorOpen}
+        onOpenChange={(open) => {
+          if (!open && isAuditBusy) {
+            toast.info("Please wait for the audit action to finish before closing the editor.");
+            return;
+          }
+          setEditorOpen(open);
+        }}
+      >
         <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{state.id ? "Edit itinerary" : "Create new itinerary"}</DialogTitle>
+            <DialogDescription>
+              Create, audit and refine catalogue guide content. Draft text is preserved if AI actions fail.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -1059,6 +1118,15 @@ const CatalogShopManager = () => {
                 <p className="text-[0.78rem] text-voyage-muted">
                   Senior luxury travel advisor review. Step 1: get the audit report. Step 2: apply improvements.
                 </p>
+                {auditAction.status !== "idle" && (
+                  <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                    <div className="flex items-center gap-2 font-medium">
+                      {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                      {auditAction.message}
+                    </div>
+                    {auditAction.detail && <div className="mt-1 opacity-80">{auditAction.detail}</div>}
+                  </div>
+                )}
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
@@ -1259,13 +1327,13 @@ const CatalogShopManager = () => {
               Status: {state.isPublished ? <span className="text-fjord font-medium">Published</span> : <span>Draft</span>}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
-              <Button variant="outline" onClick={() => save(false)} disabled={saving}>
+              <Button variant="outline" onClick={() => setEditorOpen(false)} disabled={isAuditBusy}>Cancel</Button>
+              <Button variant="outline" onClick={() => save(false)} disabled={saving || isAuditBusy}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}Save as Draft
               </Button>
               <Button
                 onClick={() => save(true)}
-                disabled={saving || !canPublish}
+                disabled={saving || isAuditBusy || !canPublish}
                 className="bg-ink text-voyage-white hover:bg-gold hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed"
                 title={!canPublish ? "Complete the pre-publish checklist first" : ""}
               >
