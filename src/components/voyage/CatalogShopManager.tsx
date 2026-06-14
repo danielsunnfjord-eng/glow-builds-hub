@@ -1117,6 +1117,15 @@ const CatalogShopManager = () => {
                 <p className="text-[0.78rem] text-voyage-muted">
                   Senior luxury travel advisor review. Step 1: get the audit report. Step 2: apply improvements.
                 </p>
+                {auditAction.status !== "idle" && (
+                  <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                    <div className="flex items-center gap-2 font-medium">
+                      {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                      {auditAction.message}
+                    </div>
+                    {auditAction.detail && <div className="mt-1 opacity-80">{auditAction.detail}</div>}
+                  </div>
+                )}
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
