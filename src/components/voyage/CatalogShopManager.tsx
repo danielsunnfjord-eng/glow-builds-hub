@@ -170,6 +170,7 @@ const CatalogShopManager = () => {
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
+  const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
