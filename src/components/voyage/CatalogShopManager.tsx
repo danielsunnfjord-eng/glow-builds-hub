@@ -243,6 +243,7 @@ const CatalogShopManager = () => {
   const openCreate = () => {
     setState(blankEditor);
     setSectionPrompt("");
+    setAuditAction({ status: "idle", message: "" });
     setEditorOpen(true);
   };
 
@@ -287,6 +288,7 @@ const CatalogShopManager = () => {
       previousContent: null,
     });
     setSectionPrompt("");
+    setAuditAction({ status: "idle", message: "" });
     setEditorOpen(true);
   };
 
