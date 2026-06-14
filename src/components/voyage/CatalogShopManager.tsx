@@ -1326,13 +1326,13 @@ const CatalogShopManager = () => {
               Status: {state.isPublished ? <span className="text-fjord font-medium">Published</span> : <span>Draft</span>}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setEditorOpen(false)}>Cancel</Button>
-              <Button variant="outline" onClick={() => save(false)} disabled={saving}>
+              <Button variant="outline" onClick={() => setEditorOpen(false)} disabled={isAuditBusy}>Cancel</Button>
+              <Button variant="outline" onClick={() => save(false)} disabled={saving || isAuditBusy}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}Save as Draft
               </Button>
               <Button
                 onClick={() => save(true)}
-                disabled={saving || !canPublish}
+                disabled={saving || isAuditBusy || !canPublish}
                 className="bg-ink text-voyage-white hover:bg-gold hover:text-ink disabled:opacity-50 disabled:cursor-not-allowed"
                 title={!canPublish ? "Complete the pre-publish checklist first" : ""}
               >
