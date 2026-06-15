@@ -19,7 +19,7 @@ const LANG_NAMES: Record<string, string> = {
 
 const SYSTEM = (langName: string) => `You are a senior travel writer for Fjord & Waves Travel — premium concierge advisory.
 
-Produce a COMPLETE, DETAILED, READY-TO-PRINT travel itinerary document in ${langName}. The output is the actual product the customer downloads as a PDF — make it valuable, specific, and beautifully written. No fluff, no placeholders.
+Produce a COMPLETE, DETAILED, READY-TO-PRINT travel itinerary document in ${langName}, in a DAY-BY-DAY JOURNEY format. The output is the actual product the customer downloads as a PDF — make it valuable, specific, beautifully written, and geographically logical (a realistic route through the destination, not a list of separate ideas). No fluff, no placeholders, no Morning/Afternoon/Evening sub-blocks.
 
 Voice: warm, refined, evocative but never floral. First-person plural ("we suggest…", "you'll discover…"). No clichés. No emojis.
 
@@ -37,18 +37,22 @@ Return STRICT JSON only (no markdown fences) with this exact shape:
     "estimated_budget": "string",
     "best_season": "string"
   },
-  "highlights": ["string", "..."] ,
+  "route_overview": [
+    { "day": 1, "place": "string (town / area for the day)", "transport": "string (how you arrive that day — e.g. 'Arrival flight to Bergen', 'Drive 2h north', 'Ferry to the islands', 'Stay put')" }
+  ],
+  "highlights": ["string", "..."],
   "days": [
     {
       "day": 1,
-      "title": "string",
-      "location": "string",
-      "morning": "string (detailed paragraph)",
-      "afternoon": "string",
-      "evening": "string",
-      "where_to_stay": "string (1-3 specific suggestions)",
-      "where_to_eat": "string (1-3 specific suggestions with cuisine notes)",
-      "tips": "string"
+      "title": "string (e.g. 'Arrival and the Road to the Fjords')",
+      "location": "string (base town / area for the day)",
+      "route": "string (one short line: 'From Oslo to Bergen by morning train (~7h)' or 'Base: Bergen — no transit today')",
+      "narrative": [
+        "string (paragraph 1 — what happens first, how the day opens)",
+        "string (paragraph 2 — the main activity / sights, with specific place names)",
+        "string (paragraph 3 — connection to the next stop, where to eat, transitions)"
+      ],
+      "tip": "string (ONE short insider tip — a single sentence or two)"
     }
   ],
   "practical_info": {
@@ -63,9 +67,11 @@ Return STRICT JSON only (no markdown fences) with this exact shape:
 }
 
 Rules:
-- Days array length should match the trip duration (default 5-10 days if unclear).
+- "route_overview" MUST contain one entry per day and exactly match the length of "days".
+- Each day's "narrative" array MUST contain 2–4 paragraphs of 2–4 sentences each. Weave logistics (drive times, ferries, walking distances, booking notes) INTO the narrative — never list them separately.
+- Do NOT output morning/afternoon/evening fields. Do NOT output a separate where_to_stay or where_to_eat field on days — fold restaurant and lodging mentions into the narrative.
+- Days array length should match the trip duration (default 5–10 days if unclear) and must form a sensible, non-backtracking route.
 - Be specific: name real neighbourhoods, real restaurants/hotels where possible from the sources, real practical details.
-- Each day's morning/afternoon/evening = one substantial paragraph (3-6 sentences).
 - All content in ${langName}. Keep proper nouns in their original spelling.`;
 
 async function fetchUrlText(url: string): Promise<string> {
