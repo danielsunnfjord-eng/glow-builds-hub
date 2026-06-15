@@ -1256,9 +1256,13 @@ const CatalogShopManager = () => {
         <DialogContent
           className="max-w-5xl max-h-[92vh] overflow-y-auto"
           onPointerDownOutside={(e) => {
+            // Radix portals (Select dropdowns, tooltips, sonner toasts, image
+            // cropper, the close-confirm AlertDialog itself, etc.) all register
+            // as "outside" the Dialog. Just block the close — never pop the
+            // discard-confirm modal from background pointer events, or normal
+            // editing actions (opening the Language select, dismissing a
+            // toast) would unexpectedly prompt the user and close the editor.
             e.preventDefault();
-            if (isAuditBusy) return;
-            if (hasUnsavedChanges) setCloseConfirmOpen(true);
           }}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => {
