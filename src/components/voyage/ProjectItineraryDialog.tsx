@@ -452,7 +452,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                   />
                 </div>
               )}
-              <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
+              <div className="flex-1 min-h-0 overflow-y-auto border border-parchment-3 rounded-md bg-voyage-white">
                 <ItineraryEditor content={content} onContentChange={setContent} />
               </div>
             </div>
