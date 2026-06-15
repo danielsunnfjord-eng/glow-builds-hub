@@ -1,5 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
@@ -10,6 +20,8 @@ import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "l
 
 const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
+const PROJECT_EDITOR_AUTOSAVE_MS = 30_000;
+const PROJECT_AUDIT_TIMEOUT_MS = 120_000;
 
 interface Project {
   id: string;
