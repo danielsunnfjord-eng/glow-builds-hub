@@ -224,6 +224,8 @@ const CatalogShopManager = () => {
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
   const [failedAuditBatch, setFailedAuditBatch] = useState<FailedAuditBatch | null>(null);
+  const [itemStatuses, setItemStatuses] = useState<Record<string, ApplyItemStatus>>({});
+  const [applySummary, setApplySummary] = useState<ApplySummary | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const [lastPersistedSignature, setLastPersistedSignature] = useState(() => catalogDraftSignature(blankEditor, ""));
   const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
