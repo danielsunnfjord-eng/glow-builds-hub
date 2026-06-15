@@ -95,6 +95,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const autoSaveIntervalRef = useRef<number | null>(null);
   const latestSnapshotRef = useRef<ProjectEditorSnapshot | null>(null);
   const latestOpenRef = useRef(open);
+  const loadedProjectIdRef = useRef<string | null>(null);
 
   const snapshot = useMemo<ProjectEditorSnapshot>(() => ({
     content,
@@ -117,6 +118,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
   useEffect(() => {
     if (!open || !project) return;
+    if (loadedProjectIdRef.current === project.id) return;
+    loadedProjectIdRef.current = project.id;
     const baseSnapshot: ProjectEditorSnapshot = {
       content: project.itinerary_content || "",
       notes: project.internal_notes || "",
@@ -159,7 +162,11 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       setCloseConfirmOpen(false);
     };
     loadDraft();
-  }, [open, project]);
+  }, [open, project?.id]);
+
+  useEffect(() => {
+    if (!open) loadedProjectIdRef.current = null;
+  }, [open]);
 
   const persistProjectDraft = useCallback(async (silent = true) => {
     const current = latestSnapshotRef.current;
