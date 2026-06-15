@@ -1427,7 +1427,8 @@ const CatalogShopManager = () => {
                   disabled={
                     !state.auditItems.some((i) => i.selected) ||
                     applyingAudit ||
-                    auditing
+                    auditing ||
+                    failedAuditBatch !== null
                   }
                   className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
                 >

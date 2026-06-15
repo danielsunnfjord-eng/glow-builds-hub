@@ -660,7 +660,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               {auditItems.length > 0 && (
                 <button
                   onClick={applyImprovements}
-                  disabled={applying || !auditItems.some((i) => i.selected)}
+                  disabled={applying || failedApplyBatch !== null || !auditItems.some((i) => i.selected)}
                   className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
