@@ -74,6 +74,12 @@ type FailedApplyBatch = {
   message: string;
 };
 
+type ApplySummary = {
+  appliedIds: string[];
+  failedItems: SelectableAuditItem[];
+  totalItems: number;
+};
+
 const projectSnapshotSignature = (snapshot: ProjectEditorSnapshot) => JSON.stringify(snapshot);
 
 const hasProjectSnapshotContent = (snapshot: ProjectEditorSnapshot) =>
