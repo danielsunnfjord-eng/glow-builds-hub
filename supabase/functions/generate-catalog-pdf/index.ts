@@ -19,7 +19,7 @@ const LANG_NAMES: Record<string, string> = {
 
 const SYSTEM = (langName: string) => `You are a senior travel writer for Fjord & Waves Travel — premium concierge advisory.
 
-Produce a COMPLETE, DETAILED, READY-TO-PRINT travel itinerary document in ${langName}. The output is the actual product the customer downloads as a PDF — make it valuable, specific, and beautifully written. No fluff, no placeholders.
+Produce a COMPLETE, DETAILED, READY-TO-PRINT travel itinerary document in ${langName}, in a DAY-BY-DAY JOURNEY format. The output is the actual product the customer downloads as a PDF — make it valuable, specific, beautifully written, and geographically logical (a realistic route through the destination, not a list of separate ideas). No fluff, no placeholders, no Morning/Afternoon/Evening sub-blocks.
 
 Voice: warm, refined, evocative but never floral. First-person plural ("we suggest…", "you'll discover…"). No clichés. No emojis.
 
@@ -37,18 +37,22 @@ Return STRICT JSON only (no markdown fences) with this exact shape:
     "estimated_budget": "string",
     "best_season": "string"
   },
-  "highlights": ["string", "..."] ,
+  "route_overview": [
+    { "day": 1, "place": "string (town / area for the day)", "transport": "string (how you arrive that day — e.g. 'Arrival flight to Bergen', 'Drive 2h north', 'Ferry to the islands', 'Stay put')" }
+  ],
+  "highlights": ["string", "..."],
   "days": [
     {
       "day": 1,
-      "title": "string",
-      "location": "string",
-      "morning": "string (detailed paragraph)",
-      "afternoon": "string",
-      "evening": "string",
-      "where_to_stay": "string (1-3 specific suggestions)",
-      "where_to_eat": "string (1-3 specific suggestions with cuisine notes)",
-      "tips": "string"
+      "title": "string (e.g. 'Arrival and the Road to the Fjords')",
+      "location": "string (base town / area for the day)",
+      "route": "string (one short line: 'From Oslo to Bergen by morning train (~7h)' or 'Base: Bergen — no transit today')",
+      "narrative": [
+        "string (paragraph 1 — what happens first, how the day opens)",
+        "string (paragraph 2 — the main activity / sights, with specific place names)",
+        "string (paragraph 3 — connection to the next stop, where to eat, transitions)"
+      ],
+      "tip": "string (ONE short insider tip — a single sentence or two)"
     }
   ],
   "practical_info": {
@@ -63,9 +67,11 @@ Return STRICT JSON only (no markdown fences) with this exact shape:
 }
 
 Rules:
-- Days array length should match the trip duration (default 5-10 days if unclear).
+- "route_overview" MUST contain one entry per day and exactly match the length of "days".
+- Each day's "narrative" array MUST contain 2–4 paragraphs of 2–4 sentences each. Weave logistics (drive times, ferries, walking distances, booking notes) INTO the narrative — never list them separately.
+- Do NOT output morning/afternoon/evening fields. Do NOT output a separate where_to_stay or where_to_eat field on days — fold restaurant and lodging mentions into the narrative.
+- Days array length should match the trip duration (default 5–10 days if unclear) and must form a sensible, non-backtracking route.
 - Be specific: name real neighbourhoods, real restaurants/hotels where possible from the sources, real practical details.
-- Each day's morning/afternoon/evening = one substantial paragraph (3-6 sentences).
 - All content in ${langName}. Keep proper nouns in their original spelling.`;
 
 async function fetchUrlText(url: string): Promise<string> {
@@ -235,11 +241,14 @@ Apply the instruction precisely. Preserve the exact JSON shape and keys. Only mo
   "title": "string", "subtitle": "string", "cover_image_url": "string",
   "intro": "string",
   "trip_overview": { "destination": "string", "duration": "string", "best_for": "string", "estimated_budget": "string", "best_season": "string" },
+  "route_overview": [{ "day": 1, "place": "string", "transport": "string" }],
   "highlights": ["string"],
-  "days": [{ "day": 1, "title": "string", "location": "string", "image_url": "string", "morning": "string", "afternoon": "string", "evening": "string", "where_to_stay": "string", "where_to_eat": "string", "tips": "string" }],
+  "days": [{ "day": 1, "title": "string", "location": "string", "image_url": "string", "route": "string", "narrative": ["string"], "tip": "string" }],
   "practical_info": { "getting_there": "string", "getting_around": "string", "money": "string", "language_basics": "string", "what_to_pack": "string", "etiquette": "string" },
   "closing": "string"
 }
+
+The day-by-day format requires "route_overview" (one entry per day), and each day uses "route" + "narrative" (array of paragraphs) + optional "tip" — NEVER morning/afternoon/evening, where_to_stay or where_to_eat fields. Logistics are woven into the narrative paragraphs.
 
 When asked to add links, embed them inline in the relevant paragraph as plain URLs (e.g. "see https://example.com"). Do not invent image URLs — leave image_url empty if not provided.`;
 
@@ -557,6 +566,69 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       M + 14, iy + 34, contentW - 28, 14,
     );
 
+    // ============ TRIP OVERVIEW (route at a glance) ============
+    // Prefer explicit route_overview; fall back to synthesising from days for legacy drafts.
+    const routeOverview: Array<{ day: number; place: string; transport: string }> =
+      Array.isArray(doc.route_overview) && doc.route_overview.length
+        ? doc.route_overview.map((r: any, i: number) => ({
+            day: Number(r?.day) || i + 1,
+            place: String(r?.place || "").trim(),
+            transport: String(r?.transport || "").trim(),
+          }))
+        : Array.isArray(doc.days)
+        ? doc.days.map((d: any, i: number) => ({
+            day: Number(d?.day) || i + 1,
+            place: String(d?.location || "").trim(),
+            transport: String(d?.route || "").trim(),
+          }))
+        : [];
+
+    if (routeOverview.length) {
+      pdf.addPage();
+      pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.text("TRIP OVERVIEW", M, 70);
+      pdf.setDrawColor(...GOLD); pdf.line(M, 76, M + 30, 76);
+      pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(22);
+      pdf.text("The route at a glance", M, 110);
+
+      // Column layout: Day | Location | Transport
+      const colDayW = 60;
+      const colPlaceW = Math.floor(contentW * 0.4);
+      const colTransW = contentW - colDayW - colPlaceW;
+      let ry = 140;
+
+      // Header row
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...GOLD);
+      pdf.text("DAY", M, ry);
+      pdf.text("LOCATION", M + colDayW, ry);
+      pdf.text("HOW YOU GET THERE", M + colDayW + colPlaceW, ry);
+      ry += 8;
+      pdf.setDrawColor(...GOLD); pdf.setLineWidth(0.5);
+      pdf.line(M, ry, M + contentW, ry);
+      ry += 14;
+
+      pdf.setTextColor(...INK); pdf.setFontSize(10.5);
+      for (const r of routeOverview) {
+        const placeLines = pdf.splitTextToSize(r.place || "—", colPlaceW - 10);
+        const transLines = pdf.splitTextToSize(r.transport || "—", colTransW - 4);
+        const rows = Math.max(placeLines.length, transLines.length);
+        const rowH = rows * 14 + 6;
+        if (ry + rowH > H - 60) { pdf.addPage(); ry = 80; }
+
+        pdf.setFont("times", "bold"); pdf.setTextColor(...GOLD);
+        pdf.text(String(r.day), M, ry);
+        pdf.setFont("times", "normal"); pdf.setTextColor(...INK);
+        let py = ry;
+        for (const ln of placeLines) { pdf.text(ln, M + colDayW, py); py += 14; }
+        let ty2 = ry;
+        for (const ln of transLines) { pdf.text(ln, M + colDayW + colPlaceW, ty2); ty2 += 14; }
+
+        ry += rowH;
+        pdf.setDrawColor(230, 225, 215); pdf.setLineWidth(0.3);
+        pdf.line(M, ry - 4, M + contentW, ry - 4);
+      }
+    }
+
     // ============ DAYS ============
     if (Array.isArray(doc.days)) {
       for (const d of doc.days) {
@@ -568,14 +640,20 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
         pdf.text(`DAY ${d.day || ""}`, M, 42);
         pdf.setDrawColor(...GOLD); pdf.line(M, 48, M + 24, 48);
         pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(22);
-        pdf.text(d.title || "", M, 74);
+        const titleLn = pdf.splitTextToSize(d.title || "", contentW);
+        let dty = 74;
+        for (const ln of titleLn.slice(0, 2)) { pdf.text(ln, M, dty); dty += 24; }
 
-        let yy = 120;
-        if (d.location) {
+        let yy = Math.max(120, dty + 16);
+
+        // Route line (italic, single line summary of base / transit for the day)
+        const routeLine = String(d.route || "").trim() ||
+          (d.location ? `Base: ${d.location}` : "");
+        if (routeLine) {
           pdf.setFont("times", "italic"); pdf.setFontSize(11); pdf.setTextColor(...MUTED);
-          yy = addWrapped(pdf, d.location, M, yy, contentW, 14);
+          yy = addWrapped(pdf, routeLine, M, yy, contentW, 14);
           pdf.setTextColor(...INK);
-          yy += 6;
+          yy += 10;
         }
 
         if (d.image_url) {
@@ -588,34 +666,31 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
           }
         }
 
-        const periods: [string, string][] = [
-          ["Morning", d.morning || ""],
-          ["Afternoon", d.afternoon || ""],
-          ["Evening", d.evening || ""],
-        ];
-        for (const [h, v] of periods) {
-          if (!v) continue;
+        // Narrative paragraphs — accept new `narrative: string[]`,
+        // fall back to legacy morning/afternoon/evening as plain paragraphs.
+        const paragraphs: string[] = Array.isArray(d.narrative) && d.narrative.length
+          ? d.narrative.map((p: any) => String(p || "").trim()).filter(Boolean)
+          : [d.morning, d.afternoon, d.evening]
+              .map((p: any) => String(p || "").trim())
+              .filter(Boolean);
+
+        pdf.setFont("times", "normal"); pdf.setFontSize(11); pdf.setTextColor(...INK);
+        for (const p of paragraphs) {
           if (yy > H - 100) { pdf.addPage(); yy = 80; }
-          pdf.setFont("helvetica", "bold"); pdf.setFontSize(9.5); pdf.setTextColor(...GOLD);
-          pdf.text(h.toUpperCase(), M, yy); yy += 14;
-          pdf.setFont("times", "normal"); pdf.setFontSize(11); pdf.setTextColor(...INK);
-          yy = addWrapped(pdf, v, M, yy, contentW, 15);
+          yy = addWrapped(pdf, p, M, yy, contentW, 15);
           yy += 12;
         }
 
-        const tips: [string, string][] = [
-          ["Dining tip", d.where_to_eat || ""],
-          ["Insider tip", d.tips || ""],
-        ];
-        for (const [h, v] of tips) {
-          if (!v) continue;
+        // Single insider tip callout (accept `tip` or legacy `tips`)
+        const tipText = String(d.tip || d.tips || "").trim();
+        if (tipText) {
           if (yy > H - 100) { pdf.addPage(); yy = 80; }
           pdf.setFillColor(250, 246, 238);
-          const lines = pdf.splitTextToSize(v, contentW - 24);
+          const lines = pdf.splitTextToSize(tipText, contentW - 24);
           const boxH = lines.length * 14 + 28;
           pdf.rect(M, yy, contentW, boxH, "F");
           pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...GOLD);
-          pdf.text(h.toUpperCase(), M + 12, yy + 16);
+          pdf.text("INSIDER TIP", M + 12, yy + 16);
           pdf.setFont("times", "italic"); pdf.setFontSize(10.5); pdf.setTextColor(...INK);
           let ty = yy + 30;
           for (const ln of lines) { pdf.text(ln, M + 12, ty); ty += 14; }
@@ -623,6 +698,7 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
         }
       }
     }
+
 
     // ============ WHERE TO STAY ============
     if (visibleHotels.length) {

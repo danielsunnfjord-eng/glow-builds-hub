@@ -26,6 +26,50 @@ import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 
+// --- Day-by-day markdown parser ---------------------------------------------
+// Splits a day-by-day catalogue guide markdown into:
+//   { intro, overview (markdown of Trip Overview section), days [{ heading, body }], practical }
+// Headings detected: `## Day N — Theme`, `## Trip Overview`, `## Practical Tips`
+// (and their PT/NO variants: Dia, Dag, Visão Geral / Reiseoversikt, Dicas / Tips).
+const OVERVIEW_LABELS = /^(trip\s*overview|vis[ãa]o\s*geral.*|reiseoversikt.*|oversikt)$/i;
+const PRACTICAL_LABELS = /^(practical\s*tips|dicas\s*pr[áa]ticas|praktiske\s*tips|praktisk)$/i;
+const DAY_HEADING = /^(?:day|dia|dag)\s*(\d+)\s*[—\-:]?\s*(.*)$/i;
+
+function parseDayByDay(md: string) {
+  const result = {
+    intro: "" as string,
+    overview: "" as string,
+    days: [] as Array<{ day: number; title: string; body: string }>,
+    practical: "" as string,
+  };
+  if (!md) return result;
+  // Split on ## headings, keep the heading with each block
+  const parts = md.split(/^##\s+/m);
+  result.intro = (parts.shift() || "").trim();
+  for (const raw of parts) {
+    const nlIdx = raw.indexOf("\n");
+    const heading = (nlIdx === -1 ? raw : raw.slice(0, nlIdx)).trim();
+    const body = (nlIdx === -1 ? "" : raw.slice(nlIdx + 1)).trim();
+    if (OVERVIEW_LABELS.test(heading)) {
+      result.overview = body;
+      continue;
+    }
+    if (PRACTICAL_LABELS.test(heading)) {
+      result.practical = body;
+      continue;
+    }
+    const dm = heading.match(DAY_HEADING);
+    if (dm) {
+      result.days.push({
+        day: parseInt(dm[1], 10),
+        title: (dm[2] || "").trim(),
+        body,
+      });
+    }
+  }
+  return result;
+}
+
 interface CatalogItem {
   id: string;
   slug: string;
@@ -108,6 +152,7 @@ const ItineraryShopDetail = () => {
   const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no) : "";
   const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no) : "";
   const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no) : "";
+  const journey = useMemo(() => parseDayByDay(itineraryMd), [itineraryMd]);
 
   const wygItems = useMemo(
     () =>
@@ -525,6 +570,72 @@ const ItineraryShopDetail = () => {
                   )}
                 </div>
               )}
+
+              {/* Day-by-day journey (rendered from itinerary markdown) */}
+              {journey.days.length > 0 && (
+                <div className="mb-14">
+                  {journey.overview && (
+                    <div className="mb-10">
+                      <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
+                        {t("shop.tripOverviewBadge", "The route at a glance")}
+                      </div>
+                      <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                        {t("shop.tripOverview", "Trip Overview")}
+                      </h2>
+                      <div className="h-px w-12 bg-gold mb-6" />
+                      <div
+                        className="prose-itin text-[0.95rem] text-ink/85 leading-[1.7] [&_ul]:list-none [&_ul]:p-0 [&_ul]:space-y-2 [&_li]:pl-4 [&_li]:border-l-2 [&_li]:border-gold/40 [&_li]:py-1 [&_strong]:text-ink"
+                        dangerouslySetInnerHTML={{ __html: markdownToHtml(journey.overview) }}
+                      />
+                    </div>
+                  )}
+
+                  <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
+                    {t("shop.dayByDayBadge", "Day by day")}
+                  </div>
+                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                    {t("shop.dayByDay", "Your journey, day by day")}
+                  </h2>
+                  <div className="h-px w-12 bg-gold mb-7" />
+
+                  <div className="space-y-8">
+                    {journey.days.map((d) => (
+                      <article
+                        key={d.day}
+                        className="bg-voyage-white border border-ink/[0.06] rounded-lg p-6 max-md:p-5"
+                      >
+                        <div className="flex items-baseline gap-3 mb-3">
+                          <span className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold">
+                            {t("shop.dayLabel", "Day")} {d.day}
+                          </span>
+                          <span className="h-px flex-1 bg-ink/10" />
+                        </div>
+                        <h3 className="font-serif text-[1.3rem] max-md:text-[1.15rem] font-bold text-ink mb-4 leading-snug">
+                          {d.title}
+                        </h3>
+                        <div
+                          className="prose-itin text-[0.95rem] text-ink/80 leading-[1.75] space-y-3 [&_em]:text-voyage-muted [&_strong]:text-ink"
+                          dangerouslySetInnerHTML={{ __html: markdownToHtml(d.body) }}
+                        />
+                      </article>
+                    ))}
+                  </div>
+
+                  {journey.practical && (
+                    <div className="mt-10">
+                      <h3 className="font-serif text-[1.3rem] font-bold text-ink mb-3">
+                        {t("shop.practicalTips", "Practical Tips")}
+                      </h3>
+                      <div className="h-px w-12 bg-gold mb-5" />
+                      <div
+                        className="prose-itin text-[0.95rem] text-ink/80 leading-[1.75] space-y-3 [&_strong]:text-ink"
+                        dangerouslySetInnerHTML={{ __html: markdownToHtml(journey.practical) }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
 
               {/* What to expect */}
               <div className="mb-14">
