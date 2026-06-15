@@ -851,8 +851,6 @@ const CatalogShopManager = () => {
     if (!applySummary?.failedItems.length || !state.content.trim()) return;
     setApplyingAudit(true);
     setFailedAuditBatch(null);
-    setItemStatuses({});
-    setApplySummary(null);
     const toRetry = applySummary.failedItems;
     try {
       const result = await runApplyBatches(toRetry, state.content, { resetStatuses: false });
