@@ -50,6 +50,8 @@ interface CatalogRow {
   id: string;
   slug: string;
   title_en: string;
+  title_pt: string | null;
+  title_no: string | null;
   destination: string | null;
   duration: string | null;
   price_eur: number;
@@ -202,6 +204,7 @@ const CatalogShopManager = () => {
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
+  const [previewLang, setPreviewLang] = useState<Lang>("en");
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
@@ -248,7 +251,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -1074,7 +1077,11 @@ const CatalogShopManager = () => {
                   {r.is_published && r.slug && (
                     <a href={`/catalogue/${r.slug}`} target="_blank" rel="noreferrer" className="text-[0.72rem] uppercase tracking-wider text-voyage-muted hover:text-ink px-2">View</a>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => setPreviewRow(r)} title="Preview PDF">
+                  <Button size="sm" variant="ghost" onClick={() => {
+                    const initial: Lang = r.itinerary_content_en ? "en" : r.itinerary_content_pt ? "pt" : r.itinerary_content_no ? "no" : "en";
+                    setPreviewLang(initial);
+                    setPreviewRow(r);
+                  }} title="Preview PDF">
                     <Eye className="w-4 h-4 mr-1" /> Preview PDF
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => openEdit(r)}>Edit</Button>
@@ -1547,28 +1554,63 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {previewRow && (
-        <PdfPreview
-          content={
-            previewRow.itinerary_content_en ||
-            previewRow.itinerary_content_pt ||
-            previewRow.itinerary_content_no ||
-            ""
-          }
-          project={{
-            client_name: previewRow.title_en || "",
-            destination: previewRow.destination,
-            trip_duration: previewRow.duration,
-            hero_image_url: previewRow.hero_image_url,
-            hero_image_credit: previewRow.hero_image_credit,
-            hero_image_caption: previewRow.hero_image_caption,
-            cover_tagline: previewRow.summary_en || null,
-          }}
-          hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
-          onClose={() => setPreviewRow(null)}
-          onExport={() => window.print()}
-        />
-      )}
+      {previewRow && (() => {
+        const contentByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.itinerary_content_en,
+          pt: previewRow.itinerary_content_pt,
+          no: previewRow.itinerary_content_no,
+        };
+        const titleByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.title_en,
+          pt: previewRow.title_pt,
+          no: previewRow.title_no,
+        };
+        const summaryByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.summary_en,
+          pt: previewRow.summary_pt,
+          no: previewRow.summary_no,
+        };
+        const pickedContent =
+          contentByLang[previewLang] || contentByLang.en || contentByLang.pt || contentByLang.no || "";
+        const pickedTitle =
+          titleByLang[previewLang] || titleByLang.en || titleByLang.pt || titleByLang.no || "";
+        const pickedSummary =
+          summaryByLang[previewLang] || summaryByLang.en || summaryByLang.pt || summaryByLang.no || "";
+        const available: Lang[] = (["en", "pt", "no"] as Lang[]).filter((l) => !!contentByLang[l]);
+        return (
+          <>
+            {available.length > 1 && (
+              <div className="fixed top-4 right-4 z-[70] flex gap-1 bg-voyage-white border border-parchment-3 rounded shadow-md p-1 fjw-no-print">
+                {available.map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setPreviewLang(l)}
+                    className={`px-2 py-1 text-[0.7rem] uppercase tracking-wider rounded ${previewLang === l ? "bg-ink text-voyage-white" : "text-voyage-muted hover:text-ink"}`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            )}
+            <PdfPreview
+              content={pickedContent}
+              language={previewLang}
+              project={{
+                client_name: pickedTitle,
+                destination: previewRow.destination,
+                trip_duration: previewRow.duration,
+                hero_image_url: previewRow.hero_image_url,
+                hero_image_credit: previewRow.hero_image_credit,
+                hero_image_caption: previewRow.hero_image_caption,
+                cover_tagline: pickedSummary || null,
+              }}
+              hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
+              onClose={() => setPreviewRow(null)}
+              onExport={() => window.print()}
+            />
+          </>
+        );
+      })()}
       </>
       )}
     </div>

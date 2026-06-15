@@ -22,6 +22,7 @@ interface HotelRecPreview {
 
 interface PdfPreviewProps {
   content: string;
+  language?: string;
   project: {
     client_name: string;
     destination?: string | null;
@@ -46,22 +47,67 @@ const normalizePhoto = (p: HotelPhoto | string | undefined | null): HotelPhoto |
   return null;
 };
 
-const formatDateRange = (start?: string | null, end?: string | null) => {
-  if (!start && !end) return "";
-  const fmt = (d: string) =>
-    new Date(d).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  if (start && end) return `${fmt(start)} — ${fmt(end)}`;
-  return fmt((start || end) as string);
+const I18N: Record<string, Record<string, string>> = {
+  en: {
+    preparedFor: "Prepared exclusively for",
+    valuedTraveller: "Valued Traveller",
+    defaultTagline: "Your Journey, Curated.",
+    journeyAwaits: "— A Journey Awaits —",
+    whereToStayLabel: "Where to Stay",
+    hotelRecs: "Hotel Recommendations",
+    perks: "Exclusive perks",
+    itinerary: "Itinerary",
+    thankYou: "Thank you for trusting us\nwith your journey.",
+    closingNote: "We are here every step of the way — before, during, and long after you return home.",
+    dateLocale: "en-GB",
+  },
+  pt: {
+    preparedFor: "Preparado exclusivamente para",
+    valuedTraveller: "Viajante Especial",
+    defaultTagline: "Sua Jornada, Curada.",
+    journeyAwaits: "— Uma Jornada Espera Você —",
+    whereToStayLabel: "Onde Ficar",
+    hotelRecs: "Recomendações de Hotéis",
+    perks: "Benefícios exclusivos",
+    itinerary: "Roteiro",
+    thankYou: "Obrigado por confiar a nós\na sua jornada.",
+    closingNote: "Estamos com você em cada etapa — antes, durante e muito depois do seu retorno.",
+    dateLocale: "pt-BR",
+  },
+  no: {
+    preparedFor: "Utarbeidet eksklusivt for",
+    valuedTraveller: "Verdsatt Reisende",
+    defaultTagline: "Din Reise, Kuratert.",
+    journeyAwaits: "— En Reise Venter —",
+    whereToStayLabel: "Hvor du skal bo",
+    hotelRecs: "Hotellanbefalinger",
+    perks: "Eksklusive fordeler",
+    itinerary: "Reiserute",
+    thankYou: "Takk for at du betror oss\nreisen din.",
+    closingNote: "Vi er med deg hele veien — før, under og lenge etter at du kommer hjem.",
+    dateLocale: "nb-NO",
+  },
 };
 
-const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewProps) => {
-  const { t } = useTranslation();
+const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: PdfPreviewProps) => {
+  const { i18n } = useTranslation();
+  const lang = (language || i18n.language || "en").slice(0, 2).toLowerCase();
+  const L = I18N[lang] || I18N.en;
+
+  const formatDateRange = (start?: string | null, end?: string | null) => {
+    if (!start && !end) return "";
+    const fmt = (d: string) =>
+      new Date(d).toLocaleDateString(L.dateLocale, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    if (start && end) return `${fmt(start)} — ${fmt(end)}`;
+    return fmt((start || end) as string);
+  };
+
   const htmlContent = markdownToHtml(content);
-  const tagline = project?.cover_tagline?.trim() || "Your Journey, Curated.";
+  const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
   const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
 
@@ -76,7 +122,9 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
     color: "#1E2D3D",
     position: "relative",
     overflow: "hidden",
-  };
+    WebkitPrintColorAdjust: "exact",
+    printColorAdjust: "exact",
+  } as React.CSSProperties;
 
   return (
     <div
@@ -90,14 +138,14 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
         {/* Header bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-parchment-3 bg-voyage-white fjw-no-print">
           <h3 className="text-sm font-serif font-semibold text-ink">
-            👁️ {t("aa.pdfPreview", "PDF Preview")}
+            👁️ PDF Preview
           </h3>
           <div className="flex gap-2">
             <button
               onClick={onExport}
               className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors"
             >
-              📄 {t("aa.exportPdf")}
+              📄 Export PDF
             </button>
             <button
               onClick={onClose}
@@ -111,37 +159,57 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
         {/* Preview pages */}
         <div className="flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y p-6 bg-[#e8e0d0] fjw-print-root">
           {/* ============ COVER PAGE ============ */}
-          <div className="fjw-print-page" style={pageStyle}>
+          <div
+            className="fjw-print-page"
+            style={{
+              ...pageStyle,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             {/* Top logo bar */}
             <div
               style={{
                 padding: "12mm 20mm 0",
                 display: "flex",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
               <img
                 src={logoHorizontalHd}
                 alt="Fjord & Waves Travel"
-                style={{ height: "150px", width: "auto", maxWidth: "150mm", objectFit: "contain", display: "block" }}
+                crossOrigin="anonymous"
+                style={{ height: "120px", width: "auto", maxWidth: "150mm", objectFit: "contain", display: "block" }}
               />
             </div>
 
-            {/* Hero image */}
+            {/* Hero image — using <img> so it prints reliably */}
             <div
               style={{
-                margin: "18mm 20mm 4mm",
-                height: "120mm",
+                margin: "10mm 20mm 4mm",
+                height: "95mm",
                 borderRadius: "4px",
                 overflow: "hidden",
-                background: project?.hero_image_url
-                  ? `#1E2D3D url(${project.hero_image_url}) center/cover no-repeat`
-                  : "linear-gradient(135deg, #A9C6C1 0%, #4C6F75 100%)",
+                background: "linear-gradient(135deg, #A9C6C1 0%, #4C6F75 100%)",
                 position: "relative",
                 boxShadow: "0 10px 30px rgba(30,45,61,0.25)",
+                flexShrink: 0,
               }}
             >
-              {!project?.hero_image_url && (
+              {project?.hero_image_url ? (
+                <img
+                  src={project.hero_image_url}
+                  alt={project?.destination || ""}
+                  crossOrigin="anonymous"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ) : (
                 <div
                   style={{
                     position: "absolute",
@@ -156,7 +224,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                     letterSpacing: "0.1em",
                   }}
                 >
-                  — A Journey Awaits —
+                  {L.journeyAwaits}
                 </div>
               )}
               {project?.hero_image_credit && (
@@ -180,12 +248,13 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
             {project?.hero_image_caption && (
               <p
                 style={{
-                  margin: "0 20mm 10mm",
+                  margin: "0 20mm 6mm",
                   fontFamily: "'Cormorant Garamond', serif",
                   fontStyle: "italic",
                   fontSize: "13px",
                   color: "#4C6F75",
                   textAlign: "center",
+                  flexShrink: 0,
                 }}
               >
                 {project.hero_image_caption}
@@ -193,7 +262,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
             )}
 
             {/* Client name + meta */}
-            <div style={{ padding: "0 20mm", textAlign: "center" }}>
+            <div style={{ padding: "0 20mm", textAlign: "center", flexShrink: 0 }}>
               <p
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -201,68 +270,75 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                   letterSpacing: "0.32em",
                   textTransform: "uppercase",
                   color: "#4C6F75",
-                  marginBottom: "10px",
+                  margin: "0 0 14px",
                 }}
               >
-                Prepared exclusively for
+                {L.preparedFor}
               </p>
               <h1
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "48px",
+                  fontSize: "42px",
                   fontWeight: 500,
                   color: "#1E2D3D",
                   margin: "0 0 14px",
-                  lineHeight: 1.1,
+                  lineHeight: 1.15,
                   letterSpacing: "0.01em",
                 }}
               >
-                {project?.client_name || "Valued Traveller"}
+                {project?.client_name || L.valuedTraveller}
               </h1>
               <div
                 style={{
                   width: "60px",
                   height: "1px",
                   background: "#DCCEB8",
-                  margin: "12px auto 14px",
+                  margin: "0 auto 14px",
                 }}
               />
-              <p
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "22px",
-                  fontStyle: "italic",
-                  color: "#4C6F75",
-                  margin: "0 0 4px",
-                }}
-              >
-                {project?.destination || ""}
-              </p>
-              {dateRange && (
+              {project?.destination && (
                 <p
                   style={{
-                    fontSize: "12px",
-                    color: "#1E2D3D",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    margin: "8px 0 0",
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "20px",
+                    fontStyle: "italic",
+                    color: "#4C6F75",
+                    margin: "0 0 12px",
                   }}
                 >
-                  {dateRange}
+                  {project.destination}
                 </p>
+              )}
+              {dateRange && (
+                <>
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "1px",
+                      background: "#DCCEB8",
+                      margin: "0 auto 12px",
+                    }}
+                  />
+                  <p
+                    style={{
+                      fontSize: "11px",
+                      color: "#1E2D3D",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      margin: 0,
+                    }}
+                  >
+                    {dateRange}
+                  </p>
+                </>
               )}
             </div>
 
-            {/* Tagline at bottom */}
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: "24mm",
-                textAlign: "center",
-              }}
-            >
+            {/* Spacer pushes tagline to bottom */}
+            <div style={{ flex: 1, minHeight: "12mm" }} />
+
+            {/* Tagline at bottom (in normal flow, not absolute, so it never overlaps) */}
+            <div style={{ textAlign: "center", padding: "0 20mm 18mm", flexShrink: 0 }}>
               <p
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
@@ -309,6 +385,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
               <img
                 src={logoHorizontal}
                 alt="Fjord & Waves"
+                crossOrigin="anonymous"
                 style={{ height: "22px" }}
               />
               <p
@@ -320,7 +397,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                   margin: 0,
                 }}
               >
-                {project?.destination || "Itinerary"}
+                {project?.destination || L.itinerary}
                 {dateRange ? ` · ${dateRange}` : ""}
               </p>
             </div>
@@ -350,11 +427,11 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
             <div className="fjw-print-page" style={pageStyle}>
               <div style={{ padding: "20mm 20mm 18mm" }}>
                 <div style={{ fontSize: "10px", letterSpacing: "0.2em", color: "#B48C3C", fontWeight: 700, textTransform: "uppercase" }}>
-                  Where to Stay
+                  {L.whereToStayLabel}
                 </div>
                 <div style={{ width: "30px", height: "1px", background: "#B48C3C", margin: "6px 0 14px" }} />
                 <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "30px", fontWeight: 600, color: "#1E2D3D", margin: "0 0 20px" }}>
-                  Hotel Recommendations
+                  {L.hotelRecs}
                 </h2>
 
                 {visibleHotels.map((h, idx) => {
@@ -363,7 +440,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                     .filter((p): p is HotelPhoto => !!p && !!p.url)
                     .slice(0, 3);
                   return (
-                    <div key={h.id || idx} style={{ marginBottom: "26px", paddingBottom: "20px", borderBottom: "1px solid #DCCEB8" }}>
+                    <div key={h.id || idx} style={{ marginBottom: "26px", paddingBottom: "20px", borderBottom: "1px solid #DCCEB8", pageBreakInside: "avoid", breakInside: "avoid" }}>
                       <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 600, color: "#1E2D3D", margin: "0 0 4px" }}>
                         {h.name}
                       </h3>
@@ -380,7 +457,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                       {Array.isArray(h.perks) && h.perks.length > 0 && (
                         <div style={{ margin: "8px 0 12px" }}>
                           <div style={{ fontSize: "9px", letterSpacing: "0.18em", color: "#B48C3C", fontWeight: 700, textTransform: "uppercase", marginBottom: "6px" }}>
-                            Exclusive perks
+                            {L.perks}
                           </div>
                           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                             {h.perks.map((p, i) => (
@@ -396,7 +473,13 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                         <div style={{ display: "grid", gridTemplateColumns: `repeat(${photos.length}, 1fr)`, gap: "6px", marginTop: "10px" }}>
                           {photos.map((ph, i) => (
                             <div key={i}>
-                              <div style={{ position: "relative", width: "100%", paddingBottom: "72%", borderRadius: "3px", overflow: "hidden", background: `#1E2D3D url(${ph.url}) center/cover no-repeat` }}>
+                              <div style={{ position: "relative", width: "100%", paddingBottom: "72%", borderRadius: "3px", overflow: "hidden", background: "#1E2D3D" }}>
+                                <img
+                                  src={ph.url}
+                                  alt={ph.caption || ""}
+                                  crossOrigin="anonymous"
+                                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                />
                                 {ph.credit && (
                                   <div style={{ position: "absolute", right: 0, bottom: 0, background: "rgba(0,0,0,0.45)", color: "#fff", fontSize: "7px", padding: "2px 5px", letterSpacing: "0.04em" }}>
                                     {ph.credit}
@@ -421,7 +504,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
 
           {/* ============ BACK PAGE ============ */}
           <div
-            className="fjw-print-page"
+            className="fjw-print-page fjw-print-page-last"
             style={{
               ...pageStyle,
               background:
@@ -441,6 +524,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
               <img
                 src={logoBadge}
                 alt="Fjord & Waves Travel"
+                crossOrigin="anonymous"
                 style={{ width: "110px", height: "110px", objectFit: "contain", marginBottom: "30px" }}
               />
 
@@ -452,11 +536,10 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                   color: "#1E2D3D",
                   margin: "0 0 18px",
                   lineHeight: 1.2,
+                  whiteSpace: "pre-line",
                 }}
               >
-                Thank you for trusting us
-                <br />
-                with your journey.
+                {L.thankYou}
               </h2>
 
               <p
@@ -470,8 +553,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
                   lineHeight: 1.6,
                 }}
               >
-                We are here every step of the way — before, during,
-                and long after you return home.
+                {L.closingNote}
               </p>
 
               <div
@@ -550,29 +632,74 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport }: PdfPreviewP
         </div>
       </div>
 
-      {/* Print isolation: hide app shell, show only print pages */}
+      {/* Print isolation + reliable image/page rendering */}
       <style>{`
         @media print {
-          body * { visibility: hidden !important; }
-          .fjw-pdf-shell, .fjw-pdf-shell * { visibility: visible !important; }
-          .fjw-pdf-shell {
-            position: fixed !important;
-            inset: 0 !important;
+          @page { size: A4; margin: 0; }
+          html, body {
+            margin: 0 !important;
             padding: 0 !important;
             background: #fff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          body * { visibility: hidden !important; }
+          .fjw-pdf-shell, .fjw-pdf-shell * { visibility: visible !important; }
+          .fjw-no-print { display: none !important; }
+          .fjw-pdf-shell {
+            position: absolute !important;
+            inset: auto !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #fff !important;
+            display: block !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
           }
           .fjw-pdf-shell > div {
+            width: 100% !important;
             max-width: none !important;
             max-height: none !important;
+            height: auto !important;
+            min-height: 0 !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             overflow: visible !important;
             background: #fff !important;
+            display: block !important;
           }
           .fjw-print-root {
             padding: 0 !important;
             background: #fff !important;
             overflow: visible !important;
+            height: auto !important;
+            min-height: 0 !important;
+            display: block !important;
+          }
+          .fjw-print-page {
+            margin: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            width: 210mm !important;
+            min-height: 297mm !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .fjw-print-page-last {
+            page-break-after: auto !important;
+            break-after: auto !important;
+          }
+          .fjw-print-page img {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            image-rendering: auto;
           }
         }
       `}</style>
