@@ -346,6 +346,9 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         } as any)
         .eq("id", project.id);
       if (error) throw error;
+      await supabase
+        .from("project_itinerary_editor_drafts" as any)
+        .upsert({ project_id: project.id, draft: snapshot as any } as any, { onConflict: "project_id" } as any);
       toast.success("Itinerary saved");
       setLastPersistedSignature(projectSnapshotSignature(snapshot));
       setLastAutoSavedAt(new Date().toISOString());
