@@ -724,11 +724,11 @@ const CatalogShopManager = () => {
     const appliedIds: string[] = [];
     const failedItems: SelectableAuditItem[] = [];
 
-    if (opts.resetStatuses) {
-      const initial: Record<string, ApplyItemStatus> = {};
-      for (const it of itemsToApply) initial[it.id] = "pending";
-      setItemStatuses(initial);
-    }
+    setItemStatuses((prev) => {
+      const next: Record<string, ApplyItemStatus> = opts.resetStatuses ? {} : { ...prev };
+      for (const it of itemsToApply) next[it.id] = "pending";
+      return next;
+    });
 
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
