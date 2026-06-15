@@ -222,19 +222,30 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       return;
     }
     setAuditing(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
-      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content, mode: "audit" },
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || SUPABASE_ANON_KEY}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({ content, mode: "audit" }),
       });
-      if (error) throw error;
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `Audit failed (${res.status})`);
       if (data?.error) throw new Error(data.error);
       const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
       if (!parsed.length) throw new Error("No audit suggestions returned");
       setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
       toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
-      toast.error(e?.message || "Audit failed");
+      toast.error(e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed");
     } finally {
+      window.clearTimeout(timeout);
       setAuditing(false);
     }
   };
@@ -253,6 +264,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setApplying(true);
     const original = content;
     const auditText = itemsToPromptText(selected);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(
@@ -264,6 +277,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             apikey: SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
           },
+          signal: controller.signal,
           body: JSON.stringify({
             content: original,
             mode: "rewrite",
@@ -278,8 +292,6 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         const errText = await res.text().catch(() => "");
         throw new Error(`Rewrite failed: ${errText || res.status}`);
       }
-      setPreviousContent(original);
-      setContent("");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let acc = "";
@@ -287,13 +299,18 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         const { done, value } = await reader.read();
         if (done) break;
         acc += decoder.decode(value, { stream: true });
-        setContent(acc);
       }
+      acc += decoder.decode();
+      if (acc.includes("[Error from upstream")) throw new Error(acc.trim());
+      if (!acc.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
+      setPreviousContent(original);
+      setContent(acc.trim());
       toast.success("Improvements applied — review and save.");
     } catch (e: any) {
-      toast.error(e?.message || "Failed to apply improvements");
+      toast.error(e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements");
       setContent(original);
     } finally {
+      window.clearTimeout(timeout);
       setApplying(false);
     }
   };
