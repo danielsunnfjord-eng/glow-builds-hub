@@ -280,6 +280,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
       setApplyStatus({ status: "idle", message: "" });
       setFailedApplyBatch(null);
+      setItemStatuses({});
+      setApplySummary(null);
       toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
       toast.error(e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed");
