@@ -1552,28 +1552,63 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {previewRow && (
-        <PdfPreview
-          content={
-            previewRow.itinerary_content_en ||
-            previewRow.itinerary_content_pt ||
-            previewRow.itinerary_content_no ||
-            ""
-          }
-          project={{
-            client_name: previewRow.title_en || "",
-            destination: previewRow.destination,
-            trip_duration: previewRow.duration,
-            hero_image_url: previewRow.hero_image_url,
-            hero_image_credit: previewRow.hero_image_credit,
-            hero_image_caption: previewRow.hero_image_caption,
-            cover_tagline: previewRow.summary_en || null,
-          }}
-          hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
-          onClose={() => setPreviewRow(null)}
-          onExport={() => window.print()}
-        />
-      )}
+      {previewRow && (() => {
+        const contentByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.itinerary_content_en,
+          pt: previewRow.itinerary_content_pt,
+          no: previewRow.itinerary_content_no,
+        };
+        const titleByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.title_en,
+          pt: previewRow.title_pt,
+          no: previewRow.title_no,
+        };
+        const summaryByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.summary_en,
+          pt: previewRow.summary_pt,
+          no: previewRow.summary_no,
+        };
+        const pickedContent =
+          contentByLang[previewLang] || contentByLang.en || contentByLang.pt || contentByLang.no || "";
+        const pickedTitle =
+          titleByLang[previewLang] || titleByLang.en || titleByLang.pt || titleByLang.no || "";
+        const pickedSummary =
+          summaryByLang[previewLang] || summaryByLang.en || summaryByLang.pt || summaryByLang.no || "";
+        const available: Lang[] = (["en", "pt", "no"] as Lang[]).filter((l) => !!contentByLang[l]);
+        return (
+          <>
+            {available.length > 1 && (
+              <div className="fixed top-4 right-4 z-[70] flex gap-1 bg-voyage-white border border-parchment-3 rounded shadow-md p-1 fjw-no-print">
+                {available.map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setPreviewLang(l)}
+                    className={`px-2 py-1 text-[0.7rem] uppercase tracking-wider rounded ${previewLang === l ? "bg-ink text-voyage-white" : "text-voyage-muted hover:text-ink"}`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            )}
+            <PdfPreview
+              content={pickedContent}
+              language={previewLang}
+              project={{
+                client_name: pickedTitle,
+                destination: previewRow.destination,
+                trip_duration: previewRow.duration,
+                hero_image_url: previewRow.hero_image_url,
+                hero_image_credit: previewRow.hero_image_credit,
+                hero_image_caption: previewRow.hero_image_caption,
+                cover_tagline: pickedSummary || null,
+              }}
+              hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
+              onClose={() => setPreviewRow(null)}
+              onExport={() => window.print()}
+            />
+          </>
+        );
+      })()}
       </>
       )}
     </div>
