@@ -135,7 +135,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           .from("project_itinerary_editor_drafts" as any)
           .select("draft, updated_at")
           .eq("project_id", project.id)
-          .maybeSingle();
+          .maybeSingle() as any;
         if (!error && data?.draft) {
           next = { ...baseSnapshot, ...(data.draft as Partial<ProjectEditorSnapshot>) };
           restoredAt = data.updated_at;
