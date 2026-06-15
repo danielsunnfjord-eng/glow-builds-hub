@@ -24,6 +24,7 @@ import {
   Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
+import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import {
@@ -1099,19 +1100,34 @@ const CatalogShopManager = () => {
       <Dialog
         open={editorOpen}
         onOpenChange={(open) => {
-          if (open) setEditorOpen(true);
-          else requestEditorClose();
+          if (open) {
+            setEditorOpen(true);
+            return;
+          }
+          // Block ALL programmatic / outside close attempts during an audit run
+          // or other long-running operation. The editor can only be closed via
+          // the explicit Cancel / Close-Anyway buttons.
+          if (isAuditBusy || saving || generating || regenerating || uploading) {
+            toast.info("Please wait for the current action to finish before closing the editor.");
+            return;
+          }
+          requestEditorClose();
         }}
       >
         <DialogContent
           className="max-w-5xl max-h-[92vh] overflow-y-auto"
           onPointerDownOutside={(e) => {
             e.preventDefault();
+            if (isAuditBusy) return;
             if (hasUnsavedChanges) setCloseConfirmOpen(true);
           }}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => {
             e.preventDefault();
+            if (isAuditBusy) {
+              toast.info("Please wait for the audit action to finish before closing the editor.");
+              return;
+            }
             requestEditorClose();
           }}
         >
@@ -1281,11 +1297,21 @@ const CatalogShopManager = () => {
             </Button>
           </div>
 
-          <ItineraryEditor
-            content={state.content}
-            onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
-            placeholder="Write or generate the itinerary…"
-          />
+          <EditorErrorBoundary
+            onError={(err) =>
+              setAuditAction({
+                status: "error",
+                message: "The editor hit a rendering error after the last AI action.",
+                detail: err.message + " — your draft text is preserved. Use 'Reload editor' to continue.",
+              })
+            }
+          >
+            <ItineraryEditor
+              content={state.content}
+              onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
+              placeholder="Write or generate the itinerary…"
+            />
+          </EditorErrorBoundary>
 
           <div className="mt-3 p-3 border border-parchment-3 rounded bg-parchment/40">
             <Label className="text-[0.78rem]">Regenerate a specific section with AI</Label>

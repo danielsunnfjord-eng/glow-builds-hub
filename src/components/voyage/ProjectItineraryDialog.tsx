@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ItineraryEditor from "./ItineraryEditor";
+import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
@@ -401,19 +402,25 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       <Dialog
         open={open}
         onOpenChange={(nextOpen) => {
-          if (nextOpen) onOpenChange(true);
-          else requestClose();
+          if (nextOpen) { onOpenChange(true); return; }
+          if (isBusy) {
+            toast.info("Please wait for the current action to finish before closing the editor.");
+            return;
+          }
+          requestClose();
         }}
       >
         <DialogContent
           className="fixed left-1/2 top-2 bottom-2 max-w-6xl w-[96vw] h-auto max-h-none translate-y-0 !flex flex-col overflow-hidden p-5 gap-3"
           onPointerDownOutside={(e) => {
             e.preventDefault();
+            if (isBusy) return;
             if (hasUnsavedChanges) setCloseConfirmOpen(true);
           }}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => {
             e.preventDefault();
+            if (isBusy) return;
             requestClose();
           }}
         >
@@ -452,8 +459,10 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                   />
                 </div>
               )}
-              <div className="flex-1 min-h-0 overflow-hidden border border-parchment-3 rounded-md bg-voyage-white">
-                <ItineraryEditor content={content} onContentChange={setContent} />
+              <div className="flex-1 min-h-0 overflow-y-auto border border-parchment-3 rounded-md bg-voyage-white">
+                <EditorErrorBoundary>
+                  <ItineraryEditor content={content} onContentChange={setContent} />
+                </EditorErrorBoundary>
               </div>
             </div>
 
