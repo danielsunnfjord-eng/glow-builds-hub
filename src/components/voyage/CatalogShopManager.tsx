@@ -33,6 +33,7 @@ import {
   type SelectableAuditItem,
 } from "@/lib/auditParser";
 import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
+import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
 type Lang = "en" | "pt" | "no";
