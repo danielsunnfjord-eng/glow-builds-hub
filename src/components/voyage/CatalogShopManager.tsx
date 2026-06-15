@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
@@ -154,6 +164,30 @@ const blankEditor: EditorState = {
   previousContent: null,
 };
 
+const catalogDraftPayload = (editorState: EditorState, sectionPrompt: string) => ({
+  version: 1,
+  state: editorState,
+  sectionPrompt,
+});
+
+const catalogDraftSignature = (editorState: EditorState, sectionPrompt: string) =>
+  JSON.stringify(catalogDraftPayload(editorState, sectionPrompt));
+
+const hasCatalogDraftContent = (editorState: EditorState, sectionPrompt: string) =>
+  Boolean(
+    editorState.title.trim() ||
+    editorState.destination.trim() ||
+    editorState.duration.trim() ||
+    editorState.brief.trim() ||
+    editorState.summary.trim() ||
+    editorState.summaryPt.trim() ||
+    editorState.summaryNo.trim() ||
+    editorState.content.trim() ||
+    editorState.heroImageUrl.trim() ||
+    editorState.hotels.length ||
+    sectionPrompt.trim(),
+  );
+
 const CatalogShopManager = () => {
   const qc = useQueryClient();
   const { t } = useTranslation();
@@ -171,6 +205,13 @@ const CatalogShopManager = () => {
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const [lastPersistedSignature, setLastPersistedSignature] = useState(() => catalogDraftSignature(blankEditor, ""));
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [autoSaveError, setAutoSaveError] = useState("");
+  const [restoredNotice, setRestoredNotice] = useState("");
+  const autoSaveIntervalRef = useRef<number | null>(null);
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -239,15 +280,110 @@ const CatalogShopManager = () => {
   };
 
   const isAuditBusy = auditing || applyingAudit;
+  const currentDraftSignature = useMemo(() => catalogDraftSignature(state, sectionPrompt), [state, sectionPrompt]);
+  const hasUnsavedChanges = currentDraftSignature !== lastPersistedSignature;
+
+  const loadCatalogDraft = async (itineraryId: string) => {
+    const { data, error } = await supabase
+      .from("catalog_itinerary_drafts")
+      .select("draft, updated_at")
+      .eq("itinerary_id", itineraryId)
+      .maybeSingle();
+    if (error || !data?.draft) return null;
+    return data as unknown as { draft: { state?: Partial<EditorState>; sectionPrompt?: string }; updated_at: string };
+  };
+
+  const persistCatalogDraft = useCallback(async (silent = true) => {
+    if (!editorOpen || isAuditBusy || !hasCatalogDraftContent(state, sectionPrompt)) return;
+    setAutoSaveStatus("saving");
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const slugBase = slugify(state.title || state.destination || "untitled-catalogue-itinerary");
+      let itineraryId = state.id;
+      if (!itineraryId) {
+        const title = state.title.trim() || "Untitled catalogue itinerary";
+        const { data, error } = await supabase
+          .from("catalog_itineraries")
+          .insert({
+            title_en: title,
+            slug: `${slugBase}-${Date.now().toString(36)}`,
+            summary_en: state.summary || "",
+            description_en: "",
+            what_you_get_en: "",
+            is_published: false,
+            price_eur: Number(state.priceEur) || 0,
+          })
+          .select("id")
+          .single();
+        if (error) throw error;
+        itineraryId = data.id;
+        setState((s) => ({ ...s, id: data.id, title }));
+      }
+      const signature = catalogDraftSignature({ ...state, id: itineraryId }, sectionPrompt);
+      const { error } = await supabase
+        .from("catalog_itinerary_drafts")
+        .upsert({
+          itinerary_id: itineraryId,
+          language: state.language,
+          draft: catalogDraftPayload({ ...state, id: itineraryId }, sectionPrompt) as any,
+          updated_by: user?.id || null,
+        } as any, { onConflict: "itinerary_id" });
+      if (error) throw error;
+      const now = new Date().toISOString();
+      setLastPersistedSignature(signature);
+      setLastAutoSavedAt(now);
+      setAutoSaveStatus("saved");
+      setAutoSaveError("");
+      if (!silent) toast.success("Draft auto-saved");
+    } catch (e: any) {
+      setAutoSaveStatus("error");
+      setAutoSaveError(e?.message || "Auto-save failed");
+      if (!silent) toast.error(e?.message || "Auto-save failed");
+    }
+  }, [editorOpen, isAuditBusy, sectionPrompt, state]);
+
+  const requestEditorClose = () => {
+    if (isAuditBusy || saving || generating || regenerating || uploading) {
+      toast.info("Please wait for the current action to finish before closing the editor.");
+      return;
+    }
+    if (hasUnsavedChanges) {
+      setCloseConfirmOpen(true);
+      return;
+    }
+    setEditorOpen(false);
+  };
+
+  const closeEditorAnyway = () => {
+    setCloseConfirmOpen(false);
+    setEditorOpen(false);
+  };
+
+  useEffect(() => {
+    if (!editorOpen) return;
+    autoSaveIntervalRef.current = window.setInterval(() => {
+      persistCatalogDraft(true);
+    }, 30_000);
+    return () => {
+      if (autoSaveIntervalRef.current) window.clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    };
+  }, [editorOpen, persistCatalogDraft]);
 
   const openCreate = () => {
     setState(blankEditor);
     setSectionPrompt("");
     setAuditAction({ status: "idle", message: "" });
+    setLastPersistedSignature(catalogDraftSignature(blankEditor, ""));
+    setLastAutoSavedAt(null);
+    setAutoSaveStatus("idle");
+    setAutoSaveError("");
+    setRestoredNotice("");
+    setCloseConfirmOpen(false);
     setEditorOpen(true);
   };
 
-  const openEdit = (r: CatalogRow) => {
+  const openEdit = async (r: CatalogRow) => {
     const lang: Lang = r.itinerary_content_no ? "no" : r.itinerary_content_pt ? "pt" : "en";
     const content =
       (lang === "no" ? r.itinerary_content_no : lang === "pt" ? r.itinerary_content_pt : r.itinerary_content_en) || "";
@@ -262,7 +398,7 @@ const CatalogShopManager = () => {
           visible: h.visible !== false,
         }))
       : [];
-    setState({
+    const baseState: EditorState = {
       id: r.id,
       title: r.title_en || "",
       destination: r.destination || "",
@@ -286,9 +422,29 @@ const CatalogShopManager = () => {
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
-    });
-    setSectionPrompt("");
+    };
+    let nextState = baseState;
+    let nextSectionPrompt = "";
+    let restoredAt: string | null = null;
+    try {
+      const savedDraft = await loadCatalogDraft(r.id);
+      if (savedDraft?.draft?.state) {
+        nextState = { ...baseState, ...savedDraft.draft.state, id: r.id } as EditorState;
+        nextSectionPrompt = savedDraft.draft.sectionPrompt || "";
+        restoredAt = savedDraft.updated_at;
+      }
+    } catch {
+      // Recovery should never block opening the editor.
+    }
+    setState(nextState);
+    setSectionPrompt(nextSectionPrompt);
     setAuditAction({ status: "idle", message: "" });
+    setLastPersistedSignature(catalogDraftSignature(nextState, nextSectionPrompt));
+    setLastAutoSavedAt(restoredAt);
+    setAutoSaveStatus(restoredAt ? "saved" : "idle");
+    setAutoSaveError("");
+    setRestoredNotice(restoredAt ? `Draft restored from ${new Date(restoredAt).toLocaleString()}` : "");
+    setCloseConfirmOpen(false);
     setEditorOpen(true);
   };
 
@@ -698,12 +854,15 @@ const CatalogShopManager = () => {
         const { error } = await supabase.from("catalog_itineraries").update(payload).eq("id", state.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("catalog_itineraries").insert(payload);
+        const { data, error } = await supabase.from("catalog_itineraries").insert(payload).select("id").single();
         if (error) throw error;
+        setState((s) => ({ ...s, id: data.id }));
       }
+      setLastPersistedSignature(catalogDraftSignature(state, sectionPrompt));
+      setLastAutoSavedAt(new Date().toISOString());
+      setAutoSaveStatus("saved");
       toast.success(state.id ? "Saved" : "Created");
       qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
-      setEditorOpen(false);
     } catch (e: any) {
       toast.error(e?.message || "Save failed");
     } finally {
