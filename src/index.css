@@ -276,3 +276,14 @@
   }
   .fjw-no-print { display: none !important; }
 }
+
+/* ---------- Audit "Apply Selected" highlight flash ---------- */
+.fjw-audit-flash {
+  animation: fjwAuditFlash 4s ease-out;
+  border-radius: 4px;
+}
+@keyframes fjwAuditFlash {
+  0%   { background-color: rgba(250, 204, 21, 0.55); box-shadow: 0 0 0 6px rgba(250, 204, 21, 0.25); }
+  60%  { background-color: rgba(250, 204, 21, 0.30); box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.10); }
+  100% { background-color: transparent;               box-shadow: 0 0 0 0 transparent; }
+}
