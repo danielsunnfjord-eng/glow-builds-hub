@@ -729,6 +729,7 @@ const CatalogShopManager = () => {
             signal: controller.signal,
             body: JSON.stringify({
               mode: "rewrite",
+              single_batch: true,
               structure: "catalogue-thematic",
               content: workingContent,
               audit: buildAuditBatchPrompt(batch),
@@ -780,6 +781,7 @@ const CatalogShopManager = () => {
         signal: controller.signal,
         body: JSON.stringify({
           mode: "rewrite",
+          single_batch: true,
           structure: "catalogue-thematic",
           content: state.content,
           audit: buildAuditBatchPrompt(failedAuditBatch.items),
@@ -1426,13 +1428,19 @@ const CatalogShopManager = () => {
                     !state.auditItems.some((i) => i.selected) ||
                     applyingAudit ||
                     auditing ||
-                    state.previousContent !== null
+                    false
                   }
                   className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
                 >
                   {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
                   Apply Selected ({state.auditItems.filter((i) => i.selected).length})
                 </Button>
+                {failedAuditBatch && (
+                  <Button variant="outline" size="sm" onClick={retryFailedAuditBatch} disabled={applyingAudit || auditing}>
+                    {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
+                    Retry batch {failedAuditBatch.batchNumber}
+                  </Button>
+                )}
                 {state.previousContent !== null && (
                   <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
                     <Undo2 className="w-4 h-4 mr-2" /> Keep Original

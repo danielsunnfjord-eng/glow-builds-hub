@@ -84,14 +84,15 @@ function streamRewrite(opts: {
   audit: string;
   totalDays: number;
   structure?: string;
+  singleBatch?: boolean;
 }): Response {
-  const { apiKey, content, audit, totalDays, structure } = opts;
+  const { apiKey, content, audit, totalDays, structure, singleBatch } = opts;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
   const isCatalogueGuide = structure === 'catalogue-thematic';
 
-  const numChunks = totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
+  const numChunks = singleBatch ? 1 : totalDays >= 22 ? 4 : totalDays >= 15 ? 3 : totalDays >= 8 ? 2 : 1;
   const ranges = totalDays > 0 ? splitDayRanges(totalDays, numChunks) : [];
 
   const baseContext =
@@ -203,7 +204,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '' } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false } = body || {};
     if (!content || typeof content !== 'string' || !content.trim()) {
       return new Response(JSON.stringify({ error: 'Missing itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -212,7 +213,7 @@ Deno.serve(async (req) => {
 
     if (mode === 'rewrite') {
       const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
-      return streamRewrite({ apiKey, content, audit, totalDays, structure });
+      return streamRewrite({ apiKey, content, audit, totalDays, structure, singleBatch: Boolean(single_batch) });
     }
 
     // Default: audit-only (short, fast). Returns JSON items.
