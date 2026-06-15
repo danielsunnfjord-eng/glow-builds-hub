@@ -147,6 +147,12 @@ type FailedAuditBatch = {
   message: string;
 };
 
+type ApplySummary = {
+  appliedIds: string[];
+  failedItems: SelectableAuditItem[];
+  totalItems: number;
+};
+
 const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
 const blankEditor: EditorState = {
