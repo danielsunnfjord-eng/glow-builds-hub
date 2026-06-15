@@ -1092,19 +1092,37 @@ const CatalogShopManager = () => {
       <Dialog
         open={editorOpen}
         onOpenChange={(open) => {
-          if (!open && isAuditBusy) {
-            toast.info("Please wait for the audit action to finish before closing the editor.");
-            return;
-          }
-          setEditorOpen(open);
+          if (open) setEditorOpen(true);
+          else requestEditorClose();
         }}
       >
-        <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">
+        <DialogContent
+          className="max-w-5xl max-h-[92vh] overflow-y-auto"
+          onPointerDownOutside={(e) => {
+            e.preventDefault();
+            if (hasUnsavedChanges) setCloseConfirmOpen(true);
+          }}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            requestEditorClose();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>{state.id ? "Edit itinerary" : "Create new itinerary"}</DialogTitle>
             <DialogDescription>
               Create, audit and refine catalogue guide content. Draft text is preserved if AI actions fail.
             </DialogDescription>
+            <div className="mt-2 space-y-1 text-[0.75rem]">
+              {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+              <div className="text-voyage-muted">
+                {autoSaveStatus === "saving" && "Auto-saving draft…"}
+                {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
+                {autoSaveStatus === "error" && `Auto-save failed: ${autoSaveError}`}
+                {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
+                {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -1497,7 +1515,7 @@ const CatalogShopManager = () => {
               Status: {state.isPublished ? <span className="text-fjord font-medium">Published</span> : <span>Draft</span>}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setEditorOpen(false)} disabled={isAuditBusy}>Cancel</Button>
+              <Button variant="outline" onClick={requestEditorClose} disabled={isAuditBusy}>Cancel</Button>
               <Button variant="outline" onClick={() => save(false)} disabled={saving || isAuditBusy}>
                 {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />}Save as Draft
               </Button>
