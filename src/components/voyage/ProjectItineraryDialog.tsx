@@ -85,7 +85,30 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [applying, setApplying] = useState(false);
   const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const [lastPersistedSignature, setLastPersistedSignature] = useState("");
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [autoSaveError, setAutoSaveError] = useState("");
+  const [restoredNotice, setRestoredNotice] = useState("");
   const heroInputRef = useRef<HTMLInputElement>(null);
+  const autoSaveIntervalRef = useRef<number | null>(null);
+  const latestSnapshotRef = useRef<ProjectEditorSnapshot | null>(null);
+  const latestOpenRef = useRef(open);
+
+  const snapshot = useMemo<ProjectEditorSnapshot>(() => ({
+    content,
+    notes,
+    heroUrl,
+    heroCredit,
+    heroCaption,
+    tagline,
+    auditItems,
+    previousContent,
+  }), [content, notes, heroUrl, heroCredit, heroCaption, tagline, auditItems, previousContent]);
+  const currentSignature = useMemo(() => projectSnapshotSignature(snapshot), [snapshot]);
+  const hasUnsavedChanges = Boolean(lastPersistedSignature) && currentSignature !== lastPersistedSignature;
+  const isBusy = auditing || applying || uploadingHero || saving;
 
   useEffect(() => {
     if (!open) return;
