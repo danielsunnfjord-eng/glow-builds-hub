@@ -171,6 +171,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       setTagline(next.tagline);
       setAuditItems(next.auditItems || []);
       setPreviousContent(next.previousContent || null);
+      setApplyStatus({ status: "idle", message: "" });
+      setFailedApplyBatch(null);
       setLastPersistedSignature(projectSnapshotSignature(next));
       setLastAutoSavedAt(restoredAt);
       setAutoSaveStatus(restoredAt ? "saved" : "idle");
@@ -531,6 +533,15 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     onKeepOriginal={keepOriginal}
                     compact
                   />
+                  {applyStatus.status !== "idle" && (
+                    <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${applyStatus.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                      <div className="flex items-center gap-2 font-medium">
+                        {applyStatus.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                        {applyStatus.message}
+                      </div>
+                      {applyStatus.detail && <div className="mt-1 opacity-80">{applyStatus.detail}</div>}
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex-1 min-h-0 overflow-y-auto border border-parchment-3 rounded-md bg-voyage-white">
@@ -646,7 +657,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
               </button>
-              {auditItems.length > 0 && previousContent === null && (
+              {auditItems.length > 0 && (
                 <button
                   onClick={applyImprovements}
                   disabled={applying || !auditItems.some((i) => i.selected)}
@@ -654,6 +665,16 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   {applying ? "Rewriting…" : `Apply Selected (${auditItems.filter((i) => i.selected).length})`}
+                </button>
+              )}
+              {failedApplyBatch && (
+                <button
+                  onClick={retryFailedBatch}
+                  disabled={applying}
+                  className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                >
+                  {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  Retry batch {failedApplyBatch.batchNumber}
                 </button>
               )}
               {previousContent !== null && (
