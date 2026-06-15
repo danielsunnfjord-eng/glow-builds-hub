@@ -292,6 +292,89 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const selectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: true })));
   const deselectAll = () => setAuditItems((arr) => arr.map((i) => ({ ...i, selected: false })));
 
+  const runApplyBatchesProject = async (
+    itemsToApply: SelectableAuditItem[],
+    startingContent: string,
+    opts: { resetStatuses: boolean },
+  ) => {
+    const batches = chunkAuditItems(itemsToApply, 2);
+    let workingContent = startingContent;
+    const appliedIds: string[] = [];
+    const failedItems: SelectableAuditItem[] = [];
+    const { data: { session } } = await supabase.auth.getSession();
+
+    setItemStatuses((prev) => {
+      const next: Record<string, ApplyItemStatus> = opts.resetStatuses ? {} : { ...prev };
+      for (const it of itemsToApply) next[it.id] = "pending";
+      return next;
+    });
+
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      setItemStatuses((prev) => {
+        const next = { ...prev };
+        for (const it of batch) next[it.id] = "applying";
+        return next;
+      });
+      setApplyStatus({
+        status: "running",
+        message: `Applying batch ${i + 1} of ${batches.length}…`,
+        detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved.` : "The editor stays open while this batch is processed.",
+      });
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          },
+          signal: controller.signal,
+          body: JSON.stringify({
+            content: workingContent,
+            mode: "rewrite",
+            single_batch: true,
+            audit: buildAuditBatchPrompt(batch),
+            start_date: project?.start_date,
+            end_date: project?.end_date,
+            trip_duration: project?.trip_duration,
+          }),
+        });
+        const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
+        const previousBatchContent = workingContent;
+        workingContent = rewritten;
+        const batchIds = new Set(batch.map((item) => item.id));
+        setPreviousContent((prev) => prev ?? startingContent);
+        setContent(rewritten);
+        setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
+        setItemStatuses((prev) => {
+          const next = { ...prev };
+          for (const it of batch) next[it.id] = "applied";
+          return next;
+        });
+        for (const it of batch) appliedIds.push(it.id);
+        flashEditorHighlight(findFirstChangedHeadingText(previousBatchContent, rewritten));
+      } catch (e: any) {
+        const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
+        setItemStatuses((prev) => {
+          const next = { ...prev };
+          for (const it of batch) next[it.id] = "failed";
+          return next;
+        });
+        setFailedApplyBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
+        setApplyStatus({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing applied changes.` });
+        for (const it of batch) failedItems.push(it);
+        toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
+        return { appliedIds, failedItems, stoppedEarly: true };
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+    return { appliedIds, failedItems, stoppedEarly: false };
+  };
+
   const applyImprovements = async () => {
     const selected = auditItems.filter((i) => i.selected);
     if (!content.trim() || !selected.length) {
@@ -299,61 +382,18 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       return;
     }
     setApplying(true);
-    const original = content;
     setFailedApplyBatch(null);
-    const batches = chunkAuditItems(selected, 2);
-    let workingContent = original;
+    setApplySummary(null);
+    const original = content;
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i];
-        setApplyStatus({
-          status: "running",
-          message: `Applying batch ${i + 1} of ${batches.length}…`,
-          detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved.` : "The editor stays open while this batch is processed.",
-        });
-        const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
-        try {
-          const res = await fetch(
-            `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                apikey: SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-              },
-              signal: controller.signal,
-              body: JSON.stringify({
-                content: workingContent,
-                mode: "rewrite",
-                single_batch: true,
-                audit: buildAuditBatchPrompt(batch),
-                start_date: project?.start_date,
-                end_date: project?.end_date,
-                trip_duration: project?.trip_duration,
-              }),
-            },
-          );
-          const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
-          workingContent = rewritten;
-          const batchIds = new Set(batch.map((item) => item.id));
-          setPreviousContent(original);
-          setContent(rewritten);
-          setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
-        } catch (e: any) {
-          const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
-          setFailedApplyBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
-          setApplyStatus({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing applied changes.` });
-          toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
-          return;
-        } finally {
-          window.clearTimeout(timeout);
-        }
+      const result = await runApplyBatchesProject(selected, original, { resetStatuses: true });
+      if (!result.stoppedEarly) {
+        setApplyStatus({ status: "idle", message: "" });
+        setApplySummary({ appliedIds: result.appliedIds, failedItems: [], totalItems: selected.length });
+        toast.success(`${result.appliedIds.length} of ${selected.length} improvements applied.`);
+      } else {
+        setApplySummary({ appliedIds: result.appliedIds, failedItems: result.failedItems, totalItems: selected.length });
       }
-      setApplyStatus({ status: "idle", message: "" });
-      toast.success("Improvements applied — review and save.");
     } catch (e: any) {
       const message = e?.message || "Failed to apply improvements. Your draft was preserved.";
       setApplyStatus({ status: "error", message, detail: "The editor content was not cleared or closed." });
@@ -366,47 +406,57 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const retryFailedBatch = async () => {
     if (!failedApplyBatch || !content.trim()) return;
     setApplying(true);
-    setApplyStatus({ status: "running", message: `Applying batch ${failedApplyBatch.batchNumber} of ${failedApplyBatch.totalBatches}…`, detail: "Retrying only the failed batch." });
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          content,
-          mode: "rewrite",
-          single_batch: true,
-          audit: buildAuditBatchPrompt(failedApplyBatch.items),
-          start_date: project?.start_date,
-          end_date: project?.end_date,
-          trip_duration: project?.trip_duration,
-        }),
-      });
-      const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
-      const batchIds = new Set(failedApplyBatch.items.map((item) => item.id));
-      setPreviousContent((prev) => prev ?? content);
-      setContent(rewritten);
-      setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
-      setFailedApplyBatch(null);
-      setApplyStatus({ status: "idle", message: "" });
-      toast.success("Failed batch applied. Continue with any remaining selected improvements.");
-    } catch (e: any) {
-      const message = e?.name === "AbortError" ? `Batch ${failedApplyBatch.batchNumber} timed out again.` : e?.message || `Batch ${failedApplyBatch.batchNumber} failed again.`;
-      setFailedApplyBatch((current) => (current ? { ...current, message } : current));
-      setApplyStatus({ status: "error", message: `Batch ${failedApplyBatch.batchNumber} of ${failedApplyBatch.totalBatches} failed.`, detail: `${message} Your current draft is still preserved.` });
-      toast.error(message);
+      const result = await runApplyBatchesProject(failedApplyBatch.items, content, { resetStatuses: false });
+      if (!result.stoppedEarly) {
+        setFailedApplyBatch(null);
+        setApplyStatus({ status: "idle", message: "" });
+        setApplySummary((prev) => prev ? {
+          ...prev,
+          appliedIds: [...prev.appliedIds, ...result.appliedIds],
+          failedItems: prev.failedItems.filter((f) => !result.appliedIds.includes(f.id)),
+        } : null);
+        toast.success("Failed batch applied. Continue with any remaining selected improvements.");
+      }
     } finally {
-      window.clearTimeout(timeout);
       setApplying(false);
     }
   };
+
+  const retryFailedItems = async () => {
+    if (!applySummary?.failedItems.length || !content.trim()) return;
+    setApplying(true);
+    setFailedApplyBatch(null);
+    const toRetry = applySummary.failedItems;
+    try {
+      const result = await runApplyBatchesProject(toRetry, content, { resetStatuses: false });
+      if (!result.stoppedEarly) {
+        setApplyStatus({ status: "idle", message: "" });
+        setApplySummary((prev) => prev ? {
+          ...prev,
+          appliedIds: [...prev.appliedIds, ...result.appliedIds],
+          failedItems: [],
+        } : null);
+        toast.success("Previously failed improvements applied.");
+      } else {
+        setApplySummary((prev) => prev ? {
+          ...prev,
+          appliedIds: [...prev.appliedIds, ...result.appliedIds],
+          failedItems: result.failedItems,
+        } : null);
+      }
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  const viewUpdatedItinerary = () => {
+    setApplySummary(null);
+    setApplyStatus({ status: "idle", message: "" });
+    scrollEditorIntoView();
+  };
+
+
 
   const keepOriginal = () => {
     if (previousContent === null) return;
