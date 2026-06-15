@@ -407,6 +407,8 @@ const CatalogShopManager = () => {
     setSectionPrompt("");
     setAuditAction({ status: "idle", message: "" });
     setFailedAuditBatch(null);
+    setItemStatuses({});
+    setApplySummary(null);
     setLastPersistedSignature(catalogDraftSignature(blankEditor, ""));
     setLastAutoSavedAt(null);
     setAutoSaveStatus("idle");
@@ -473,6 +475,8 @@ const CatalogShopManager = () => {
     setSectionPrompt(nextSectionPrompt);
     setAuditAction({ status: "idle", message: "" });
     setFailedAuditBatch(null);
+    setItemStatuses({});
+    setApplySummary(null);
     setLastPersistedSignature(catalogDraftSignature(nextState, nextSectionPrompt));
     setLastAutoSavedAt(restoredAt);
     setAutoSaveStatus(restoredAt ? "saved" : "idle");
@@ -799,6 +803,8 @@ const CatalogShopManager = () => {
     }
     setApplyingAudit(true);
     setFailedAuditBatch(null);
+    setItemStatuses({});
+    setApplySummary(null);
     setApplySummary(null);
     const original = state.content;
     try {
@@ -830,6 +836,8 @@ const CatalogShopManager = () => {
       const result = await runApplyBatches(failedAuditBatch.items, state.content, { resetStatuses: false });
       if (!result.stoppedEarly) {
         setFailedAuditBatch(null);
+    setItemStatuses({});
+    setApplySummary(null);
         setAuditAction({ status: "idle", message: "" });
         setApplySummary((prev) => prev ? {
           ...prev,
@@ -847,6 +855,8 @@ const CatalogShopManager = () => {
     if (!applySummary?.failedItems.length || !state.content.trim()) return;
     setApplyingAudit(true);
     setFailedAuditBatch(null);
+    setItemStatuses({});
+    setApplySummary(null);
     const toRetry = applySummary.failedItems;
     try {
       const result = await runApplyBatches(toRetry, state.content, { resetStatuses: false });
