@@ -30,9 +30,9 @@ import AuditChecklist from "./AuditChecklist";
 import {
   parseAuditItems,
   serializeAuditItems,
-  itemsToPromptText,
   type SelectableAuditItem,
 } from "@/lib/auditParser";
+import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
 type Lang = "en" | "pt" | "no";
@@ -139,6 +139,13 @@ type AuditActionState = {
   detail?: string;
 };
 
+type FailedAuditBatch = {
+  batchNumber: number;
+  totalBatches: number;
+  items: SelectableAuditItem[];
+  message: string;
+};
+
 const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
 const blankEditor: EditorState = {
@@ -209,6 +216,7 @@ const CatalogShopManager = () => {
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
+  const [failedAuditBatch, setFailedAuditBatch] = useState<FailedAuditBatch | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const [lastPersistedSignature, setLastPersistedSignature] = useState(() => catalogDraftSignature(blankEditor, ""));
   const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);

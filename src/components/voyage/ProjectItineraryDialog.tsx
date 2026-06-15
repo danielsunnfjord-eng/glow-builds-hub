@@ -14,7 +14,8 @@ import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
-import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
+import { parseAuditItems, type SelectableAuditItem } from "@/lib/auditParser";
+import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
@@ -59,6 +60,19 @@ type ProjectEditorSnapshot = {
   previousContent: string | null;
 };
 
+type ApplyStatus = {
+  status: "idle" | "running" | "error";
+  message: string;
+  detail?: string;
+};
+
+type FailedApplyBatch = {
+  batchNumber: number;
+  totalBatches: number;
+  items: SelectableAuditItem[];
+  message: string;
+};
+
 const projectSnapshotSignature = (snapshot: ProjectEditorSnapshot) => JSON.stringify(snapshot);
 
 const hasProjectSnapshotContent = (snapshot: ProjectEditorSnapshot) =>
@@ -86,6 +100,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [applying, setApplying] = useState(false);
   const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const [applyStatus, setApplyStatus] = useState<ApplyStatus>({ status: "idle", message: "" });
+  const [failedApplyBatch, setFailedApplyBatch] = useState<FailedApplyBatch | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const [lastPersistedSignature, setLastPersistedSignature] = useState("");
   const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
