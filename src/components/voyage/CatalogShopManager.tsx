@@ -803,8 +803,6 @@ const CatalogShopManager = () => {
     }
     setApplyingAudit(true);
     setFailedAuditBatch(null);
-    setItemStatuses({});
-    setApplySummary(null);
     setApplySummary(null);
     const original = state.content;
     try {
