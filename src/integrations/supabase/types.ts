@@ -467,6 +467,38 @@ export type Database = {
           },
         ]
       }
+      project_itinerary_editor_drafts: {
+        Row: {
+          created_at: string
+          draft: Json
+          project_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          draft?: Json
+          project_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          draft?: Json
+          project_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_itinerary_editor_drafts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       route_maker_itineraries: {
         Row: {
           accommodations: Json | null

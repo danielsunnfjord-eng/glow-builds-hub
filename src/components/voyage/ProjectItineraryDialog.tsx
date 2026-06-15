@@ -1,5 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import ItineraryEditor from "./ItineraryEditor";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
@@ -10,6 +20,8 @@ import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "l
 
 const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
+const PROJECT_EDITOR_AUTOSAVE_MS = 30_000;
+const PROJECT_AUDIT_TIMEOUT_MS = 120_000;
 
 interface Project {
   id: string;
@@ -35,6 +47,30 @@ interface Props {
   onSaved?: () => void;
 }
 
+type ProjectEditorSnapshot = {
+  content: string;
+  notes: string;
+  heroUrl: string | null;
+  heroCredit: string;
+  heroCaption: string;
+  tagline: string;
+  auditItems: SelectableAuditItem[];
+  previousContent: string | null;
+};
+
+const projectSnapshotSignature = (snapshot: ProjectEditorSnapshot) => JSON.stringify(snapshot);
+
+const hasProjectSnapshotContent = (snapshot: ProjectEditorSnapshot) =>
+  Boolean(
+    snapshot.content.trim() ||
+    snapshot.notes.trim() ||
+    snapshot.heroUrl ||
+    snapshot.heroCredit.trim() ||
+    snapshot.heroCaption.trim() ||
+    snapshot.tagline.trim() ||
+    snapshot.auditItems.length,
+  );
+
 const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props) => {
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
@@ -49,19 +85,143 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [applying, setApplying] = useState(false);
   const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
+  const [lastPersistedSignature, setLastPersistedSignature] = useState("");
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [autoSaveError, setAutoSaveError] = useState("");
+  const [restoredNotice, setRestoredNotice] = useState("");
   const heroInputRef = useRef<HTMLInputElement>(null);
+  const autoSaveIntervalRef = useRef<number | null>(null);
+  const latestSnapshotRef = useRef<ProjectEditorSnapshot | null>(null);
+  const latestOpenRef = useRef(open);
+  const loadedProjectIdRef = useRef<string | null>(null);
+
+  const snapshot = useMemo<ProjectEditorSnapshot>(() => ({
+    content,
+    notes,
+    heroUrl,
+    heroCredit,
+    heroCaption,
+    tagline,
+    auditItems,
+    previousContent,
+  }), [content, notes, heroUrl, heroCredit, heroCaption, tagline, auditItems, previousContent]);
+  const currentSignature = useMemo(() => projectSnapshotSignature(snapshot), [snapshot]);
+  const hasUnsavedChanges = Boolean(lastPersistedSignature) && currentSignature !== lastPersistedSignature;
+  const isBusy = auditing || applying || uploadingHero || saving;
+
+  useEffect(() => {
+    latestSnapshotRef.current = snapshot;
+    latestOpenRef.current = open;
+  }, [snapshot, open]);
+
+  useEffect(() => {
+    if (!open || !project) return;
+    if (loadedProjectIdRef.current === project.id) return;
+    loadedProjectIdRef.current = project.id;
+    const baseSnapshot: ProjectEditorSnapshot = {
+      content: project.itinerary_content || "",
+      notes: project.internal_notes || "",
+      heroUrl: project.hero_image_url || null,
+      heroCredit: project.hero_image_credit || "",
+      heroCaption: project.hero_image_caption || "",
+      tagline: project.cover_tagline || "",
+      auditItems: [],
+      previousContent: null,
+    };
+    const loadDraft = async () => {
+      let next = baseSnapshot;
+      let restoredAt: string | null = null;
+      try {
+        const { data, error } = await supabase
+          .from("project_itinerary_editor_drafts" as any)
+          .select("draft, updated_at")
+          .eq("project_id", project.id)
+          .maybeSingle() as any;
+        if (!error && data?.draft) {
+          next = { ...baseSnapshot, ...(data.draft as Partial<ProjectEditorSnapshot>) };
+          restoredAt = data.updated_at;
+        }
+      } catch {
+        // Recovery should never block opening the editor.
+      }
+      setContent(next.content);
+      setNotes(next.notes);
+      setHeroUrl(next.heroUrl);
+      setHeroCredit(next.heroCredit);
+      setHeroCaption(next.heroCaption);
+      setTagline(next.tagline);
+      setAuditItems(next.auditItems || []);
+      setPreviousContent(next.previousContent || null);
+      setLastPersistedSignature(projectSnapshotSignature(next));
+      setLastAutoSavedAt(restoredAt);
+      setAutoSaveStatus(restoredAt ? "saved" : "idle");
+      setAutoSaveError("");
+      setRestoredNotice(restoredAt ? `Draft restored from ${new Date(restoredAt).toLocaleString()}` : "");
+      setCloseConfirmOpen(false);
+    };
+    loadDraft();
+  }, [open, project?.id]);
+
+  useEffect(() => {
+    if (!open) loadedProjectIdRef.current = null;
+  }, [open]);
+
+  const persistProjectDraft = useCallback(async (silent = true) => {
+    const current = latestSnapshotRef.current;
+    if (!latestOpenRef.current || !project?.id || !current || !hasProjectSnapshotContent(current) || isBusy) return;
+    setAutoSaveStatus("saving");
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from("project_itinerary_editor_drafts" as any)
+        .upsert({
+          project_id: project.id,
+          draft: current as any,
+          updated_by: user?.id || null,
+        } as any, { onConflict: "project_id" } as any);
+      if (error) throw error;
+      const now = new Date().toISOString();
+      setLastPersistedSignature(projectSnapshotSignature(current));
+      setLastAutoSavedAt(now);
+      setAutoSaveStatus("saved");
+      setAutoSaveError("");
+      if (!silent) toast.success("Draft auto-saved");
+    } catch (e: any) {
+      setAutoSaveStatus("error");
+      setAutoSaveError(e?.message || "Auto-save failed");
+      if (!silent) toast.error(e?.message || "Auto-save failed");
+    }
+  }, [isBusy, project?.id]);
+
+  const requestClose = () => {
+    if (isBusy) {
+      toast.info("Please wait for the current action to finish before closing the editor.");
+      return;
+    }
+    if (hasUnsavedChanges) {
+      setCloseConfirmOpen(true);
+      return;
+    }
+    onOpenChange(false);
+  };
+
+  const closeAnyway = () => {
+    setCloseConfirmOpen(false);
+    onOpenChange(false);
+  };
 
   useEffect(() => {
     if (!open) return;
-    setContent(project?.itinerary_content || "");
-    setNotes(project?.internal_notes || "");
-    setHeroUrl(project?.hero_image_url || null);
-    setHeroCredit(project?.hero_image_credit || "");
-    setHeroCaption(project?.hero_image_caption || "");
-    setTagline(project?.cover_tagline || "");
-    setAuditItems([]);
-    setPreviousContent(null);
-  }, [open, project]);
+    autoSaveIntervalRef.current = window.setInterval(() => {
+      persistProjectDraft(true);
+    }, PROJECT_EDITOR_AUTOSAVE_MS);
+    return () => {
+      if (autoSaveIntervalRef.current) window.clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    };
+  }, [open, persistProjectDraft]);
 
   const runAudit = async () => {
     if (!content.trim()) {
@@ -69,19 +229,30 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       return;
     }
     setAuditing(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
-      const { data, error } = await supabase.functions.invoke("audit-itinerary-claude", {
-        body: { content, mode: "audit" },
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || SUPABASE_ANON_KEY}`,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({ content, mode: "audit" }),
       });
-      if (error) throw error;
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `Audit failed (${res.status})`);
       if (data?.error) throw new Error(data.error);
       const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
       if (!parsed.length) throw new Error("No audit suggestions returned");
       setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
       toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
-      toast.error(e?.message || "Audit failed");
+      toast.error(e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed");
     } finally {
+      window.clearTimeout(timeout);
       setAuditing(false);
     }
   };
@@ -100,6 +271,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     setApplying(true);
     const original = content;
     const auditText = itemsToPromptText(selected);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(
@@ -111,6 +284,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             apikey: SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
           },
+          signal: controller.signal,
           body: JSON.stringify({
             content: original,
             mode: "rewrite",
@@ -125,8 +299,6 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         const errText = await res.text().catch(() => "");
         throw new Error(`Rewrite failed: ${errText || res.status}`);
       }
-      setPreviousContent(original);
-      setContent("");
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let acc = "";
@@ -134,13 +306,18 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         const { done, value } = await reader.read();
         if (done) break;
         acc += decoder.decode(value, { stream: true });
-        setContent(acc);
       }
+      acc += decoder.decode();
+      if (acc.includes("[Error from upstream")) throw new Error(acc.trim());
+      if (!acc.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
+      setPreviousContent(original);
+      setContent(acc.trim());
       toast.success("Improvements applied — review and save.");
     } catch (e: any) {
-      toast.error(e?.message || "Failed to apply improvements");
+      toast.error(e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements");
       setContent(original);
     } finally {
+      window.clearTimeout(timeout);
       setApplying(false);
     }
   };
@@ -169,7 +346,13 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         } as any)
         .eq("id", project.id);
       if (error) throw error;
+      await supabase
+        .from("project_itinerary_editor_drafts" as any)
+        .upsert({ project_id: project.id, draft: snapshot as any } as any, { onConflict: "project_id" } as any);
       toast.success("Itinerary saved");
+      setLastPersistedSignature(projectSnapshotSignature(snapshot));
+      setLastAutoSavedAt(new Date().toISOString());
+      setAutoSaveStatus("saved");
       onSaved?.();
     } catch (e: any) {
       toast.error(e?.message || "Failed to save");
@@ -215,12 +398,24 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (nextOpen) onOpenChange(true);
+          else requestClose();
+        }}
+      >
         <DialogContent
           className="fixed left-1/2 top-2 bottom-2 max-w-6xl w-[96vw] h-auto max-h-none translate-y-0 !flex flex-col overflow-hidden p-5 gap-3"
-          onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
-          onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
-          onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
+          onPointerDownOutside={(e) => {
+            e.preventDefault();
+            if (hasUnsavedChanges) setCloseConfirmOpen(true);
+          }}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            requestClose();
+          }}
         >
           <DialogHeader className="shrink-0">
             <DialogTitle className="font-serif text-xl">
@@ -229,6 +424,16 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             <DialogDescription>
               {[project?.trip_duration, project?.start_date, project?.end_date].filter(Boolean).join(" · ") || "Edit the itinerary, cover, and internal notes."}
             </DialogDescription>
+            <div className="mt-2 space-y-1 text-[0.75rem]">
+              {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+              <div className="text-voyage-muted">
+                {autoSaveStatus === "saving" && "Auto-saving draft…"}
+                {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
+                {autoSaveStatus === "error" && `Auto-save failed: ${autoSaveError}`}
+                {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
+                {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
@@ -381,7 +586,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
             <div className="flex gap-2">
               <button
-                onClick={() => onOpenChange(false)}
+                onClick={requestClose}
                 className="px-4 py-2 rounded-sm border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
               >
                 Close
@@ -413,6 +618,20 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={closeConfirmOpen} onOpenChange={setCloseConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>You have unsaved changes.</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to close?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+            <AlertDialogAction onClick={closeAnyway}>Close Anyway</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
