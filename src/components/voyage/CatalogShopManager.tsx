@@ -303,24 +303,26 @@ const CatalogShopManager = () => {
   };
 
   const persistCatalogDraft = useCallback(async (silent = true) => {
-    if (!editorOpen || isAuditBusy || !hasCatalogDraftContent(state, sectionPrompt)) return;
+    const draftState = latestStateRef.current;
+    const draftSectionPrompt = latestSectionPromptRef.current;
+    if (!latestEditorOpenRef.current || isAuditBusy || !hasCatalogDraftContent(draftState, draftSectionPrompt)) return;
     setAutoSaveStatus("saving");
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const slugBase = slugify(state.title || state.destination || "untitled-catalogue-itinerary");
-      let itineraryId = state.id;
+      const slugBase = slugify(draftState.title || draftState.destination || "untitled-catalogue-itinerary");
+      let itineraryId = draftState.id;
       if (!itineraryId) {
-        const title = state.title.trim() || "Untitled catalogue itinerary";
+        const title = draftState.title.trim() || "Untitled catalogue itinerary";
         const { data, error } = await supabase
           .from("catalog_itineraries")
           .insert({
             title_en: title,
             slug: `${slugBase}-${Date.now().toString(36)}`,
-            summary_en: state.summary || "",
+            summary_en: draftState.summary || "",
             description_en: "",
             what_you_get_en: "",
             is_published: false,
-            price_eur: Number(state.priceEur) || 0,
+            price_eur: Number(draftState.priceEur) || 0,
           })
           .select("id")
           .single();
@@ -328,13 +330,13 @@ const CatalogShopManager = () => {
         itineraryId = data.id;
         setState((s) => ({ ...s, id: data.id, title }));
       }
-      const signature = catalogDraftSignature({ ...state, id: itineraryId }, sectionPrompt);
+      const signature = catalogDraftSignature({ ...draftState, id: itineraryId }, draftSectionPrompt);
       const { error } = await supabase
         .from("catalog_itinerary_drafts")
         .upsert({
           itinerary_id: itineraryId,
-          language: state.language,
-          draft: catalogDraftPayload({ ...state, id: itineraryId }, sectionPrompt) as any,
+          language: draftState.language,
+          draft: catalogDraftPayload({ ...draftState, id: itineraryId }, draftSectionPrompt) as any,
           updated_by: user?.id || null,
         } as any, { onConflict: "itinerary_id" });
       if (error) throw error;
@@ -349,7 +351,7 @@ const CatalogShopManager = () => {
       setAutoSaveError(e?.message || "Auto-save failed");
       if (!silent) toast.error(e?.message || "Auto-save failed");
     }
-  }, [editorOpen, isAuditBusy, sectionPrompt, state]);
+  }, [isAuditBusy]);
 
   const requestEditorClose = () => {
     if (isAuditBusy || saving || generating || regenerating || uploading) {
