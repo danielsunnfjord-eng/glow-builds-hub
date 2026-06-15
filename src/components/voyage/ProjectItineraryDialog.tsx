@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ItineraryEditor from "./ItineraryEditor";
+import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
