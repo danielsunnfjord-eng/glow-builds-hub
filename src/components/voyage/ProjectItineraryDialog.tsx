@@ -402,7 +402,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         open={open}
         onOpenChange={(nextOpen) => {
           if (nextOpen) { onOpenChange(true); return; }
-          if (isAuditBusy) {
+          if (isBusy) {
             toast.info("Please wait for the current action to finish before closing the editor.");
             return;
           }
@@ -413,13 +413,13 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           className="fixed left-1/2 top-2 bottom-2 max-w-6xl w-[96vw] h-auto max-h-none translate-y-0 !flex flex-col overflow-hidden p-5 gap-3"
           onPointerDownOutside={(e) => {
             e.preventDefault();
-            if (isAuditBusy) return;
+            if (isBusy) return;
             if (hasUnsavedChanges) setCloseConfirmOpen(true);
           }}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => {
             e.preventDefault();
-            if (isAuditBusy) return;
+            if (isBusy) return;
             requestClose();
           }}
         >
