@@ -1100,19 +1100,34 @@ const CatalogShopManager = () => {
       <Dialog
         open={editorOpen}
         onOpenChange={(open) => {
-          if (open) setEditorOpen(true);
-          else requestEditorClose();
+          if (open) {
+            setEditorOpen(true);
+            return;
+          }
+          // Block ALL programmatic / outside close attempts during an audit run
+          // or other long-running operation. The editor can only be closed via
+          // the explicit Cancel / Close-Anyway buttons.
+          if (isAuditBusy || saving || generating || regenerating || uploading) {
+            toast.info("Please wait for the current action to finish before closing the editor.");
+            return;
+          }
+          requestEditorClose();
         }}
       >
         <DialogContent
           className="max-w-5xl max-h-[92vh] overflow-y-auto"
           onPointerDownOutside={(e) => {
             e.preventDefault();
+            if (isAuditBusy) return;
             if (hasUnsavedChanges) setCloseConfirmOpen(true);
           }}
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => {
             e.preventDefault();
+            if (isAuditBusy) {
+              toast.info("Please wait for the audit action to finish before closing the editor.");
+              return;
+            }
             requestEditorClose();
           }}
         >
