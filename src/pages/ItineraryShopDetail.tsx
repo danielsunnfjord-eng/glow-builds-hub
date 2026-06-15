@@ -26,6 +26,50 @@ import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 
+// --- Day-by-day markdown parser ---------------------------------------------
+// Splits a day-by-day catalogue guide markdown into:
+//   { intro, overview (markdown of Trip Overview section), days [{ heading, body }], practical }
+// Headings detected: `## Day N — Theme`, `## Trip Overview`, `## Practical Tips`
+// (and their PT/NO variants: Dia, Dag, Visão Geral / Reiseoversikt, Dicas / Tips).
+const OVERVIEW_LABELS = /^(trip\s*overview|vis[ãa]o\s*geral.*|reiseoversikt.*|oversikt)$/i;
+const PRACTICAL_LABELS = /^(practical\s*tips|dicas\s*pr[áa]ticas|praktiske\s*tips|praktisk)$/i;
+const DAY_HEADING = /^(?:day|dia|dag)\s*(\d+)\s*[—\-:]?\s*(.*)$/i;
+
+function parseDayByDay(md: string) {
+  const result = {
+    intro: "" as string,
+    overview: "" as string,
+    days: [] as Array<{ day: number; title: string; body: string }>,
+    practical: "" as string,
+  };
+  if (!md) return result;
+  // Split on ## headings, keep the heading with each block
+  const parts = md.split(/^##\s+/m);
+  result.intro = (parts.shift() || "").trim();
+  for (const raw of parts) {
+    const nlIdx = raw.indexOf("\n");
+    const heading = (nlIdx === -1 ? raw : raw.slice(0, nlIdx)).trim();
+    const body = (nlIdx === -1 ? "" : raw.slice(nlIdx + 1)).trim();
+    if (OVERVIEW_LABELS.test(heading)) {
+      result.overview = body;
+      continue;
+    }
+    if (PRACTICAL_LABELS.test(heading)) {
+      result.practical = body;
+      continue;
+    }
+    const dm = heading.match(DAY_HEADING);
+    if (dm) {
+      result.days.push({
+        day: parseInt(dm[1], 10),
+        title: (dm[2] || "").trim(),
+        body,
+      });
+    }
+  }
+  return result;
+}
+
 interface CatalogItem {
   id: string;
   slug: string;
