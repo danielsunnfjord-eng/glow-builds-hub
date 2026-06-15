@@ -24,6 +24,7 @@ import {
   Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
+import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import {
