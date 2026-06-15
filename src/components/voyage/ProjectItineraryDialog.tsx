@@ -591,6 +591,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     canKeepOriginal={previousContent !== null}
                     onKeepOriginal={keepOriginal}
                     compact
+                    statuses={itemStatuses}
                   />
                   {applyStatus.status !== "idle" && (
                     <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${applyStatus.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
@@ -599,6 +600,45 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                         {applyStatus.message}
                       </div>
                       {applyStatus.detail && <div className="mt-1 opacity-80">{applyStatus.detail}</div>}
+                    </div>
+                  )}
+                  {applySummary && (
+                    <div className={`mt-2 rounded-md border px-3 py-2 text-[0.78rem] ${applySummary.failedItems.length ? "border-destructive/40 bg-destructive/5" : "border-sage/40 bg-sage/10"}`}>
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="font-medium text-ink inline-flex items-center gap-1.5">
+                          {applySummary.failedItems.length
+                            ? <AlertCircle className="w-4 h-4 text-destructive" />
+                            : <CheckCircle2 className="w-4 h-4 text-sage" />}
+                          {applySummary.appliedIds.length} of {applySummary.totalItems} improvements applied{applySummary.failedItems.length ? " — some failed" : " successfully"}
+                        </div>
+                        <div className="flex gap-2 flex-wrap">
+                          {applySummary.failedItems.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={retryFailedItems}
+                              disabled={applying}
+                              className="px-3 py-1.5 rounded-sm border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              {applying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCcw className="w-3 h-3" />}
+                              Retry {applySummary.failedItems.length} failed
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={viewUpdatedItinerary}
+                            className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                          >
+                            <Eye className="w-3 h-3" /> View Updated Itinerary
+                          </button>
+                        </div>
+                      </div>
+                      {applySummary.failedItems.length > 0 && (
+                        <ul className="mt-2 list-disc pl-5 text-[0.72rem] text-ink-2 space-y-0.5">
+                          {applySummary.failedItems.map((f) => (
+                            <li key={f.id}><span className="font-medium">{f.title}</span></li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   )}
                 </div>
