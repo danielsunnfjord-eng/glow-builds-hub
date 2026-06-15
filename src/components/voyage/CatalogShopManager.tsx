@@ -50,6 +50,8 @@ interface CatalogRow {
   id: string;
   slug: string;
   title_en: string;
+  title_pt: string | null;
+  title_no: string | null;
   destination: string | null;
   duration: string | null;
   price_eur: number;
