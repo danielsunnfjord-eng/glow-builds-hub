@@ -111,15 +111,54 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const isBusy = auditing || applying || uploadingHero || saving;
 
   useEffect(() => {
-    if (!open) return;
-    setContent(project?.itinerary_content || "");
-    setNotes(project?.internal_notes || "");
-    setHeroUrl(project?.hero_image_url || null);
-    setHeroCredit(project?.hero_image_credit || "");
-    setHeroCaption(project?.hero_image_caption || "");
-    setTagline(project?.cover_tagline || "");
-    setAuditItems([]);
-    setPreviousContent(null);
+    latestSnapshotRef.current = snapshot;
+    latestOpenRef.current = open;
+  }, [snapshot, open]);
+
+  useEffect(() => {
+    if (!open || !project) return;
+    const baseSnapshot: ProjectEditorSnapshot = {
+      content: project.itinerary_content || "",
+      notes: project.internal_notes || "",
+      heroUrl: project.hero_image_url || null,
+      heroCredit: project.hero_image_credit || "",
+      heroCaption: project.hero_image_caption || "",
+      tagline: project.cover_tagline || "",
+      auditItems: [],
+      previousContent: null,
+    };
+    const loadDraft = async () => {
+      let next = baseSnapshot;
+      let restoredAt: string | null = null;
+      try {
+        const { data, error } = await supabase
+          .from("project_itinerary_editor_drafts" as any)
+          .select("draft, updated_at")
+          .eq("project_id", project.id)
+          .maybeSingle();
+        if (!error && data?.draft) {
+          next = { ...baseSnapshot, ...(data.draft as Partial<ProjectEditorSnapshot>) };
+          restoredAt = data.updated_at;
+        }
+      } catch {
+        // Recovery should never block opening the editor.
+      }
+      setContent(next.content);
+      setNotes(next.notes);
+      setHeroUrl(next.heroUrl);
+      setHeroCredit(next.heroCredit);
+      setHeroCaption(next.heroCaption);
+      setTagline(next.tagline);
+      setAuditItems(next.auditItems || []);
+      setPreviousContent(next.previousContent || null);
+      setLastPersistedSignature(projectSnapshotSignature(next));
+      setLastAutoSavedAt(restoredAt);
+      setAutoSaveStatus(restoredAt ? "saved" : "idle");
+      setAutoSaveError("");
+      setRestoredNotice(restoredAt ? `Draft restored from ${new Date(restoredAt).toLocaleString()}` : "");
+      setCloseConfirmOpen(false);
+    };
+    loadDraft();
   }, [open, project]);
 
   const runAudit = async () => {
