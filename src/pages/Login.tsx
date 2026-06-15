@@ -137,7 +137,7 @@ const Login = () => {
         {view === "login" && (
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")} className={inputClass} />
-            <PasswordField value={password} onChange={setPassword} placeholder={t("login.password")} />
+            {renderPasswordField(password, setPassword, t("login.password"))}
             <button type="submit" disabled={loading} className={btnClass}>
               {loading ? t("login.signingIn") : t("login.signInBtn")}
             </button>
@@ -151,7 +151,7 @@ const Login = () => {
         {view === "signup" && (
           <form onSubmit={handleSignup} className="flex flex-col gap-4">
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")} className={inputClass} />
-            <PasswordField value={password} onChange={setPassword} placeholder={t("login.passwordMin")} minLength={6} />
+            {renderPasswordField(password, setPassword, t("login.passwordMin"), 6)}
             <button type="submit" disabled={loading} className={btnClass}>
               {loading ? t("login.creating") : t("login.createBtn")}
             </button>
