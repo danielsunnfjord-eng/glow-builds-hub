@@ -16,9 +16,10 @@ import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import { parseAuditItems, type SelectableAuditItem } from "@/lib/auditParser";
 import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
+import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { AlertCircle, Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, Loader2, FileText, ImagePlus, RefreshCcw, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
 
 const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
