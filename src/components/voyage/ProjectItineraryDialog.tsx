@@ -576,7 +576,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
             <div className="flex gap-2">
               <button
-                onClick={() => onOpenChange(false)}
+                onClick={requestClose}
                 className="px-4 py-2 rounded-sm border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
               >
                 Close
@@ -608,6 +608,20 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={closeConfirmOpen} onOpenChange={setCloseConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>You have unsaved changes.</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to close?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+            <AlertDialogAction onClick={closeAnyway}>Close Anyway</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
