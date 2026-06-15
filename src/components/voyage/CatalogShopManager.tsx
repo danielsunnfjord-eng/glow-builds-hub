@@ -30,9 +30,9 @@ import AuditChecklist from "./AuditChecklist";
 import {
   parseAuditItems,
   serializeAuditItems,
-  itemsToPromptText,
   type SelectableAuditItem,
 } from "@/lib/auditParser";
+import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
 type Lang = "en" | "pt" | "no";
@@ -139,6 +139,13 @@ type AuditActionState = {
   detail?: string;
 };
 
+type FailedAuditBatch = {
+  batchNumber: number;
+  totalBatches: number;
+  items: SelectableAuditItem[];
+  message: string;
+};
+
 const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
 const blankEditor: EditorState = {
@@ -209,6 +216,7 @@ const CatalogShopManager = () => {
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
+  const [failedAuditBatch, setFailedAuditBatch] = useState<FailedAuditBatch | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const [lastPersistedSignature, setLastPersistedSignature] = useState(() => catalogDraftSignature(blankEditor, ""));
   const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
@@ -389,6 +397,7 @@ const CatalogShopManager = () => {
     setState(blankEditor);
     setSectionPrompt("");
     setAuditAction({ status: "idle", message: "" });
+    setFailedAuditBatch(null);
     setLastPersistedSignature(catalogDraftSignature(blankEditor, ""));
     setLastAutoSavedAt(null);
     setAutoSaveStatus("idle");
@@ -454,6 +463,7 @@ const CatalogShopManager = () => {
     setState(nextState);
     setSectionPrompt(nextSectionPrompt);
     setAuditAction({ status: "idle", message: "" });
+    setFailedAuditBatch(null);
     setLastPersistedSignature(catalogDraftSignature(nextState, nextSectionPrompt));
     setLastAutoSavedAt(restoredAt);
     setAutoSaveStatus(restoredAt ? "saved" : "idle");
@@ -697,9 +707,70 @@ const CatalogShopManager = () => {
       return;
     }
     setApplyingAudit(true);
+    setFailedAuditBatch(null);
     const original = state.content;
-    const auditText = itemsToPromptText(selected);
-    setAuditAction({ status: "running", message: "Applying selected improvements… Your current draft stays visible until the rewrite is complete." });
+    const batches = chunkAuditItems(selected, 2);
+    let workingContent = original;
+    try {
+      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`;
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        setAuditAction({
+          status: "running",
+          message: `Applying batch ${i + 1} of ${batches.length}…`,
+          detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved in the editor.` : "Your current draft stays visible while this batch is processed.",
+        });
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: await getFunctionHeaders(),
+            signal: controller.signal,
+            body: JSON.stringify({
+              mode: "rewrite",
+              single_batch: true,
+              structure: "catalogue-thematic",
+              content: workingContent,
+              audit: buildAuditBatchPrompt(batch),
+              trip_duration: state.duration,
+            }),
+          });
+          if (!res.ok || !res.body) throw new Error(await readFunctionError(res));
+          const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
+          workingContent = rewritten;
+          const batchIds = new Set(batch.map((item) => item.id));
+          setState((s) => ({
+            ...s,
+            previousContent: original,
+            content: rewritten,
+            auditItems: s.auditItems.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)),
+          }));
+        } catch (e: any) {
+          const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
+          setFailedAuditBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
+          setAuditAction({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing the applied changes.` });
+          toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
+          return;
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      }
+      setAuditAction({ status: "idle", message: "" });
+      toast.success("Improvements applied. Review the rewritten itinerary.");
+    } catch (e: any) {
+      const message = e?.message || "Failed to apply improvements. Your draft was preserved.";
+      setAuditAction({ status: "error", message, detail: "The editor content was not cleared or closed." });
+      toast.error(message);
+    } finally {
+      setApplyingAudit(false);
+    }
+  };
+
+  const retryFailedAuditBatch = async () => {
+    if (!failedAuditBatch || !state.content.trim()) return;
+    setApplyingAudit(true);
+    setAuditAction({ status: "running", message: `Applying batch ${failedAuditBatch.batchNumber} of ${failedAuditBatch.totalBatches}…`, detail: "Retrying only the failed batch." });
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
     try {
@@ -710,34 +781,30 @@ const CatalogShopManager = () => {
         signal: controller.signal,
         body: JSON.stringify({
           mode: "rewrite",
+          single_batch: true,
           structure: "catalogue-thematic",
-          content: original,
-          audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
+          content: state.content,
+          audit: buildAuditBatchPrompt(failedAuditBatch.items),
           trip_duration: state.duration,
         }),
       });
-      if (!res.ok || !res.body) {
-        throw new Error(await readFunctionError(res));
-      }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let rewritten = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        rewritten += decoder.decode(value, { stream: true });
-      }
-      rewritten += decoder.decode();
-      if (rewritten.includes("[Error from upstream")) throw new Error(rewritten.trim());
-      if (!rewritten.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
-      setState((s) => ({ ...s, previousContent: original, content: rewritten.trim() }));
+      if (!res.ok || !res.body) throw new Error(await readFunctionError(res));
+      const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
+      const batchIds = new Set(failedAuditBatch.items.map((item) => item.id));
+      setState((s) => ({
+        ...s,
+        previousContent: s.previousContent ?? state.content,
+        content: rewritten,
+        auditItems: s.auditItems.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)),
+      }));
+      setFailedAuditBatch(null);
       setAuditAction({ status: "idle", message: "" });
-      toast.success("Improvements applied. Review the rewritten itinerary.");
+      toast.success("Failed batch applied. Continue with any remaining selected improvements.");
     } catch (e: any) {
-      const message = e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements. Your original draft was preserved.";
-      setAuditAction({ status: "error", message, detail: "No editor content was replaced." });
+      const message = e?.name === "AbortError" ? `Batch ${failedAuditBatch.batchNumber} timed out again.` : e?.message || `Batch ${failedAuditBatch.batchNumber} failed again.`;
+      setFailedAuditBatch((current) => (current ? { ...current, message } : current));
+      setAuditAction({ status: "error", message: `Batch ${failedAuditBatch.batchNumber} of ${failedAuditBatch.totalBatches} failed.`, detail: `${message} Your current draft is still preserved.` });
       toast.error(message);
-      setState((s) => ({ ...s, content: original, previousContent: null }));
     } finally {
       window.clearTimeout(timeout);
       setApplyingAudit(false);
@@ -1361,13 +1428,19 @@ const CatalogShopManager = () => {
                     !state.auditItems.some((i) => i.selected) ||
                     applyingAudit ||
                     auditing ||
-                    state.previousContent !== null
+                    failedAuditBatch !== null
                   }
                   className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
                 >
                   {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
                   Apply Selected ({state.auditItems.filter((i) => i.selected).length})
                 </Button>
+                {failedAuditBatch && (
+                  <Button variant="outline" size="sm" onClick={retryFailedAuditBatch} disabled={applyingAudit || auditing}>
+                    {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
+                    Retry batch {failedAuditBatch.batchNumber}
+                  </Button>
+                )}
                 {state.previousContent !== null && (
                   <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
                     <Undo2 className="w-4 h-4 mr-2" /> Keep Original

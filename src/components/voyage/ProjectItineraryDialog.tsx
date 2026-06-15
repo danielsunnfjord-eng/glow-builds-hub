@@ -14,10 +14,11 @@ import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
-import { parseAuditItems, itemsToPromptText, type SelectableAuditItem } from "@/lib/auditParser";
+import { parseAuditItems, type SelectableAuditItem } from "@/lib/auditParser";
+import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
+import { AlertCircle, Loader2, FileText, ImagePlus, X, ShieldCheck, Undo2, Sparkles } from "lucide-react";
 
 const SUPABASE_URL = "https://jgpratgrdorvkruonzgr.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncHJhdGdyZG9ydmtydW9uemdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTYzMzQsImV4cCI6MjA5MDQ3MjMzNH0.08GsMrM1nSbzIpkPxQ-19HXVyNTiQGvV_TKkowEf4cs";
@@ -59,6 +60,19 @@ type ProjectEditorSnapshot = {
   previousContent: string | null;
 };
 
+type ApplyStatus = {
+  status: "idle" | "running" | "error";
+  message: string;
+  detail?: string;
+};
+
+type FailedApplyBatch = {
+  batchNumber: number;
+  totalBatches: number;
+  items: SelectableAuditItem[];
+  message: string;
+};
+
 const projectSnapshotSignature = (snapshot: ProjectEditorSnapshot) => JSON.stringify(snapshot);
 
 const hasProjectSnapshotContent = (snapshot: ProjectEditorSnapshot) =>
@@ -86,6 +100,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
   const [applying, setApplying] = useState(false);
   const [auditItems, setAuditItems] = useState<SelectableAuditItem[]>([]);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const [applyStatus, setApplyStatus] = useState<ApplyStatus>({ status: "idle", message: "" });
+  const [failedApplyBatch, setFailedApplyBatch] = useState<FailedApplyBatch | null>(null);
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false);
   const [lastPersistedSignature, setLastPersistedSignature] = useState("");
   const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null);
@@ -155,6 +171,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       setTagline(next.tagline);
       setAuditItems(next.auditItems || []);
       setPreviousContent(next.previousContent || null);
+      setApplyStatus({ status: "idle", message: "" });
+      setFailedApplyBatch(null);
       setLastPersistedSignature(projectSnapshotSignature(next));
       setLastAutoSavedAt(restoredAt);
       setAutoSaveStatus(restoredAt ? "saved" : "idle");
@@ -249,6 +267,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       const parsed = parseAuditItems(data?.items?.length ? data.items : data?.audit);
       if (!parsed.length) throw new Error("No audit suggestions returned");
       setAuditItems(parsed.map((i) => ({ ...i, selected: true })));
+      setApplyStatus({ status: "idle", message: "" });
+      setFailedApplyBatch(null);
       toast.success("Audit complete — pick the improvements to apply.");
     } catch (e: any) {
       toast.error(e?.name === "AbortError" ? "Audit timed out. Your draft was preserved — please retry." : e?.message || "Audit failed");
@@ -271,52 +291,108 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     }
     setApplying(true);
     const original = content;
-    const auditText = itemsToPromptText(selected);
+    setFailedApplyBatch(null);
+    const batches = chunkAuditItems(selected, 2);
+    let workingContent = original;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        setApplyStatus({
+          status: "running",
+          message: `Applying batch ${i + 1} of ${batches.length}…`,
+          detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved.` : "The editor stays open while this batch is processed.",
+        });
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
+        try {
+          const res = await fetch(
+            `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                apikey: SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                content: workingContent,
+                mode: "rewrite",
+                single_batch: true,
+                audit: buildAuditBatchPrompt(batch),
+                start_date: project?.start_date,
+                end_date: project?.end_date,
+                trip_duration: project?.trip_duration,
+              }),
+            },
+          );
+          const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
+          workingContent = rewritten;
+          const batchIds = new Set(batch.map((item) => item.id));
+          setPreviousContent(original);
+          setContent(rewritten);
+          setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
+        } catch (e: any) {
+          const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
+          setFailedApplyBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
+          setApplyStatus({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing applied changes.` });
+          toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
+          return;
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      }
+      setApplyStatus({ status: "idle", message: "" });
+      toast.success("Improvements applied — review and save.");
+    } catch (e: any) {
+      const message = e?.message || "Failed to apply improvements. Your draft was preserved.";
+      setApplyStatus({ status: "error", message, detail: "The editor content was not cleared or closed." });
+      toast.error(message);
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  const retryFailedBatch = async () => {
+    if (!failedApplyBatch || !content.trim()) return;
+    setApplying(true);
+    setApplyStatus({ status: "running", message: `Applying batch ${failedApplyBatch.batchNumber} of ${failedApplyBatch.totalBatches}…`, detail: "Retrying only the failed batch." });
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            content: original,
-            mode: "rewrite",
-            audit: `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${auditText}`,
-            start_date: project?.start_date,
-            end_date: project?.end_date,
-            trip_duration: project?.trip_duration,
-          }),
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
         },
-      );
-      if (!res.ok || !res.body) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(`Rewrite failed: ${errText || res.status}`);
-      }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let acc = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += decoder.decode(value, { stream: true });
-      }
-      acc += decoder.decode();
-      if (acc.includes("[Error from upstream")) throw new Error(acc.trim());
-      if (!acc.trim()) throw new Error("Empty rewrite returned. Your original draft was preserved.");
-      setPreviousContent(original);
-      setContent(acc.trim());
-      toast.success("Improvements applied — review and save.");
+        signal: controller.signal,
+        body: JSON.stringify({
+          content,
+          mode: "rewrite",
+          single_batch: true,
+          audit: buildAuditBatchPrompt(failedApplyBatch.items),
+          start_date: project?.start_date,
+          end_date: project?.end_date,
+          trip_duration: project?.trip_duration,
+        }),
+      });
+      const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
+      const batchIds = new Set(failedApplyBatch.items.map((item) => item.id));
+      setPreviousContent((prev) => prev ?? content);
+      setContent(rewritten);
+      setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
+      setFailedApplyBatch(null);
+      setApplyStatus({ status: "idle", message: "" });
+      toast.success("Failed batch applied. Continue with any remaining selected improvements.");
     } catch (e: any) {
-      toast.error(e?.name === "AbortError" ? "Applying improvements timed out. Your original draft was preserved — please retry." : e?.message || "Failed to apply improvements");
-      setContent(original);
+      const message = e?.name === "AbortError" ? `Batch ${failedApplyBatch.batchNumber} timed out again.` : e?.message || `Batch ${failedApplyBatch.batchNumber} failed again.`;
+      setFailedApplyBatch((current) => (current ? { ...current, message } : current));
+      setApplyStatus({ status: "error", message: `Batch ${failedApplyBatch.batchNumber} of ${failedApplyBatch.totalBatches} failed.`, detail: `${message} Your current draft is still preserved.` });
+      toast.error(message);
     } finally {
       window.clearTimeout(timeout);
       setApplying(false);
@@ -457,6 +533,15 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     onKeepOriginal={keepOriginal}
                     compact
                   />
+                  {applyStatus.status !== "idle" && (
+                    <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${applyStatus.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                      <div className="flex items-center gap-2 font-medium">
+                        {applyStatus.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                        {applyStatus.message}
+                      </div>
+                      {applyStatus.detail && <div className="mt-1 opacity-80">{applyStatus.detail}</div>}
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex-1 min-h-0 overflow-y-auto border border-parchment-3 rounded-md bg-voyage-white">
@@ -572,14 +657,24 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
               </button>
-              {auditItems.length > 0 && previousContent === null && (
+              {auditItems.length > 0 && (
                 <button
                   onClick={applyImprovements}
-                  disabled={applying || !auditItems.some((i) => i.selected)}
+                  disabled={applying || failedApplyBatch !== null || !auditItems.some((i) => i.selected)}
                   className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   {applying ? "Rewriting…" : `Apply Selected (${auditItems.filter((i) => i.selected).length})`}
+                </button>
+              )}
+              {failedApplyBatch && (
+                <button
+                  onClick={retryFailedBatch}
+                  disabled={applying}
+                  className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                >
+                  {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  Retry batch {failedApplyBatch.batchNumber}
                 </button>
               )}
               {previousContent !== null && (
