@@ -834,8 +834,6 @@ const CatalogShopManager = () => {
       const result = await runApplyBatches(failedAuditBatch.items, state.content, { resetStatuses: false });
       if (!result.stoppedEarly) {
         setFailedAuditBatch(null);
-    setItemStatuses({});
-    setApplySummary(null);
         setAuditAction({ status: "idle", message: "" });
         setApplySummary((prev) => prev ? {
           ...prev,
