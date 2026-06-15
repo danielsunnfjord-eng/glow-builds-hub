@@ -340,6 +340,9 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
         .eq("id", project.id);
       if (error) throw error;
       toast.success("Itinerary saved");
+      setLastPersistedSignature(projectSnapshotSignature(snapshot));
+      setLastAutoSavedAt(new Date().toISOString());
+      setAutoSaveStatus("saved");
       onSaved?.();
     } catch (e: any) {
       toast.error(e?.message || "Failed to save");
@@ -385,12 +388,24 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (nextOpen) onOpenChange(true);
+          else requestClose();
+        }}
+      >
         <DialogContent
           className="fixed left-1/2 top-2 bottom-2 max-w-6xl w-[96vw] h-auto max-h-none translate-y-0 !flex flex-col overflow-hidden p-5 gap-3"
-          onPointerDownOutside={(e) => { if (showPdf) e.preventDefault(); }}
-          onInteractOutside={(e) => { if (showPdf) e.preventDefault(); }}
-          onEscapeKeyDown={(e) => { if (showPdf) e.preventDefault(); }}
+          onPointerDownOutside={(e) => {
+            e.preventDefault();
+            if (hasUnsavedChanges) setCloseConfirmOpen(true);
+          }}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => {
+            e.preventDefault();
+            requestClose();
+          }}
         >
           <DialogHeader className="shrink-0">
             <DialogTitle className="font-serif text-xl">
@@ -399,6 +414,16 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             <DialogDescription>
               {[project?.trip_duration, project?.start_date, project?.end_date].filter(Boolean).join(" · ") || "Edit the itinerary, cover, and internal notes."}
             </DialogDescription>
+            <div className="mt-2 space-y-1 text-[0.75rem]">
+              {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+              <div className="text-voyage-muted">
+                {autoSaveStatus === "saving" && "Auto-saving draft…"}
+                {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
+                {autoSaveStatus === "error" && `Auto-save failed: ${autoSaveError}`}
+                {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
+                {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="grid grid-cols-3 gap-4 flex-1 min-h-0 overflow-hidden">
