@@ -202,6 +202,7 @@ const CatalogShopManager = () => {
   const [regenerating, setRegenerating] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewRow, setPreviewRow] = useState<CatalogRow | null>(null);
+  const [previewLang, setPreviewLang] = useState<Lang>("en");
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
