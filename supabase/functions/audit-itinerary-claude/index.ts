@@ -204,7 +204,61 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false, sections, improvement } = body || {};
+
+    // Sectional rewrite: receives a list of labeled sections + ONE improvement,
+    // returns only the sections that were changed. Output is capped so the call
+    // stays fast and well within any timeout.
+    if (mode === 'rewrite_sections') {
+      if (!Array.isArray(sections) || !sections.length) {
+        return new Response(JSON.stringify({ error: 'Missing sections' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (!improvement || typeof improvement?.title !== 'string' || !improvement.title.trim()) {
+        return new Response(JSON.stringify({ error: 'Missing improvement' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const SECTIONAL_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. You receive a travel document split into labeled sections plus ONE specific improvement to apply.
+
+Rewrite ONLY the section(s) that need to change to apply this improvement. Leave every other section completely untouched and DO NOT include them in your output. Most improvements affect only one section; some may legitimately affect a few. Never rewrite the whole document.
+
+For each changed section, preserve its heading (do not include the heading line in the output — only the new body markdown) and keep the existing tone, voice, structure, and sub-headings. Keep changes focused and surgical.
+
+Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
+{ "sections": [ { "id": "<section id>", "body": "<new body markdown without the heading line>" } ] }
+
+If no section needs to change to apply this improvement, output: { "sections": [] }`;
+
+      const improvementLine = `${improvement.title}${improvement.why ? ` — ${improvement.why}` : ''}`;
+      const docBlocks = sections
+        .map((s: any) => `--- SECTION id=${String(s?.id || '')} ---\n${String(s?.heading || '(preamble — no heading)')}\n${String(s?.body || '')}`)
+        .join('\n\n');
+      const userMsg = `Improvement to apply:\n${improvementLine}\n\nDocument sections:\n\n${docBlocks}`;
+
+      try {
+        const text = await callClaude(apiKey, SECTIONAL_SYSTEM, userMsg, 2000);
+        const cleaned = text.replace(/^```json\s*|\s*```$/gi, '').trim();
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        let parsed: any = null;
+        try { parsed = JSON.parse(match ? match[0] : cleaned); } catch { parsed = null; }
+        const outSections = Array.isArray(parsed?.sections)
+          ? parsed.sections
+              .map((s: any) => ({ id: String(s?.id || ''), body: String(s?.body ?? '') }))
+              .filter((s: any) => s.id)
+          : [];
+        return new Response(JSON.stringify({ sections: outSections }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: (e as Error).message }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     if (!content || typeof content !== 'string' || !content.trim()) {
       return new Response(JSON.stringify({ error: 'Missing itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
