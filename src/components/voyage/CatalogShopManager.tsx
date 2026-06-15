@@ -1282,11 +1282,21 @@ const CatalogShopManager = () => {
             </Button>
           </div>
 
-          <ItineraryEditor
-            content={state.content}
-            onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
-            placeholder="Write or generate the itinerary…"
-          />
+          <EditorErrorBoundary
+            onError={(err) =>
+              setAuditAction({
+                status: "error",
+                message: "The editor hit a rendering error after the last AI action.",
+                detail: err.message + " — your draft text is preserved. Use 'Reload editor' to continue.",
+              })
+            }
+          >
+            <ItineraryEditor
+              content={state.content}
+              onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
+              placeholder="Write or generate the itinerary…"
+            />
+          </EditorErrorBoundary>
 
           <div className="mt-3 p-3 border border-parchment-3 rounded bg-parchment/40">
             <Label className="text-[0.78rem]">Regenerate a specific section with AI</Label>
