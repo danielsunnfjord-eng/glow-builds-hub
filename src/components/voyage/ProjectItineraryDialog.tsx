@@ -47,6 +47,30 @@ interface Props {
   onSaved?: () => void;
 }
 
+type ProjectEditorSnapshot = {
+  content: string;
+  notes: string;
+  heroUrl: string | null;
+  heroCredit: string;
+  heroCaption: string;
+  tagline: string;
+  auditItems: SelectableAuditItem[];
+  previousContent: string | null;
+};
+
+const projectSnapshotSignature = (snapshot: ProjectEditorSnapshot) => JSON.stringify(snapshot);
+
+const hasProjectSnapshotContent = (snapshot: ProjectEditorSnapshot) =>
+  Boolean(
+    snapshot.content.trim() ||
+    snapshot.notes.trim() ||
+    snapshot.heroUrl ||
+    snapshot.heroCredit.trim() ||
+    snapshot.heroCaption.trim() ||
+    snapshot.tagline.trim() ||
+    snapshot.auditItems.length,
+  );
+
 const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props) => {
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
