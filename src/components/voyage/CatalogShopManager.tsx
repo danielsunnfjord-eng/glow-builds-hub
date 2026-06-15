@@ -1532,6 +1532,21 @@ const CatalogShopManager = () => {
         </DialogContent>
       </Dialog>
 
+      <AlertDialog open={closeConfirmOpen} onOpenChange={setCloseConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>You have unsaved changes.</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to close?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+            <AlertDialogAction onClick={closeEditorAnyway}>Close Anyway</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {previewRow && (
         <PdfPreview
           content={
