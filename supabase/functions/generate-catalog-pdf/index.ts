@@ -241,11 +241,14 @@ Apply the instruction precisely. Preserve the exact JSON shape and keys. Only mo
   "title": "string", "subtitle": "string", "cover_image_url": "string",
   "intro": "string",
   "trip_overview": { "destination": "string", "duration": "string", "best_for": "string", "estimated_budget": "string", "best_season": "string" },
+  "route_overview": [{ "day": 1, "place": "string", "transport": "string" }],
   "highlights": ["string"],
-  "days": [{ "day": 1, "title": "string", "location": "string", "image_url": "string", "morning": "string", "afternoon": "string", "evening": "string", "where_to_stay": "string", "where_to_eat": "string", "tips": "string" }],
+  "days": [{ "day": 1, "title": "string", "location": "string", "image_url": "string", "route": "string", "narrative": ["string"], "tip": "string" }],
   "practical_info": { "getting_there": "string", "getting_around": "string", "money": "string", "language_basics": "string", "what_to_pack": "string", "etiquette": "string" },
   "closing": "string"
 }
+
+The day-by-day format requires "route_overview" (one entry per day), and each day uses "route" + "narrative" (array of paragraphs) + optional "tip" — NEVER morning/afternoon/evening, where_to_stay or where_to_eat fields. Logistics are woven into the narrative paragraphs.
 
 When asked to add links, embed them inline in the relevant paragraph as plain URLs (e.g. "see https://example.com"). Do not invent image URLs — leave image_url empty if not provided.`;
 
