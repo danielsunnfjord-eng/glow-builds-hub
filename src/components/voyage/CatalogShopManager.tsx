@@ -1514,6 +1514,36 @@ const CatalogShopManager = () => {
                 )}
               </div>
             </div>
+            {applySummary && (
+              <div className={`mt-3 rounded-md border px-3 py-2 text-[0.8rem] ${applySummary.failedItems.length ? "border-destructive/40 bg-destructive/5" : "border-sage/40 bg-sage/10"}`}>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="font-medium text-ink inline-flex items-center gap-1.5">
+                    {applySummary.failedItems.length
+                      ? <AlertCircle className="w-4 h-4 text-destructive" />
+                      : <CheckCircle2 className="w-4 h-4 text-sage" />}
+                    {applySummary.appliedIds.length} of {applySummary.totalItems} improvements applied{applySummary.failedItems.length ? " — some failed" : " successfully"}
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {applySummary.failedItems.length > 0 && (
+                      <Button size="sm" variant="outline" onClick={retryFailedItems} disabled={applyingAudit}>
+                        {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <RefreshCcw className="w-3.5 h-3.5 mr-1.5" />}
+                        Retry {applySummary.failedItems.length} failed
+                      </Button>
+                    )}
+                    <Button size="sm" onClick={viewUpdatedItinerary} className="bg-ink text-voyage-white hover:bg-gold hover:text-ink">
+                      <Eye className="w-3.5 h-3.5 mr-1.5" /> View Updated Itinerary
+                    </Button>
+                  </div>
+                </div>
+                {applySummary.failedItems.length > 0 && (
+                  <ul className="mt-2 list-disc pl-5 text-[0.75rem] text-ink-2 space-y-0.5">
+                    {applySummary.failedItems.map((f) => (
+                      <li key={f.id}><span className="font-medium">{f.title}</span></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             {state.auditItems.length ? (
               <div className="mt-2">
                 <AuditChecklist
@@ -1521,6 +1551,7 @@ const CatalogShopManager = () => {
                   onToggle={toggleAuditItem}
                   onSelectAll={selectAllAudit}
                   onDeselectAll={deselectAllAudit}
+                  statuses={itemStatuses}
                 />
               </div>
             ) : (
