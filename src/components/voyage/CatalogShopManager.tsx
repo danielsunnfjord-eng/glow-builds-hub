@@ -1075,7 +1075,11 @@ const CatalogShopManager = () => {
                   {r.is_published && r.slug && (
                     <a href={`/catalogue/${r.slug}`} target="_blank" rel="noreferrer" className="text-[0.72rem] uppercase tracking-wider text-voyage-muted hover:text-ink px-2">View</a>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => setPreviewRow(r)} title="Preview PDF">
+                  <Button size="sm" variant="ghost" onClick={() => {
+                    const initial: Lang = r.itinerary_content_en ? "en" : r.itinerary_content_pt ? "pt" : r.itinerary_content_no ? "no" : "en";
+                    setPreviewLang(initial);
+                    setPreviewRow(r);
+                  }} title="Preview PDF">
                     <Eye className="w-4 h-4 mr-1" /> Preview PDF
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => openEdit(r)}>Edit</Button>
