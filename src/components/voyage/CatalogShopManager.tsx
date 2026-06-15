@@ -212,6 +212,9 @@ const CatalogShopManager = () => {
   const [autoSaveError, setAutoSaveError] = useState("");
   const [restoredNotice, setRestoredNotice] = useState("");
   const autoSaveIntervalRef = useRef<number | null>(null);
+  const latestStateRef = useRef(state);
+  const latestSectionPromptRef = useRef(sectionPrompt);
+  const latestEditorOpenRef = useRef(editorOpen);
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -282,6 +285,12 @@ const CatalogShopManager = () => {
   const isAuditBusy = auditing || applyingAudit;
   const currentDraftSignature = useMemo(() => catalogDraftSignature(state, sectionPrompt), [state, sectionPrompt]);
   const hasUnsavedChanges = currentDraftSignature !== lastPersistedSignature;
+
+  useEffect(() => {
+    latestStateRef.current = state;
+    latestSectionPromptRef.current = sectionPrompt;
+    latestEditorOpenRef.current = editorOpen;
+  }, [state, sectionPrompt, editorOpen]);
 
   const loadCatalogDraft = async (itineraryId: string) => {
     const { data, error } = await supabase
