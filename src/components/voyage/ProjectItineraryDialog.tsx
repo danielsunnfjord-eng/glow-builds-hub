@@ -182,6 +182,8 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       setPreviousContent(next.previousContent || null);
       setApplyStatus({ status: "idle", message: "" });
       setFailedApplyBatch(null);
+      setItemStatuses({});
+      setApplySummary(null);
       setLastPersistedSignature(projectSnapshotSignature(next));
       setLastAutoSavedAt(restoredAt);
       setAutoSaveStatus(restoredAt ? "saved" : "idle");
