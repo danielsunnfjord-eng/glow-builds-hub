@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "@/assets/logo.webp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -13,10 +14,22 @@ const Login = () => {
   const [view, setView] = useState<View>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const state = location.state as { passwordReset?: boolean } | null;
+    if (state?.passwordReset) {
+      setNotice(t("login.passwordUpdated", "Password updated successfully. Please sign in."));
+      // Clear state so it doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, t]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +48,11 @@ const Login = () => {
     e.preventDefault();
     if (!email || !password || loading) return;
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/admin` },
+    });
     setLoading(false);
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
@@ -61,6 +78,45 @@ const Login = () => {
     }
   };
 
+  const passwordInputClass =
+    "w-full pl-4 pr-12 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+  const inputClass =
+    "px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+  const btnClass =
+    "px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60";
+
+  const PasswordField = ({
+    value,
+    onChange,
+    placeholder,
+    minLength,
+  }: {
+    value: string;
+    onChange: (v: string) => void;
+    placeholder: string;
+    minLength?: number;
+  }) => (
+    <div className="relative">
+      <input
+        type={showPassword ? "text" : "password"}
+        required
+        minLength={minLength}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={passwordInputClass}
+      />
+      <button
+        type="button"
+        onClick={() => setShowPassword((s) => !s)}
+        aria-label={showPassword ? "Hide password" : "Show password"}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-voyage-white/50 hover:text-gold transition-colors p-1"
+      >
+        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink px-6">
       <Seo title="Advisor Login — Fjord & Waves Travel" description="Sign in to the Fjord & Waves Travel advisor dashboard." path="/login" noindex />
@@ -77,31 +133,31 @@ const Login = () => {
           </p>
         </div>
 
+        {notice && view === "login" && (
+          <div className="mb-6 px-4 py-3 rounded-sm bg-gold/10 border border-gold/30 text-gold text-[0.8rem] text-center">
+            {notice}
+          </div>
+        )}
+
         {view === "login" && (
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")}
-              className="px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("login.password")}
-              className="px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-            <button type="submit" disabled={loading}
-              className="px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60">
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")} className={inputClass} />
+            <PasswordField value={password} onChange={setPassword} placeholder={t("login.password")} />
+            <button type="submit" disabled={loading} className={btnClass}>
               {loading ? t("login.signingIn") : t("login.signInBtn")}
             </button>
             <div className="flex justify-between mt-2">
-              <button type="button" onClick={() => setView("signup")} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors">{t("login.createLink")}</button>
-              <button type="button" onClick={() => setView("forgot")} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors">{t("login.forgotLink")}</button>
+              <button type="button" onClick={() => { setNotice(null); setView("signup"); }} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors">{t("login.createLink")}</button>
+              <button type="button" onClick={() => { setNotice(null); setView("forgot"); }} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors">{t("login.forgotLink")}</button>
             </div>
           </form>
         )}
 
         {view === "signup" && (
           <form onSubmit={handleSignup} className="flex flex-col gap-4">
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")}
-              className="px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("login.passwordMin")}
-              className="px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-            <button type="submit" disabled={loading}
-              className="px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60">
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")} className={inputClass} />
+            <PasswordField value={password} onChange={setPassword} placeholder={t("login.passwordMin")} minLength={6} />
+            <button type="submit" disabled={loading} className={btnClass}>
               {loading ? t("login.creating") : t("login.createBtn")}
             </button>
             <button type="button" onClick={() => setView("login")} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors mt-2">{t("login.backToSignIn")}</button>
@@ -110,10 +166,11 @@ const Login = () => {
 
         {view === "forgot" && (
           <form onSubmit={handleForgotPassword} className="flex flex-col gap-4">
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")}
-              className="px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-            <button type="submit" disabled={loading}
-              className="px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60">
+            <p className="text-[0.78rem] text-voyage-white/50 leading-relaxed">
+              {t("login.forgotHelp", "Enter the email address linked to your account and we'll send you a link to reset your password.")}
+            </p>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.email")} className={inputClass} />
+            <button type="submit" disabled={loading} className={btnClass}>
               {loading ? t("login.sending") : t("login.sendReset")}
             </button>
             <button type="button" onClick={() => setView("login")} className="text-[0.75rem] text-voyage-white/40 hover:text-gold transition-colors mt-2">{t("login.backToSignIn")}</button>
