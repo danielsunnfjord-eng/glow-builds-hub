@@ -161,6 +161,61 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     loadDraft();
   }, [open, project]);
 
+  const persistProjectDraft = useCallback(async (silent = true) => {
+    const current = latestSnapshotRef.current;
+    if (!latestOpenRef.current || !project?.id || !current || !hasProjectSnapshotContent(current) || isBusy) return;
+    setAutoSaveStatus("saving");
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase
+        .from("project_itinerary_editor_drafts" as any)
+        .upsert({
+          project_id: project.id,
+          draft: current as any,
+          updated_by: user?.id || null,
+        } as any, { onConflict: "project_id" } as any);
+      if (error) throw error;
+      const now = new Date().toISOString();
+      setLastPersistedSignature(projectSnapshotSignature(current));
+      setLastAutoSavedAt(now);
+      setAutoSaveStatus("saved");
+      setAutoSaveError("");
+      if (!silent) toast.success("Draft auto-saved");
+    } catch (e: any) {
+      setAutoSaveStatus("error");
+      setAutoSaveError(e?.message || "Auto-save failed");
+      if (!silent) toast.error(e?.message || "Auto-save failed");
+    }
+  }, [isBusy, project?.id]);
+
+  const requestClose = () => {
+    if (isBusy) {
+      toast.info("Please wait for the current action to finish before closing the editor.");
+      return;
+    }
+    if (hasUnsavedChanges) {
+      setCloseConfirmOpen(true);
+      return;
+    }
+    onOpenChange(false);
+  };
+
+  const closeAnyway = () => {
+    setCloseConfirmOpen(false);
+    onOpenChange(false);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    autoSaveIntervalRef.current = window.setInterval(() => {
+      persistProjectDraft(true);
+    }, PROJECT_EDITOR_AUTOSAVE_MS);
+    return () => {
+      if (autoSaveIntervalRef.current) window.clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    };
+  }, [open, persistProjectDraft]);
+
   const runAudit = async () => {
     if (!content.trim()) {
       toast.error("Itinerary is empty");
