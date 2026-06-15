@@ -88,19 +88,30 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       }
       if (content !== lastExternalContent.current) {
         lastExternalContent.current = content;
-        const html = markdownToHtml(content);
-        editor.commands.setContent(html, { emitUpdate: false });
+        try {
+          const html = markdownToHtml(content);
+          editor.commands.setContent(html, { emitUpdate: false });
+        } catch (err) {
+          // Never let a malformed AI rewrite tear down the editor / dialog tree.
+          // Fall back to inserting raw text so the user keeps their session.
+          console.error("[ItineraryEditor] setContent failed, falling back to plain text", err);
+          try {
+            editor.commands.setContent(content || "", { emitUpdate: false });
+          } catch (err2) {
+            console.error("[ItineraryEditor] plain-text fallback also failed", err2);
+          }
+        }
       }
     }, [content, editor]);
 
     if (!editor) return null;
 
     return (
-      <div className="bg-voyage-white flex h-full min-h-0 flex-col relative">
-        <div className="shrink-0 z-30 border-b border-parchment-3">
+      <div className="bg-voyage-white relative">
+        <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm">
           <Toolbar editor={editor} />
         </div>
-        <div className="overflow-y-auto flex-1 min-h-0 relative">
+        <div className="relative">
           <EditorContent editor={editor} />
           <AiEditMenu editor={editor} />
         </div>
