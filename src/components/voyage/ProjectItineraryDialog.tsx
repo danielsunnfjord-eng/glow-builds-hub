@@ -15,7 +15,7 @@ import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import AuditChecklist from "./AuditChecklist";
 import { parseAuditItems, type SelectableAuditItem } from "@/lib/auditParser";
-import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
+import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -301,7 +301,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
     startingContent: string,
     opts: { resetStatuses: boolean },
   ) => {
-    const batches = chunkAuditItems(itemsToApply, 2);
+    const batches = chunkAuditItems(itemsToApply, 1);
     let workingContent = startingContent;
     const appliedIds: string[] = [];
     const failedItems: SelectableAuditItem[] = [];
@@ -315,6 +315,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
 
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
+      const item = batch[0];
       setItemStatuses((prev) => {
         const next = { ...prev };
         for (const it of batch) next[it.id] = "applying";
@@ -322,55 +323,56 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
       });
       setApplyStatus({
         status: "running",
-        message: `Applying batch ${i + 1} of ${batches.length}…`,
-        detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved.` : "The editor stays open while this batch is processed.",
+        message: `Applying improvement ${i + 1} of ${batches.length}…`,
+        detail: i > 0
+          ? `${i} improvement${i === 1 ? "" : "s"} already applied — only the affected sections were rewritten.`
+          : "Only the affected section(s) are being rewritten — the editor stays open.",
       });
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), PROJECT_AUDIT_TIMEOUT_MS);
       try {
-        const res = await fetch(`${SUPABASE_URL}/functions/v1/audit-itinerary-claude`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
-          },
+        const headers: HeadersInit = {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+        };
+        const result = await applyImprovementSectional({
+          url: `${SUPABASE_URL}/functions/v1/audit-itinerary-claude`,
+          headers,
           signal: controller.signal,
-          body: JSON.stringify({
-            content: workingContent,
-            mode: "rewrite",
-            single_batch: true,
-            audit: buildAuditBatchPrompt(batch),
-            start_date: project?.start_date,
-            end_date: project?.end_date,
-            trip_duration: project?.trip_duration,
-          }),
+          content: workingContent,
+          improvement: item,
         });
-        const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
         const previousBatchContent = workingContent;
-        workingContent = rewritten;
-        const batchIds = new Set(batch.map((item) => item.id));
+        workingContent = result.newContent;
+        const batchIds = new Set(batch.map((b) => b.id));
         setPreviousContent((prev) => prev ?? startingContent);
-        setContent(rewritten);
-        setAuditItems((items) => items.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)));
+        setContent(result.newContent);
+        setAuditItems((items) => items.map((it) => (batchIds.has(it.id) ? { ...it, selected: false } : it)));
         setItemStatuses((prev) => {
           const next = { ...prev };
           for (const it of batch) next[it.id] = "applied";
           return next;
         });
         for (const it of batch) appliedIds.push(it.id);
-        flashEditorHighlight(findFirstChangedHeadingText(previousBatchContent, rewritten));
+        flashEditorHighlight(result.changedHeading ?? findFirstChangedHeadingText(previousBatchContent, result.newContent));
       } catch (e: any) {
-        const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
+        const message = e?.name === "AbortError"
+          ? `Improvement ${i + 1} timed out. Successfully applied improvements were preserved.`
+          : e?.message || `Improvement ${i + 1} failed.`;
         setItemStatuses((prev) => {
           const next = { ...prev };
           for (const it of batch) next[it.id] = "failed";
           return next;
         });
         setFailedApplyBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
-        setApplyStatus({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing applied changes.` });
+        setApplyStatus({
+          status: "error",
+          message: `Improvement ${i + 1} of ${batches.length} failed.`,
+          detail: `${message} Retry this item to continue without losing applied changes.`,
+        });
         for (const it of batch) failedItems.push(it);
-        toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
+        toast.error(`Improvement ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
         return { appliedIds, failedItems, stoppedEarly: true };
       } finally {
         window.clearTimeout(timeout);

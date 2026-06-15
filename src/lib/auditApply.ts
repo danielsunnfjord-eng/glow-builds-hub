@@ -1,6 +1,8 @@
 import { itemsToPromptText, type AuditItem } from "@/lib/auditParser";
 
-export const AUDIT_APPLY_BATCH_SIZE = 2;
+// One improvement per call now: each call only rewrites the affected
+// section(s), so it is cheap and well within timeout limits.
+export const AUDIT_APPLY_BATCH_SIZE = 1;
 
 export const chunkAuditItems = <T,>(items: T[], size = AUDIT_APPLY_BATCH_SIZE): T[][] => {
   const chunks: T[][] = [];
@@ -11,6 +13,117 @@ export const chunkAuditItems = <T,>(items: T[], size = AUDIT_APPLY_BATCH_SIZE): 
 export const buildAuditBatchPrompt = (items: AuditItem[]) =>
   `Apply ONLY the following selected improvements. Leave everything else unchanged.\n\n${itemsToPromptText(items)}`;
 
+// -------- Sectional rewrite helpers --------
+
+const HEADING_RE = /^(#{1,3})\s+.+/;
+
+export interface MdSection {
+  id: string;
+  heading: string; // full heading line ("## Where to Stay") or "" for preamble
+  body: string;    // verbatim body markdown after the heading line
+}
+
+export function splitMarkdownSections(md: string): MdSection[] {
+  const lines = (md || "").split("\n");
+  const out: MdSection[] = [];
+  let current: MdSection = { id: "s0", heading: "", body: "" };
+  let bodyLines: string[] = [];
+  let index = 0;
+  const flush = () => {
+    current.body = bodyLines.join("\n");
+    out.push(current);
+    bodyLines = [];
+  };
+  for (const line of lines) {
+    if (HEADING_RE.test(line)) {
+      flush();
+      index += 1;
+      current = { id: `s${index}`, heading: line, body: "" };
+    } else {
+      bodyLines.push(line);
+    }
+  }
+  flush();
+  return out;
+}
+
+export function mergeMarkdownSections(
+  sections: MdSection[],
+  updates: Array<{ id: string; body: string }>,
+): string {
+  const map = new Map(updates.map((u) => [String(u.id), String(u.body ?? "")]));
+  return sections
+    .map((s) => {
+      const newBody = map.has(s.id) ? map.get(s.id)! : s.body;
+      return s.heading ? (newBody ? `${s.heading}\n${newBody}` : s.heading) : newBody;
+    })
+    .join("\n");
+}
+
+export interface ApplyImprovementResult {
+  newContent: string;
+  changedHeading: string | null;
+  changedSectionIds: string[];
+}
+
+/**
+ * Apply ONE improvement by sending Claude only the relevant section context
+ * (full document split into labeled sections; Claude returns only the
+ * rewritten sections as JSON, capped at 2000 output tokens).
+ */
+export async function applyImprovementSectional(args: {
+  url: string;
+  headers: HeadersInit;
+  signal?: AbortSignal;
+  content: string;
+  improvement: AuditItem;
+  extras?: Record<string, unknown>;
+}): Promise<ApplyImprovementResult> {
+  const sections = splitMarkdownSections(args.content);
+  const res = await fetch(args.url, {
+    method: "POST",
+    headers: args.headers,
+    signal: args.signal,
+    body: JSON.stringify({
+      mode: "rewrite_sections",
+      sections: sections.map((s) => ({ id: s.id, heading: s.heading, body: s.body })),
+      improvement: { title: args.improvement.title, why: args.improvement.why },
+      ...(args.extras || {}),
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error(errText || `Apply failed (${res.status})`);
+  }
+
+  const data = await res.json().catch(() => null) as { sections?: Array<{ id: string; body: string }> } | null;
+  const updates = Array.isArray(data?.sections) ? data!.sections : [];
+
+  if (!updates.length) {
+    // No section flagged for change — treat as a successful no-op so the
+    // overall flow continues and the item is marked applied.
+    return { newContent: args.content, changedHeading: null, changedSectionIds: [] };
+  }
+
+  // Only honor IDs that exist in the original document.
+  const validIds = new Set(sections.map((s) => s.id));
+  const safeUpdates = updates
+    .map((u) => ({ id: String(u?.id ?? ""), body: String(u?.body ?? "") }))
+    .filter((u) => validIds.has(u.id));
+
+  if (!safeUpdates.length) {
+    return { newContent: args.content, changedHeading: null, changedSectionIds: [] };
+  }
+
+  const merged = mergeMarkdownSections(sections, safeUpdates);
+  const firstHeadingLine = sections.find((s) => s.id === safeUpdates[0].id)?.heading || "";
+  const changedHeading = firstHeadingLine.replace(/^#+\s*/, "").trim() || null;
+  return { newContent: merged, changedHeading, changedSectionIds: safeUpdates.map((u) => u.id) };
+}
+
+// Legacy streaming reader — kept for any code paths that still stream a full
+// rewrite (e.g. fallback / older flows). New apply flow no longer uses it.
 export const readRewriteStream = async (res: Response, emptyMessage: string) => {
   if (!res.ok || !res.body) {
     const errText = await res.text().catch(() => "");

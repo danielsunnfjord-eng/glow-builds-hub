@@ -32,7 +32,7 @@ import {
   serializeAuditItems,
   type SelectableAuditItem,
 } from "@/lib/auditParser";
-import { buildAuditBatchPrompt, chunkAuditItems, readRewriteStream } from "@/lib/auditApply";
+import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 
@@ -718,7 +718,7 @@ const CatalogShopManager = () => {
     startingContent: string,
     opts: { resetStatuses: boolean },
   ) => {
-    const batches = chunkAuditItems(itemsToApply, 2);
+    const batches = chunkAuditItems(itemsToApply, 1);
     let workingContent = startingContent;
     const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/audit-itinerary-claude`;
     const appliedIds: string[] = [];
@@ -732,6 +732,7 @@ const CatalogShopManager = () => {
 
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
+      const item = batch[0];
       setItemStatuses((prev) => {
         const next = { ...prev };
         for (const it of batch) next[it.id] = "applying";
@@ -739,35 +740,30 @@ const CatalogShopManager = () => {
       });
       setAuditAction({
         status: "running",
-        message: `Applying batch ${i + 1} of ${batches.length}…`,
-        detail: i > 0 ? `${i} batch${i === 1 ? "" : "es"} already applied and preserved in the editor.` : "Your current draft stays visible while this batch is processed.",
+        message: `Applying improvement ${i + 1} of ${batches.length}…`,
+        detail: i > 0
+          ? `${i} improvement${i === 1 ? "" : "s"} already applied — only the affected sections were rewritten.`
+          : "Only the affected section(s) are being rewritten — your draft stays visible.",
       });
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), CATALOG_AUDIT_TIMEOUT_MS);
       try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: await getFunctionHeaders(),
+        const headers = await getFunctionHeaders();
+        const result = await applyImprovementSectional({
+          url,
+          headers,
           signal: controller.signal,
-          body: JSON.stringify({
-            mode: "rewrite",
-            single_batch: true,
-            structure: "catalogue-thematic",
-            content: workingContent,
-            audit: buildAuditBatchPrompt(batch),
-            trip_duration: state.duration,
-          }),
+          content: workingContent,
+          improvement: item,
         });
-        if (!res.ok || !res.body) throw new Error(await readFunctionError(res));
-        const rewritten = await readRewriteStream(res, "Empty rewrite returned. Your draft was preserved.");
         const previousContent = workingContent;
-        workingContent = rewritten;
-        const batchIds = new Set(batch.map((item) => item.id));
+        workingContent = result.newContent;
+        const batchIds = new Set(batch.map((b) => b.id));
         setState((s) => ({
           ...s,
           previousContent: s.previousContent ?? startingContent,
-          content: rewritten,
-          auditItems: s.auditItems.map((item) => (batchIds.has(item.id) ? { ...item, selected: false } : item)),
+          content: result.newContent,
+          auditItems: s.auditItems.map((it) => (batchIds.has(it.id) ? { ...it, selected: false } : it)),
         }));
         setItemStatuses((prev) => {
           const next = { ...prev };
@@ -775,18 +771,24 @@ const CatalogShopManager = () => {
           return next;
         });
         for (const it of batch) appliedIds.push(it.id);
-        flashEditorHighlight(findFirstChangedHeadingText(previousContent, rewritten));
+        flashEditorHighlight(result.changedHeading ?? findFirstChangedHeadingText(previousContent, result.newContent));
       } catch (e: any) {
-        const message = e?.name === "AbortError" ? `Batch ${i + 1} timed out. Successfully applied batches were preserved.` : e?.message || `Batch ${i + 1} failed.`;
+        const message = e?.name === "AbortError"
+          ? `Improvement ${i + 1} timed out. Successfully applied improvements were preserved.`
+          : e?.message || `Improvement ${i + 1} failed.`;
         setItemStatuses((prev) => {
           const next = { ...prev };
           for (const it of batch) next[it.id] = "failed";
           return next;
         });
         setFailedAuditBatch({ batchNumber: i + 1, totalBatches: batches.length, items: batch, message });
-        setAuditAction({ status: "error", message: `Batch ${i + 1} of ${batches.length} failed.`, detail: `${message} Retry this batch to continue without losing the applied changes.` });
+        setAuditAction({
+          status: "error",
+          message: `Improvement ${i + 1} of ${batches.length} failed.`,
+          detail: `${message} Retry this item to continue without losing applied changes.`,
+        });
         for (const it of batch) failedItems.push(it);
-        toast.error(`Batch ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
+        toast.error(`Improvement ${i + 1} of ${batches.length} failed — applied changes were preserved.`);
         return { appliedIds, failedItems, stoppedEarly: true };
       } finally {
         window.clearTimeout(timeout);
