@@ -7,17 +7,23 @@ interface LinkPopoverProps {
   onSetLink: (url: string) => void;
   onUnsetLink: () => void;
   title: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: LinkPopoverProps) => {
+const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onOpenChange }: LinkPopoverProps) => {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const setOpenWithNotify = (next: boolean) => {
+    setOpen(next);
+    onOpenChange?.(next);
+  };
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpenWithNotify(false);
     };
     if (open) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -32,7 +38,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: L
 
   return (
     <div className="relative" ref={ref}>
-      <ToolbarButton active={isActive} onClick={() => setOpen(!open)} title={title}>
+      <ToolbarButton active={isActive} onClick={() => setOpenWithNotify(!open)} title={title}>
         🔗
       </ToolbarButton>
 
@@ -48,14 +54,16 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: L
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 onSetLink(url);
-                setOpen(false);
+                setOpenWithNotify(false);
+              } else if (e.key === "Escape") {
+                setOpenWithNotify(false);
               }
             }}
           />
           <div className="flex gap-1">
             <button
               type="button"
-              onClick={() => { onSetLink(url); setOpen(false); }}
+              onClick={() => { onSetLink(url); setOpenWithNotify(false); }}
               className="flex-1 text-[0.65rem] bg-gold text-ink rounded px-2 py-1 hover:bg-gold/80"
             >
               Apply
@@ -63,7 +71,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: L
             {isActive && (
               <button
                 type="button"
-                onClick={() => { onUnsetLink(); setOpen(false); }}
+                onClick={() => { onUnsetLink(); setOpenWithNotify(false); }}
                 className="text-[0.65rem] border border-parchment-3 text-voyage-muted rounded px-2 py-1 hover:bg-parchment"
               >
                 Remove
