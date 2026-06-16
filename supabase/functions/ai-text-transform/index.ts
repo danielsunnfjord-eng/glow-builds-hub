@@ -6,58 +6,60 @@ const corsHeaders = {
 };
 
 const CONTEXT = `You are an editorial assistant for Fjord & Waves Travel, a premium Scandinavian travel advisory.
-The text you receive is part of a travel itinerary that will be sent to clients as a polished PDF document.
+The text you receive is part of a travel itinerary written in Markdown and will be sent to clients as a polished PDF document.
 
 CRITICAL OUTPUT RULES:
-- Return ONLY the transformed text. No explanations, no preamble, no "Here is..." prefix.
-- Do NOT use markdown syntax (no ##, no **, no *, no -, no backticks, no code blocks).
-- Write clean, plain prose. Use line breaks to separate paragraphs.
-- Preserve any existing structure (day headings, sections) but express them as plain text.
+- Return ONLY the transformed text. No explanations, no preamble, no "Here is..." prefix, no code fences.
+- PRESERVE the input's markdown structure EXACTLY:
+  * Keep every heading (#, ##, ###, ####) at the same level and in the same position.
+  * Keep **bold**, *italic*, ~~strike~~, \`inline code\`, and [links](url) marks intact when they wrap content you keep.
+  * Keep bullet lists (-, *) and numbered lists (1.) with the same item count where possible.
+  * Keep blockquotes (>), horizontal rules (---), tables, and images (![]()) untouched in position.
+  * Keep blank lines between paragraphs — never collapse paragraphs into one block.
+- Only rewrite the prose *inside* those structures. Do not invent new headings, do not flatten headings into prose, do not strip emphasis.
 - The tone must be warm, elegant, and premium — worthy of a luxury travel experience.
-- Keep the same language as the input text unless translating.`;
+- Keep the same language as the input text unless explicitly translating.`;
 
 const ACTIONS: Record<string, string> = {
   rewrite: `${CONTEXT}
 
-Rewrite the text to improve clarity, flow, and readability while keeping the same meaning and all key details. Make sentences smoother and more natural.`,
+Rewrite the prose inside the existing markdown structure to improve clarity, flow, and readability while keeping the same meaning and all key details. Sentences smoother and more natural. Headings, lists and emphasis stay exactly as given.`,
 
   improve: `${CONTEXT}
 
-Elevate the text to premium quality. Enhance the language to be more vivid, engaging, and evocative. Add sensory details where appropriate. Make it feel like a luxury travel magazine. Preserve all factual information.`,
+Elevate the prose to premium quality inside the existing markdown structure. More vivid, engaging, evocative language; add sensory details where appropriate. Preserve all factual information and all headings/lists/emphasis exactly.`,
 
   shorten: `${CONTEXT}
 
-Condense the text significantly while retaining all essential information (names, times, places, recommendations). Remove redundancy and filler. Every sentence should earn its place.`,
+Condense the prose significantly while retaining all essential information (names, times, places, recommendations) AND the full markdown structure (headings, lists, emphasis, paragraph breaks). Remove redundancy and filler.`,
 
   elaborate: `${CONTEXT}
 
-Expand the text with richer descriptions, practical details, and atmosphere. Add context about locations, tips for travellers, and sensory language that brings the experience to life. Keep it informative and inspiring.`,
+Expand the prose with richer descriptions, practical details, and atmosphere — but keep every heading, list item, and paragraph boundary from the input. Add context, tips, sensory language; do not invent new sections.`,
 
   format: `${CONTEXT}
 
-Restructure the text for optimal readability in a PDF document:
-- Ensure clear section breaks between days/topics
-- Use short paragraphs (2-3 sentences max)
-- Group related information logically
-- Add line breaks between sections for visual breathing room
-- Make sure times, places, and recommendations are easy to scan
-Do NOT add markdown symbols. Just reorganize the plain text.`,
+Restructure the prose for optimal readability while keeping all markdown markers:
+- Split overly long paragraphs into short ones (2-3 sentences) with a blank line between.
+- Keep existing headings; only promote a line to a heading if it is clearly a section title in the input.
+- Keep bullet/numbered lists where they exist; do not invent new ones.
+- Make sure times, places, and recommendations are easy to scan.`,
 
   professional: `${CONTEXT}
 
-Transform the text into the voice of a world-class travel concierge. Use sophisticated, confident language. Every sentence should convey expertise and exclusivity. The reader should feel they are in exceptional hands. Maintain all practical details while elevating the tone to ultra-premium.`,
+Transform the prose into the voice of a world-class travel concierge — sophisticated, confident, exclusive. Maintain every practical detail and the full markdown structure (headings, lists, emphasis, paragraph breaks) exactly.`,
 
   translate_en: `${CONTEXT}
 
-Translate the text to English. Maintain the premium travel advisory tone, formatting structure, and all details. The translation should read naturally, not like a translation.`,
+Translate the text to English. Preserve the markdown structure EXACTLY — every heading, list, emphasis mark, blockquote, image, link and blank-line paragraph break must remain in the same position. Read naturally, not like a translation.`,
 
   translate_no: `${CONTEXT}
 
-Translate the text to Norwegian (Bokmål). Maintain the premium travel advisory tone, formatting structure, and all details. Use natural, elegant Norwegian.`,
+Translate the text to Norwegian (Bokmål). Preserve the markdown structure EXACTLY — every heading, list, emphasis mark, blockquote, image, link and blank-line paragraph break must remain in the same position. Use natural, elegant Norwegian.`,
 
   translate_pt: `${CONTEXT}
 
-Translate the text to Brazilian Portuguese. Maintain the premium travel advisory tone, formatting structure, and all details. Use natural, refined Portuguese.`,
+Translate the text to Brazilian Portuguese. Preserve the markdown structure EXACTLY — every heading, list, emphasis mark, blockquote, image, link and blank-line paragraph break must remain in the same position. Use natural, refined Portuguese.`,
 };
 
 serve(async (req) => {
@@ -77,7 +79,7 @@ serve(async (req) => {
 
     let systemPrompt: string;
     if (customPrompt) {
-      systemPrompt = `${CONTEXT}\n\nUser instruction: ${customPrompt}`;
+      systemPrompt = `${CONTEXT}\n\nUser instruction: ${customPrompt}\n\nApply this instruction while preserving the markdown structure exactly.`;
     } else {
       systemPrompt = ACTIONS[action];
     }
@@ -126,16 +128,13 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    let result = data.choices?.[0]?.message?.content || "";
+    let result: string = data.choices?.[0]?.message?.content || "";
 
-    // Strip any markdown artifacts the model might still produce
+    // Only strip surrounding ``` code fences (model sometimes wraps output).
+    // Do NOT strip markdown markers — preserving structure is the whole point.
     result = result
-      .replace(/^```[\s\S]*?```$/gm, "")
-      .replace(/^#+\s*/gm, "")
-      .replace(/\*\*([^*]+)\*\*/g, "$1")
-      .replace(/\*([^*]+)\*/g, "$1")
-      .replace(/^[-*]\s+/gm, "• ")
-      .replace(/\\([#*_~`>|\-\[\](){}+.!])/g, "$1")
+      .replace(/^\s*```(?:markdown|md)?\s*\n?/i, "")
+      .replace(/\n?```\s*$/i, "")
       .trim();
 
     return new Response(JSON.stringify({ result }), {

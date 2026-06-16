@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { markdownToHtml } from "./markdownHelpers";
+
 
 interface AiPreviewPanelProps {
   original: string;
@@ -35,9 +37,10 @@ const AiPreviewPanel = ({ original, preview, onAccept, onReject, loading }: AiPr
           <div className="text-white/40 text-[0.6rem] font-medium mb-1 uppercase tracking-wider">
             {t("aiEdit.original") || "Original"}
           </div>
-          <div className="bg-white/5 rounded p-2 text-white/60 text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-white/10">
-            {original}
-          </div>
+          <div
+            className="fjw-ai-preview bg-white/5 rounded p-2 text-white/60 text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-white/10"
+            dangerouslySetInnerHTML={{ __html: markdownToHtml(original) }}
+          />
         </div>
 
         {/* Arrow */}
@@ -48,9 +51,10 @@ const AiPreviewPanel = ({ original, preview, onAccept, onReject, loading }: AiPr
           <div className="text-gold/80 text-[0.6rem] font-medium mb-1 uppercase tracking-wider">
             {t("aiEdit.suggested") || "Suggested"}
           </div>
-          <div className="bg-gold/5 rounded p-2 text-white text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-gold/20">
-            {preview}
-          </div>
+          <div
+            className="fjw-ai-preview bg-gold/5 rounded p-2 text-white text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-gold/20"
+            dangerouslySetInnerHTML={{ __html: markdownToHtml(preview) }}
+          />
         </div>
       </div>
 

@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Editor } from "@tiptap/react";
+import { DOMSerializer } from "@tiptap/pm/model";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import AiPreviewPanel from "./AiPreviewPanel";
+import { htmlToMarkdown, markdownToHtml } from "./markdownHelpers";
 
 const AI_ACTIONS = [
   { key: "rewrite", icon: "✏️", labelKey: "aiEdit.rewrite" },
@@ -68,13 +70,25 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     };
   }, [editor]);
 
-  const getSelectedText = () => {
-    const { from, to } = editor.state.selection;
-    return editor.state.doc.textBetween(from, to, " ");
+  // Extract the current selection as markdown so headings/lists/emphasis survive the round-trip.
+  const getSelectedMarkdown = (): string => {
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return "";
+    try {
+      const slice = editor.state.doc.slice(from, to);
+      const serializer = DOMSerializer.fromSchema(editor.schema);
+      const fragment = serializer.serializeFragment(slice.content);
+      const container = document.createElement("div");
+      container.appendChild(fragment);
+      return htmlToMarkdown(container.innerHTML);
+    } catch (err) {
+      console.error("getSelectedMarkdown failed, falling back to text", err);
+      return editor.state.doc.textBetween(from, to, "\n\n");
+    }
   };
 
   const runAction = async (action: string, prompt?: string) => {
-    const text = getSelectedText();
+    const text = getSelectedMarkdown();
     if (!text.trim()) return;
 
     const { from, to } = editor.state.selection;
@@ -113,7 +127,14 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
   const acceptPreview = () => {
     if (!preview?.result) return;
-    editor.chain().focus().deleteRange({ from: preview.from, to: preview.to }).insertContentAt(preview.from, preview.result).run();
+    // Convert markdown back to HTML so TipTap reinstates headings, lists, emphasis, paragraph breaks.
+    const html = markdownToHtml(preview.result);
+    editor
+      .chain()
+      .focus()
+      .deleteRange({ from: preview.from, to: preview.to })
+      .insertContentAt(preview.from, html, { parseOptions: { preserveWhitespace: "full" } })
+      .run();
     toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
     setPreview(null);
   };
