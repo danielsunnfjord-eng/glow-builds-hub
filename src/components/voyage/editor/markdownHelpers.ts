@@ -2,6 +2,10 @@ import TurndownService from "turndown";
 
 export function cleanMarkdown(md: string): string {
   return md
+    // Collapse runs of 3+ newlines into a clean paragraph break, but NEVER
+    // collapse `\n\n` into a single `\n` — paragraph boundaries must survive.
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
     .replace(/\\([#*_~`>|\-\[\](){}+.!])/g, "$1")
     .replace(/\\\\/g, "\\")
     .replace(/(?<!\w)__(?!\w)/g, "")

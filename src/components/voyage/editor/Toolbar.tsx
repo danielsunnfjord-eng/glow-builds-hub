@@ -58,24 +58,41 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  // Headings are block-level in TipTap: toggling them transforms the entire
+  // current block. Expand the selection to the parent block first so the user
+  // visibly sees what's about to change (no more "I selected one word but the
+  // whole paragraph turned into a heading" surprise).
+  const toggleHeadingBlock = (level: 1 | 2 | 3) => {
+    const { state } = editor;
+    const { $from, $to } = state.selection;
+    const start = $from.start($from.depth);
+    const end = $to.end($to.depth);
+    editor
+      .chain()
+      .focus()
+      .setTextSelection({ from: start, to: end })
+      .toggleHeading({ level })
+      .run();
+  };
+
   return (
     <div className="flex items-center gap-0.5 flex-wrap px-3 py-1.5 border-b border-parchment-3 bg-parchment/60">
 
       {/* Headings */}
       <ToolbarButton
         active={editor.isActive("heading", { level: 1 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        title="Heading 1"
+        onClick={() => toggleHeadingBlock(1)}
+        title="Heading 1 (applies to the current paragraph)"
       >H1</ToolbarButton>
       <ToolbarButton
         active={editor.isActive("heading", { level: 2 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        title="Heading 2"
+        onClick={() => toggleHeadingBlock(2)}
+        title="Heading 2 (applies to the current paragraph)"
       >H2</ToolbarButton>
       <ToolbarButton
         active={editor.isActive("heading", { level: 3 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        title="Heading 3"
+        onClick={() => toggleHeadingBlock(3)}
+        title="Heading 3 (applies to the current paragraph)"
       >H3</ToolbarButton>
 
       <ToolbarSep />
