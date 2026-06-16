@@ -255,10 +255,12 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
         </button>
 
         {showCustom && (
-          <div className="absolute bottom-full right-0 mb-1 bg-ink/95 border border-gold/20 rounded-lg shadow-lg p-2 w-[280px]">
+          <div className="absolute bottom-full right-0 mb-1 bg-ink/95 border border-gold/20 rounded-lg shadow-lg p-2 w-[280px] z-50">
             <textarea
+              autoFocus
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
               placeholder={t("aiEdit.customPlaceholder") || "Tell AI what to do with the selected text..."}
               className="w-full bg-white/10 text-white text-[0.7rem] rounded px-2 py-1.5 border border-white/20 focus:border-gold focus:outline-none resize-none h-16 placeholder:text-white/40"
               onKeyDown={(e) => {
