@@ -25,6 +25,15 @@ export function markdownToHtml(md: string): string {
     // Legacy: image followed by "*Photo: …*" line on next line
     .replace(/!\[([^\]]*)\]\(([^)]+)\)\n\*Photo:\s*([^*]*)\*/g, '<figure class="fjw-figure"><img src="$2" alt="$1"><figcaption class="fjw-img-caption">$1</figcaption><div class="fjw-img-credit">$3</div></figure>')
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    // Markdown links [text](url) — render as real <a> so they're clickable in the PDF.
+    // Negative lookbehind for `!` prevents matching the image syntax above.
+    .replace(/(^|[^!])\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, (_m, pre, text, href, title) => {
+      const safeHref = href.replace(/"/g, "&quot;");
+      const titleAttr = title ? ` title="${title.replace(/"/g, "&quot;")}"` : "";
+      return `${pre}<a href="${safeHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+    })
+    // Bare URLs (http/https) not already inside an <a> or markdown link → autolink
+    .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>')
     .replace(/^#{4}\s+(.+?)\s*$/gm, "<h4>$1</h4>")
     .replace(/^#{3}\s+(.+?)\s*$/gm, "<h3>$1</h3>")
     .replace(/^#{2}\s+(.+?)\s*$/gm, "<h2>$1</h2>")
