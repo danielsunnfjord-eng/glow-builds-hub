@@ -511,6 +511,7 @@ export default {
   aiEdit: {
     rewrite: "Reescrever",
     improve: "Melhorar",
+    humanize: "Humanizar",
     shorten: "Encurtar",
     elaborate: "Elaborar",
     format: "Formatar",
