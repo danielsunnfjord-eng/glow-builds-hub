@@ -97,8 +97,8 @@ const CuratedSection = () => {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-12 right-16 flex flex-col items-center gap-2 text-voyage-white/30 text-[0.62rem] tracking-[0.2em] uppercase animate-fade-up-4 max-md:hidden">
-          <div className="w-px h-[50px] bg-gradient-to-b from-gold/50 to-transparent animate-pulse-bar" />
+        <div className="absolute bottom-12 right-16 flex flex-col items-center gap-2 text-ink/30 text-[0.62rem] tracking-[0.2em] uppercase animate-fade-up-4 max-md:hidden">
+          <div className="w-px h-[50px] bg-gradient-to-b from-ink/50 to-transparent animate-pulse-bar" />
           {t("hero.scroll")}
         </div>
       </div>
