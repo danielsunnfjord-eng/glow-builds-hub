@@ -509,6 +509,7 @@ export default {
   aiEdit: {
     rewrite: "Omskriv",
     improve: "Forbedre",
+    humanize: "Naturlig",
     shorten: "Forkort",
     elaborate: "Utdyp",
     format: "Formater",

@@ -524,6 +524,7 @@ export default {
   aiEdit: {
     rewrite: "Rewrite",
     improve: "Improve",
+    humanize: "Humanize",
     shorten: "Shorten",
     elaborate: "Elaborate",
     format: "Format",

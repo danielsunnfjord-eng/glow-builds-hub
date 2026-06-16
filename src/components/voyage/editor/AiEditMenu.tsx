@@ -10,6 +10,7 @@ import { htmlToMarkdown, markdownToHtml } from "./markdownHelpers";
 const AI_ACTIONS = [
   { key: "rewrite", icon: "✏️", labelKey: "aiEdit.rewrite" },
   { key: "improve", icon: "✨", labelKey: "aiEdit.improve" },
+  { key: "humanize", icon: "🫶", labelKey: "aiEdit.humanize" },
   { key: "shorten", icon: "📐", labelKey: "aiEdit.shorten" },
   { key: "elaborate", icon: "📝", labelKey: "aiEdit.elaborate" },
   { key: "format", icon: "📋", labelKey: "aiEdit.format" },
@@ -40,10 +41,20 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   // Preview state
   const [preview, setPreview] = useState<{ original: string; result: string; from: number; to: number } | null>(null);
 
+  // Track popup state in a ref so the editor blur handler (registered once)
+  // can read the latest value without re-binding.
+  const popupOpenRef = useRef(false);
+  useEffect(() => {
+    popupOpenRef.current = showCustom || showTranslate || !!preview;
+  }, [showCustom, showTranslate, preview]);
+
   useEffect(() => {
     const checkSelection = () => {
       const { from, to } = editor.state.selection;
       const hasSelection = from !== to;
+      // Don't collapse the menu while a popup/preview is open — the user
+      // is interacting with a textarea, not the editor.
+      if (popupOpenRef.current) return;
       setVisible(hasSelection);
       if (!hasSelection) {
         setShowTranslate(false);
@@ -53,7 +64,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
     const handleBlur = () => {
       setTimeout(() => {
-        if (!interactingRef.current) {
+        if (!interactingRef.current && !popupOpenRef.current) {
           setVisible(false);
         }
       }, 300);
@@ -244,10 +255,12 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
         </button>
 
         {showCustom && (
-          <div className="absolute bottom-full right-0 mb-1 bg-ink/95 border border-gold/20 rounded-lg shadow-lg p-2 w-[280px]">
+          <div className="absolute bottom-full right-0 mb-1 bg-ink/95 border border-gold/20 rounded-lg shadow-lg p-2 w-[280px] z-50">
             <textarea
+              autoFocus
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
               placeholder={t("aiEdit.customPlaceholder") || "Tell AI what to do with the selected text..."}
               className="w-full bg-white/10 text-white text-[0.7rem] rounded px-2 py-1.5 border border-white/20 focus:border-gold focus:outline-none resize-none h-16 placeholder:text-white/40"
               onKeyDown={(e) => {
