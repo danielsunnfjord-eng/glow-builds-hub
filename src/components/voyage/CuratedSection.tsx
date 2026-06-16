@@ -82,15 +82,15 @@ const CuratedSection = () => {
 
         <div className="relative z-10 px-16 pb-24 max-md:px-6 max-md:pb-16">
           <div className="max-w-[700px]">
-            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-8 animate-fade-up">
-              <div className="w-[30px] h-px bg-gold" />
+            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-8 animate-fade-up">
+              <div className="w-[30px] h-px bg-ink" />
               {t("hero.badge")}
             </div>
-            <h1 className="font-serif text-[clamp(3.2rem,7vw,6rem)] font-bold leading-[0.95] text-voyage-white mb-4 tracking-tight animate-fade-up-1">
+            <h1 className="font-serif text-[clamp(3.2rem,7vw,6rem)] font-bold leading-[0.95] text-ink mb-4 tracking-tight animate-fade-up-1">
               {t("hero.title1")}
-              <em className="block italic font-normal text-gold-2">{t("hero.title2")}</em>
+              <em className="block italic font-normal text-gold">{t("hero.title2")}</em>
             </h1>
-            <p className="text-base font-light text-voyage-white/60 max-w-[460px] leading-relaxed mb-0 animate-fade-up-2">
+            <p className="text-base font-light text-ink/70 max-w-[460px] leading-relaxed mb-0 animate-fade-up-2">
               {t("hero.subtitle")}
             </p>
           </div>
