@@ -10,6 +10,7 @@ import { htmlToMarkdown, markdownToHtml } from "./markdownHelpers";
 const AI_ACTIONS = [
   { key: "rewrite", icon: "✏️", labelKey: "aiEdit.rewrite" },
   { key: "improve", icon: "✨", labelKey: "aiEdit.improve" },
+  { key: "humanize", icon: "🫶", labelKey: "aiEdit.humanize" },
   { key: "shorten", icon: "📐", labelKey: "aiEdit.shorten" },
   { key: "elaborate", icon: "📝", labelKey: "aiEdit.elaborate" },
   { key: "format", icon: "📋", labelKey: "aiEdit.format" },
