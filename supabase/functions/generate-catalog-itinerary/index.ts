@@ -122,28 +122,30 @@ Deno.serve(async (req) => {
     if (mode === 'section') {
       userPrompts.push(
         `Write the response entirely in ${langName}.\n\n` +
-          `Here is an existing catalogue guide draft (markdown), already in day-by-day format:\n\n` +
+          `Here is an existing catalogue itinerary draft (markdown):\n\n` +
           `"""\n${existing_content}\n"""\n\n` +
-          `Please regenerate ONLY the section described below, keeping the same day-by-day journey style, tone and conventions ` +
-          `(no Morning/Afternoon/Evening sub-headings, logistics woven into narrative, 2–4 short paragraphs per day). ` +
+          `Please regenerate ONLY the section described below, keeping the same premium editorial style, tone and conventions ` +
+          `(Morning / Afternoon / Evening sub-sections of 2-4 sentences each, one-sentence Dining tip and Insider tip, transport guidance woven into the narrative, no clock times, no AI clichés). ` +
           `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
           `Section instruction: ${section_instruction}`,
       );
     } else {
-      // Two-pass day-by-day generation to keep streams flowing and avoid truncation.
+      // Two-pass generation to keep streams flowing and avoid truncation.
       userPrompts.push(
-        `Produce the day-by-day catalogue journey now in markdown. ` +
-          `Write the short editorial introduction (max 2 short paragraphs), then the \`## Trip Overview\` bullet list covering EVERY day of the trip, ` +
-          `then the FIRST HALF of the day-by-day sections in full (\`## Day N — Theme\` headings, italic base/route line, then 2–4 short narrative paragraphs each). ` +
-          `Stop cleanly at the end of a day — do not write Practical Tips yet; the guide will be continued in a follow-up call.`,
+        `Produce the premium editorial itinerary now in markdown. ` +
+          `Write the compelling 2-3 paragraph editorial introduction first (no heading), ` +
+          `then the FIRST HALF of the day-by-day sections in full. ` +
+          `Each day must use a \`## Day N — Theme\` heading and include \`### Morning\`, \`### Afternoon\`, \`### Evening\` sub-sections (2-4 sentences each), plus one-sentence Dining suggestion, Local insider tip, Transport guidance, Reservation guidance (where relevant), and Optional alternatives. ` +
+          `Stop cleanly at the end of a day — the itinerary will be continued in a follow-up call.`,
       );
       userPrompts.push(
-        `Continue the day-by-day catalogue journey. ` +
-          `Do not repeat the introduction, the trip overview, or any days already written. ` +
-          `Start directly with the next \`## Day N — Theme\` heading and complete all remaining days, then write the final \`## Practical Tips\` section. ` +
+        `Continue the premium editorial itinerary. ` +
+          `Do not repeat the introduction or any days already written. ` +
+          `Start directly with the next \`## Day N — Theme\` heading and complete all remaining days using the same Morning / Afternoon / Evening structure with Dining, Insider tip, Transport, Reservation and Optional alternatives sub-items. ` +
           `End naturally — no closing remarks.`,
       );
     }
+
 
     return streamSequentialCalls({ apiKey, systemPrompt, userPrompts });
   } catch (err: any) {
