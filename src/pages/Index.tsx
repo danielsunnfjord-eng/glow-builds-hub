@@ -30,6 +30,7 @@ const Index = () => {
         path="/"
       />
       <Navbar />
+      <Hero />
       <main>
         <CuratedSection />
         <Suspense fallback={null}>
