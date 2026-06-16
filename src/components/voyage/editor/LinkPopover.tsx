@@ -10,7 +10,7 @@ interface LinkPopoverProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: LinkPopoverProps) => {
+const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onOpenChange }: LinkPopoverProps) => {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const ref = useRef<HTMLDivElement>(null);
