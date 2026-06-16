@@ -16,9 +16,14 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
   const ref = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const setOpenWithNotify = (next: boolean) => {
+    setOpen(next);
+    onOpenChange?.(next);
+  };
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpenWithNotify(false);
     };
     if (open) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -33,7 +38,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
 
   return (
     <div className="relative" ref={ref}>
-      <ToolbarButton active={isActive} onClick={() => setOpen(!open)} title={title}>
+      <ToolbarButton active={isActive} onClick={() => setOpenWithNotify(!open)} title={title}>
         🔗
       </ToolbarButton>
 
