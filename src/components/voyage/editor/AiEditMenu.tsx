@@ -146,15 +146,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
         .run();
     }
 
-    // Force an update emit so the parent state captures the formatted markdown
-    // even if TipTap's chained commands don't trigger onUpdate (e.g. setContent
-    // when the new content equals the previous serialized form).
-    const md = htmlToMarkdown(editor.getHTML());
-    // @ts-expect-error - emit is available on the underlying event emitter
-    editor.emit?.("update", { editor, transaction: editor.state.tr });
-    // Fallback: call the change handler indirectly via setContent metadata is
-    // not needed; the chain's setContent above already emits with emitUpdate.
-    void md;
+
 
     toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
     setPreview(null);
