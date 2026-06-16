@@ -129,12 +129,25 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     if (!preview?.result) return;
     // Convert markdown back to HTML so TipTap reinstates headings, lists, emphasis, paragraph breaks.
     const html = markdownToHtml(preview.result);
-    editor
-      .chain()
-      .focus()
-      .deleteRange({ from: preview.from, to: preview.to })
-      .insertContentAt(preview.from, html, { parseOptions: { preserveWhitespace: "full" } })
-      .run();
+    const docSize = editor.state.doc.content.size;
+    const isWholeDoc = preview.from <= 1 && preview.to >= docSize - 1;
+
+    if (isWholeDoc) {
+      // Replace the entire document so block-level nodes (headings, lists)
+      // aren't flattened into the surrounding paragraph context.
+      editor.commands.setContent(html, { emitUpdate: true });
+    } else {
+      // Range replace — pass the range to insertContentAt so ProseMirror
+      // splits the parent block correctly and preserves block-level nodes.
+      editor
+        .chain()
+        .focus()
+        .insertContentAt({ from: preview.from, to: preview.to }, html)
+        .run();
+    }
+
+
+
     toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
     setPreview(null);
   };
