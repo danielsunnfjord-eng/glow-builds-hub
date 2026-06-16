@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
+import Hero from "@/components/voyage/Hero";
 import CuratedSection from "@/components/voyage/CuratedSection";
 import Seo from "@/components/Seo";
 
@@ -29,6 +30,7 @@ const Index = () => {
         path="/"
       />
       <Navbar />
+      <Hero />
       <main>
         <CuratedSection />
         <Suspense fallback={null}>
