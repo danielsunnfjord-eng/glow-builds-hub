@@ -6,6 +6,7 @@ import {
   Plane, BedDouble, Ticket, Car, Ship, Umbrella, Wine, Leaf,
   type LucideIcon,
 } from "lucide-react";
+import heroBg from "@/assets/hero-fjord.png.asset.json";
 
 const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
