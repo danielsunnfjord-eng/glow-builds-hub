@@ -7,6 +7,7 @@ interface LinkPopoverProps {
   onSetLink: (url: string) => void;
   onUnsetLink: () => void;
   title: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title }: LinkPopoverProps) => {
