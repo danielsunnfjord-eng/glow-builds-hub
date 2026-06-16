@@ -54,14 +54,16 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 onSetLink(url);
-                setOpen(false);
+                setOpenWithNotify(false);
+              } else if (e.key === "Escape") {
+                setOpenWithNotify(false);
               }
             }}
           />
           <div className="flex gap-1">
             <button
               type="button"
-              onClick={() => { onSetLink(url); setOpen(false); }}
+              onClick={() => { onSetLink(url); setOpenWithNotify(false); }}
               className="flex-1 text-[0.65rem] bg-gold text-ink rounded px-2 py-1 hover:bg-gold/80"
             >
               Apply
@@ -69,7 +71,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
             {isActive && (
               <button
                 type="button"
-                onClick={() => { onUnsetLink(); setOpen(false); }}
+                onClick={() => { onUnsetLink(); setOpenWithNotify(false); }}
                 className="text-[0.65rem] border border-parchment-3 text-voyage-muted rounded px-2 py-1 hover:bg-parchment"
               >
                 Remove
