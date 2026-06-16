@@ -513,7 +513,50 @@ When asked to add links, embed them inline in the relevant paragraph as plain UR
       }
     }
 
-    // ============ INTRODUCTION ============
+    // ============ ABOUT OUR ITINERARIES & SERVICE (static company intro) ============
+    pdf.addPage();
+    {
+      pdf.setTextColor(...GOLD); pdf.setFont("helvetica", "bold"); pdf.setFontSize(10);
+      pdf.text("WELCOME", M, 70);
+      pdf.setDrawColor(...GOLD); pdf.line(M, 76, M + 30, 76);
+
+      pdf.setTextColor(...INK); pdf.setFont("times", "bold"); pdf.setFontSize(26);
+      let ay = 110;
+      pdf.text("About Our Itineraries & Service", M, ay);
+      ay += 36;
+
+      const aboutSections: Array<{ heading: string; body: string }> = [
+        {
+          heading: "About These Itineraries",
+          body:
+            "These itineraries are created with care and intention — designed to inspire you, spark ideas, and help you start shaping unforgettable journeys to destinations around the world. Whether you are dreaming of dramatic fjords, vibrant cities, tropical waves, or remote escapes, our goal is to make travel planning easier, more exciting, and more accessible. Each itinerary reflects genuine local knowledge, thoughtful pacing, and the philosophy that great travel is about meaningful moments, not exhausting checklists.",
+        },
+        {
+          heading: "About Fjord & Waves Travel",
+          body:
+            "At Fjord & Waves Travel, we go beyond inspiration. We offer a fully personalised travel advisory service tailored to your individual preferences, needs, and expectations. My role as a Fora Travel advisor and IATA-accredited travel professional is to understand each client's travel style, interests, and expectations — then design a journey that feels uniquely yours. From destination selection to accommodation curation, activity planning, and seamless logistics, we take care of every detail so you can focus on the experience itself.",
+        },
+        {
+          heading: "Ready for a Bespoke Journey?",
+          body:
+            "If you're ready to move beyond a pre-designed itinerary and turn inspiration into a fully personalised travel experience, I would love to help. Get in touch at hello@fjordwavestravel.com or visit fjordwavestravel.com to start crafting your next adventure — one designed precisely for you.",
+        },
+      ];
+
+      for (const sec of aboutSections) {
+        if (ay > H - 120) { pdf.addPage(); ay = 80; }
+        pdf.setFont("times", "bold"); pdf.setFontSize(15); pdf.setTextColor(...INK);
+        pdf.text(sec.heading, M, ay); ay += 8;
+        pdf.setDrawColor(...GOLD); pdf.setLineWidth(0.5);
+        pdf.line(M, ay, M + 24, ay);
+        ay += 14;
+        pdf.setFont("times", "normal"); pdf.setFontSize(11); pdf.setTextColor(...INK);
+        ay = addWrapped(pdf, sec.body, M, ay, contentW, 16);
+        ay += 18;
+      }
+    }
+
+    // ============ DESTINATION-SPECIFIC EDITORIAL INTRODUCTION ============
     pdf.addPage();
     pdf.setTextColor(...GOLD);
     pdf.setFont("helvetica", "bold");
