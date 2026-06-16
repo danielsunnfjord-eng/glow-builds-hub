@@ -129,12 +129,33 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     if (!preview?.result) return;
     // Convert markdown back to HTML so TipTap reinstates headings, lists, emphasis, paragraph breaks.
     const html = markdownToHtml(preview.result);
-    editor
-      .chain()
-      .focus()
-      .deleteRange({ from: preview.from, to: preview.to })
-      .insertContentAt(preview.from, html, { parseOptions: { preserveWhitespace: "full" } })
-      .run();
+    const docSize = editor.state.doc.content.size;
+    const isWholeDoc = preview.from <= 1 && preview.to >= docSize - 1;
+
+    if (isWholeDoc) {
+      // Replace the entire document so block-level nodes (headings, lists)
+      // aren't flattened into the surrounding paragraph context.
+      editor.commands.setContent(html, { emitUpdate: true });
+    } else {
+      // Range replace — pass the range to insertContentAt so ProseMirror
+      // splits the parent block correctly and preserves block-level nodes.
+      editor
+        .chain()
+        .focus()
+        .insertContentAt({ from: preview.from, to: preview.to }, html)
+        .run();
+    }
+
+    // Force an update emit so the parent state captures the formatted markdown
+    // even if TipTap's chained commands don't trigger onUpdate (e.g. setContent
+    // when the new content equals the previous serialized form).
+    const md = htmlToMarkdown(editor.getHTML());
+    // @ts-expect-error - emit is available on the underlying event emitter
+    editor.emit?.("update", { editor, transaction: editor.state.tr });
+    // Fallback: call the change handler indirectly via setContent metadata is
+    // not needed; the chain's setContent above already emits with emitUpdate.
+    void md;
+
     toast({ title: `${t("aiEdit.applied") || "AI applied"} ✓` });
     setPreview(null);
   };
