@@ -154,12 +154,28 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       <LinkPopover
         isActive={editor.isActive("link")}
         currentHref={linkHref}
-        onSetLink={(url) => {
-          if (url) {
-            editor.chain().focus().extendMarkRange("link").setLink({ href: url, target: "_blank" }).run();
+        onOpenChange={(open) => {
+          if (open) {
+            const { from, to } = editor.state.selection;
+            savedSelection.current = { from, to };
           }
         }}
-        onUnsetLink={() => editor.chain().focus().unsetLink().run()}
+        onSetLink={(url) => {
+          if (!url) return;
+          const href = /^(https?:|mailto:|tel:|\/|#)/i.test(url) ? url : `https://${url}`;
+          const sel = savedSelection.current;
+          const chain = editor.chain().focus();
+          if (sel) chain.setTextSelection(sel);
+          // If nothing is selected, expand to the link mark range so we update the existing link.
+          if (sel && sel.from === sel.to) chain.extendMarkRange("link");
+          chain.setLink({ href, target: "_blank", rel: "noopener noreferrer" }).run();
+        }}
+        onUnsetLink={() => {
+          const sel = savedSelection.current;
+          const chain = editor.chain().focus();
+          if (sel) chain.setTextSelection(sel);
+          chain.extendMarkRange("link").unsetLink().run();
+        }}
         title="Link"
       />
 
