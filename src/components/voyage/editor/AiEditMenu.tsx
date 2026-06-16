@@ -41,10 +41,20 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   // Preview state
   const [preview, setPreview] = useState<{ original: string; result: string; from: number; to: number } | null>(null);
 
+  // Track popup state in a ref so the editor blur handler (registered once)
+  // can read the latest value without re-binding.
+  const popupOpenRef = useRef(false);
+  useEffect(() => {
+    popupOpenRef.current = showCustom || showTranslate || !!preview;
+  }, [showCustom, showTranslate, preview]);
+
   useEffect(() => {
     const checkSelection = () => {
       const { from, to } = editor.state.selection;
       const hasSelection = from !== to;
+      // Don't collapse the menu while a popup/preview is open — the user
+      // is interacting with a textarea, not the editor.
+      if (popupOpenRef.current) return;
       setVisible(hasSelection);
       if (!hasSelection) {
         setShowTranslate(false);
@@ -54,7 +64,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
 
     const handleBlur = () => {
       setTimeout(() => {
-        if (!interactingRef.current) {
+        if (!interactingRef.current && !popupOpenRef.current) {
           setVisible(false);
         }
       }, 300);
