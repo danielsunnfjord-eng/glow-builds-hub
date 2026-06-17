@@ -341,20 +341,48 @@
   box-shadow: 0 8px 40px rgba(19,17,14,0.18);
   /* Match printed PDF margins exactly — comfortable top & bottom. */
   padding: 26mm 22mm 28mm;
-  /* Faint horizontal guide every A4 page so the writer can see where
-     the next page will start. The guide is layered behind the content. */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(297mm - 1px),
-    rgba(180, 140, 60, 0.35) calc(297mm - 1px),
-    rgba(180, 140, 60, 0.35) 297mm,
-    transparent 297mm,
-    transparent calc(297mm + 24px),
-    rgba(232, 224, 208, 1) calc(297mm + 24px),
-    rgba(232, 224, 208, 1) calc(297mm + 24px)
-  );
+  /* Page-boundary band every 297mm — clearly visible gutter between A4
+     pages, plus left/right margin guide stripes. */
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(297mm - 2px),
+      #B48C3C calc(297mm - 2px),
+      #B48C3C 297mm,
+      #e8e0d0 297mm,
+      #e8e0d0 calc(297mm + 18px),
+      #B48C3C calc(297mm + 18px),
+      #B48C3C calc(297mm + 20px)
+    ),
+    linear-gradient(to right,
+      transparent 0,
+      transparent calc(22mm - 1px),
+      rgba(180,140,60,0.40) calc(22mm - 1px),
+      rgba(180,140,60,0.40) 22mm,
+      transparent 22mm,
+      transparent calc(100% - 22mm),
+      rgba(180,140,60,0.40) calc(100% - 22mm),
+      rgba(180,140,60,0.40) calc(100% - 22mm + 1px),
+      transparent calc(100% - 22mm + 1px)
+    );
+  background-repeat: repeat-y, repeat-y;
+  background-position: 0 0, 0 0;
+  background-size: 100% auto, 100% 100%;
 }
+/* Top & bottom margin guides on the first page. */
+.fjw-a4-sheet::before,
+.fjw-a4-sheet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+  border-top: 1px dashed rgba(180,140,60,0.55);
+}
+.fjw-a4-sheet::before { top: 26mm; }
+.fjw-a4-sheet::after  { bottom: 28mm; }
 .fjw-a4-sheet .fjw-editor-wysiwyg {
   min-height: calc(297mm - 54mm);
 }
