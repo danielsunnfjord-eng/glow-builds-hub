@@ -107,6 +107,8 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
   };
 
   const htmlContent = markdownToHtml(content);
+  // Split the body content on manual page breaks so each chunk renders on its own A4 sheet.
+  const contentChunks = htmlContent.split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i);
   const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
   const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
@@ -141,6 +143,12 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
             👁️ PDF Preview
           </h3>
           <div className="flex gap-2">
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors"
+            >
+              🖨 Print
+            </button>
             <button
               onClick={onExport}
               className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors"
