@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
+  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2, ArrowUp, ArrowDown,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
@@ -942,6 +942,17 @@ const CatalogShopManager = () => {
 
   const addHotel = () => setState((s) => ({ ...s, hotels: [...s.hotels, newHotel()] }));
 
+  const moveHotel = (id: string, direction: -1 | 1) =>
+    setState((s) => {
+      const idx = s.hotels.findIndex((h) => h.id === id);
+      if (idx < 0) return s;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= s.hotels.length) return s;
+      const next = [...s.hotels];
+      [next[idx], next[newIdx]] = [next[newIdx], next[idx]];
+      return { ...s, hotels: next };
+    });
+
   // Pre-publish checklist
   type Check = { key: string; label: string; ok: boolean };
   const buildChecklist = (s: EditorState): Check[] => [
@@ -1598,6 +1609,24 @@ const CatalogShopManager = () => {
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="text-[0.7rem] uppercase tracking-wider text-voyage-muted">Hotel #{i + 1}</div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveHotel(h.id, -1)}
+                        disabled={i === 0}
+                        title="Move up"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveHotel(h.id, 1)}
+                        disabled={i === state.hotels.length - 1}
+                        title="Move down"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </Button>
                       <label className="flex items-center gap-1.5 text-[0.75rem] cursor-pointer">
                         <input
                           type="checkbox"
