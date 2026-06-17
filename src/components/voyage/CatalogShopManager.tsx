@@ -942,6 +942,17 @@ const CatalogShopManager = () => {
 
   const addHotel = () => setState((s) => ({ ...s, hotels: [...s.hotels, newHotel()] }));
 
+  const moveHotel = (id: string, direction: -1 | 1) =>
+    setState((s) => {
+      const idx = s.hotels.findIndex((h) => h.id === id);
+      if (idx < 0) return s;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= s.hotels.length) return s;
+      const next = [...s.hotels];
+      [next[idx], next[newIdx]] = [next[newIdx], next[idx]];
+      return { ...s, hotels: next };
+    });
+
   // Pre-publish checklist
   type Check = { key: string; label: string; ok: boolean };
   const buildChecklist = (s: EditorState): Check[] => [
