@@ -388,6 +388,8 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
                 ...pageStyle,
                 background: "#FFFFFF",
                 padding: "22mm 22mm 26mm",
+                maxHeight: "none",
+                overflow: "visible",
               }}
             >
               {/* Small header */}
