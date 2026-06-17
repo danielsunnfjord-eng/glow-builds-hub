@@ -108,7 +108,15 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
 
   const htmlContent = markdownToHtml(content);
   // Split the body content on manual page breaks so each chunk renders on its own A4 sheet.
-  const contentChunks = htmlContent.split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i);
+  // Filter out empty / whitespace-only chunks (leading, trailing, or consecutive breaks) — these
+  // would otherwise render as fully blank A4 sheets in both the preview and the printed PDF.
+  const isMeaningfulChunk = (html: string) => {
+    const stripped = html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+    return stripped.length > 0 || /<img\b/i.test(html);
+  };
+  const contentChunks = htmlContent
+    .split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i)
+    .filter(isMeaningfulChunk);
   const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
   const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
