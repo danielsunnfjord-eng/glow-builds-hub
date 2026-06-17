@@ -281,6 +281,19 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
 
       <ToolbarSep />
 
+      {/* Page break */}
+      <ToolbarButton
+        onClick={() => (editor.chain().focus() as any).insertPageBreak().run()}
+        title="Insert page break (Ctrl/Cmd+Enter)"
+        className="inline-flex items-center gap-1"
+      >
+        <FileText className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
+      <ToolbarSep />
+
+
+
 
 
       {/* Undo/Redo */}
