@@ -146,12 +146,12 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       }
       scrollTarget.addEventListener("scroll", calc, { passive: true });
       window.addEventListener("resize", calc);
-      const off = editor.on("update", calc);
+      editor.on("update", calc);
       return () => {
         ro.disconnect();
         scrollTarget.removeEventListener("scroll", calc as any);
         window.removeEventListener("resize", calc);
-        (off as any)?.();
+        editor.off("update", calc);
       };
     }, [editor]);
 
