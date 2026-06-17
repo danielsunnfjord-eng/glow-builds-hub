@@ -108,7 +108,15 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
 
   const htmlContent = markdownToHtml(content);
   // Split the body content on manual page breaks so each chunk renders on its own A4 sheet.
-  const contentChunks = htmlContent.split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i);
+  // Filter out empty / whitespace-only chunks (leading, trailing, or consecutive breaks) — these
+  // would otherwise render as fully blank A4 sheets in both the preview and the printed PDF.
+  const isMeaningfulChunk = (html: string) => {
+    const stripped = html.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+    return stripped.length > 0 || /<img\b/i.test(html);
+  };
+  const contentChunks = htmlContent
+    .split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i)
+    .filter(isMeaningfulChunk);
   const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
   const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
@@ -117,6 +125,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
     width: "210mm",
     maxWidth: "100%",
     minHeight: "297mm",
+    maxHeight: "297mm",
     background: "#F6F4EE",
     margin: "0 auto 24px",
     boxShadow: "0 8px 40px rgba(19,17,14,0.18)",
@@ -379,6 +388,8 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
                 ...pageStyle,
                 background: "#FFFFFF",
                 padding: "22mm 22mm 26mm",
+                maxHeight: "none",
+                overflow: "visible",
               }}
             >
               {/* Small header */}
@@ -698,10 +709,14 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
             box-shadow: none !important;
             border-radius: 0 !important;
             width: 210mm !important;
-            min-height: 297mm !important;
+            /* Let each sheet grow with its content so long chunks auto-paginate;
+               page-break-after below forces a clean A4 break between sheets. */
+            min-height: 0 !important;
+            height: auto !important;
             page-break-after: always !important;
             break-after: page !important;
-            page-break-inside: avoid !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
