@@ -1609,6 +1609,24 @@ const CatalogShopManager = () => {
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="text-[0.7rem] uppercase tracking-wider text-voyage-muted">Hotel #{i + 1}</div>
                     <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveHotel(h.id, -1)}
+                        disabled={i === 0}
+                        title="Move up"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveHotel(h.id, 1)}
+                        disabled={i === state.hotels.length - 1}
+                        title="Move down"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </Button>
                       <label className="flex items-center gap-1.5 text-[0.75rem] cursor-pointer">
                         <input
                           type="checkbox"
