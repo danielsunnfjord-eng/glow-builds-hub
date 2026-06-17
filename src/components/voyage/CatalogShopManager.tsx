@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2,
+  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2, ArrowUp, ArrowDown,
 } from "lucide-react";
 import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
