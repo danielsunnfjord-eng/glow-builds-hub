@@ -387,7 +387,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
               style={{
                 ...pageStyle,
                 background: "#FFFFFF",
-                padding: "22mm 22mm 26mm",
+                padding: "26mm 22mm 28mm",
                 maxHeight: "none",
                 overflow: "visible",
               }}
