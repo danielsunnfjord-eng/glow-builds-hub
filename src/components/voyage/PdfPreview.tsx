@@ -125,6 +125,7 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
     width: "210mm",
     maxWidth: "100%",
     minHeight: "297mm",
+    maxHeight: "297mm",
     background: "#F6F4EE",
     margin: "0 auto 24px",
     boxShadow: "0 8px 40px rgba(19,17,14,0.18)",
