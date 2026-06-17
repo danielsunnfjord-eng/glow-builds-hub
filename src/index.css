@@ -287,3 +287,109 @@
   60%  { background-color: rgba(250, 204, 21, 0.30); box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.10); }
   100% { background-color: transparent;               box-shadow: 0 0 0 0 transparent; }
 }
+
+/* ============================================================
+   A4 page-view editor canvas (Word-like paginated view)
+   ============================================================ */
+.fjw-editor-shell {
+  /* The shell already provides a grey gutter via bg-[#e8e0d0]. */
+}
+.fjw-a4-sheet {
+  position: relative;
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  background: #ffffff;
+  box-shadow: 0 8px 40px rgba(19,17,14,0.18);
+  /* Match printed PDF margins exactly. */
+  padding: 22mm 22mm 26mm;
+  /* Faint horizontal guide every A4 page so the writer can see where
+     the next page will start. The guide is layered behind the content. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(297mm - 1px),
+    rgba(180, 140, 60, 0.35) calc(297mm - 1px),
+    rgba(180, 140, 60, 0.35) 297mm,
+    transparent 297mm,
+    transparent calc(297mm + 24px),
+    rgba(232, 224, 208, 1) calc(297mm + 24px),
+    rgba(232, 224, 208, 1) calc(297mm + 24px)
+  );
+}
+.fjw-a4-sheet .fjw-editor-wysiwyg {
+  min-height: calc(297mm - 48mm);
+}
+
+/* Manual page break — visible divider inside the editor. */
+.fjw-page-break {
+  display: block;
+  position: relative;
+  height: 1px;
+  margin: 18px 0;
+  background: transparent;
+  border-top: 2px dashed #B48C3C;
+  page-break-before: always;
+  break-before: page;
+}
+.fjw-page-break::after {
+  content: "— Page Break —";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  color: #B48C3C;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0 10px;
+  font-weight: 600;
+}
+.ProseMirror-selectednode.fjw-page-break {
+  outline: 2px solid #B48C3C;
+  outline-offset: 4px;
+}
+
+/* "Page X of Y" floating pill, bottom-right of the editor shell. */
+.fjw-page-pill {
+  position: sticky;
+  bottom: 12px;
+  margin-left: auto;
+  margin-right: 16px;
+  width: fit-content;
+  background: rgba(30, 45, 61, 0.92);
+  color: #F6F4EE;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Print rules — A4 sheets + manual page breaks honoured. */
+@media print {
+  .fjw-editor-shell,
+  .fjw-a4-sheet {
+    background: #fff !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    padding: 22mm 22mm 26mm !important;
+    margin: 0 !important;
+  }
+  .fjw-page-break {
+    border: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+  .fjw-page-break::after { display: none !important; }
+  .fjw-pdf-shell { position: static !important; background: #fff !important; padding: 0 !important; }
+  .fjw-pdf-shell > div { box-shadow: none !important; background: #fff !important; max-width: none !important; }
+  .fjw-print-root { padding: 0 !important; background: #fff !important; overflow: visible !important; }
+}
