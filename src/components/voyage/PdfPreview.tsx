@@ -706,10 +706,20 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
             box-shadow: none !important;
             border-radius: 0 !important;
             width: 210mm !important;
-            min-height: 297mm !important;
+            /* Slightly under 297mm so sub-pixel rendering doesn't push a blank
+               page after every sheet. The page-break-after below still forces
+               a clean A4 break between sheets. */
+            min-height: 0 !important;
+            height: auto !important;
+            max-height: 297mm !important;
             page-break-after: always !important;
             break-after: page !important;
-            page-break-inside: avoid !important;
+            /* Do NOT use page-break-inside: avoid on a sheet this tall — if it
+               doesn't fit perfectly, the browser pushes the whole thing to the
+               next page, leaving a blank page behind it. */
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+            overflow: hidden !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
