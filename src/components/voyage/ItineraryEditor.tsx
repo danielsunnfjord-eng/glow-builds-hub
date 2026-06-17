@@ -12,9 +12,10 @@ import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Link from "@tiptap/extension-link";
-import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useRef, forwardRef, useImperativeHandle, useState, useLayoutEffect } from "react";
 import Toolbar from "./editor/Toolbar";
 import AiEditMenu from "./editor/AiEditMenu";
+import { PageBreak } from "./editor/PageBreak";
 import { markdownToHtml, htmlToMarkdown } from "./editor/markdownHelpers";
 
 interface ItineraryEditorProps {
@@ -31,6 +32,8 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
   ({ content, onContentChange, placeholder }, ref) => {
     const isInternalUpdate = useRef(false);
     const lastExternalContent = useRef(content);
+    const sheetRef = useRef<HTMLDivElement>(null);
+    const [pageInfo, setPageInfo] = useState<{ current: number; total: number }>({ current: 1, total: 1 });
 
     const editor = useEditor({
       extensions: [
@@ -56,12 +59,13 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
           openOnClick: false,
           HTMLAttributes: { class: "text-blue-600 underline cursor-pointer" },
         }),
+        PageBreak,
       ],
       content: markdownToHtml(content),
       editorProps: {
         attributes: {
           class:
-            "fjw-editor-wysiwyg max-w-none p-10 min-h-[420px] focus:outline-none",
+            "fjw-editor-wysiwyg max-w-none focus:outline-none",
         },
       },
 
@@ -92,8 +96,6 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
           const html = markdownToHtml(content);
           editor.commands.setContent(html, { emitUpdate: false });
         } catch (err) {
-          // Never let a malformed AI rewrite tear down the editor / dialog tree.
-          // Fall back to inserting raw text so the user keeps their session.
           console.error("[ItineraryEditor] setContent failed, falling back to plain text", err);
           try {
             editor.commands.setContent(content || "", { emitUpdate: false });
@@ -104,16 +106,70 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       }
     }, [content, editor]);
 
+    // Compute "Page X of Y" from the rendered editor height vs A4 height (1123px @ 96dpi),
+    // accounting for manual page breaks.
+    useLayoutEffect(() => {
+      if (!editor || !sheetRef.current) return;
+      const PAGE_PX = 1123; // 297mm at 96dpi
+      const calc = () => {
+        const sheet = sheetRef.current;
+        if (!sheet) return;
+        const editorEl = sheet.querySelector(".fjw-editor-wysiwyg") as HTMLElement | null;
+        if (!editorEl) return;
+        const manualBreaks = editorEl.querySelectorAll(".fjw-page-break").length;
+        const total = Math.max(1, Math.ceil(editorEl.scrollHeight / PAGE_PX) + manualBreaks);
+        // Current page: based on the nearest scrolling ancestor.
+        let scrollEl: HTMLElement | Window = window;
+        let parent: HTMLElement | null = sheet.parentElement;
+        while (parent) {
+          const oy = getComputedStyle(parent).overflowY;
+          if (oy === "auto" || oy === "scroll") { scrollEl = parent; break; }
+          parent = parent.parentElement;
+        }
+        const sheetRect = sheet.getBoundingClientRect();
+        const containerRect = scrollEl === window
+          ? { top: 0, height: window.innerHeight }
+          : (scrollEl as HTMLElement).getBoundingClientRect();
+        const offsetIntoSheet = Math.max(0, containerRect.top - sheetRect.top);
+        const current = Math.min(total, Math.max(1, Math.floor(offsetIntoSheet / PAGE_PX) + 1));
+        setPageInfo((prev) => (prev.current === current && prev.total === total ? prev : { current, total }));
+      };
+      calc();
+      const ro = new ResizeObserver(calc);
+      ro.observe(sheetRef.current);
+      let scrollTarget: HTMLElement | Window = window;
+      let parent: HTMLElement | null = sheetRef.current.parentElement;
+      while (parent) {
+        const oy = getComputedStyle(parent).overflowY;
+        if (oy === "auto" || oy === "scroll") { scrollTarget = parent; break; }
+        parent = parent.parentElement;
+      }
+      scrollTarget.addEventListener("scroll", calc, { passive: true });
+      window.addEventListener("resize", calc);
+      const off = editor.on("update", calc);
+      return () => {
+        ro.disconnect();
+        scrollTarget.removeEventListener("scroll", calc as any);
+        window.removeEventListener("resize", calc);
+        (off as any)?.();
+      };
+    }, [editor]);
+
     if (!editor) return null;
 
     return (
-      <div className="bg-voyage-white relative">
-        <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm">
+      <div className="bg-[#e8e0d0] relative fjw-editor-shell">
+        <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm fjw-no-print">
           <Toolbar editor={editor} />
         </div>
-        <div className="relative">
-          <EditorContent editor={editor} />
-          <AiEditMenu editor={editor} />
+        <div className="relative py-6 px-4 flex justify-center">
+          <div ref={sheetRef} className="fjw-a4-sheet" data-page-sheet>
+            <EditorContent editor={editor} />
+            <AiEditMenu editor={editor} />
+          </div>
+        </div>
+        <div className="fjw-page-pill fjw-no-print">
+          Page {pageInfo.current} of {pageInfo.total}
         </div>
       </div>
     );
