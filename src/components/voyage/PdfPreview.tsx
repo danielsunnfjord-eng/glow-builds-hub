@@ -107,6 +107,8 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
   };
 
   const htmlContent = markdownToHtml(content);
+  // Split the body content on manual page breaks so each chunk renders on its own A4 sheet.
+  const contentChunks = htmlContent.split(/<div[^>]*class=["'][^"']*fjw-page-break[^"']*["'][^>]*>\s*<\/div>/i);
   const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
   const dateRange = formatDateRange(project?.start_date, project?.end_date);
   const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
@@ -141,6 +143,12 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
             👁️ PDF Preview
           </h3>
           <div className="flex gap-2">
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors"
+            >
+              🖨 Print
+            </button>
             <button
               onClick={onExport}
               className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors"
@@ -363,64 +371,69 @@ const PdfPreview = ({ content, project, hotels, onClose, onExport, language }: P
           </div>
 
           {/* ============ CONTENT PAGE(S) ============ */}
-          <div
-            className="fjw-print-page"
-            style={{
-              ...pageStyle,
-              background: "#FFFFFF",
-              padding: "22mm 22mm 26mm",
-            }}
-          >
-            {/* Small header */}
+          {contentChunks.map((chunk, ci) => (
             <div
+              key={`content-${ci}`}
+              className="fjw-print-page"
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "1px solid #DCCEB8",
-                paddingBottom: "10px",
-                marginBottom: "20px",
+                ...pageStyle,
+                background: "#FFFFFF",
+                padding: "22mm 22mm 26mm",
               }}
             >
-              <img
-                src={logoHorizontal}
-                alt="Fjord & Waves"
-                crossOrigin="anonymous"
-                style={{ height: "22px" }}
-              />
-              <p
+              {/* Small header */}
+              <div
                 style={{
-                  fontSize: "10px",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "#4C6F75",
-                  margin: 0,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #DCCEB8",
+                  paddingBottom: "10px",
+                  marginBottom: "20px",
                 }}
               >
-                {project?.destination || L.itinerary}
-                {dateRange ? ` · ${dateRange}` : ""}
-              </p>
-            </div>
+                <img
+                  src={logoHorizontal}
+                  alt="Fjord & Waves"
+                  crossOrigin="anonymous"
+                  style={{ height: "22px" }}
+                />
+                <p
+                  style={{
+                    fontSize: "10px",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    color: "#4C6F75",
+                    margin: 0,
+                  }}
+                >
+                  {project?.destination || L.itinerary}
+                  {dateRange ? ` · ${dateRange}` : ""}
+                </p>
+              </div>
 
-            <div
-              className="pdf-preview-content"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
+              <div
+                className="pdf-preview-content"
+                dangerouslySetInnerHTML={{ __html: chunk }}
+              />
 
-            <div
-              style={{
-                textAlign: "center",
-                marginTop: "32px",
-                fontSize: "10px",
-                color: "#4C6F75",
-                borderTop: "1px solid #DCCEB8",
-                paddingTop: "12px",
-                letterSpacing: "0.1em",
-              }}
-            >
-              © {new Date().getFullYear()} Fjord & Waves Travel · Org.nr: 928804860
+              {ci === contentChunks.length - 1 && (
+                <div
+                  style={{
+                    textAlign: "center",
+                    marginTop: "32px",
+                    fontSize: "10px",
+                    color: "#4C6F75",
+                    borderTop: "1px solid #DCCEB8",
+                    paddingTop: "12px",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  © {new Date().getFullYear()} Fjord & Waves Travel · Org.nr: 928804860
+                </div>
+              )}
             </div>
-          </div>
+          ))}
 
           {/* ============ WHERE TO STAY ============ */}
           {visibleHotels.length > 0 && (

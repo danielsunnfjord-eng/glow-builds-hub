@@ -6,7 +6,11 @@ import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, FileText } from "lucide-react";
+
+
+
+
 
 
 
@@ -276,6 +280,19 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       </ToolbarButton>
 
       <ToolbarSep />
+
+      {/* Page break */}
+      <ToolbarButton
+        onClick={() => (editor.chain().focus() as any).insertPageBreak().run()}
+        title="Insert page break (Ctrl/Cmd+Enter)"
+        className="inline-flex items-center gap-1"
+      >
+        <FileText className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
+      <ToolbarSep />
+
+
 
 
 

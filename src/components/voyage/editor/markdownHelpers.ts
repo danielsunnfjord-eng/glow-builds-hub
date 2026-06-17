@@ -15,6 +15,8 @@ export function cleanMarkdown(md: string): string {
 export function markdownToHtml(md: string): string {
   if (!md) return "";
   let cleaned = cleanMarkdown(md);
+  // Manual page-break token (round-tripped via Turndown rule below).
+  cleaned = cleaned.replace(/<!--\s*pagebreak\s*-->/gi, '<div class="fjw-page-break" data-page-break="true"></div>');
   let html = cleaned
     // Image with markdown title attribute = photo credit. Caption taken from alt.
     .replace(/!\[([^\]]*)\]\(([^)\s]+)\s+"([^"]*)"\)/g, (_m, alt, src, credit) => {
@@ -61,7 +63,8 @@ export function markdownToHtml(md: string): string {
         trimmed.startsWith("<blockquote") ||
         trimmed.startsWith("<figure") ||
         trimmed.startsWith("<img") ||
-        trimmed.startsWith("<table")
+        trimmed.startsWith("<table") ||
+        trimmed.startsWith("<div")
       )
         return trimmed;
       return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
@@ -104,6 +107,15 @@ turndownService.addRule("imageWithTitle", {
     const title = (el.getAttribute("title") || "").replace(/"/g, "'");
     return `\n\n![${alt}](${src} "${title}")\n`;
   },
+});
+
+// Manual page break (<div class="fjw-page-break">) → markdown comment token.
+turndownService.addRule("pageBreak", {
+  filter: (node) =>
+    node.nodeName === "DIV" &&
+    ((node as HTMLElement).classList?.contains("fjw-page-break") ||
+      (node as HTMLElement).getAttribute?.("data-page-break") === "true"),
+  replacement: () => "\n\n<!--pagebreak-->\n\n",
 });
 
 export function htmlToMarkdown(html: string): string {

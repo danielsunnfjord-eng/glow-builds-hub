@@ -1,42 +1,59 @@
-## Root causes
+## Goal
+Make Module 1 (project itinerary) and Module 2 (catalogue itinerary) editors render as scrollable A4 "pages" matching the printed PDF, with manual page breaks, live page numbers, and a native Print button.
 
-### 1. Heading button changes "the whole text"
-TipTap's `toggleHeading` is a **block-level** transform: it converts the entire paragraph node containing the cursor/selection, regardless of how many characters are highlighted. That alone is expected, but the real problem in our editor is that **AI-generated content often arrives as one giant paragraph** because `markdownToHtml` only splits paragraphs on double newlines (`\n\n`), and AI output (and the recent `ai-text-transform` strip-markdown pass) collapses paragraph boundaries to single `\n`. Result: the "whole document" is one `<p>` block, so toggling H2 turns *everything* into an H2.
+## Important caveat (please read before I build)
+True content-aware pagination in TipTap (auto-splitting a paragraph across two A4 pages mid-sentence) requires a custom ProseMirror layout engine and is brittle. I will deliver a **visually paginated A4 view** that is correct for the vast majority of cases:
 
-### 2. AI polish wipes headers, lists, paragraphs
-In `AiEditMenu.tsx`, the selection is extracted with `editor.state.doc.textBetween(from, to, " ")` — **plain text only, no markup**. The `ai-text-transform` edge function's system prompt then explicitly tells the model: *"Do NOT use markdown syntax (no ##, no **, no -...)"* and a post-processing pass strips any markdown the model produces anyway. The plain-text result is reinserted via `insertContentAt`, which drops every heading/list/bold in the selection.
+- The editor canvas is a single 210mm-wide A4 column with the exact PDF margins, fonts, sizes, and line-height (so it looks identical to the printed page).
+- Page boundaries are drawn as a repeating horizontal guide every 297mm so you can clearly see where the page break will fall as you type.
+- Manual page breaks (toolbar button + `Ctrl/Cmd+Enter`) insert a hard A4 page boundary that is honoured both on screen and in the PDF/print output.
+- "Page X of Y" is computed live from the editor's pixel height plus any manual breaks.
+- Printing uses the browser's native dialog with `@page { size: A4 }` and `page-break-before: always` on each manual break.
 
-## Fix plan
+If you need true automatic mid-paragraph splitting (Word-style "content reflows across pages as you type"), that is a much larger effort — say the word and I'll scope it as a follow-up.
 
-### A. Preserve formatting through the AI round-trip
-- `AiEditMenu.tsx`
-  - Extract the selected slice as **HTML** (`editor.view.dom`-scoped serializer, or `editor.state.doc.cut(from,to)` → ProseMirror `DOMSerializer`), then convert to **markdown** via the existing `htmlToMarkdown` helper.
-  - Send that markdown to the edge function.
-  - Convert the returned markdown back to HTML via `markdownToHtml` and insert with `insertContentAt(from, html, { parseOptions: { preserveWhitespace: 'full' } })` (or `editor.commands.insertContent(html)` after `deleteRange`).
-  - Update `AiPreviewPanel` to render the original/preview as HTML (or at least preserve line breaks) so the user previews the formatted result, not a flattened string.
-- `supabase/functions/ai-text-transform/index.ts`
-  - Replace the "no markdown" rules with: *"Preserve the input's markdown structure exactly — keep all `#`/`##`/`###` headings, `**bold**`, `*italic*`, bullet/numbered lists, blockquotes and blank-line paragraph breaks. Only rewrite the prose inside those structures."*
-  - Remove the post-processing strip block (`replace(/^#+\s*/gm, "")`, `**…**` stripping, `*…*` stripping, `^[-*]\s+` → `• `) so headings and emphasis survive.
-  - Keep `translate_*` actions on the same "preserve structure" rule.
+## Changes
 
-### B. Make heading toggle behave intuitively
-TipTap cannot turn a *substring* of a paragraph into a heading (headings are whole blocks). Two complementary improvements:
-1. **Ensure paragraph breaks survive the markdown round-trip.** In `markdownHelpers.ts`, normalize incoming content so single `\n` between sentence groups doesn't get glued into one `<p>`. Concretely: in `markdownToHtml`, after image/heading replacements, treat any line that follows a blank line or another block as a new paragraph; and in `cleanMarkdown`, collapse triple+ newlines to `\n\n` but never collapse `\n\n` down to `\n`. Also harden the AI-output formatter (`ai-text-transform`) to keep the blank lines between paragraphs (see fix A) so polished output stays multi-paragraph.
-2. **Toolbar feedback for headings.** In `Toolbar.tsx`, when the user clicks H1/H2/H3 with a *partial* selection inside a paragraph, first expand the selection to the full block (using `editor.commands.selectParentNode()` equivalent: `setTextSelection` to the block's start/end via `$from.before()` / `$from.after()`), so the visible behavior matches the result and there's no surprise. Add a small `title` tooltip clarifying "Applies to the current paragraph."
+### 1. A4 editor canvas (`ItineraryEditor.tsx` + `index.css`)
+- Wrap `<EditorContent>` in a centered 210mm-wide "page sheet" with PDF margins (`22mm 22mm 26mm`), white background, shadow, and a faint grey gutter around it (mimicking Word page view).
+- Add a CSS repeating linear-gradient at 297mm intervals to draw a dashed page-break guide line across the sheet.
+- Toolbar stays sticky at the top (already sticky — keep as-is).
+- Font/size/line-height tokens already shared via `.fjw-editor-wysiwyg` / `.pdf-preview-content` in `index.css`; verify parity and tighten any mismatches (heading sizes, paragraph margins).
 
-### C. Verification
-- Build + load the catalogue itinerary editor in a Playwright session.
-- Paste a multi-paragraph markdown sample, confirm paragraphs render as separate `<p>` blocks.
-- Click H2 with cursor inside paragraph 2 → only paragraph 2 becomes heading.
-- Select a region containing one `## Heading`, two paragraphs and a bullet list → run AI "Improve" → confirm headings/list/paragraphs survive in the preview and after Accept.
-- Re-open the dialog and confirm round-tripped markdown still parses to the same structure.
+### 2. Manual page break
+- Register a tiny custom TipTap node `pageBreak` that:
+  - Renders in the editor as a labeled horizontal divider (`— Page Break —`).
+  - Serializes to HTML as `<div class="fjw-page-break"></div>`.
+  - Markdown round-trip: `<!-- pagebreak -->` token in `markdownHelpers.ts` ↔ the node.
+- Add a toolbar button (⤵ icon, tooltip "Insert page break — Ctrl+Enter") and a keyboard shortcut.
+- PDF preview and print CSS treat `.fjw-page-break` as `page-break-before: always` and visually start a new A4 sheet.
 
-## Files to change
+### 3. Live "Page X of Y"
+- A small overlay pill at the bottom-right of the editor: `Page {current} of {total}`.
+- Total = `ceil(editorHeightPx / pageHeightPx) + manualBreaks`.
+- Current = computed from scroll position relative to the editor container.
 
-- `src/components/voyage/editor/AiEditMenu.tsx` — selection as HTML→markdown, insert HTML back, preview as HTML.
-- `src/components/voyage/editor/AiPreviewPanel.tsx` — render HTML preview.
-- `src/components/voyage/editor/markdownHelpers.ts` — preserve paragraph breaks more robustly.
-- `src/components/voyage/editor/Toolbar.tsx` — auto-expand selection to the parent block when toggling headings; tooltip wording.
-- `supabase/functions/ai-text-transform/index.ts` — new system prompt that preserves markdown; remove markdown-stripping post-processor.
+### 4. Print button
+- New `🖨 Print` button next to `📄 Export PDF` in `PdfPreview.tsx` header. Calls `window.print()`.
+- Print stylesheet (already present `@page { size: A4; margin: 0 }`) extended so:
+  - `.fjw-page-break` forces `page-break-before: always`.
+  - Editor canvas hides chrome (toolbar, page-number pill, gutter background) when printing.
 
-No schema, RLS, secrets, or auth changes.
+### 5. PDF preview parity
+- `PdfPreview.tsx` already renders A4 sheets; add handling for `.fjw-page-break` inside the content HTML so a manual break splits the content sheet into multiple A4 sheets in the preview.
+
+## Files touched
+- `src/components/voyage/ItineraryEditor.tsx` — A4 canvas wrapper, page-number overlay, register PageBreak node.
+- `src/components/voyage/editor/Toolbar.tsx` — page-break button + shortcut wiring.
+- `src/components/voyage/editor/PageBreak.ts` *(new)* — custom TipTap node.
+- `src/components/voyage/editor/markdownHelpers.ts` — round-trip the `<!-- pagebreak -->` token.
+- `src/components/voyage/PdfPreview.tsx` — Print button; split content by `.fjw-page-break` into multiple sheets.
+- `src/index.css` — A4 sheet styles, page-guide background, page-break print rules, page-number pill.
+- `src/i18n/locales/{en,no,pt}.ts` — labels for "Page Break", "Print", "Page X of Y".
+
+## Out of scope (will not change)
+- Automatic mid-paragraph content reflow across pages.
+- Any business logic, AI prompts, hotel/Stripe/email flows.
+- The Catalogue PDF edge function (`generate-catalog-pdf`) — it already renders A4; I'll only ensure it respects `.fjw-page-break` if present.
+
+Shall I proceed with this scope?
