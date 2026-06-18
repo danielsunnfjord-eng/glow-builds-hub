@@ -53,6 +53,10 @@ export function markdownToHtml(md: string): string {
   html = html
     .split("\n\n")
     .map((block) => {
+      // Don't trim whitespace-only blocks away — a block that is just a
+      // non-breaking space is an intentional spacer paragraph.
+      const isSpacer = /^[\s\u00A0]+$/.test(block) && /\u00A0/.test(block);
+      if (isSpacer) return "<p>\u00A0</p>";
       const trimmed = block.trim();
       if (!trimmed) return "";
       if (
@@ -116,6 +120,19 @@ turndownService.addRule("pageBreak", {
     ((node as HTMLElement).classList?.contains("fjw-page-break") ||
       (node as HTMLElement).getAttribute?.("data-page-break") === "true"),
   replacement: () => "\n\n<!--pagebreak-->\n\n",
+});
+
+// Empty paragraph (spacer used to position content vertically) →
+// preserve as a non-breaking-space block so it survives the markdown round trip.
+turndownService.addRule("emptyParagraph", {
+  filter: (node) => {
+    if (node.nodeName !== "P") return false;
+    const el = node as HTMLElement;
+    if (el.querySelector("img,figure")) return false;
+    const text = (el.textContent || "").replace(/\u00A0/g, "").trim();
+    return text.length === 0;
+  },
+  replacement: () => "\n\n\u00A0\n\n",
 });
 
 export function htmlToMarkdown(html: string): string {
