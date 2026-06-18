@@ -29,6 +29,8 @@ const ItineraryShopSuccess = lazy(() => import("./pages/ItineraryShopSuccess.tsx
 const DestinationNorway = lazy(() => import("./pages/DestinationNorway.tsx"));
 const Routes_ = lazy(() => import("./pages/Routes.tsx"));
 const RouteDetail = lazy(() => import("./pages/RouteDetail.tsx"));
+const StartYourJourney = lazy(() => import("./pages/StartYourJourney.tsx"));
+const ThankYou = lazy(() => import("./pages/ThankYou.tsx"));
 
 // Defer non-critical 3rd-party widget so it doesn't block first paint.
 const CalendlyBadge = lazy(() => import("./components/voyage/CalendlyBadge.tsx"));
@@ -83,6 +85,8 @@ const App = () => (
             <Route path="/destinations/norway" element={<DestinationNorway />} />
             <Route path="/routes" element={<Routes_ />} />
             <Route path="/routes/:slug" element={<RouteDetail />} />
+            <Route path="/start-your-journey" element={<StartYourJourney />} />
+            <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
