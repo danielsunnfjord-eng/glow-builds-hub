@@ -8,6 +8,9 @@ interface ItineraryCoverPageProps {
   season: string;
   description: string;
   heroImageUrl?: string;
+  eyebrow?: string;
+  shortDescription?: string;
+  region?: string;
 }
 
 const FONTS_HREF =
@@ -64,6 +67,9 @@ const ItineraryCoverPage = ({
   season,
   description,
   heroImageUrl,
+  eyebrow = "A pre-designed and inspirational itinerary",
+  shortDescription,
+  region,
 }: ItineraryCoverPageProps) => {
   useCoverFonts();
 
@@ -102,35 +108,36 @@ const ItineraryCoverPage = ({
       </div>
 
       {/* Body */}
-      <div style={{ padding: "36px 52px 52px", textAlign: "center", background: "#f8f5f0" }}>
+      <div style={{ padding: "52px 52px 52px", textAlign: "center", background: "#f8f5f0" }}>
         {/* Logo block */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
-          <MountainWavesMark />
-        </div>
-        <div
-          style={{
-            fontFamily: "'Jost', sans-serif",
-            fontWeight: 400,
-            fontSize: 13,
-            letterSpacing: "0.32em",
-            color: "#3a4a52",
-            marginBottom: 6,
-          }}
-        >
-          FJORD &amp; WAVES
-        </div>
-        <div
-          style={{
-            fontFamily: "'Jost', sans-serif",
-            fontWeight: 300,
-            fontSize: 9,
-            letterSpacing: "0.28em",
-            color: "#8fa0a8",
-            textTransform: "uppercase",
-            marginBottom: 28,
-          }}
-        >
-          Curated travel experiences
+        <div style={{ margin: "28px 0 40px" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
+            <MountainWavesMark />
+          </div>
+          <div
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: 400,
+              fontSize: 13,
+              letterSpacing: "0.32em",
+              color: "#3a4a52",
+              marginBottom: 8,
+            }}
+          >
+            FJORD &amp; WAVES
+          </div>
+          <div
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: 300,
+              fontSize: 9,
+              letterSpacing: "0.28em",
+              color: "#8fa0a8",
+              textTransform: "uppercase",
+            }}
+          >
+            Curated travel experiences
+          </div>
         </div>
 
         {/* Divider */}
@@ -153,7 +160,7 @@ const ItineraryCoverPage = ({
             marginBottom: 18,
           }}
         >
-          PREPARED EXCLUSIVELY FOR
+          {eyebrow}
         </div>
 
         {/* Title */}
@@ -214,20 +221,22 @@ const ItineraryCoverPage = ({
           <div style={{ flex: 1, height: 0, borderTop: "0.5px solid #c4d4da" }} />
         </div>
 
-        {/* Description */}
-        <p
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontStyle: "italic",
-            fontSize: 19,
-            lineHeight: 1.75,
-            color: "#2e4450",
-            maxWidth: 520,
-            margin: "0 auto 44px",
-          }}
-        >
-          {description}
-        </p>
+        {/* Description — shortDescription only */}
+        {shortDescription && (
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontStyle: "italic",
+              fontSize: 19,
+              lineHeight: 1.75,
+              color: "#2e4450",
+              maxWidth: 520,
+              margin: "0 auto 44px",
+            }}
+          >
+            {shortDescription}
+          </p>
+        )}
 
         {/* Metadata strip */}
         <div
@@ -241,7 +250,7 @@ const ItineraryCoverPage = ({
         >
           {[
             { label: "Duration", value: duration },
-            { label: "Region", value: location },
+            { label: "Region", value: region ?? location },
             { label: "Season", value: season },
           ].map((item, idx) => (
             <div
