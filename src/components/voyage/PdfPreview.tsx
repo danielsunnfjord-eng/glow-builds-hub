@@ -171,7 +171,7 @@ const PAGE_CSS = `
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 12mm 22mm 0;
+  padding: 12mm 22mm 8mm;
   position: relative;
 }
 
@@ -227,8 +227,9 @@ const PAGE_CSS = `
 
 /* 8. Footer teal accent bar */
 .fjw-cover-accent-bar {
+  position: absolute; left: 0; right: 0; bottom: 0;
   width: 100%; height: 5mm; background: #4C6F75;
-  margin-top: auto; flex-shrink: 0;
+  margin: 0; flex-shrink: 0;
 }
 
 .fjw-photo-credit {
