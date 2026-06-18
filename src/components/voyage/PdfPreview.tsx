@@ -134,8 +134,6 @@ const PAGE_CSS = `
 }
 .fjw-cover-logo-img {
   height: 52mm; width: auto; display: block;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 
 /* 2. Hero image — full width band */
