@@ -94,13 +94,15 @@ const PAGE_CSS = `
   line-height: 1.75;
 }
 
+/* ========== COVER PAGE ========== */
 .fjw-cover-page {
-  height: 257mm;
-  max-height: 257mm;
+  height: 297mm;
+  width: 210mm;
+  max-height: 297mm;
   overflow: hidden;
   break-after: page;
   page-break-after: always;
-  background: #f8f5f0;
+  background: #f5f1ea;
   margin: -20mm;
   padding: 0;
   position: relative;
@@ -116,115 +118,98 @@ const PAGE_CSS = `
   text-align: center;
 }
 
-/* Hero image — top of page */
+/* 1. Logo block — top, centered, on parchment */
+.fjw-cover-logo-block {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 22mm 0 16mm;
+  background: #f5f1ea;
+  flex-shrink: 0;
+}
+.fjw-cover-logo-mark { width: 52px; height: 52px; margin-bottom: 14px; display: block; }
+.fjw-cover-logo-name {
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-weight: 400; font-size: 13px;
+  letter-spacing: 0.32em; color: #1c2e38;
+  text-transform: uppercase;
+}
+.fjw-cover-logo-tagline {
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-weight: 300; font-size: 9px;
+  letter-spacing: 0.28em; color: #8fa0a8;
+  text-transform: uppercase; margin-top: 8px;
+}
+
+/* 2. Hero image — full width band */
 .fjw-cover-hero {
   position: relative;
   width: 100%;
-  height: 78mm;
+  height: 95mm;
   overflow: hidden;
   background: #1c2e38;
   flex-shrink: 0;
 }
-.fjw-cover-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.fjw-cover-placeholder {
-  height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #f8f5f0; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 16px; letter-spacing: 0.1em;
+.fjw-cover-hero img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
-.fjw-cover-hero .fjw-photo-credit {
-  position: absolute; right: 16px; bottom: 10px;
-  color: rgba(255,255,255,0.88); background: transparent;
-  font-family: 'Jost', sans-serif;
-  font-size: 9px; letter-spacing: 0.08em; padding: 0;
+.fjw-cover-placeholder {
+  height: 100%; width: 100%; background: #1c2e38;
 }
 
-/* Body wrapper */
+/* 3. Photo credit — quiet line below hero */
+.fjw-cover-credit {
+  width: 100%;
+  text-align: right;
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-size: 8px;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8fa0a8;
+  padding: 4mm 14mm 0;
+  flex-shrink: 0;
+}
+
+/* Body wrapper for text content */
 .fjw-cover-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 14mm 22mm 0;
+  padding: 12mm 22mm 0;
   position: relative;
 }
 
-/* Logo block */
-.fjw-cover-logo-block {
-  display: flex; flex-direction: column; align-items: center;
-  margin-bottom: 10mm;
-}
-.fjw-cover-logo-mark {
-  width: 44px; height: 44px; margin-bottom: 10px;
-}
-.fjw-cover-logo-name {
-  font-family: 'Jost', 'Montserrat', sans-serif;
-  font-weight: 400; font-size: 12px;
-  letter-spacing: 0.34em; color: #3a4a52;
-  text-transform: uppercase;
-}
-.fjw-cover-logo-tagline {
-  font-family: 'Jost', 'Montserrat', sans-serif;
-  font-weight: 300; font-size: 8px;
-  letter-spacing: 0.3em; color: #8fa0a8;
-  text-transform: uppercase; margin-top: 5px;
-}
-
-/* Small divider line above eyebrow */
-.fjw-cover-divider-thin {
-  width: 28px; height: 1px; background: #c4d4da; margin: 0 auto 7mm;
-}
-
-/* Eyebrow */
+/* 4. Eyebrow */
 .fjw-cover-eyebrow {
-  margin: 0 0 6mm; font-family: 'Jost', 'Montserrat', sans-serif;
+  margin: 0 0 6mm;
+  font-family: 'Jost', 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase;
   color: #8fa0a8; font-weight: 400;
 }
 
-/* Title */
+/* 5. Title */
 .fjw-cover-title {
-  margin: 0 auto 4mm;
+  margin: 0 auto 6mm;
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 30px; font-weight: 400; line-height: 1.18;
-  letter-spacing: 0.005em; color: #1c2e38;
+  font-size: 34px; font-weight: 500; line-height: 1.18;
+  letter-spacing: -0.005em; color: #1c2e38;
   max-width: 150mm;
 }
 
-/* Subtitle (location · duration) */
-.fjw-cover-subtitle {
-  margin: 0 0 7mm;
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-size: 13px;
-  color: #8fa0a8; letter-spacing: 0.04em;
-}
-
-/* Diamond divider */
-.fjw-cover-diamond-divider {
-  display: flex; align-items: center; justify-content: center;
-  gap: 10px; margin: 0 auto 7mm; width: 80%;
-}
-.fjw-cover-diamond-divider .line {
-  flex: 1; height: 1px; background: #c4d4da; max-width: 60mm;
-}
-.fjw-cover-diamond-divider .diamond {
-  width: 5px; height: 5px; background: #4C6F75;
-  transform: rotate(45deg); flex-shrink: 0;
-}
-
-/* Description */
+/* 6. Short description — italic editorial */
 .fjw-cover-description {
-  margin: 0 auto 9mm;
+  margin: 0 auto 10mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
-  font-size: 13px; line-height: 1.7;
-  color: #4C6F75; max-width: 145mm;
+  font-size: 15px; line-height: 1.7;
+  color: #2e4450; max-width: 145mm;
 }
 
-/* Metadata strip — Duration / Region / Season */
+/* 7. Metadata strip — Duration / Region / Season */
 .fjw-cover-meta {
   display: flex; justify-content: center; align-items: stretch;
-  gap: 0; margin: 0 auto 8mm; width: 100%; max-width: 150mm;
+  margin: 0 auto 12mm; width: 100%; max-width: 150mm;
 }
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
@@ -242,20 +227,12 @@ const PAGE_CSS = `
 }
 .fjw-cover-meta-value {
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 15px; color: #1c2e38; font-weight: 400;
+  font-size: 16px; color: #1c2e38; font-weight: 400;
 }
 
-/* Down arrow */
-.fjw-cover-arrow {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1px solid #c4d4da; display: flex;
-  align-items: center; justify-content: center;
-  margin: auto auto 8mm; color: #4C6F75;
-}
-
-/* Footer teal accent bar */
+/* 8. Footer teal accent bar */
 .fjw-cover-accent-bar {
-  width: 100%; height: 4mm; background: #4C6F75;
+  width: 100%; height: 5mm; background: #4C6F75;
   margin-top: auto; flex-shrink: 0;
 }
 
@@ -482,29 +459,36 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
     const seasonLabel = dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
     const subtitleLine = [project?.destination, project?.trip_duration].filter(Boolean).join(" · ");
 
+    const coverTitle = project?.destination || L.itinerary;
+    const heroBlock = project?.hero_image_url
+      ? `<img src="${escapeHtml(project.hero_image_url)}" alt="${escapeHtml(coverTitle)}" crossorigin="anonymous" />`
+      : `<div class="fjw-cover-placeholder"></div>`;
+
     return `<div class="fjw-paged-document">
       <section class="fjw-cover-page">
-        <div class="fjw-cover-hero">
-          ${coverHero}
-          ${project?.hero_image_credit ? `<div class="fjw-photo-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}
+        <!-- 1. Logo block -->
+        <div class="fjw-cover-logo-block">
+          <svg class="fjw-cover-logo-mark" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M26 6 L32 18 L26 14 L20 18 Z" fill="#3a6070" opacity="0.9"/>
+            <path d="M20 18 L26 14 L32 18 L38 26 L26 22 L14 26 Z" fill="#3a6070" opacity="0.65"/>
+            <path d="M6 34 Q13 28 20 32 Q26 36 32 30 Q38 24 46 30 L46 44 Q38 38 32 42 Q26 46 20 42 Q13 38 6 44 Z" fill="#3a6070" opacity="0.45"/>
+            <path d="M6 38 Q13 33 20 36 Q26 39 32 34 Q38 29 46 34" stroke="#3a6070" stroke-width="1" fill="none" opacity="0.6"/>
+            <path d="M6 42 Q13 37 20 40 Q26 43 32 38 Q38 33 46 38" stroke="#7a9aa8" stroke-width="0.8" fill="none" opacity="0.5"/>
+          </svg>
+          <div class="fjw-cover-logo-name">Fjord &amp; Waves</div>
+          <div class="fjw-cover-logo-tagline">Curated travel experiences</div>
         </div>
+
+        <!-- 2. Hero image -->
+        <div class="fjw-cover-hero">${heroBlock}</div>
+
+        <!-- 3. Photo credit -->
+        ${project?.hero_image_credit ? `<div class="fjw-cover-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}
+
+        <!-- 4–7. Text content -->
         <div class="fjw-cover-body">
-          <div class="fjw-cover-logo-block">
-            <svg class="fjw-cover-logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22 8 L34 26 L10 26 Z" fill="#3a4a52"/>
-              <path d="M6 30 Q11 27 16 30 T26 30 T36 30 T44 30" stroke="#7a96a0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-              <path d="M4 34 Q9 31 14 34 T24 34 T34 34 T42 34" stroke="#a8bec5" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-            </svg>
-            <div class="fjw-cover-logo-name">FJORD &amp; WAVES</div>
-            <div class="fjw-cover-logo-tagline">Curated travel experiences</div>
-          </div>
-          <div class="fjw-cover-divider-thin"></div>
-          <p class="fjw-cover-eyebrow">${escapeHtml(L.preparedFor)}</p>
-          <h1 class="fjw-cover-title">${escapeHtml(project?.client_name || L.valuedTraveller)}</h1>
-          ${subtitleLine ? `<p class="fjw-cover-subtitle">${escapeHtml(subtitleLine)}</p>` : ""}
-          <div class="fjw-cover-diamond-divider">
-            <span class="line"></span><span class="diamond"></span><span class="line"></span>
-          </div>
+          <p class="fjw-cover-eyebrow">A pre-designed and inspirational itinerary</p>
+          <h1 class="fjw-cover-title">${escapeHtml(coverTitle)}</h1>
           ${tagline ? `<p class="fjw-cover-description">${escapeHtml(tagline)}</p>` : ""}
           <div class="fjw-cover-meta">
             <div class="fjw-cover-meta-col">
@@ -520,10 +504,9 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
               <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
             </div>
           </div>
-          <div class="fjw-cover-arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2 V10 M2.5 6.5 L6 10 L9.5 6.5" stroke="#4C6F75" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
         </div>
+
+        <!-- 8. Footer accent bar -->
         <div class="fjw-cover-accent-bar"></div>
       </section>
       <section class="fjw-itinerary-section">
