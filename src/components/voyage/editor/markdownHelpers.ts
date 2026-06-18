@@ -36,10 +36,10 @@ export function markdownToHtml(md: string): string {
     })
     // Bare URLs (http/https) not already inside an <a> or markdown link → autolink
     .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>')
-    .replace(/^#{4}\s+(.+?)\s*$/gm, "<h4>$1</h4>")
-    .replace(/^#{3}\s+(.+?)\s*$/gm, "<h3>$1</h3>")
-    .replace(/^#{2}\s+(.+?)\s*$/gm, "<h2>$1</h2>")
-    .replace(/^#{1}\s+(.+?)\s*$/gm, "<h1>$1</h1>")
+    .replace(/^#{4}[^\S\n]+(.+?)[^\S\n]*$/gm, "<h4>$1</h4>")
+    .replace(/^#{3}[^\S\n]+(.+?)[^\S\n]*$/gm, "<h3>$1</h3>")
+    .replace(/^#{2}[^\S\n]+(.+?)[^\S\n]*$/gm, "<h2>$1</h2>")
+    .replace(/^#{1}[^\S\n]+(.+?)[^\S\n]*$/gm, "<h1>$1</h1>")
     .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/(?<!\*)\*([^*\n]+?)\*(?!\*)/g, "<em>$1</em>")
@@ -82,6 +82,12 @@ const turndownService = new TurndownService({
   headingStyle: "atx",
   hr: "---",
   bulletListMarker: "-",
+  blankReplacement: (_content, node) => {
+    if (node.nodeName !== "P") return "\n\n";
+    const el = node as HTMLElement;
+    if (el.querySelector("img,figure")) return "\n\n";
+    return "\n\n\u00A0\n\n";
+  },
 });
 
 turndownService.addRule("figure", {
