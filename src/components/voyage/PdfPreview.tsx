@@ -94,7 +94,19 @@ const PAGE_CSS = `
   line-height: 1.75;
 }
 
-.fjw-cover-page,
+.fjw-cover-page {
+  height: 257mm;
+  max-height: 257mm;
+  overflow: hidden;
+  break-after: page;
+  page-break-after: always;
+  background: #f8f5f0;
+  margin: -20mm;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
 .fjw-back-page {
   height: 257mm;
   max-height: 257mm;
@@ -104,50 +116,153 @@ const PAGE_CSS = `
   text-align: center;
 }
 
-.fjw-cover-logo { display: flex; justify-content: center; padding-top: 0; }
-.fjw-cover-logo img { height: 46px; width: auto; max-width: 110mm; object-fit: contain; }
+/* Hero image — top of page */
 .fjw-cover-hero {
-  height: 76mm;
-  margin: 5mm 0 3mm;
-  border-radius: 4px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #A9C6C1 0%, #4C6F75 100%);
-  box-shadow: 0 8px 24px rgba(30,45,61,0.22);
   position: relative;
+  width: 100%;
+  height: 78mm;
+  overflow: hidden;
+  background: #1c2e38;
+  flex-shrink: 0;
 }
 .fjw-cover-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .fjw-cover-placeholder {
   height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #F6F4EE; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  color: #f8f5f0; font-family: 'Cormorant Garamond', serif; font-style: italic;
   font-size: 16px; letter-spacing: 0.1em;
 }
+.fjw-cover-hero .fjw-photo-credit {
+  position: absolute; right: 16px; bottom: 10px;
+  color: rgba(255,255,255,0.88); background: transparent;
+  font-family: 'Jost', sans-serif;
+  font-size: 9px; letter-spacing: 0.08em; padding: 0;
+}
+
+/* Body wrapper */
+.fjw-cover-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14mm 22mm 0;
+  position: relative;
+}
+
+/* Logo block */
+.fjw-cover-logo-block {
+  display: flex; flex-direction: column; align-items: center;
+  margin-bottom: 10mm;
+}
+.fjw-cover-logo-mark {
+  width: 44px; height: 44px; margin-bottom: 10px;
+}
+.fjw-cover-logo-name {
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-weight: 400; font-size: 12px;
+  letter-spacing: 0.34em; color: #3a4a52;
+  text-transform: uppercase;
+}
+.fjw-cover-logo-tagline {
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-weight: 300; font-size: 8px;
+  letter-spacing: 0.3em; color: #8fa0a8;
+  text-transform: uppercase; margin-top: 5px;
+}
+
+/* Small divider line above eyebrow */
+.fjw-cover-divider-thin {
+  width: 28px; height: 1px; background: #c4d4da; margin: 0 auto 7mm;
+}
+
+/* Eyebrow */
+.fjw-cover-eyebrow {
+  margin: 0 0 6mm; font-family: 'Jost', 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: #8fa0a8; font-weight: 400;
+}
+
+/* Title */
+.fjw-cover-title {
+  margin: 0 auto 4mm;
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 400; line-height: 1.18;
+  letter-spacing: 0.005em; color: #1c2e38;
+  max-width: 150mm;
+}
+
+/* Subtitle (location · duration) */
+.fjw-cover-subtitle {
+  margin: 0 0 7mm;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 13px;
+  color: #8fa0a8; letter-spacing: 0.04em;
+}
+
+/* Diamond divider */
+.fjw-cover-diamond-divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin: 0 auto 7mm; width: 80%;
+}
+.fjw-cover-diamond-divider .line {
+  flex: 1; height: 1px; background: #c4d4da; max-width: 60mm;
+}
+.fjw-cover-diamond-divider .diamond {
+  width: 5px; height: 5px; background: #4C6F75;
+  transform: rotate(45deg); flex-shrink: 0;
+}
+
+/* Description */
+.fjw-cover-description {
+  margin: 0 auto 9mm;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-weight: 400;
+  font-size: 13px; line-height: 1.7;
+  color: #4C6F75; max-width: 145mm;
+}
+
+/* Metadata strip — Duration / Region / Season */
+.fjw-cover-meta {
+  display: flex; justify-content: center; align-items: stretch;
+  gap: 0; margin: 0 auto 8mm; width: 100%; max-width: 150mm;
+}
+.fjw-cover-meta-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 0 6mm;
+}
+.fjw-cover-meta-col + .fjw-cover-meta-col {
+  border-left: 1px solid #c4d4da;
+}
+.fjw-cover-meta-label {
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 0.28em;
+  color: #8fa0a8; text-transform: uppercase;
+  margin-bottom: 4mm; font-weight: 400;
+}
+.fjw-cover-meta-value {
+  font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+  font-size: 15px; color: #1c2e38; font-weight: 400;
+}
+
+/* Down arrow */
+.fjw-cover-arrow {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid #c4d4da; display: flex;
+  align-items: center; justify-content: center;
+  margin: auto auto 8mm; color: #4C6F75;
+}
+
+/* Footer teal accent bar */
+.fjw-cover-accent-bar {
+  width: 100%; height: 4mm; background: #4C6F75;
+  margin-top: auto; flex-shrink: 0;
+}
+
 .fjw-photo-credit {
   position: absolute; right: 8px; bottom: 5px; color: rgba(255,255,255,0.92);
   background: rgba(0,0,0,0.35); padding: 2px 5px; border-radius: 2px;
   font-size: 7px; letter-spacing: 0.04em;
-}
-.fjw-cover-caption {
-  margin: 0 0 4mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 11px; line-height: 1.3; color: #4C6F75;
-}
-.fjw-cover-eyebrow {
-  margin: 0 0 6px; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: #4C6F75;
-}
-.fjw-cover-title {
-  margin: 0 auto 8px; font-family: 'Cormorant Garamond', serif; font-size: 26px;
-  font-weight: 500; line-height: 1.15; letter-spacing: 0.01em; color: #1E2D3D;
-  max-width: 140mm;
-}
-.fjw-cover-rule { width: 46px; height: 1px; background: #DCCEB8; margin: 8px auto; }
-.fjw-cover-destination {
-  margin: 0 0 4mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 14px; color: #4C6F75;
-}
-.fjw-cover-date { margin: 0 0 4mm; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #4C6F75; }
-.fjw-cover-tagline {
-  margin: 3mm auto 0; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 11.5px; line-height: 1.5; letter-spacing: 0.01em; color: #1E2D3D;
-  max-width: 135mm;
 }
 
 .fjw-running-header {
@@ -364,18 +479,52 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         </section>`
       : "";
 
+    const seasonLabel = dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
+    const subtitleLine = [project?.destination, project?.trip_duration].filter(Boolean).join(" · ");
+
     return `<div class="fjw-paged-document">
       <section class="fjw-cover-page">
-        <div class="fjw-cover-logo"><img src="${escapeHtml(logoHorizontalHd)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" /></div>
-        <div class="fjw-cover-hero">${coverHero}${project?.hero_image_credit ? `<div class="fjw-photo-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}</div>
-        ${project?.hero_image_caption ? `<p class="fjw-cover-caption">${escapeHtml(project.hero_image_caption)}</p>` : ""}
-        <p class="fjw-cover-eyebrow">${escapeHtml(L.preparedFor)}</p>
-        <h1 class="fjw-cover-title">${escapeHtml(project?.client_name || L.valuedTraveller)}</h1>
-        <div class="fjw-cover-rule"></div>
-        ${project?.destination ? `<p class="fjw-cover-destination">${escapeHtml(project.destination)}</p>` : ""}
-        ${dateRange ? `<p class="fjw-cover-date">${escapeHtml(dateRange)}</p>` : ""}
-        ${tagline ? `<div class="fjw-cover-rule" style="margin-top:18mm"></div>` : ""}
-        <p class="fjw-cover-tagline">${escapeHtml(tagline)}</p>
+        <div class="fjw-cover-hero">
+          ${coverHero}
+          ${project?.hero_image_credit ? `<div class="fjw-photo-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}
+        </div>
+        <div class="fjw-cover-body">
+          <div class="fjw-cover-logo-block">
+            <svg class="fjw-cover-logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 8 L34 26 L10 26 Z" fill="#3a4a52"/>
+              <path d="M6 30 Q11 27 16 30 T26 30 T36 30 T44 30" stroke="#7a96a0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path d="M4 34 Q9 31 14 34 T24 34 T34 34 T42 34" stroke="#a8bec5" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div class="fjw-cover-logo-name">FJORD &amp; WAVES</div>
+            <div class="fjw-cover-logo-tagline">Curated travel experiences</div>
+          </div>
+          <div class="fjw-cover-divider-thin"></div>
+          <p class="fjw-cover-eyebrow">${escapeHtml(L.preparedFor)}</p>
+          <h1 class="fjw-cover-title">${escapeHtml(project?.client_name || L.valuedTraveller)}</h1>
+          ${subtitleLine ? `<p class="fjw-cover-subtitle">${escapeHtml(subtitleLine)}</p>` : ""}
+          <div class="fjw-cover-diamond-divider">
+            <span class="line"></span><span class="diamond"></span><span class="line"></span>
+          </div>
+          ${tagline ? `<p class="fjw-cover-description">${escapeHtml(tagline)}</p>` : ""}
+          <div class="fjw-cover-meta">
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Duration</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project?.trip_duration || "—")}</div>
+            </div>
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Region</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project?.destination || "—")}</div>
+            </div>
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Season</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
+            </div>
+          </div>
+          <div class="fjw-cover-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2 V10 M2.5 6.5 L6 10 L9.5 6.5" stroke="#4C6F75" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="fjw-cover-accent-bar"></div>
       </section>
       <section class="fjw-itinerary-section">
         <header class="fjw-running-header"><img src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" /><p>${escapeHtml(destinationLine)}</p></header>
