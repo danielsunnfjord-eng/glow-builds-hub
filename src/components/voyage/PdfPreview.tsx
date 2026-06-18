@@ -251,20 +251,18 @@ const PAGE_CSS = `
   border: 1px solid #c4d4da; display: flex;
   align-items: center; justify-content: center;
   margin: auto auto 8mm; color: #4C6F75;
-.fjw-cover-accent-bar {
-  width: 100%; height: 4mm; background: #4C6F75;
-  margin-top: auto; flex-shrink: 0;
-}
-.fjw-photo-credit {
-  position: absolute; right: 8px; bottom: 5px; color: rgba(255,255,255,0.92);
-  background: rgba(0,0,0,0.35); padding: 2px 5px; border-radius: 2px;
-  font-size: 7px; letter-spacing: 0.04em;
 }
 
 /* Footer teal accent bar */
 .fjw-cover-accent-bar {
   width: 100%; height: 4mm; background: #4C6F75;
   margin-top: auto; flex-shrink: 0;
+}
+
+.fjw-photo-credit {
+  position: absolute; right: 8px; bottom: 5px; color: rgba(255,255,255,0.92);
+  background: rgba(0,0,0,0.35); padding: 2px 5px; border-radius: 2px;
+  font-size: 7px; letter-spacing: 0.04em;
 }
 
 .fjw-running-header {
