@@ -342,11 +342,11 @@ const PREVIEW_FRAME_CSS = `
   overflow: hidden;
 }
 .fjw-paged-render .pagedjs_pagebox {
-  background: rgba(220,206,184,0.26);
+  background: #ffffff;
 }
 .fjw-paged-render .pagedjs_area {
   background: #ffffff;
-  outline: 1px solid rgba(180,140,60,0.48);
+  outline: none;
 }
 .fjw-paged-render .pagedjs_margin,
 .fjw-paged-render .pagedjs_margin-top-left-corner-holder,
@@ -357,7 +357,7 @@ const PREVIEW_FRAME_CSS = `
 .fjw-paged-render .pagedjs_margin-bottom,
 .fjw-paged-render .pagedjs_margin-left,
 .fjw-paged-render .pagedjs_margin-right {
-  background: rgba(220,206,184,0.22);
+  background: #ffffff;
 }
 @media print {
   @page { size: A4; margin: 0; }
