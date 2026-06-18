@@ -121,22 +121,12 @@ const PAGE_CSS = `
 /* 1. Logo block — top, centered, on parchment */
 .fjw-cover-logo-block {
   display: flex; flex-direction: column; align-items: center;
-  padding: 22mm 0 16mm;
+  padding: 14mm 0 10mm;
   background: #f5f1ea;
   flex-shrink: 0;
 }
-.fjw-cover-logo-mark { width: 52px; height: 52px; margin-bottom: 14px; display: block; }
-.fjw-cover-logo-name {
-  font-family: 'Jost', 'Montserrat', sans-serif;
-  font-weight: 400; font-size: 13px;
-  letter-spacing: 0.32em; color: #1c2e38;
-  text-transform: uppercase;
-}
-.fjw-cover-logo-tagline {
-  font-family: 'Jost', 'Montserrat', sans-serif;
-  font-weight: 300; font-size: 9px;
-  letter-spacing: 0.28em; color: #8fa0a8;
-  text-transform: uppercase; margin-top: 8px;
+.fjw-cover-logo-img {
+  height: 18mm; width: auto; display: block;
 }
 
 /* 2. Hero image — full width band */
