@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Previewer } from "pagedjs";
 import { markdownToHtml } from "./editor/markdownHelpers";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
-import logoHorizontalHd from "@/assets/logo-horizontal-hd.png";
+import logoBadgeHd from "@/assets/logo-badge-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
 
 interface HotelPhoto {
@@ -123,12 +123,12 @@ const PAGE_CSS = `
 /* 1. Logo block — top, centered, on parchment */
 .fjw-cover-logo-block {
   display: flex; flex-direction: column; align-items: center;
-  padding: 10mm 0 6mm;
+  padding: 8mm 0 4mm;
   background: #f5f1ea;
   flex-shrink: 0;
 }
 .fjw-cover-logo-img {
-  height: 36mm; width: auto; display: block;
+  height: 52mm; width: auto; display: block;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
@@ -466,7 +466,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       <section class="fjw-cover-page">
         <!-- 1. Logo block -->
         <div class="fjw-cover-logo-block">
-          <img class="fjw-cover-logo-img" src="${escapeHtml(logoHorizontalHd)}" alt="Fjord &amp; Waves" crossorigin="anonymous" width="1536" height="1024" />
+          <img class="fjw-cover-logo-img" src="${escapeHtml(logoBadgeHd)}" alt="Fjord &amp; Waves" crossorigin="anonymous" width="1024" height="1024" />
         </div>
 
         <!-- 2. Hero image -->
