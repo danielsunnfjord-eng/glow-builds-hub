@@ -466,7 +466,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       <section class="fjw-cover-page">
         <!-- 1. Logo block -->
         <div class="fjw-cover-logo-block">
-          <img class="fjw-cover-logo-img" src="${escapeHtml(logoHorizontalHd)}" alt="Fjord &amp; Waves" crossorigin="anonymous" width="1536" height="1024" />
+          <img class="fjw-cover-logo-img" src="${escapeHtml(logoBadgeHd)}" alt="Fjord &amp; Waves" crossorigin="anonymous" width="1024" height="1024" />
         </div>
 
         <!-- 2. Hero image -->
