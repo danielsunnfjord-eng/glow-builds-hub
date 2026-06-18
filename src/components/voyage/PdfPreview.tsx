@@ -129,6 +129,8 @@ const PAGE_CSS = `
 }
 .fjw-cover-logo-img {
   height: 36mm; width: auto; display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* 2. Hero image — full width band */
@@ -464,7 +466,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       <section class="fjw-cover-page">
         <!-- 1. Logo block -->
         <div class="fjw-cover-logo-block">
-          <img class="fjw-cover-logo-img" src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" />
+          <img class="fjw-cover-logo-img" src="${escapeHtml(logoHorizontalHd)}" alt="Fjord &amp; Waves" crossorigin="anonymous" width="1536" height="1024" />
         </div>
 
         <!-- 2. Hero image -->
