@@ -88,6 +88,7 @@ const I18N: Record<string, Record<string, string>> = {
 const PAGE_CSS = `
 @page { size: 210mm 297mm; margin: 20mm; }
 @page cover { size: 210mm 297mm; margin: 0; }
+@page back { size: 210mm 297mm; margin: 0; }
 
 .fjw-paged-document {
   font-family: 'Montserrat', 'Inter', sans-serif;
@@ -113,8 +114,9 @@ const PAGE_CSS = `
   flex-direction: column;
 }
 .fjw-back-page {
-  height: 257mm;
-  max-height: 257mm;
+  page: back;
+  height: 297mm;
+  max-height: 297mm;
   overflow: hidden;
   break-after: page;
   page-break-after: always;
