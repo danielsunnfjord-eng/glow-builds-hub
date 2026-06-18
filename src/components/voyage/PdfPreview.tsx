@@ -96,55 +96,58 @@ const PAGE_CSS = `
 
 .fjw-cover-page,
 .fjw-back-page {
+  height: 257mm;
+  max-height: 257mm;
+  overflow: hidden;
   break-after: page;
   page-break-after: always;
   text-align: center;
 }
 
-.fjw-cover-logo { display: flex; justify-content: center; padding-top: 4mm; }
-.fjw-cover-logo img { height: 64px; width: auto; max-width: 120mm; object-fit: contain; }
+.fjw-cover-logo { display: flex; justify-content: center; padding-top: 0; }
+.fjw-cover-logo img { height: 46px; width: auto; max-width: 110mm; object-fit: contain; }
 .fjw-cover-hero {
-  height: 92mm;
-  margin: 14mm 0 6mm;
+  height: 76mm;
+  margin: 5mm 0 3mm;
   border-radius: 4px;
   overflow: hidden;
   background: linear-gradient(135deg, #A9C6C1 0%, #4C6F75 100%);
-  box-shadow: 0 10px 30px rgba(30,45,61,0.25);
+  box-shadow: 0 8px 24px rgba(30,45,61,0.22);
   position: relative;
 }
 .fjw-cover-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .fjw-cover-placeholder {
   height: 100%; display: flex; align-items: center; justify-content: center;
   color: #F6F4EE; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 18px; letter-spacing: 0.1em;
+  font-size: 16px; letter-spacing: 0.1em;
 }
 .fjw-photo-credit {
-  position: absolute; right: 10px; bottom: 6px; color: rgba(255,255,255,0.92);
-  background: rgba(0,0,0,0.35); padding: 2px 6px; border-radius: 2px;
-  font-size: 8px; letter-spacing: 0.04em;
+  position: absolute; right: 8px; bottom: 5px; color: rgba(255,255,255,0.92);
+  background: rgba(0,0,0,0.35); padding: 2px 5px; border-radius: 2px;
+  font-size: 7px; letter-spacing: 0.04em;
 }
 .fjw-cover-caption {
-  margin: 0 0 10mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 13px; line-height: 1.35; color: #4C6F75;
+  margin: 0 0 4mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 11px; line-height: 1.3; color: #4C6F75;
 }
 .fjw-cover-eyebrow {
-  margin: 0 0 10px; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #4C6F75;
+  margin: 0 0 6px; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: #4C6F75;
 }
 .fjw-cover-title {
-  margin: 0 0 14px; font-family: 'Cormorant Garamond', serif; font-size: 38px;
+  margin: 0 auto 8px; font-family: 'Cormorant Garamond', serif; font-size: 26px;
   font-weight: 500; line-height: 1.15; letter-spacing: 0.01em; color: #1E2D3D;
-  max-width: 150mm; margin-left: auto; margin-right: auto;
+  max-width: 140mm;
 }
-.fjw-cover-rule { width: 54px; height: 1px; background: #DCCEB8; margin: 14px auto; }
+.fjw-cover-rule { width: 46px; height: 1px; background: #DCCEB8; margin: 8px auto; }
 .fjw-cover-destination {
-  margin: 0 0 14mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 18px; color: #4C6F75;
+  margin: 0 0 4mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 14px; color: #4C6F75;
 }
-.fjw-cover-date { margin: 0 0 10mm; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #4C6F75; }
+.fjw-cover-date { margin: 0 0 4mm; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #4C6F75; }
 .fjw-cover-tagline {
-  margin: 0 auto; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 17px; line-height: 1.7; letter-spacing: 0.01em; color: #1E2D3D;
-  max-width: 145mm;
+  margin: 3mm auto 0; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 11.5px; line-height: 1.5; letter-spacing: 0.01em; color: #1E2D3D;
+  max-width: 135mm;
 }
 
 .fjw-running-header {
