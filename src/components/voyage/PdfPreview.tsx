@@ -371,7 +371,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         <div class="fjw-cover-rule"></div>
         ${project?.destination ? `<p class="fjw-cover-destination">${escapeHtml(project.destination)}</p>` : ""}
         ${dateRange ? `<p class="fjw-cover-date">${escapeHtml(dateRange)}</p>` : ""}
-        <div class="fjw-cover-spacer"></div>
+        ${tagline ? `<div class="fjw-cover-rule" style="margin-top:18mm"></div>` : ""}
         <p class="fjw-cover-tagline">${escapeHtml(tagline)}</p>
       </section>
       <section class="fjw-itinerary-section">
