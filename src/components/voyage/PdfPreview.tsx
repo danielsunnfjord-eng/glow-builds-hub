@@ -447,9 +447,13 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       : "";
 
     const seasonLabel = dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
-    const subtitleLine = [project?.destination, project?.trip_duration].filter(Boolean).join(" · ");
 
     const coverTitle = project?.destination || L.itinerary;
+    const truncateSentences = (text: string, max: number) => {
+      const parts = text.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [];
+      return parts.slice(0, max).join("").trim();
+    };
+    const shortTagline = tagline ? truncateSentences(tagline, 4) : "";
     const heroBlock = project?.hero_image_url
       ? `<img src="${escapeHtml(project.hero_image_url)}" alt="${escapeHtml(coverTitle)}" crossorigin="anonymous" />`
       : `<div class="fjw-cover-placeholder"></div>`;
@@ -458,15 +462,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       <section class="fjw-cover-page">
         <!-- 1. Logo block -->
         <div class="fjw-cover-logo-block">
-          <svg class="fjw-cover-logo-mark" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M26 6 L32 18 L26 14 L20 18 Z" fill="#3a6070" opacity="0.9"/>
-            <path d="M20 18 L26 14 L32 18 L38 26 L26 22 L14 26 Z" fill="#3a6070" opacity="0.65"/>
-            <path d="M6 34 Q13 28 20 32 Q26 36 32 30 Q38 24 46 30 L46 44 Q38 38 32 42 Q26 46 20 42 Q13 38 6 44 Z" fill="#3a6070" opacity="0.45"/>
-            <path d="M6 38 Q13 33 20 36 Q26 39 32 34 Q38 29 46 34" stroke="#3a6070" stroke-width="1" fill="none" opacity="0.6"/>
-            <path d="M6 42 Q13 37 20 40 Q26 43 32 38 Q38 33 46 38" stroke="#7a9aa8" stroke-width="0.8" fill="none" opacity="0.5"/>
-          </svg>
-          <div class="fjw-cover-logo-name">Fjord &amp; Waves</div>
-          <div class="fjw-cover-logo-tagline">Curated travel experiences</div>
+          <img class="fjw-cover-logo-img" src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" />
         </div>
 
         <!-- 2. Hero image -->
@@ -479,7 +475,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         <div class="fjw-cover-body">
           <p class="fjw-cover-eyebrow">A pre-designed and inspirational itinerary</p>
           <h1 class="fjw-cover-title">${escapeHtml(coverTitle)}</h1>
-          ${tagline ? `<p class="fjw-cover-description">${escapeHtml(tagline)}</p>` : ""}
+          ${shortTagline ? `<p class="fjw-cover-description">${escapeHtml(shortTagline)}</p>` : ""}
           <div class="fjw-cover-meta">
             <div class="fjw-cover-meta-col">
               <div class="fjw-cover-meta-label">Duration</div>
