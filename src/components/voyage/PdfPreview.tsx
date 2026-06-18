@@ -104,8 +104,6 @@ const PAGE_CSS = `
   width: 210mm;
   max-height: 297mm;
   overflow: hidden;
-  break-after: page;
-  page-break-after: always;
   background: #f5f1ea;
   margin: 0;
   padding: 0;

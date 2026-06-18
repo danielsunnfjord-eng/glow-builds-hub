@@ -1,19 +1,21 @@
-## Problem
+## Root cause
 
-Both the cover and back pages use the same `logo-badge-hd.png` (1024×1024 px). However, the cover page applies aggressive CSS image-rendering settings that make the logo look pixelated:
+The cover `<section>` in `PdfPreview.tsx` has both:
 
 ```css
-.fjw-cover-logo-img {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
+.fjw-cover-page {
+  height: 297mm;          /* fills full A4 page */
+  break-after: page;       /* forces another page break AFTER */
+  page-break-after: always;
 }
 ```
 
-The back page does **not** set any `image-rendering` property, so the browser uses its default smooth scaling — which is why it looks better.
+Combined with Paged.js's named page (`page: cover`), the page-break is redundant. The cover already occupies a full 297mm page, then `break-after: page` forces an **extra** empty page before the itinerary section starts. Same root cause likely applies to `.fjw-back-page` if it ever appears before other content.
 
-## Plan
+## Fix
 
-1. **Remove the `image-rendering` declarations** from `.fjw-cover-logo-img` in `PdfPreview.tsx` so the browser scales the logo smoothly, matching the back page behavior.
-2. **Verify** with a quick TypeScript check (`bunx tsc --noEmit`) to ensure no syntax errors are introduced.
+Remove the `break-after: page` and `page-break-after: always` declarations from `.fjw-cover-page` (lines 107–108). The transition between the `cover` named page and the default page used by `.fjw-itinerary-section` already triggers a new page in Paged.js — no manual break needed.
 
-This is a one-line CSS change that will make the cover page logo render at the same quality as the back page.
+Verify by:
+1. Opening the PDF preview — confirm itinerary content begins on page 2, no blank page in between.
+2. Using the in-app Print button — confirm the printed/exported PDF has no blank page after the cover.
