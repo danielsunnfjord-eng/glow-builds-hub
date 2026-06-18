@@ -121,6 +121,8 @@ const PAGE_CSS = `
   break-after: page;
   page-break-after: always;
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 1. Logo block — top, centered, on parchment */
@@ -512,7 +514,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       </section>
       ${hotelHtml}
       <section class="fjw-back-page">
-        <img src="${escapeHtml(logoBadge)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" />
+        <img src="${escapeHtml(logoBadgeHd)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" />
         <h2>${escapeHtml(L.thankYou)}</h2>
         <p>${escapeHtml(L.closingNote)}</p>
         <div class="fjw-back-rule"></div>
