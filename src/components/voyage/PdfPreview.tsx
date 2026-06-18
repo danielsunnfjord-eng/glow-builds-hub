@@ -479,18 +479,52 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         </section>`
       : "";
 
+    const seasonLabel = dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
+    const subtitleLine = [project?.destination, project?.trip_duration].filter(Boolean).join(" · ");
+
     return `<div class="fjw-paged-document">
       <section class="fjw-cover-page">
-        <div class="fjw-cover-logo"><img src="${escapeHtml(logoHorizontalHd)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" /></div>
-        <div class="fjw-cover-hero">${coverHero}${project?.hero_image_credit ? `<div class="fjw-photo-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}</div>
-        ${project?.hero_image_caption ? `<p class="fjw-cover-caption">${escapeHtml(project.hero_image_caption)}</p>` : ""}
-        <p class="fjw-cover-eyebrow">${escapeHtml(L.preparedFor)}</p>
-        <h1 class="fjw-cover-title">${escapeHtml(project?.client_name || L.valuedTraveller)}</h1>
-        <div class="fjw-cover-rule"></div>
-        ${project?.destination ? `<p class="fjw-cover-destination">${escapeHtml(project.destination)}</p>` : ""}
-        ${dateRange ? `<p class="fjw-cover-date">${escapeHtml(dateRange)}</p>` : ""}
-        ${tagline ? `<div class="fjw-cover-rule" style="margin-top:18mm"></div>` : ""}
-        <p class="fjw-cover-tagline">${escapeHtml(tagline)}</p>
+        <div class="fjw-cover-hero">
+          ${coverHero}
+          ${project?.hero_image_credit ? `<div class="fjw-photo-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}
+        </div>
+        <div class="fjw-cover-body">
+          <div class="fjw-cover-logo-block">
+            <svg class="fjw-cover-logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 8 L34 26 L10 26 Z" fill="#3a4a52"/>
+              <path d="M6 30 Q11 27 16 30 T26 30 T36 30 T44 30" stroke="#7a96a0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <path d="M4 34 Q9 31 14 34 T24 34 T34 34 T42 34" stroke="#a8bec5" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div class="fjw-cover-logo-name">FJORD &amp; WAVES</div>
+            <div class="fjw-cover-logo-tagline">Curated travel experiences</div>
+          </div>
+          <div class="fjw-cover-divider-thin"></div>
+          <p class="fjw-cover-eyebrow">${escapeHtml(L.preparedFor)}</p>
+          <h1 class="fjw-cover-title">${escapeHtml(project?.client_name || L.valuedTraveller)}</h1>
+          ${subtitleLine ? `<p class="fjw-cover-subtitle">${escapeHtml(subtitleLine)}</p>` : ""}
+          <div class="fjw-cover-diamond-divider">
+            <span class="line"></span><span class="diamond"></span><span class="line"></span>
+          </div>
+          ${tagline ? `<p class="fjw-cover-description">${escapeHtml(tagline)}</p>` : ""}
+          <div class="fjw-cover-meta">
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Duration</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project?.trip_duration || "—")}</div>
+            </div>
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Region</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project?.destination || "—")}</div>
+            </div>
+            <div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Season</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
+            </div>
+          </div>
+          <div class="fjw-cover-arrow">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2 V10 M2.5 6.5 L6 10 L9.5 6.5" stroke="#4C6F75" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="fjw-cover-accent-bar"></div>
       </section>
       <section class="fjw-itinerary-section">
         <header class="fjw-running-header"><img src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" /><p>${escapeHtml(destinationLine)}</p></header>
