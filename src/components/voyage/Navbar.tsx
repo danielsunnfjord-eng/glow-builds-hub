@@ -44,7 +44,7 @@ const Navbar = () => {
           </button>
           <LanguageSelector variant="light" />
           <button
-            onClick={() => goToSection("enquiry")}
+            onClick={() => navigate("/start-your-journey")}
             className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
@@ -93,7 +93,7 @@ const Navbar = () => {
             <LanguageSelector variant="light" />
           </div>
           <button
-            onClick={() => goToSection("enquiry")}
+            onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
             className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
