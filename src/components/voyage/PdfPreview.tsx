@@ -123,12 +123,12 @@ const PAGE_CSS = `
 /* 1. Logo block — top, centered, on parchment */
 .fjw-cover-logo-block {
   display: flex; flex-direction: column; align-items: center;
-  padding: 10mm 0 6mm;
+  padding: 8mm 0 4mm;
   background: #f5f1ea;
   flex-shrink: 0;
 }
 .fjw-cover-logo-img {
-  height: 36mm; width: auto; display: block;
+  height: 52mm; width: auto; display: block;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
