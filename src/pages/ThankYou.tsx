@@ -8,7 +8,6 @@ import Seo from "@/components/Seo";
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
-    dataLayer?: unknown[];
   }
 }
 
@@ -18,7 +17,7 @@ const ThankYou = () => {
     // e.g. 'AW-XXXXXXXXX/AbCdEfGhIjK'
     try {
       window.dataLayer = window.dataLayer || [];
-      const gtag = window.gtag || ((...args: unknown[]) => window.dataLayer!.push(args));
+      const gtag = window.gtag || ((...args: unknown[]) => (window.dataLayer = window.dataLayer || []).push(args));
       gtag("event", "conversion", {
         send_to: "AW-CONVERSION_ID/CONVERSION_LABEL",
         event_category: "lead",
