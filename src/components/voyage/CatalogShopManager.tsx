@@ -1838,6 +1838,7 @@ const CatalogShopManager = () => {
                 hero_image_credit: previewRow.hero_image_credit,
                 hero_image_caption: previewRow.hero_image_caption,
                 cover_tagline: pickedSummary || null,
+                season: previewRow.season,
               }}
               hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
               onClose={() => setPreviewRow(null)}

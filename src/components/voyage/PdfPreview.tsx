@@ -36,6 +36,7 @@ interface PdfPreviewProps {
     hero_image_credit?: string | null;
     hero_image_caption?: string | null;
     cover_tagline?: string | null;
+    season?: string[] | string | null;
   } | null;
   hotels?: HotelRecPreview[];
   onClose: () => void;
@@ -450,7 +451,10 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         </section>`
       : "";
 
-    const seasonLabel = dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
+    const seasonFromProject = Array.isArray(project?.season)
+      ? project!.season.join(" · ")
+      : (project?.season || "");
+    const seasonLabel = seasonFromProject || dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
 
     const coverTitle = project?.destination || L.itinerary;
     const truncateSentences = (text: string, max: number) => {
