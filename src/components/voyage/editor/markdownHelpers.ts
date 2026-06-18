@@ -82,6 +82,12 @@ const turndownService = new TurndownService({
   headingStyle: "atx",
   hr: "---",
   bulletListMarker: "-",
+  blankReplacement: (_content, node) => {
+    if (node.nodeName !== "P") return "\n\n";
+    const el = node as HTMLElement;
+    if (el.querySelector("img,figure")) return "\n\n";
+    return "\n\n\u00A0\n\n";
+  },
 });
 
 turndownService.addRule("figure", {
