@@ -114,8 +114,9 @@ const PAGE_CSS = `
   flex-direction: column;
 }
 .fjw-back-page {
-  height: 257mm;
-  max-height: 257mm;
+  page: back;
+  height: 297mm;
+  max-height: 297mm;
   overflow: hidden;
   break-after: page;
   page-break-after: always;
