@@ -86,6 +86,7 @@ const I18N: Record<string, Record<string, string>> = {
 
 const PAGE_CSS = `
 @page { size: 210mm 297mm; margin: 20mm; }
+@page cover { size: 210mm 297mm; margin: 0; }
 
 .fjw-paged-document {
   font-family: 'Montserrat', 'Inter', sans-serif;
@@ -96,6 +97,7 @@ const PAGE_CSS = `
 
 /* ========== COVER PAGE ========== */
 .fjw-cover-page {
+  page: cover;
   height: 297mm;
   width: 210mm;
   max-height: 297mm;
@@ -103,7 +105,7 @@ const PAGE_CSS = `
   break-after: page;
   page-break-after: always;
   background: #f5f1ea;
-  margin: -20mm;
+  margin: 0;
   padding: 0;
   position: relative;
   display: flex;
@@ -121,12 +123,12 @@ const PAGE_CSS = `
 /* 1. Logo block — top, centered, on parchment */
 .fjw-cover-logo-block {
   display: flex; flex-direction: column; align-items: center;
-  padding: 14mm 0 10mm;
+  padding: 10mm 0 6mm;
   background: #f5f1ea;
   flex-shrink: 0;
 }
 .fjw-cover-logo-img {
-  height: 18mm; width: auto; display: block;
+  height: 36mm; width: auto; display: block;
 }
 
 /* 2. Hero image — full width band */
@@ -340,11 +342,11 @@ const PREVIEW_FRAME_CSS = `
   overflow: hidden;
 }
 .fjw-paged-render .pagedjs_pagebox {
-  background: rgba(220,206,184,0.26);
+  background: #ffffff;
 }
 .fjw-paged-render .pagedjs_area {
   background: #ffffff;
-  outline: 1px solid rgba(180,140,60,0.48);
+  outline: none;
 }
 .fjw-paged-render .pagedjs_margin,
 .fjw-paged-render .pagedjs_margin-top-left-corner-holder,
@@ -355,7 +357,7 @@ const PREVIEW_FRAME_CSS = `
 .fjw-paged-render .pagedjs_margin-bottom,
 .fjw-paged-render .pagedjs_margin-left,
 .fjw-paged-render .pagedjs_margin-right {
-  background: rgba(220,206,184,0.22);
+  background: #ffffff;
 }
 @media print {
   @page { size: A4; margin: 0; }
