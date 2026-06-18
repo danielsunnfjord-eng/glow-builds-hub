@@ -96,25 +96,21 @@ const PAGE_CSS = `
 
 .fjw-cover-page,
 .fjw-back-page {
-  height: 257mm;
   break-after: page;
   page-break-after: always;
-  display: flex;
-  flex-direction: column;
   text-align: center;
 }
 
-.fjw-cover-logo { display: flex; justify-content: center; padding-top: 1mm; flex-shrink: 0; }
-.fjw-cover-logo img { height: 74px; width: auto; max-width: 132mm; object-fit: contain; }
+.fjw-cover-logo { display: flex; justify-content: center; padding-top: 4mm; }
+.fjw-cover-logo img { height: 64px; width: auto; max-width: 120mm; object-fit: contain; }
 .fjw-cover-hero {
-  height: 76mm;
-  margin: 7mm 0 3mm;
+  height: 92mm;
+  margin: 14mm 0 6mm;
   border-radius: 4px;
   overflow: hidden;
   background: linear-gradient(135deg, #A9C6C1 0%, #4C6F75 100%);
   box-shadow: 0 10px 30px rgba(30,45,61,0.25);
   position: relative;
-  flex-shrink: 0;
 }
 .fjw-cover-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .fjw-cover-placeholder {
@@ -128,26 +124,27 @@ const PAGE_CSS = `
   font-size: 8px; letter-spacing: 0.04em;
 }
 .fjw-cover-caption {
-  margin: 0 0 4mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 11px; line-height: 1.35; color: #4C6F75;
+  margin: 0 0 10mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 13px; line-height: 1.35; color: #4C6F75;
 }
 .fjw-cover-eyebrow {
-  margin: 0 0 8px; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: #4C6F75;
+  margin: 0 0 10px; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #4C6F75;
 }
 .fjw-cover-title {
-  margin: 0 0 10px; font-family: 'Cormorant Garamond', serif; font-size: 32px;
+  margin: 0 0 14px; font-family: 'Cormorant Garamond', serif; font-size: 38px;
   font-weight: 500; line-height: 1.15; letter-spacing: 0.01em; color: #1E2D3D;
+  max-width: 150mm; margin-left: auto; margin-right: auto;
 }
-.fjw-cover-rule { width: 54px; height: 1px; background: #DCCEB8; margin: 0 auto 10px; }
+.fjw-cover-rule { width: 54px; height: 1px; background: #DCCEB8; margin: 14px auto; }
 .fjw-cover-destination {
-  margin: 0 0 8px; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 16px; color: #4C6F75;
+  margin: 0 0 14mm; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 18px; color: #4C6F75;
 }
-.fjw-cover-date { margin: 0; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
-.fjw-cover-spacer { flex: 1; min-height: 4mm; }
+.fjw-cover-date { margin: 0 0 10mm; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #4C6F75; }
 .fjw-cover-tagline {
-  margin: 0; font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 15px; line-height: 1.6; letter-spacing: 0.04em; color: #1E2D3D;
+  margin: 0 auto; font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 17px; line-height: 1.7; letter-spacing: 0.01em; color: #1E2D3D;
+  max-width: 145mm;
 }
 
 .fjw-running-header {
@@ -374,7 +371,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         <div class="fjw-cover-rule"></div>
         ${project?.destination ? `<p class="fjw-cover-destination">${escapeHtml(project.destination)}</p>` : ""}
         ${dateRange ? `<p class="fjw-cover-date">${escapeHtml(dateRange)}</p>` : ""}
-        <div class="fjw-cover-spacer"></div>
+        ${tagline ? `<div class="fjw-cover-rule" style="margin-top:18mm"></div>` : ""}
         <p class="fjw-cover-tagline">${escapeHtml(tagline)}</p>
       </section>
       <section class="fjw-itinerary-section">
