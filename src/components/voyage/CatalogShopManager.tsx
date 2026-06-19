@@ -1868,6 +1868,12 @@ const CatalogShopManager = () => {
                 hero_image_caption: previewRow.hero_image_caption,
                 cover_tagline: pickedSummary || null,
                 season: previewRow.season,
+                budget_cover_label: (() => {
+                  try {
+                    const raw = window.localStorage.getItem("fjw-budget-v1:" + previewRow.id);
+                    return raw ? (JSON.parse(raw)?.coverLabel ?? null) : null;
+                  } catch { return null; }
+                })(),
               }}
               hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
               onClose={() => setPreviewRow(null)}
