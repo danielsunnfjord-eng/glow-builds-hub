@@ -315,6 +315,27 @@ const CatalogShopManager = () => {
     latestEditorOpenRef.current = editorOpen;
   }, [state, sectionPrompt, editorOpen]);
 
+  // Budget per catalog row (persisted in localStorage)
+  useEffect(() => {
+    import("@/lib/itineraryBudgetStore").then(({ loadBudget }) => {
+      const id = state.id || null;
+      const { budget, coverLabel } = loadBudget(id);
+      setBudget(budget);
+      setBudgetCoverLabel(coverLabel);
+    });
+  }, [state.id]);
+
+  const handleBudgetSaved = useCallback(
+    (b: import("./editor/BudgetEstimator").BudgetData | null, lbl: string | null) => {
+      setBudget(b);
+      setBudgetCoverLabel(lbl);
+      import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
+        saveBudget(state.id || null, { budget: b, coverLabel: lbl });
+      });
+    },
+    [state.id],
+  );
+
   const loadCatalogDraft = async (itineraryId: string) => {
     const { data, error } = await supabase
       .from("catalog_itinerary_drafts")
