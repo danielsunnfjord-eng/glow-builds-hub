@@ -6,7 +6,9 @@ import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ImagePlus, FileText } from "lucide-react";
+import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
+import { htmlToMarkdown } from "./markdownHelpers";
+import { parseItineraryMarkdown } from "@/lib/itineraryParser";
 
 
 
@@ -61,6 +63,61 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       toast.error(err?.message || "Upload failed");
     }
     if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const handleGenerateMap = async () => {
+    try {
+      const md = htmlToMarkdown(editor.getHTML());
+      const days = parseItineraryMarkdown(md);
+      const stops = days.flatMap((d, di) =>
+        d.items
+          .filter((it) => it.type !== "transport")
+          .map((it, oi) => ({
+            day: d.day || di + 1,
+            order: oi,
+            title: it.title,
+            location: it.location,
+            lat: it.lat,
+            lng: it.lng,
+          })),
+      );
+      if (stops.length === 0) {
+        toast.error("No itinerary stops detected. Add day headings and bullet items first.");
+        return;
+      }
+      const context = (window.prompt(
+        "Optional country/region to bias geocoding (e.g. 'Norway'):",
+        "",
+      ) || "").trim() || undefined;
+
+      const tId = toast.loading(`Generating map for ${stops.length} stops…`);
+      const { data, error } = await supabase.functions.invoke("generate-itinerary-map", {
+        body: { stops, context },
+      });
+      toast.dismiss(tId);
+      if (error) throw error;
+      if (!data?.url) throw new Error("No map URL returned");
+
+      (editor.chain().focus() as any)
+        .setImage({ src: data.url, alt: "Itinerary route map" })
+        .run();
+      const skipped = data.skipped || 0;
+      const legend = (data.stops || [])
+        .map((s: any) => `${s.n}. ${s.title}${s.location ? ` — ${s.location}` : ""}`)
+        .join("<br/>");
+      editor
+        .chain()
+        .focus()
+        .createParagraphNear()
+        .insertContent(
+          `<p class="fjw-img-caption"><em>Route overview — ${data.stops.length} stops${skipped ? ` (${skipped} not located)` : ""}</em></p>` +
+            (legend ? `<p class="fjw-img-credit"><small>${legend}</small></p>` : ""),
+        )
+        .run();
+      toast.success("Map inserted");
+    } catch (err: any) {
+      toast.error(err?.message || "Map generation failed");
+    }
   };
 
   // Headings are block-level in TipTap: toggling them transforms the entire
@@ -277,6 +334,14 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
         className="inline-flex items-center gap-1"
       >
         <ImagePlus className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
+      <ToolbarButton
+        onClick={handleGenerateMap}
+        title="Generate route map from itinerary stops"
+        className="inline-flex items-center gap-1"
+      >
+        <MapIcon className="w-3.5 h-3.5" />
       </ToolbarButton>
 
       <ToolbarSep />

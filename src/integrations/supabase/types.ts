@@ -426,6 +426,27 @@ export type Database = {
         }
         Relationships: []
       }
+      geocode_cache: {
+        Row: {
+          created_at: string
+          lat: number
+          lng: number
+          query: string
+        }
+        Insert: {
+          created_at?: string
+          lat: number
+          lng: number
+          query: string
+        }
+        Update: {
+          created_at?: string
+          lat?: number
+          lng?: number
+          query?: string
+        }
+        Relationships: []
+      }
       itinerary_drafts: {
         Row: {
           chat_history: Json | null
