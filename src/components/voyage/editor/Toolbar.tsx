@@ -77,31 +77,19 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
   const handleGenerateMap = async () => {
     try {
       const md = htmlToMarkdown(editor.getHTML());
-      const days = parseItineraryMarkdown(md);
-      const stops = days.flatMap((d, di) =>
-        d.items
-          .filter((it) => it.type !== "transport")
-          .map((it, oi) => ({
-            day: d.day || di + 1,
-            order: oi,
-            title: it.title,
-            location: it.location,
-            lat: it.lat,
-            lng: it.lng,
-          })),
-      );
+      const stops = extractMapStops(md);
       if (stops.length === 0) {
-        toast.error("No itinerary stops detected. Add day headings and bullet items first.");
+        toast.error(
+          "No locations detected. Add a 'Trip Overview' section with day headers like 'Day 1 - Bergen - Voss - Flåm'.",
+        );
         return;
       }
-      const context = (window.prompt(
-        "Optional country/region to bias geocoding (e.g. 'Norway'):",
-        "",
-      ) || "").trim() || undefined;
+      const context = pickCountryBias(destination);
+      const style = pickMapStyle(destination);
 
       const tId = toast.loading(`Generating map for ${stops.length} stops…`);
       const { data, error } = await supabase.functions.invoke("generate-itinerary-map", {
-        body: { stops, context },
+        body: { stops, context, style },
       });
       toast.dismiss(tId);
       if (error) throw error;
@@ -111,9 +99,18 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
         .setImage({ src: data.url, alt: "Itinerary route map" })
         .run();
       const skipped = data.skipped || 0;
-      const legend = (data.stops || [])
-        .map((s: any) => `${s.n}. ${s.title}${s.location ? ` — ${s.location}` : ""}`)
+      // Group resolved stops by day for a clean legend
+      const byDay = new Map<number, string[]>();
+      for (const s of (data.stops || []) as Array<{ n: number; title: string; day?: number }>) {
+        const d = s.day || 0;
+        if (!byDay.has(d)) byDay.set(d, []);
+        byDay.get(d)!.push(s.title);
+      }
+      const legend = Array.from(byDay.entries())
+        .sort((a, b) => a[0] - b[0])
+        .map(([d, names]) => `Day ${d}: ${names.join(" · ")}`)
         .join("<br/>");
+
       editor
         .chain()
         .focus()
