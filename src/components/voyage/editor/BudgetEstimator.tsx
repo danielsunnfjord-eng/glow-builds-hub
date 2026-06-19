@@ -150,40 +150,46 @@ const BudgetEstimator = ({
 
   const buildTableHtml = (): string => {
     if (!budget) return "";
-    const rows = Object.entries(budget.per_day).map(([k, l]) => {
+    const TEAL = "#2a6b6b";
+    const ROW_BORDER = "1px solid #eeeeee";
+    const HDR_FONT = "font-family:'Jost','Montserrat',sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;color:#1a1a1a;";
+    const NO_BREAK = "page-break-inside:avoid;break-inside:avoid;";
+
+    const entries = Object.entries(budget.per_day);
+    const rows = entries.map(([k, l], i) => {
       const lo = convert(l.low || 0, baseCcy, displayCcy);
       const hi = convert(l.high || 0, baseCcy, displayCcy);
-      return `<tr>
-  <td style="padding:8px 12px;border-bottom:1px solid #E6DCC6;font-family:'Cormorant Garamond',serif;font-size:13px;color:#1E2D3D;">${titleCase(k)}</td>
-  <td style="padding:8px 12px;border-bottom:1px solid #E6DCC6;text-align:right;font-family:'Montserrat',sans-serif;font-size:12px;color:#3D6B74;">${fmt(lo, displayCcy)} – ${fmt(hi, displayCcy)}</td>
-  <td style="padding:8px 12px;border-bottom:1px solid #E6DCC6;font-family:'Montserrat',sans-serif;font-size:11px;color:#6c7a82;font-style:italic;">${(l.note || "").replace(/</g, "&lt;")}</td>
+      const bg = i % 2 === 0 ? "#ffffff" : "#fafafa";
+      return `<tr style="background:${bg};${NO_BREAK}">
+  <td style="padding:12px 14px;border-bottom:${ROW_BORDER};border-left:3px solid ${TEAL};font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:${TEAL};">${titleCase(k)}</td>
+  <td style="padding:12px 14px;border-bottom:${ROW_BORDER};text-align:center;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;">${fmt(lo, displayCcy)} – ${fmt(hi, displayCcy)}</td>
+  <td style="padding:12px 14px;border-bottom:${ROW_BORDER};font-family:'Montserrat',sans-serif;font-size:12px;font-weight:400;color:#555555;">${(l.note || "").replace(/</g, "&lt;")}</td>
 </tr>`;
     }).join("");
-    const days = budget.duration_days || 0;
+
     const tpdLo = convert(budget.total_per_day?.low || 0, baseCcy, displayCcy);
     const tpdHi = convert(budget.total_per_day?.high || 0, baseCcy, displayCcy);
-    const tppLo = convert(budget.total_per_person?.low || 0, baseCcy, displayCcy);
-    const tppHi = convert(budget.total_per_person?.high || 0, baseCcy, displayCcy);
-    return `<table class="fjw-budget-table" style="width:100%;border-collapse:collapse;margin:18px 0;border:1px solid #B8975A;">
+    const totalLabel = `Total estimated per day: ${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}`;
+
+    return `<table class="fjw-budget-table" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
+  <colgroup>
+    <col style="width:18%;" />
+    <col style="width:20%;" />
+    <col style="width:62%;" />
+  </colgroup>
   <thead>
-    <tr style="background:#3D6B74;color:#fff;">
-      <th style="padding:10px 12px;text-align:left;font-family:'Jost','Montserrat',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;">Category</th>
-      <th style="padding:10px 12px;text-align:right;font-family:'Jost','Montserrat',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;">Per day (${displayCcy})</th>
-      <th style="padding:10px 12px;text-align:left;font-family:'Jost','Montserrat',sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:500;">Note</th>
+    <tr style="background:#f5f5f5;${NO_BREAK}">
+      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">Category</th>
+      <th style="padding:12px 14px;text-align:center;${HDR_FONT}">Per day (${displayCcy})</th>
+      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">Note</th>
     </tr>
   </thead>
   <tbody>${rows}
-    <tr style="background:#FAF6EC;">
-      <td style="padding:10px 12px;font-family:'Cormorant Garamond',serif;font-size:14px;color:#1E2D3D;font-weight:600;">Total per day</td>
-      <td style="padding:10px 12px;text-align:right;font-family:'Montserrat',sans-serif;font-size:13px;color:#1E2D3D;font-weight:600;">${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}</td>
-      <td style="padding:10px 12px;font-family:'Montserrat',sans-serif;font-size:11px;color:#6c7a82;">${days} day${days === 1 ? "" : "s"}</td>
-    </tr>
-    <tr style="background:#B8975A;color:#fff;">
-      <td style="padding:12px;font-family:'Playfair Display','Cormorant Garamond',serif;font-size:16px;font-weight:600;">Estimated total per person</td>
-      <td colspan="2" style="padding:12px;text-align:right;font-family:'Playfair Display','Cormorant Garamond',serif;font-size:18px;font-weight:600;">${fmt(tppLo, displayCcy)} – ${fmt(tppHi, displayCcy)}</td>
+    <tr style="background:#f0f0f0;${NO_BREAK}">
+      <td colspan="3" style="padding:14px;text-align:center;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#1a1a1a;letter-spacing:0.02em;">${totalLabel}</td>
     </tr>
   </tbody>
-</table>${budget.notes ? `<p class="fjw-budget-note" style="font-size:11px;color:#6c7a82;font-style:italic;margin-top:-8px;">${budget.notes.replace(/</g, "&lt;")}</p>` : ""}`;
+</table>${budget.notes ? `<p class="fjw-budget-note" style="font-size:11px;color:#555555;margin-top:-8px;">${budget.notes.replace(/</g, "&lt;")}</p>` : ""}`;
   };
 
   const handleInsert = () => {
