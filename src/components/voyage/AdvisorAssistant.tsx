@@ -154,6 +154,26 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     loadProjectDraft();
   }, [selectedProjectId]);
 
+  // Load persisted budget per project
+  useEffect(() => {
+    import("@/lib/itineraryBudgetStore").then(({ loadBudget }) => {
+      const { budget, coverLabel } = loadBudget(selectedProjectId);
+      setBudget(budget);
+      setBudgetCoverLabel(coverLabel);
+    });
+  }, [selectedProjectId]);
+
+  const handleBudgetSaved = useCallback(
+    (b: import("./editor/BudgetEstimator").BudgetData | null, lbl: string | null) => {
+      setBudget(b);
+      setBudgetCoverLabel(lbl);
+      import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
+        saveBudget(selectedProjectId, { budget: b, coverLabel: lbl });
+      });
+    },
+    [selectedProjectId],
+  );
+
   // --- Save draft (manual or auto) ---
   const saveDraft = useCallback(async (content: string, chatMessages: Message[], silent = false) => {
     if (!selectedProjectId) return;
