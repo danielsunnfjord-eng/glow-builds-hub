@@ -375,6 +375,14 @@ const Toolbar = ({
         <MapIcon className="w-3.5 h-3.5" />
       </ToolbarButton>
 
+      <ToolbarButton
+        onClick={() => setBudgetOpen(true)}
+        title="Estimate Budget"
+        className="inline-flex items-center gap-1"
+      >
+        <Coins className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
       <ToolbarSep />
 
       {/* Page break */}
