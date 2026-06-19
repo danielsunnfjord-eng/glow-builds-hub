@@ -414,6 +414,37 @@
   outline-offset: -6px;
 }
 
+/* Automatic page boundary guides (every 1123px = A4 at 96dpi) */
+.fjw-page-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+.fjw-page-guide {
+  position: absolute;
+  left: -56px;
+  right: -56px;
+  height: 0;
+  border-top: 1px dashed rgba(60, 70, 85, 0.45);
+  display: flex;
+  justify-content: center;
+}
+.fjw-page-guide span {
+  transform: translateY(-50%);
+  background: #e8e4de;
+  color: rgba(40, 50, 65, 0.85);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 
 /* Editor status bar */
 .fjw-editor-statusbar {
