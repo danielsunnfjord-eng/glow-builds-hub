@@ -198,7 +198,7 @@ const PAGE_CSS = `
 /* 5. Title — 12% (~36mm) */
 .fjw-cover-title {
   height: 36mm;
-  margin: 0 auto;
+  margin: 0 auto 8px;
   padding: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
