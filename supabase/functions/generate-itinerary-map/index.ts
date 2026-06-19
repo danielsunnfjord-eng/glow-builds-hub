@@ -195,7 +195,7 @@ function buildBaseMapUrl(stops: Stop[], bbox: BBox, style: string): string {
     let label: string | number = s.day;
     let color = TEAL;
     if (s.type === "start" || s.type === "end") color = GOLD;
-    if (s.type === "activity") label = "hiking";
+    if (s.type === "activity") label = "triangle"; // supported maki icon for activity stops
     return `pin-l-${label}+${color}(${s.lng.toFixed(5)},${s.lat.toFixed(5)})`;
   }).join(",");
   const bboxStr = `[${bbox.minLng.toFixed(5)},${bbox.minLat.toFixed(5)},${bbox.maxLng.toFixed(5)},${bbox.maxLat.toFixed(5)}]`;
