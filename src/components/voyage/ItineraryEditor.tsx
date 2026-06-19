@@ -18,11 +18,17 @@ import AiEditMenu from "./editor/AiEditMenu";
 import { PageBreak } from "./editor/PageBreak";
 import { markdownToHtml, htmlToMarkdown } from "./editor/markdownHelpers";
 
+import type { BudgetData } from "./editor/BudgetEstimator";
+
 interface ItineraryEditorProps {
   content: string;
   onContentChange: (markdown: string) => void;
   placeholder?: string;
   destination?: string | null;
+  tripDuration?: string | null;
+  budget?: BudgetData | null;
+  coverLabel?: string | null;
+  onBudgetSaved?: (budget: BudgetData | null, coverLabel: string | null) => void;
 }
 
 export interface ItineraryEditorHandle {
@@ -30,7 +36,7 @@ export interface ItineraryEditorHandle {
 }
 
 const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
-  ({ content, onContentChange, placeholder, destination }, ref) => {
+  ({ content, onContentChange, placeholder, destination, tripDuration, budget, coverLabel, onBudgetSaved }, ref) => {
     const isInternalUpdate = useRef(false);
     const lastExternalContent = useRef(content);
     const sheetRef = useRef<HTMLDivElement>(null);
