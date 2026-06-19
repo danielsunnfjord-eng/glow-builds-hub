@@ -1691,6 +1691,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <ItineraryEditor
                   ref={editorRef}
                   content={itineraryContent}
+                  destination={selectedProject.destination}
                   onContentChange={(md) => {
                     setItineraryContent(md);
                   }}
