@@ -99,7 +99,10 @@ const PAGE_CSS = `
   line-height: 1.75;
 }
 
-/* ========== COVER PAGE ========== */
+/* ========== COVER PAGE ==========
+   Fixed-height layout. Every section has an explicit height in mm so
+   Paged.js can never split the cover across two pages, and no child
+   can push another off the bottom. Heights sum to 297mm (A4). */
 .fjw-cover-page {
   page: cover;
   height: 297mm;
@@ -110,8 +113,9 @@ const PAGE_CSS = `
   margin: 0;
   padding: 0;
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  page-break-after: always;
+  break-after: page;
 }
 .fjw-cover-page,
 .fjw-cover-page * {
@@ -129,25 +133,24 @@ const PAGE_CSS = `
   flex-direction: column;
 }
 
-/* 1. Logo block — top, centered, on parchment */
+/* 1. Logo block — 10% */
 .fjw-cover-logo-block {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 6mm 0 3mm;
+  height: 30mm;
+  display: flex; align-items: center; justify-content: center;
   background: #f5f1ea;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 .fjw-cover-logo-img {
-  height: 38mm; width: auto; display: block;
+  max-height: 24mm; width: auto; display: block;
 }
 
-/* 2. Hero image — full width band (~35% of page) */
+/* 2. Hero image — 32% */
 .fjw-cover-hero {
   position: relative;
   width: 100%;
-  height: 100mm;
+  height: 95mm;
   overflow: hidden;
   background: #1c2e38;
-  flex-shrink: 0;
 }
 .fjw-cover-hero img {
   width: 100%; height: 100%; object-fit: cover; display: block;
@@ -156,8 +159,9 @@ const PAGE_CSS = `
   height: 100%; width: 100%; background: #1c2e38;
 }
 
-/* 3. Photo credit — quiet line below hero */
+/* 3. Photo credit — 3% (fixed; rendered even when empty so layout never shifts) */
 .fjw-cover-credit {
+  height: 9mm;
   width: 100%;
   text-align: right;
   font-family: 'Jost', 'Montserrat', sans-serif;
@@ -166,65 +170,71 @@ const PAGE_CSS = `
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #8fa0a8;
-  padding: 2mm 14mm 0;
-  flex-shrink: 0;
-}
-
-/* Body wrapper for text content — flex-fills remaining cover height,
-   never grows past it, so the stats bar stays anchored on page 1. */
-.fjw-cover-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  text-align: center;
-  padding: 6mm 18mm 10mm;
-  position: relative;
+  padding: 3mm 14mm 0;
   overflow: hidden;
 }
 
-/* 4. Eyebrow */
-.fjw-cover-eyebrow {
-  margin: 0 0 4mm;
-  font-family: 'Jost', 'Montserrat', sans-serif;
-  font-size: 8px; letter-spacing: 0.32em; text-transform: uppercase;
-  color: #8fa0a8; font-weight: 400;
-  flex-shrink: 0;
+/* Body wrapper — fills the remaining 158mm with fixed-height children */
+.fjw-cover-body {
+  height: 158mm;
+  display: block;
+  text-align: center;
+  padding: 0 22mm;
+  overflow: hidden;
+  position: relative;
 }
 
-/* 5. Title */
+/* 4. Eyebrow / tagline — 4% (~12mm) */
+.fjw-cover-eyebrow {
+  height: 12mm;
+  margin: 0;
+  padding-top: 4mm;
+  font-family: 'Jost', 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: #8fa0a8; font-weight: 400;
+  overflow: hidden;
+}
+
+/* 5. Title — 12% (~36mm) */
 .fjw-cover-title {
-  margin: 0 auto 4mm;
+  height: 36mm;
+  margin: 0 auto;
+  padding: 0;
+  display: flex; align-items: center; justify-content: center;
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 28px; font-weight: 500; line-height: 1.18;
+  font-size: 30px; font-weight: 500; line-height: 1.15;
   letter-spacing: -0.005em; color: #1c2e38;
   max-width: 150mm;
-  flex-shrink: 0;
-}
-
-/* 6. Short description — italic editorial */
-.fjw-cover-description {
-  margin: 0 auto 5mm;
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-weight: 400;
-  font-size: 13px; line-height: 1.55;
-  color: #2e4450; max-width: 145mm;
-  flex-shrink: 1;
   overflow: hidden;
 }
 
-/* 7. Metadata strip — Duration / Region / Season / Budget */
+/* 6. Short description — 24% (~71mm). Clipped, never overflows. */
+.fjw-cover-description {
+  height: 60mm;
+  margin: 0 auto;
+  padding: 0 0 4mm;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-weight: 400;
+  font-size: 14px; line-height: 1.6;
+  color: #2e4450; max-width: 145mm;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+}
+
+/* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */
 .fjw-cover-meta {
-  display: flex; justify-content: center; align-items: stretch;
-  margin: auto auto 0; width: 100%; max-width: 165mm;
-  flex-shrink: 0;
+  height: 45mm;
+  display: flex; justify-content: center; align-items: center;
+  margin: 0 auto; width: 100%; max-width: 170mm;
+  padding: 6mm 0;
+  overflow: hidden;
 }
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 0 3mm;
+  padding: 0 4mm;
   min-width: 0;
 }
 .fjw-cover-meta-col + .fjw-cover-meta-col {
@@ -234,15 +244,14 @@ const PAGE_CSS = `
   font-family: 'Jost', 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 0.24em;
   color: #8fa0a8; text-transform: uppercase;
-  margin-bottom: 2mm; font-weight: 400;
+  margin-bottom: 3mm; font-weight: 400;
   white-space: nowrap;
 }
 .fjw-cover-meta-value {
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 13px; color: #1c2e38; font-weight: 400;
+  font-size: 14px; color: #1c2e38; font-weight: 400;
   line-height: 1.25;
 }
-
 
 /* 8. Footer teal accent bar */
 .fjw-cover-page::after {
@@ -250,6 +259,7 @@ const PAGE_CSS = `
   position: absolute; left: 0; right: 0; bottom: 0;
   width: 100%; height: 5mm; background: #4C6F75;
 }
+
 
 .fjw-photo-credit {
   position: absolute; right: 8px; bottom: 5px; color: rgba(255,255,255,0.92);
