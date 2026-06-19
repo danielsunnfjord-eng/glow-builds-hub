@@ -54,15 +54,21 @@ function buildStaticUrl(
   points: { coord: Coord; n: number }[],
   style: string,
 ): string {
-  // Numbered pins (Fjord & Waves sand: b8935a)
+  // Brand colours: gold (B8975A) for start/end, teal (3D6B74) for middle stops
+  const GOLD = "b8975a";
+  const TEAL = "3d6b74";
+  const lastIdx = points.length - 1;
   const pins = points
-    .map((p) => `pin-l-${p.n}+b8935a(${p.coord.lng.toFixed(5)},${p.coord.lat.toFixed(5)})`)
+    .map((p, i) => {
+      const color = i === 0 || i === lastIdx ? GOLD : TEAL;
+      return `pin-l-${p.n}+${color}(${p.coord.lng.toFixed(5)},${p.coord.lat.toFixed(5)})`;
+    })
     .join(",");
 
-  // Route line as GeoJSON LineString overlay (Fjord midnight: 1f3a5f)
+  // Route line as GeoJSON LineString overlay (teal, 3px)
   const lineGeo = {
     type: "Feature",
-    properties: { stroke: "#1f3a5f", "stroke-width": 3 },
+    properties: { stroke: "#3D6B74", "stroke-width": 3, "stroke-opacity": 0.9 },
     geometry: {
       type: "LineString",
       coordinates: points.map((p) => [p.coord.lng, p.coord.lat]),
