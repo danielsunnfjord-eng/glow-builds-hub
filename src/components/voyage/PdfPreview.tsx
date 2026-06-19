@@ -38,6 +38,7 @@ interface PdfPreviewProps {
     hero_image_caption?: string | null;
     cover_tagline?: string | null;
     season?: string[] | string | null;
+    budget_cover_label?: string | null;
   } | null;
   hotels?: HotelRecPreview[];
   onClose: () => void;
