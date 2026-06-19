@@ -166,6 +166,17 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
           <div ref={sheetRef} className="fjw-a4-sheet" data-page-sheet>
             <EditorContent editor={editor} />
             <AiEditMenu editor={editor} />
+            <div className="fjw-page-guides fjw-no-print" aria-hidden>
+              {Array.from({ length: Math.max(0, pageInfo.total - 1) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="fjw-page-guide"
+                  style={{ top: `${(i + 1) * 1123}px` }}
+                >
+                  <span>Page {i + 1} ends · Page {i + 2} starts</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="fjw-editor-statusbar fjw-no-print">
