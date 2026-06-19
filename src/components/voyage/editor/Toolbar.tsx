@@ -65,6 +65,61 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  const handleGenerateMap = async () => {
+    try {
+      const md = htmlToMarkdown(editor.getHTML());
+      const days = parseItineraryMarkdown(md);
+      const stops = days.flatMap((d, di) =>
+        d.items
+          .filter((it) => it.type !== "transport")
+          .map((it, oi) => ({
+            day: d.day || di + 1,
+            order: oi,
+            title: it.title,
+            location: it.location,
+            lat: it.lat,
+            lng: it.lng,
+          })),
+      );
+      if (stops.length === 0) {
+        toast.error("No itinerary stops detected. Add day headings and bullet items first.");
+        return;
+      }
+      const context = (window.prompt(
+        "Optional country/region to bias geocoding (e.g. 'Norway'):",
+        "",
+      ) || "").trim() || undefined;
+
+      const tId = toast.loading(`Generating map for ${stops.length} stops…`);
+      const { data, error } = await supabase.functions.invoke("generate-itinerary-map", {
+        body: { stops, context },
+      });
+      toast.dismiss(tId);
+      if (error) throw error;
+      if (!data?.url) throw new Error("No map URL returned");
+
+      (editor.chain().focus() as any)
+        .setImage({ src: data.url, alt: "Itinerary route map" })
+        .run();
+      const skipped = data.skipped || 0;
+      const legend = (data.stops || [])
+        .map((s: any) => `${s.n}. ${s.title}${s.location ? ` — ${s.location}` : ""}`)
+        .join("<br/>");
+      editor
+        .chain()
+        .focus()
+        .createParagraphNear()
+        .insertContent(
+          `<p class="fjw-img-caption"><em>Route overview — ${data.stops.length} stops${skipped ? ` (${skipped} not located)` : ""}</em></p>` +
+            (legend ? `<p class="fjw-img-credit"><small>${legend}</small></p>` : ""),
+        )
+        .run();
+      toast.success("Map inserted");
+    } catch (err: any) {
+      toast.error(err?.message || "Map generation failed");
+    }
+  };
+
   // Headings are block-level in TipTap: toggling them transforms the entire
   // current block. Expand the selection to the parent block first so the user
   // visibly sees what's about to change (no more "I selected one word but the
