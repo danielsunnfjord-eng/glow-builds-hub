@@ -1,6 +1,6 @@
-// Generates a print-ready static route map (Mapbox Static Images API) for an
-// itinerary. Uses Claude to extract stops + legs from the raw itinerary text,
-// then renders a numbered route with brand colours and uploads to Storage.
+// Generates a print-ready static route map for an itinerary.
+// Pipeline: itineraryText → Claude (stops + legs with coords) → Mapbox Static.
+// NO geocoding — coordinates come exclusively from Claude.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3.23.8";
@@ -10,25 +10,29 @@ const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-// Legacy stop schema (still supported for callers passing explicit stops)
-const StopSchema = z.object({
-  day: z.number().int().nonnegative().optional(),
-  order: z.number().int().nonnegative().optional(),
-  title: z.string().min(1),
-  location: z.string().optional(),
-  lat: z.number().optional(),
-  lng: z.number().optional(),
-});
+// Norway bounding box for validation
+const LAT_MIN = 57.5, LAT_MAX = 71.5;
+const LNG_MIN = 4.0, LNG_MAX = 31.5;
 
 const BodySchema = z.object({
-  itineraryText: z.string().min(20).optional(),
-  stops: z.array(StopSchema).min(1).max(60).optional(),
-  context: z.string().optional(),
+  itineraryText: z.string().min(20),
   itineraryId: z.string().optional(),
   style: z.string().optional(),
 });
 
 type Coord = { lat: number; lng: number };
+type Stop = {
+  day: number;
+  name: string;
+  lat: number;
+  lng: number;
+  type: "start" | "stop" | "overnight" | "activity" | "end";
+};
+type Leg = {
+  from: string;
+  to: string;
+  mode: "car" | "train" | "ferry" | "foot";
+};
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, {
   auth: { persistSession: false },
@@ -60,21 +64,17 @@ ITINERARY:
 
 function extractJson(text: string): any {
   let t = text.trim();
-  // Strip markdown fences
   t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
-  // Find outermost JSON object
   const start = t.indexOf("{");
   const end = t.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("No JSON object found in Claude response");
   let body = t.slice(start, end + 1);
-  // Remove trailing commas
   body = body.replace(/,(\s*[}\]])/g, "$1");
-  // Strip control chars
   body = body.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "");
   return JSON.parse(body);
 }
 
-async function callClaude(itineraryText: string) {
+async function callClaude(itineraryText: string): Promise<{ stops: Stop[]; legs: Leg[] }> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -88,48 +88,89 @@ async function callClaude(itineraryText: string) {
       messages: [{ role: "user", content: CLAUDE_PROMPT + itineraryText }],
     }),
   });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`Claude API error: ${t}`);
-  }
+  if (!res.ok) throw new Error(`Claude API error: ${await res.text()}`);
   const data = await res.json();
-  const text = (data?.content?.[0]?.text || "").trim();
-  const stopReason = data?.stop_reason;
-  if (stopReason === "max_tokens") {
-    console.warn("Claude response was truncated (max_tokens)");
+  if (data?.stop_reason === "max_tokens") {
+    console.warn("Claude response truncated (max_tokens)");
   }
-  return extractJson(text);
+  const text = (data?.content?.[0]?.text || "").trim();
+  const parsed = extractJson(text);
+  return {
+    stops: Array.isArray(parsed?.stops) ? parsed.stops : [],
+    legs: Array.isArray(parsed?.legs) ? parsed.legs : [],
+  };
 }
 
-function buildStaticUrl(
-  points: { coord: Coord; n: number; type?: string }[],
-  style: string,
-): string {
+function validStop(s: any): s is Stop {
+  return (
+    s &&
+    typeof s.name === "string" &&
+    typeof s.lat === "number" &&
+    typeof s.lng === "number" &&
+    s.lat >= LAT_MIN && s.lat <= LAT_MAX &&
+    s.lng >= LNG_MIN && s.lng <= LNG_MAX
+  );
+}
+
+// Build a Mapbox Static Images URL with per-leg path overlays + numbered pins.
+function buildStaticUrl(opts: {
+  stops: Stop[];
+  legs: Leg[];
+  style: string;
+}): string {
+  const { stops, legs, style } = opts;
   const GOLD = "b8975a";
   const TEAL = "3d6b74";
-  const lastIdx = points.length - 1;
-  const pins = points
-    .map((p, i) => {
-      const isEndpoint = i === 0 || i === lastIdx || p.type === "start" || p.type === "end";
-      const color = isEndpoint ? GOLD : TEAL;
-      return `pin-l-${p.n}+${color}(${p.coord.lng.toFixed(5)},${p.coord.lat.toFixed(5)})`;
-    })
-    .join(",");
+  const FERRY = "5b9aa3"; // lighter teal for ferry legs
 
-  const lineGeo = {
-    type: "Feature",
-    properties: { stroke: "#3D6B74", "stroke-width": 3, "stroke-opacity": 0.9 },
-    geometry: {
-      type: "LineString",
-      coordinates: points.map((p) => [p.coord.lng, p.coord.lat]),
-    },
-  };
-  const line = points.length > 1
-    ? `geojson(${encodeURIComponent(JSON.stringify(lineGeo))})`
-    : "";
+  // Coord lookup by stop name (case-insensitive, last wins so end-loop resolves)
+  const byName = new Map<string, Stop>();
+  stops.forEach((s) => byName.set(s.name.trim().toLowerCase(), s));
 
-  const overlays = [line, pins].filter(Boolean).join(",");
-  return `https://api.mapbox.com/styles/v1/${style}/static/${overlays}/auto/1280x1280@2x?access_token=${MAPBOX_TOKEN}&padding=60`;
+  // Path overlays per leg. Static API doesn't support real dashes — encode
+  // ferry/foot legs as a lighter colour + lower opacity so they read as
+  // distinct from the solid car/train route.
+  const overlays: string[] = [];
+  for (const leg of legs) {
+    const a = byName.get(leg.from?.trim().toLowerCase() || "");
+    const b = byName.get(leg.to?.trim().toLowerCase() || "");
+    if (!a || !b) continue;
+    const isWater = leg.mode === "ferry" || leg.mode === "foot";
+    const color = isWater ? FERRY : TEAL;
+    const opacity = isWater ? 0.75 : 1;
+    const width = isWater ? 3 : 4;
+    const geo = {
+      type: "Feature",
+      properties: {
+        stroke: `#${color}`,
+        "stroke-width": width,
+        "stroke-opacity": opacity,
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [a.lng, a.lat],
+          [b.lng, b.lat],
+        ],
+      },
+    };
+    overlays.push(`geojson(${encodeURIComponent(JSON.stringify(geo))})`);
+  }
+
+  // Numbered pins. Day number as the label. Activity stops get the hiking icon.
+  // Endpoints (start/end) gold, others teal.
+  stops.forEach((s) => {
+    let label: string | number = s.day;
+    let color = TEAL;
+    if (s.type === "start" || s.type === "end") color = GOLD;
+    if (s.type === "activity") label = "hiking"; // maki icon
+    overlays.push(`pin-l-${label}+${color}(${s.lng.toFixed(5)},${s.lat.toFixed(5)})`);
+  });
+
+  // Tight bounding box around all stops with margin, fed to Mapbox via "auto".
+  // padding gives visual breathing room around the outermost pins.
+  const overlayStr = overlays.join(",");
+  return `https://api.mapbox.com/styles/v1/${style}/static/${overlayStr}/auto/1280x1280@2x?access_token=${MAPBOX_TOKEN}&padding=80`;
 }
 
 Deno.serve(async (req) => {
@@ -141,6 +182,11 @@ Deno.serve(async (req) => {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    if (!ANTHROPIC_KEY) {
+      return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const parsed = BodySchema.safeParse(await req.json());
     if (!parsed.success) {
@@ -148,54 +194,35 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { itineraryText, stops: legacyStops, itineraryId, style } = parsed.data;
+    const { itineraryText, itineraryId, style } = parsed.data;
     const styleId = style || "mapbox/outdoors-v12";
 
-    type ResolvedStop = { coord: Coord; n: number; title: string; day?: number; type?: string };
-    const resolved: ResolvedStop[] = [];
+    const { stops: rawStops, legs: rawLegs } = await callClaude(itineraryText);
 
-    if (itineraryText) {
-      if (!ANTHROPIC_KEY) {
-        return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const parsedClaude = await callClaude(itineraryText);
-      const claudeStops = Array.isArray(parsedClaude?.stops) ? parsedClaude.stops : [];
-      let n = 1;
-      for (const s of claudeStops) {
-        if (typeof s?.lat === "number" && typeof s?.lng === "number" && s?.name) {
-          resolved.push({
-            coord: { lat: s.lat, lng: s.lng },
-            n,
-            title: String(s.name),
-            day: typeof s.day === "number" ? s.day : undefined,
-            type: typeof s.type === "string" ? s.type : undefined,
-          });
-          n++;
-        }
-      }
-    } else if (legacyStops) {
-      let n = 1;
-      for (const s of legacyStops) {
-        if (typeof s.lat === "number" && typeof s.lng === "number") {
-          resolved.push({ coord: { lat: s.lat, lng: s.lng }, n, title: s.title, day: s.day });
-          n++;
-        }
-      }
-    } else {
-      return new Response(JSON.stringify({ error: "Provide itineraryText or stops" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Validate coordinates against Norway bounds; drop anything outside.
+    const stops: Stop[] = [];
+    let dropped = 0;
+    for (const s of rawStops) {
+      if (validStop(s)) stops.push(s as Stop);
+      else dropped++;
+    }
+    if (stops.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No valid stops returned (coordinates failed Norway bounds check)" }),
+        { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
-    if (resolved.length === 0) {
-      return new Response(JSON.stringify({ error: "No stops could be resolved" }), {
-        status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    // Keep only legs whose both endpoints survived validation.
+    const validNames = new Set(stops.map((s) => s.name.trim().toLowerCase()));
+    const legs: Leg[] = rawLegs.filter(
+      (l) =>
+        l && typeof l.from === "string" && typeof l.to === "string" &&
+        validNames.has(l.from.trim().toLowerCase()) &&
+        validNames.has(l.to.trim().toLowerCase()),
+    );
 
-    const mapUrl = buildStaticUrl(resolved, styleId);
+    const mapUrl = buildStaticUrl({ stops, legs, style: styleId });
     const imgRes = await fetch(mapUrl);
     if (!imgRes.ok) {
       const text = await imgRes.text();
@@ -216,7 +243,9 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         url: pub.publicUrl,
-        stops: resolved.map((r) => ({ n: r.n, title: r.title, day: r.day, type: r.type })),
+        stops: stops.map((s) => ({ day: s.day, name: s.name, type: s.type })),
+        legs: legs.map((l) => ({ from: l.from, to: l.to, mode: l.mode })),
+        dropped,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
