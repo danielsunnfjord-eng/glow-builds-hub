@@ -6,7 +6,9 @@ import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ImagePlus, FileText } from "lucide-react";
+import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
+import { htmlToMarkdown } from "./markdownHelpers";
+import { parseItineraryMarkdown } from "@/lib/itineraryParser";
 
 
 
