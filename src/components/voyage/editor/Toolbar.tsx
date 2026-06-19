@@ -411,6 +411,17 @@ const Toolbar = ({
         disabled={!editor.can().redo()}
         title={`${t("aa.redo")} (Ctrl+Y)`}
       >↪</ToolbarButton>
+
+      <BudgetEstimator
+        open={budgetOpen}
+        onOpenChange={setBudgetOpen}
+        editor={editor}
+        destination={destination}
+        tripDuration={tripDuration}
+        initialBudget={budget || null}
+        initialCoverLabel={coverLabel || null}
+        onSaved={(b, lbl) => onBudgetSaved?.(b, lbl)}
+      />
     </div>
   );
 };
