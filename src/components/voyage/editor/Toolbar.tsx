@@ -8,7 +8,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
-import { parseItineraryMarkdown } from "@/lib/itineraryParser";
+import { extractMapStops } from "@/lib/itineraryMapStops";
+
+// Style + country bias hints based on the destination string.
+// "Norway", "Iceland", etc. → outdoors style; cities default to light.
+const NATURE_DESTINATIONS = /(norway|noruega|norge|iceland|island|svalbard|lofoten|fjord|alps|patagonia|alaska|greenland)/i;
+function pickMapStyle(destination: string | null | undefined): string {
+  if (destination && NATURE_DESTINATIONS.test(destination)) return "mapbox/outdoors-v12";
+  return "mapbox/light-v11";
+}
+function pickCountryBias(destination: string | null | undefined): string | undefined {
+  if (!destination) return undefined;
+  // Use the last comma-separated segment (e.g. "Bergen, Norway" → "Norway")
+  // or the whole string if it has no comma.
+  const parts = destination.split(",").map((s) => s.trim()).filter(Boolean);
+  return parts[parts.length - 1] || undefined;
+}
+
+const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string | null }) => {
 
 
 
