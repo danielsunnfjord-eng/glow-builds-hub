@@ -1,14 +1,15 @@
 import { Editor } from "@tiptap/react";
 import { useTranslation } from "react-i18next";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ToolbarButton, { ToolbarSep } from "./ToolbarButton";
 import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
+import { ImagePlus, FileText, Map as MapIcon, Coins } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
 import { extractMapStops } from "@/lib/itineraryMapStops";
+import BudgetEstimator, { type BudgetData } from "./BudgetEstimator";
 
 // Style + country bias hints based on the destination string.
 // "Norway", "Iceland", etc. → outdoors style; cities default to light.
