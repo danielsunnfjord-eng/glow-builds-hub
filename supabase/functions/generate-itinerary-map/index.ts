@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
     const styleId = style || "mapbox/light-v11";
 
     // Resolve coordinates
-    const resolved: { coord: Coord; n: number; title: string; location?: string }[] = [];
+    const resolved: { coord: Coord; n: number; title: string; location?: string; day?: number }[] = [];
     let n = 1;
     for (const s of stops) {
       let coord: Coord | null = null;
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
         coord = await geocode(query);
       }
       if (coord) {
-        resolved.push({ coord, n, title: s.title, location: s.location });
+        resolved.push({ coord, n, title: s.title, location: s.location, day: s.day });
         n++;
       }
     }
