@@ -461,7 +461,11 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
       : (project?.season || "");
     const seasonLabel = seasonFromProject || dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
 
-    const coverTitle = project?.destination || L.itinerary;
+    // Use the itinerary's own title (first H1 in the markdown) so the cover
+    // matches the document header. Fall back to destination, then a localized
+    // default.
+    const firstH1 = (content || "").match(/^\s*#\s+(.+?)\s*$/m)?.[1]?.trim();
+    const coverTitle = firstH1 || project?.destination || L.itinerary;
     const truncateSentences = (text: string, max: number) => {
       const parts = text.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [];
       return parts.slice(0, max).join("").trim();
