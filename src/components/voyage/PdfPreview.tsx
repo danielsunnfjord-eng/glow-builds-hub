@@ -509,8 +509,9 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         <!-- 2. Hero image -->
         <div class="fjw-cover-hero">${heroBlock}</div>
 
-        <!-- 3. Photo credit -->
-        ${project?.hero_image_credit ? `<div class="fjw-cover-credit">${escapeHtml(project.hero_image_credit)}</div>` : ""}
+        <!-- 3. Photo credit (always rendered to keep layout fixed) -->
+        <div class="fjw-cover-credit">${project?.hero_image_credit ? escapeHtml(project.hero_image_credit) : ""}</div>
+
 
         <!-- 4–7. Text content -->
         <div class="fjw-cover-body">
