@@ -26,10 +26,25 @@ function pickCountryBias(destination: string | null | undefined): string | undef
   return parts[parts.length - 1] || undefined;
 }
 
-const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string | null }) => {
+const Toolbar = ({
+  editor,
+  destination,
+  tripDuration,
+  budget,
+  coverLabel,
+  onBudgetSaved,
+}: {
+  editor: Editor;
+  destination?: string | null;
+  tripDuration?: string | null;
+  budget?: BudgetData | null;
+  coverLabel?: string | null;
+  onBudgetSaved?: (budget: BudgetData | null, coverLabel: string | null) => void;
+}) => {
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const savedSelection = useRef<{ from: number; to: number } | null>(null);
+  const [budgetOpen, setBudgetOpen] = useState(false);
 
   const currentTextColor = editor.getAttributes("textStyle").color || "";
   const currentHighlight = editor.getAttributes("highlight").color || "";
