@@ -158,7 +158,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
     if (!editor) return null;
 
     return (
-      <div className="bg-[#e8e0d0] relative fjw-editor-shell">
+      <div className="relative fjw-editor-shell">
         <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm fjw-no-print">
           <Toolbar editor={editor} />
         </div>
@@ -168,8 +168,9 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
             <AiEditMenu editor={editor} />
           </div>
         </div>
-        <div className="fjw-page-pill fjw-no-print">
-          Page {pageInfo.current} of {pageInfo.total}
+        <div className="fjw-editor-statusbar fjw-no-print">
+          <span>A4 · page-accurate view</span>
+          <span>Page {pageInfo.current} of {pageInfo.total}</span>
         </div>
       </div>
     );
