@@ -132,19 +132,19 @@ const PAGE_CSS = `
 /* 1. Logo block — top, centered, on parchment */
 .fjw-cover-logo-block {
   display: flex; flex-direction: column; align-items: center;
-  padding: 8mm 0 4mm;
+  padding: 6mm 0 3mm;
   background: #f5f1ea;
   flex-shrink: 0;
 }
 .fjw-cover-logo-img {
-  height: 52mm; width: auto; display: block;
+  height: 38mm; width: auto; display: block;
 }
 
-/* 2. Hero image — full width band */
+/* 2. Hero image — full width band (~35% of page) */
 .fjw-cover-hero {
   position: relative;
   width: 100%;
-  height: 95mm;
+  height: 100mm;
   overflow: hidden;
   background: #1c2e38;
   flex-shrink: 0;
@@ -166,70 +166,83 @@ const PAGE_CSS = `
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #8fa0a8;
-  padding: 4mm 14mm 0;
+  padding: 2mm 14mm 0;
   flex-shrink: 0;
 }
 
-/* Body wrapper for text content */
+/* Body wrapper for text content — flex-fills remaining cover height,
+   never grows past it, so the stats bar stays anchored on page 1. */
 .fjw-cover-body {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   text-align: center;
-  padding: 12mm 22mm 8mm;
+  padding: 6mm 18mm 10mm;
   position: relative;
+  overflow: hidden;
 }
 
 /* 4. Eyebrow */
 .fjw-cover-eyebrow {
-  margin: 0 0 6mm;
+  margin: 0 0 4mm;
   font-family: 'Jost', 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase;
+  font-size: 8px; letter-spacing: 0.32em; text-transform: uppercase;
   color: #8fa0a8; font-weight: 400;
+  flex-shrink: 0;
 }
 
 /* 5. Title */
 .fjw-cover-title {
-  margin: 0 auto 6mm;
+  margin: 0 auto 4mm;
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 34px; font-weight: 500; line-height: 1.18;
+  font-size: 28px; font-weight: 500; line-height: 1.18;
   letter-spacing: -0.005em; color: #1c2e38;
   max-width: 150mm;
+  flex-shrink: 0;
 }
 
 /* 6. Short description — italic editorial */
 .fjw-cover-description {
-  margin: 0 auto 10mm;
+  margin: 0 auto 5mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
-  font-size: 15px; line-height: 1.7;
+  font-size: 13px; line-height: 1.55;
   color: #2e4450; max-width: 145mm;
+  flex-shrink: 1;
+  overflow: hidden;
 }
 
-/* 7. Metadata strip — Duration / Region / Season */
+/* 7. Metadata strip — Duration / Region / Season / Budget */
 .fjw-cover-meta {
   display: flex; justify-content: center; align-items: stretch;
-  margin: 0 auto 12mm; width: 100%; max-width: 150mm;
+  margin: auto auto 0; width: 100%; max-width: 165mm;
+  flex-shrink: 0;
 }
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 0 6mm;
+  padding: 0 3mm;
+  min-width: 0;
 }
 .fjw-cover-meta-col + .fjw-cover-meta-col {
   border-left: 1px solid #c4d4da;
 }
 .fjw-cover-meta-label {
   font-family: 'Jost', 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 0.28em;
+  font-size: 8px; letter-spacing: 0.24em;
   color: #8fa0a8; text-transform: uppercase;
-  margin-bottom: 4mm; font-weight: 400;
+  margin-bottom: 2mm; font-weight: 400;
+  white-space: nowrap;
 }
 .fjw-cover-meta-value {
   font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  font-size: 16px; color: #1c2e38; font-weight: 400;
+  font-size: 13px; color: #1c2e38; font-weight: 400;
+  line-height: 1.25;
 }
+
 
 /* 8. Footer teal accent bar */
 .fjw-cover-page::after {
