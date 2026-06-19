@@ -76,39 +76,34 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
 
   const handleGenerateMap = async () => {
     try {
-      const md = htmlToMarkdown(editor.getHTML());
-      const stops = extractMapStops(md);
-      if (stops.length === 0) {
-        toast.error(
-          "No locations detected. Add a 'Trip Overview' section with day headers like 'Day 1 - Bergen - Voss - Flåm'.",
-        );
+      const itineraryText = htmlToMarkdown(editor.getHTML()).trim();
+      if (itineraryText.length < 20) {
+        toast.error("Itinerary is empty — write some content before generating a map.");
         return;
       }
-      const context = pickCountryBias(destination);
       const style = pickMapStyle(destination);
 
-      const tId = toast.loading(`Generating map for ${stops.length} stops…`);
+      const tId = toast.loading("Generating route map…");
       const { data, error } = await supabase.functions.invoke("generate-itinerary-map", {
-        body: { stops, context, style },
+        body: { itineraryText, style },
       });
       toast.dismiss(tId);
       if (error) throw error;
-      if (!data?.url) throw new Error("No map URL returned");
+      if (!data?.url) throw new Error(data?.error || "No map URL returned");
 
       (editor.chain().focus() as any)
         .setImage({ src: data.url, alt: "Itinerary route map" })
         .run();
-      const skipped = data.skipped || 0;
-      // Group resolved stops by day for a clean legend
+
       const byDay = new Map<number, string[]>();
       for (const s of (data.stops || []) as Array<{ n: number; title: string; day?: number }>) {
         const d = s.day || 0;
         if (!byDay.has(d)) byDay.set(d, []);
-        byDay.get(d)!.push(s.title);
+        byDay.get(d)!.push(`${s.n}. ${s.title}`);
       }
       const legend = Array.from(byDay.entries())
         .sort((a, b) => a[0] - b[0])
-        .map(([d, names]) => `Day ${d}: ${names.join(" · ")}`)
+        .map(([d, names]) => (d ? `Day ${d}: ${names.join(" · ")}` : names.join(" · ")))
         .join("<br/>");
 
       editor
@@ -116,7 +111,7 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
         .focus()
         .createParagraphNear()
         .insertContent(
-          `<p class="fjw-img-caption"><em>Route overview — ${data.stops.length} stops${skipped ? ` (${skipped} not located)` : ""}</em></p>` +
+          `<p class="fjw-img-caption"><em>Route overview — ${data.stops.length} stops</em></p>` +
             (legend ? `<p class="fjw-img-credit"><small>${legend}</small></p>` : ""),
         )
         .run();
