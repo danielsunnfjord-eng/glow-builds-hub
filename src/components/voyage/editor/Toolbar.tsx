@@ -336,6 +336,14 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
         <ImagePlus className="w-3.5 h-3.5" />
       </ToolbarButton>
 
+      <ToolbarButton
+        onClick={handleGenerateMap}
+        title="Generate route map from itinerary stops"
+        className="inline-flex items-center gap-1"
+      >
+        <MapIcon className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
       <ToolbarSep />
 
       {/* Page break */}
