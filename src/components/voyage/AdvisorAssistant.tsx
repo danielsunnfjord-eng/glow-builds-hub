@@ -1716,6 +1716,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   ref={editorRef}
                   content={itineraryContent}
                   destination={selectedProject.destination}
+                  tripDuration={selectedProject.trip_duration}
+                  budget={budget}
+                  coverLabel={budgetCoverLabel}
+                  onBudgetSaved={handleBudgetSaved}
                   onContentChange={(md) => {
                     setItineraryContent(md);
                   }}
