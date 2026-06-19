@@ -175,7 +175,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
                 <div
                   key={i}
                   className="fjw-page-guide"
-                  style={{ top: `${(i + 1) * 1123}px` }}
+                  style={{ top: `${48 + (i + 1) * 971}px` }}
                 >
                   <span>Page {i + 1} ends · Page {i + 2} starts</span>
                 </div>
