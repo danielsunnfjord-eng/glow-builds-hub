@@ -1,34 +1,65 @@
-# Word/Docs-style editor canvas
+## Itinerary Map Generator (Mapbox Static Images API)
 
-Before I rip out the current paginated canvas I need to confirm scope, because parts of the spec conflict with earlier instructions and with how TipTap actually works.
+Generate a clean, print-ready static map of every location mentioned across an itinerary's days, connected by a numbered route line, then embed it into the editor document and the exported PDF.
 
-## What I can do safely (purely visual, no risk to save/PDF round-trip)
+### 1. Secret
 
-1. **Canvas background** → change editor shell from cream `#e8e0d0` to warm gray `#e8e4de`.
-2. **Page card look** → strip the current "long A4 sheet with repeating background guides" and restyle the sheet as a single white card with `box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.08)` and `border-radius: 2px`.
-3. **Margin guides** → faint dashed blue rectangle (`1px dashed rgba(100,140,200,0.25)`) at `inset: 48px 56px`, `position: absolute; pointer-events: none`.
-4. **Page break label** → restyle `.fjw-page-break` so it visually breaks out of the white card into the gray canvas as a full-width row: horizontal line + centered uppercase `Page break — Page N starts here` (11px muted). I can number them via CSS counters.
-5. **Sticky toolbar** → already sticky; I'll confirm `top: 0; z-index: 10` and that nothing above it scrolls.
-6. **Status bar** → add a thin bar under the canvas with `A4 · page-accurate view` left, `Page X of Y` right (reusing existing page counter).
+Add `MAPBOX_ACCESS_TOKEN` via the secret tool (backend only — never exposed to the browser). Used exclusively from an edge function.
 
-## What I need to flag before doing
+### 2. Edge function: `generate-itinerary-map`
 
-7. **"Each page is a distinct white card, max-width 640px, content auto-flows to next page"** — TipTap/ProseMirror is a single contenteditable document. There is no built-in way to split content into multiple DOM cards while keeping it one editable document. Real pagination requires either (a) a heavy custom ProseMirror plugin that measures and inserts page boundaries on every keystroke, or (b) showing one tall sheet that *looks* paginated via guides (what you have today).
+`supabase/functions/generate-itinerary-map/index.ts`
 
-   What I can deliver without rewriting the editor: one white card per **manual** page break — i.e. the document is split into cards at every `Ctrl/Cmd+Enter` page break, with the "Page break — Page N" label between them. Automatic overflow into a new card as the user types would require the custom plugin and is a multi-day effort with real risk to the save/round-trip work we just stabilised.
+Input (POST JSON):
+- `itineraryId` (uuid) — used to look up the itinerary and persist the map
+- OR `stops`: `[{ day, order, title, location, lat?, lng? }]` for ad-hoc generation
 
-   Also: `max-width: 640px` is narrower than A4 (`794px` at 96dpi). I'll use **794px** (true A4 width) so edit ≈ PDF. If you truly want 640px, the editor will no longer match PDF layout.
+Flow:
+1. Validate input (Zod).
+2. For each stop without coords, geocode via Mapbox Geocoding API (`/geocoding/v5/mapbox.places/{query}.json`), biased by destination context. Cache results in a new `geocode_cache` table (`query text pk`, `lat`, `lng`, `created_at`) to avoid repeat calls.
+3. Build a Mapbox Static Images API URL using style `mapbox/light-v11`:
+   - Numbered pin overlays: `pin-l-{n}+b8935a({lng},{lat})` per stop (Fjord & Waves sand/gold).
+   - Route line overlay: encoded GeoJSON LineString through stops in day/order sequence, stroke `#1f3a5f` (Fjord), width 3.
+   - `auto` bounding + `1280x1280@2x` for print-ready resolution.
+4. Fetch the PNG server-side, upload to existing `itinerary-images` storage bucket at `maps/{itineraryId}-{hash}.png`, return the public URL + stop legend `[{n, title, location}]`.
 
-8. **"PDF export must not use `window.print()`; use react-to-print or @react-pdf/renderer"** conflicts with **"Do not modify any existing PDF output design."** The current PDF pipeline is Paged.js + `window.print()` and was just stabilised (cover-page blank-page fix, spacer round-trip fix). Swapping to `@react-pdf/renderer` is a full rewrite of `PdfPreview.tsx` and would lose Paged.js features (running headers, page numbering, cover layout). `react-to-print` is closer to current behaviour but still changes the export path.
+### 3. Editor integration
 
-   My recommendation: **leave PDF export alone**. The drift problem you reported earlier was the markdown round-trip (now fixed), not the print pipeline.
+In `ItineraryEditor.tsx` toolbar, add a "Generate route map" action that:
+1. Parses current itinerary stops from the markdown (reuse `lib/itineraryParser.ts`).
+2. Calls the edge function via `supabase.functions.invoke`.
+3. Inserts a centered figure block into the document at cursor:
+   ```html
+   <figure class="fjw-route-map">
+     <img src="{url}" alt="Route map" />
+     <figcaption>Route overview — {n} stops</figcaption>
+   </figure>
+   ```
+4. Persists with the rest of the document, so reopening and PDF export both show the same image (no regen needed).
 
-## Proposed scope to implement now
+### 4. PDF rendering
 
-Items **1–6** plus the **manual-page-break card splitting** from item 7 (no auto-overflow, A4 width 794px, PDF export untouched).
+The PDF pipeline already serializes editor HTML — the `<figure class="fjw-route-map">` flows through unchanged. Add a small print CSS rule in `index.css` to keep the figure on one page (`break-inside: avoid`) and constrain width to the content area.
 
-Reply with one of:
-- **"Go"** — I implement the proposed scope above.
-- **"640px width"** — same, but force 640px (editor will visually diverge from PDF).
-- **"Auto pagination too"** — I additionally build the ProseMirror auto-paginate plugin (large, risky).
-- **"Replace PDF export"** — I additionally swap Paged.js/window.print for react-to-print or @react-pdf.
+### 5. Caching / cost control
+
+- `geocode_cache` table (public, service-role only, no anon/auth grants) avoids re-geocoding the same place.
+- Map image stored once in storage; editor stores the URL, so regeneration is opt-in.
+
+### Files to add / change
+
+- new: `supabase/functions/generate-itinerary-map/index.ts`
+- new migration: `geocode_cache` table + grants (service_role only) + RLS
+- edit: `src/components/voyage/editor/Toolbar.tsx` — new button + handler
+- edit: `src/components/voyage/ItineraryEditor.tsx` — wire handler, insert figure
+- edit: `src/index.css` — `.fjw-route-map` styles for editor + print
+
+### Out of scope
+
+- Interactive Mapbox GL JS map (static image only, per request).
+- Per-day mini-maps (existing `DayMap` keeps OSM/Leaflet).
+- Editing the existing PDF design.
+
+### Next step
+
+After plan approval I will request the `MAPBOX_ACCESS_TOKEN` via the add_secret tool, then implement the function, table, and UI in one pass.
