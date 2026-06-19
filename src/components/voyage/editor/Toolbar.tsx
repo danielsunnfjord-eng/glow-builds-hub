@@ -26,14 +26,6 @@ function pickCountryBias(destination: string | null | undefined): string | undef
 }
 
 const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string | null }) => {
-
-
-
-
-
-
-
-const Toolbar = ({ editor }: { editor: Editor }) => {
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const savedSelection = useRef<{ from: number; to: number } | null>(null);
