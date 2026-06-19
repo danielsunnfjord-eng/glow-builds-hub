@@ -91,28 +91,42 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
       if (error) throw error;
       if (!data?.url) throw new Error(data?.error || "No map URL returned");
 
+      // Insert at end of document, below the itinerary
+      const endPos = editor.state.doc.content.size;
       (editor.chain().focus() as any)
+        .setTextSelection(endPos)
+        .createParagraphNear()
         .setImage({ src: data.url, alt: "Itinerary route map" })
         .run();
 
+      const stops = (data.stops || []) as Array<{ day: number; name: string; type?: string }>;
+      const legs = (data.legs || []) as Array<{ from: string; to: string; mode: string }>;
+
       const byDay = new Map<number, string[]>();
-      for (const s of (data.stops || []) as Array<{ n: number; title: string; day?: number }>) {
+      for (const s of stops) {
         const d = s.day || 0;
         if (!byDay.has(d)) byDay.set(d, []);
-        byDay.get(d)!.push(`${s.n}. ${s.title}`);
+        byDay.get(d)!.push(s.type === "activity" ? `🥾 ${s.name}` : s.name);
       }
-      const legend = Array.from(byDay.entries())
+      const dayLines = Array.from(byDay.entries())
         .sort((a, b) => a[0] - b[0])
         .map(([d, names]) => (d ? `Day ${d}: ${names.join(" · ")}` : names.join(" · ")))
         .join("<br/>");
+
+      const hasFerry = legs.some((l) => l.mode === "ferry" || l.mode === "foot");
+      const legendKey =
+        `<strong>Legend:</strong> ─── By car/train` +
+        (hasFerry ? ` &nbsp;·&nbsp; ⋯⋯⋯ By ferry/cruise` : ``) +
+        ` &nbsp;·&nbsp; 🥾 Activity`;
 
       editor
         .chain()
         .focus()
         .createParagraphNear()
         .insertContent(
-          `<p class="fjw-img-caption"><em>Route overview — ${data.stops.length} stops</em></p>` +
-            (legend ? `<p class="fjw-img-credit"><small>${legend}</small></p>` : ""),
+          `<p class="fjw-img-caption"><em>Route overview — ${stops.length} stops</em></p>` +
+            `<p class="fjw-img-credit"><small>${legendKey}</small></p>` +
+            (dayLines ? `<p class="fjw-img-credit"><small>${dayLines}</small></p>` : ""),
         )
         .run();
       toast.success("Map inserted");
