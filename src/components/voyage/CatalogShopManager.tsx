@@ -1832,6 +1832,7 @@ const CatalogShopManager = () => {
               language={previewLang}
               project={{
                 client_name: pickedTitle,
+                title: pickedTitle,
                 destination: previewRow.destination,
                 trip_duration: previewRow.duration,
                 hero_image_url: previewRow.hero_image_url,
