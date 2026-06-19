@@ -1,9 +1,13 @@
 // Generates a print-ready static route map for an itinerary.
-// Pipeline: itineraryText → Claude (stops + legs with coords) → Mapbox Static.
+// Pipeline: itineraryText → Claude (stops + legs with coords) → Mapbox Static
+// (terrain + numbered pins) → server-side SVG overlay (true dashed ferry legs
+// + white-box place labels) → composited PNG.
 // NO geocoding — coordinates come exclusively from Claude.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3.23.8";
+import { initWasm, Resvg } from "https://esm.sh/@resvg/resvg-wasm@2.6.2";
+import { encodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 const MAPBOX_TOKEN = Deno.env.get("MAPBOX_ACCESS_TOKEN");
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY");
@@ -38,6 +42,27 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE, {
   auth: { persistSession: false },
 });
 
+// ---------- Resvg + font init (cached per isolate) ----------
+let resvgReady: Promise<void> | null = null;
+let fontBuffer: Uint8Array | null = null;
+async function ensureResvg() {
+  if (!resvgReady) {
+    resvgReady = (async () => {
+      const wasm = await fetch(
+        "https://esm.sh/@resvg/resvg-wasm@2.6.2/index_bg.wasm",
+      ).then((r) => r.arrayBuffer());
+      await initWasm(wasm);
+      // Montserrat 600 — matches brand sans-serif
+      const fontRes = await fetch(
+        "https://fonts.gstatic.com/s/montserrat/v26/JTURjIg1_i6t8kCHKm45_dJE3gnD-w.ttf",
+      );
+      fontBuffer = new Uint8Array(await fontRes.arrayBuffer());
+    })();
+  }
+  await resvgReady;
+}
+
+// ---------- Claude ----------
 const CLAUDE_PROMPT = `You are a travel itinerary parser. Extract all locations and travel legs from the itinerary below.
 
 Return ONLY a JSON object — no markdown, no explanation, no backticks. Exactly this structure:
@@ -90,9 +115,7 @@ async function callClaude(itineraryText: string): Promise<{ stops: Stop[]; legs:
   });
   if (!res.ok) throw new Error(`Claude API error: ${await res.text()}`);
   const data = await res.json();
-  if (data?.stop_reason === "max_tokens") {
-    console.warn("Claude response truncated (max_tokens)");
-  }
+  if (data?.stop_reason === "max_tokens") console.warn("Claude response truncated");
   const text = (data?.content?.[0]?.text || "").trim();
   const parsed = extractJson(text);
   return {
@@ -112,67 +135,159 @@ function validStop(s: any): s is Stop {
   );
 }
 
-// Build a Mapbox Static Images URL with per-leg path overlays + numbered pins.
-function buildStaticUrl(opts: {
-  stops: Stop[];
-  legs: Leg[];
-  style: string;
-}): string {
-  const { stops, legs, style } = opts;
-  const GOLD = "b8975a";
-  const TEAL = "3d6b74";
-  const FERRY = "5b9aa3"; // lighter teal for ferry legs
+// ---------- Web Mercator + bbox fitting ----------
+const mercY = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+const invMercY = (y: number) => ((Math.atan(Math.exp(y)) - Math.PI / 4) * 360) / Math.PI;
 
-  // Coord lookup by stop name (case-insensitive, last wins so end-loop resolves)
-  const byName = new Map<string, Stop>();
-  stops.forEach((s) => byName.set(s.name.trim().toLowerCase(), s));
+type BBox = { minLat: number; maxLat: number; minLng: number; maxLng: number };
 
-  // Path overlays per leg. Static API doesn't support real dashes — encode
-  // ferry/foot legs as a lighter colour + lower opacity so they read as
-  // distinct from the solid car/train route.
-  const overlays: string[] = [];
-  for (const leg of legs) {
-    const a = byName.get(leg.from?.trim().toLowerCase() || "");
-    const b = byName.get(leg.to?.trim().toLowerCase() || "");
-    if (!a || !b) continue;
-    const isWater = leg.mode === "ferry" || leg.mode === "foot";
-    const color = isWater ? FERRY : TEAL;
-    const opacity = isWater ? 0.75 : 1;
-    const width = isWater ? 3 : 4;
-    const geo = {
-      type: "Feature",
-      properties: {
-        stroke: `#${color}`,
-        "stroke-width": width,
-        "stroke-opacity": opacity,
-      },
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [a.lng, a.lat],
-          [b.lng, b.lat],
-        ],
-      },
-    };
-    overlays.push(`geojson(${encodeURIComponent(JSON.stringify(geo))})`);
+// Compute padded bbox, then expand the shorter axis so its mercator aspect
+// ratio matches the target image aspect ratio (1:1 for our square output).
+// After this, Mapbox's bbox-positioned render and our SVG projection agree.
+function fitBbox(stops: Stop[], aspect: number, marginPct = 0.18): BBox {
+  let minLat = Math.min(...stops.map((s) => s.lat));
+  let maxLat = Math.max(...stops.map((s) => s.lat));
+  let minLng = Math.min(...stops.map((s) => s.lng));
+  let maxLng = Math.max(...stops.map((s) => s.lng));
+
+  // Pad
+  const latPad = Math.max((maxLat - minLat) * marginPct, 0.05);
+  const lngPad = Math.max((maxLng - minLng) * marginPct, 0.08);
+  minLat -= latPad; maxLat += latPad;
+  minLng -= lngPad; maxLng += lngPad;
+
+  // Aspect-fit in mercator: width = lng span (degrees), height = mercator span
+  // converted back to degree-equivalent so the ratio is meaningful.
+  const mercDegSpan = ((mercY(maxLat) - mercY(minLat)) * 180) / Math.PI;
+  const lngSpan = maxLng - minLng;
+  const currentAR = lngSpan / mercDegSpan; // width/height
+  if (currentAR < aspect) {
+    // too tall — expand longitude
+    const newLngSpan = mercDegSpan * aspect;
+    const extra = (newLngSpan - lngSpan) / 2;
+    minLng -= extra; maxLng += extra;
+  } else if (currentAR > aspect) {
+    // too wide — expand latitude (in mercator)
+    const newMercDegSpan = lngSpan / aspect;
+    const extraDeg = (newMercDegSpan - mercDegSpan) / 2;
+    const extraMerc = (extraDeg * Math.PI) / 180;
+    minLat = invMercY(mercY(minLat) - extraMerc);
+    maxLat = invMercY(mercY(maxLat) + extraMerc);
   }
 
-  // Numbered pins. Day number as the label. Activity stops get the hiking icon.
-  // Endpoints (start/end) gold, others teal.
-  stops.forEach((s) => {
+  // Clamp lat to valid mercator range
+  minLat = Math.max(minLat, -85); maxLat = Math.min(maxLat, 85);
+  return { minLat, maxLat, minLng, maxLng };
+}
+
+function project(lat: number, lng: number, bbox: BBox, W: number, H: number) {
+  const minMY = mercY(bbox.minLat), maxMY = mercY(bbox.maxLat);
+  return {
+    x: ((lng - bbox.minLng) / (bbox.maxLng - bbox.minLng)) * W,
+    y: ((maxMY - mercY(lat)) / (maxMY - minMY)) * H,
+  };
+}
+
+// ---------- Mapbox base map (terrain + numbered pins, no lines) ----------
+function buildBaseMapUrl(stops: Stop[], bbox: BBox, style: string): string {
+  const GOLD = "b8975a", TEAL = "3d6b74";
+  const pins = stops.map((s) => {
     let label: string | number = s.day;
     let color = TEAL;
     if (s.type === "start" || s.type === "end") color = GOLD;
-    if (s.type === "activity") label = "hiking"; // maki icon
-    overlays.push(`pin-l-${label}+${color}(${s.lng.toFixed(5)},${s.lat.toFixed(5)})`);
-  });
-
-  // Tight bounding box around all stops with margin, fed to Mapbox via "auto".
-  // padding gives visual breathing room around the outermost pins.
-  const overlayStr = overlays.join(",");
-  return `https://api.mapbox.com/styles/v1/${style}/static/${overlayStr}/auto/1280x1280@2x?access_token=${MAPBOX_TOKEN}&padding=80`;
+    if (s.type === "activity") label = "hiking";
+    return `pin-l-${label}+${color}(${s.lng.toFixed(5)},${s.lat.toFixed(5)})`;
+  }).join(",");
+  const bboxStr = `[${bbox.minLng.toFixed(5)},${bbox.minLat.toFixed(5)},${bbox.maxLng.toFixed(5)},${bbox.maxLat.toFixed(5)}]`;
+  return `https://api.mapbox.com/styles/v1/${style}/static/${pins}/${bboxStr}/1280x1280@2x?access_token=${MAPBOX_TOKEN}`;
 }
 
+// ---------- SVG overlay (lines + label boxes) ----------
+function escapeXml(s: string) {
+  return s.replace(/[<>&'"]/g, (c) => (
+    { "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c]!
+  ));
+}
+
+function buildOverlaySvg(opts: {
+  baseB64: string;
+  stops: Stop[];
+  legs: Leg[];
+  bbox: BBox;
+  W: number;
+  H: number;
+}): string {
+  const { baseB64, stops, legs, bbox, W, H } = opts;
+  const coordOf = new Map<string, { x: number; y: number }>();
+  stops.forEach((s) => coordOf.set(s.name.trim().toLowerCase(), project(s.lat, s.lng, bbox, W, H)));
+
+  const ROUTE_COLOR = "#1F4D8F"; // deep blue, matches reference image
+  const FERRY_DASH = "28 18";
+
+  const lines = legs.map((leg) => {
+    const a = coordOf.get(leg.from.trim().toLowerCase());
+    const b = coordOf.get(leg.to.trim().toLowerCase());
+    if (!a || !b) return "";
+    const isFerry = leg.mode === "ferry" || leg.mode === "foot";
+    const dash = isFerry ? ` stroke-dasharray="${FERRY_DASH}"` : "";
+    return `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${ROUTE_COLOR}" stroke-width="9" stroke-linecap="round" stroke-opacity="0.92"${dash}/>`;
+  }).join("");
+
+  const fontSize = 30;
+  const padX = 16, padY = 9;
+  // Place label above-right of pin to avoid covering it.
+  const labels = stops.map((s) => {
+    const p = coordOf.get(s.name.trim().toLowerCase())!;
+    const text = s.name;
+    const textW = Math.max(60, text.length * fontSize * 0.58);
+    const boxW = textW + padX * 2;
+    const boxH = fontSize + padY * 2;
+    // Decide side: if pin is in right half, put label to the left.
+    const onRight = p.x > W * 0.6;
+    const bx = onRight ? p.x - boxW - 28 : p.x + 28;
+    const by = p.y - boxH - 18;
+    const tx = bx + padX;
+    const ty = by + padY + fontSize - 7;
+    return `
+      <g>
+        <rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${boxW.toFixed(1)}" height="${boxH}" rx="6" ry="6"
+              fill="white" stroke="#1F4D8F" stroke-width="2" opacity="0.96"/>
+        <text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="Montserrat, sans-serif"
+              font-size="${fontSize}" font-weight="700" fill="#1F4D8F">${escapeXml(text)}</text>
+      </g>
+    `;
+  }).join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <image xlink:href="data:image/png;base64,${baseB64}" x="0" y="0" width="${W}" height="${H}"/>
+    ${lines}
+    ${labels}
+  </svg>`;
+}
+
+async function composite(opts: {
+  baseBytes: Uint8Array;
+  stops: Stop[];
+  legs: Leg[];
+  bbox: BBox;
+}): Promise<Uint8Array> {
+  await ensureResvg();
+  const W = 2560, H = 2560;
+  const baseB64 = encodeBase64(opts.baseBytes);
+  const svg = buildOverlaySvg({ baseB64, stops: opts.stops, legs: opts.legs, bbox: opts.bbox, W, H });
+  const resvg = new Resvg(svg, {
+    font: {
+      fontBuffers: fontBuffer ? [fontBuffer] : [],
+      defaultFontFamily: "Montserrat",
+      loadSystemFonts: false,
+    },
+    fitTo: { mode: "width", value: W },
+  });
+  const rendered = resvg.render();
+  return rendered.asPng();
+}
+
+// ---------- Handler ----------
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -199,7 +314,6 @@ Deno.serve(async (req) => {
 
     const { stops: rawStops, legs: rawLegs } = await callClaude(itineraryText);
 
-    // Validate coordinates against Norway bounds; drop anything outside.
     const stops: Stop[] = [];
     let dropped = 0;
     for (const s of rawStops) {
@@ -208,12 +322,10 @@ Deno.serve(async (req) => {
     }
     if (stops.length === 0) {
       return new Response(
-        JSON.stringify({ error: "No valid stops returned (coordinates failed Norway bounds check)" }),
+        JSON.stringify({ error: "No valid stops (coordinates failed Norway bounds check)" }),
         { status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
-
-    // Keep only legs whose both endpoints survived validation.
     const validNames = new Set(stops.map((s) => s.name.trim().toLowerCase()));
     const legs: Leg[] = rawLegs.filter(
       (l) =>
@@ -222,7 +334,9 @@ Deno.serve(async (req) => {
         validNames.has(l.to.trim().toLowerCase()),
     );
 
-    const mapUrl = buildStaticUrl({ stops, legs, style: styleId });
+    // Square 1:1 output. fitBbox aspect = W/H = 1.
+    const bbox = fitBbox(stops, 1);
+    const mapUrl = buildBaseMapUrl(stops, bbox, styleId);
     const imgRes = await fetch(mapUrl);
     if (!imgRes.ok) {
       const text = await imgRes.text();
@@ -230,13 +344,21 @@ Deno.serve(async (req) => {
         status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const bytes = new Uint8Array(await imgRes.arrayBuffer());
+    const baseBytes = new Uint8Array(await imgRes.arrayBuffer());
+
+    let finalBytes: Uint8Array;
+    try {
+      finalBytes = await composite({ baseBytes, stops, legs, bbox });
+    } catch (compErr) {
+      console.error("Compositing failed, returning base map", compErr);
+      finalBytes = baseBytes; // graceful fallback
+    }
 
     const folder = itineraryId || "adhoc";
     const path = `maps/${folder}/${Date.now()}.png`;
     const { error: upErr } = await supabase.storage
       .from("itinerary-images")
-      .upload(path, bytes, { contentType: "image/png", upsert: true });
+      .upload(path, finalBytes, { contentType: "image/png", upsert: true });
     if (upErr) throw upErr;
     const { data: pub } = supabase.storage.from("itinerary-images").getPublicUrl(path);
 
