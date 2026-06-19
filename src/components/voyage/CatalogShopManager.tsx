@@ -1487,6 +1487,11 @@ const CatalogShopManager = () => {
               content={state.content}
               onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
               placeholder="Write or generate the itinerary…"
+              destination={state.destination}
+              tripDuration={state.duration}
+              budget={budget}
+              coverLabel={budgetCoverLabel}
+              onBudgetSaved={handleBudgetSaved}
             />
           </EditorErrorBoundary>
 
