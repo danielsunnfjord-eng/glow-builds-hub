@@ -111,7 +111,10 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
     // accounting for manual page breaks.
     useLayoutEffect(() => {
       if (!editor || !sheetRef.current) return;
-      const PAGE_PX = 1123; // 297mm at 96dpi
+      // Must mirror PdfPreview's @page margin (20mm). A4 content height = 297mm − 40mm
+      // = 257mm ≈ 971px @ 96dpi. Using the full 1123px desynchronises the editor's
+      // page boundaries from the actual PDF output.
+      const PAGE_PX = 971;
       const calc = () => {
         const sheet = sheetRef.current;
         if (!sheet) return;
@@ -172,7 +175,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
                 <div
                   key={i}
                   className="fjw-page-guide"
-                  style={{ top: `${(i + 1) * 1123}px` }}
+                  style={{ top: `${48 + (i + 1) * 971}px` }}
                 >
                   <span>Page {i + 1} ends · Page {i + 2} starts</span>
                 </div>
