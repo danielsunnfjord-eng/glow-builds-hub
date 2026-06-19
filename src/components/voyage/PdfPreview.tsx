@@ -211,11 +211,11 @@ const PAGE_CSS = `
 /* 6. Short description — 24% (~71mm). Clipped, never overflows. */
 .fjw-cover-description {
   height: 60mm;
-  margin: 0 auto;
+  margin: 8px auto 0;
   padding: 0 0 4mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
-  font-size: 14px; line-height: 1.6;
+  font-size: clamp(13px, 1.4vw, 17px); line-height: 1.7;
   color: #2e4450; max-width: 145mm;
   overflow: hidden;
   display: -webkit-box;
