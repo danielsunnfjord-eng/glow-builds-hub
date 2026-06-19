@@ -54,15 +54,21 @@ function buildStaticUrl(
   points: { coord: Coord; n: number }[],
   style: string,
 ): string {
-  // Numbered pins (Fjord & Waves sand: b8935a)
+  // Brand colours: gold (B8975A) for start/end, teal (3D6B74) for middle stops
+  const GOLD = "b8975a";
+  const TEAL = "3d6b74";
+  const lastIdx = points.length - 1;
   const pins = points
-    .map((p) => `pin-l-${p.n}+b8935a(${p.coord.lng.toFixed(5)},${p.coord.lat.toFixed(5)})`)
+    .map((p, i) => {
+      const color = i === 0 || i === lastIdx ? GOLD : TEAL;
+      return `pin-l-${p.n}+${color}(${p.coord.lng.toFixed(5)},${p.coord.lat.toFixed(5)})`;
+    })
     .join(",");
 
-  // Route line as GeoJSON LineString overlay (Fjord midnight: 1f3a5f)
+  // Route line as GeoJSON LineString overlay (teal, 3px)
   const lineGeo = {
     type: "Feature",
-    properties: { stroke: "#1f3a5f", "stroke-width": 3 },
+    properties: { stroke: "#3D6B74", "stroke-width": 3, "stroke-opacity": 0.9 },
     geometry: {
       type: "LineString",
       coordinates: points.map((p) => [p.coord.lng, p.coord.lat]),
@@ -100,7 +106,7 @@ Deno.serve(async (req) => {
     const styleId = style || "mapbox/light-v11";
 
     // Resolve coordinates
-    const resolved: { coord: Coord; n: number; title: string; location?: string }[] = [];
+    const resolved: { coord: Coord; n: number; title: string; location?: string; day?: number }[] = [];
     let n = 1;
     for (const s of stops) {
       let coord: Coord | null = null;
@@ -114,7 +120,7 @@ Deno.serve(async (req) => {
         coord = await geocode(query);
       }
       if (coord) {
-        resolved.push({ coord, n, title: s.title, location: s.location });
+        resolved.push({ coord, n, title: s.title, location: s.location, day: s.day });
         n++;
       }
     }
@@ -148,7 +154,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         url: pub.publicUrl,
-        stops: resolved.map((r) => ({ n: r.n, title: r.title, location: r.location })),
+        stops: resolved.map((r) => ({ n: r.n, title: r.title, location: r.location, day: r.day })),
         skipped: stops.length - resolved.length,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },

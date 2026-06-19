@@ -8,15 +8,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
-import { parseItineraryMarkdown } from "@/lib/itineraryParser";
+import { extractMapStops } from "@/lib/itineraryMapStops";
 
+// Style + country bias hints based on the destination string.
+// "Norway", "Iceland", etc. → outdoors style; cities default to light.
+const NATURE_DESTINATIONS = /(norway|noruega|norge|iceland|island|svalbard|lofoten|fjord|alps|patagonia|alaska|greenland)/i;
+function pickMapStyle(destination: string | null | undefined): string {
+  if (destination && NATURE_DESTINATIONS.test(destination)) return "mapbox/outdoors-v12";
+  return "mapbox/light-v11";
+}
+function pickCountryBias(destination: string | null | undefined): string | undefined {
+  if (!destination) return undefined;
+  // Use the last comma-separated segment (e.g. "Bergen, Norway" → "Norway")
+  // or the whole string if it has no comma.
+  const parts = destination.split(",").map((s) => s.trim()).filter(Boolean);
+  return parts[parts.length - 1] || undefined;
+}
 
-
-
-
-
-
-const Toolbar = ({ editor }: { editor: Editor }) => {
+const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string | null }) => {
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const savedSelection = useRef<{ from: number; to: number } | null>(null);
@@ -68,31 +77,19 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
   const handleGenerateMap = async () => {
     try {
       const md = htmlToMarkdown(editor.getHTML());
-      const days = parseItineraryMarkdown(md);
-      const stops = days.flatMap((d, di) =>
-        d.items
-          .filter((it) => it.type !== "transport")
-          .map((it, oi) => ({
-            day: d.day || di + 1,
-            order: oi,
-            title: it.title,
-            location: it.location,
-            lat: it.lat,
-            lng: it.lng,
-          })),
-      );
+      const stops = extractMapStops(md);
       if (stops.length === 0) {
-        toast.error("No itinerary stops detected. Add day headings and bullet items first.");
+        toast.error(
+          "No locations detected. Add a 'Trip Overview' section with day headers like 'Day 1 - Bergen - Voss - Flåm'.",
+        );
         return;
       }
-      const context = (window.prompt(
-        "Optional country/region to bias geocoding (e.g. 'Norway'):",
-        "",
-      ) || "").trim() || undefined;
+      const context = pickCountryBias(destination);
+      const style = pickMapStyle(destination);
 
       const tId = toast.loading(`Generating map for ${stops.length} stops…`);
       const { data, error } = await supabase.functions.invoke("generate-itinerary-map", {
-        body: { stops, context },
+        body: { stops, context, style },
       });
       toast.dismiss(tId);
       if (error) throw error;
@@ -102,9 +99,18 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
         .setImage({ src: data.url, alt: "Itinerary route map" })
         .run();
       const skipped = data.skipped || 0;
-      const legend = (data.stops || [])
-        .map((s: any) => `${s.n}. ${s.title}${s.location ? ` — ${s.location}` : ""}`)
+      // Group resolved stops by day for a clean legend
+      const byDay = new Map<number, string[]>();
+      for (const s of (data.stops || []) as Array<{ n: number; title: string; day?: number }>) {
+        const d = s.day || 0;
+        if (!byDay.has(d)) byDay.set(d, []);
+        byDay.get(d)!.push(s.title);
+      }
+      const legend = Array.from(byDay.entries())
+        .sort((a, b) => a[0] - b[0])
+        .map(([d, names]) => `Day ${d}: ${names.join(" · ")}`)
         .join("<br/>");
+
       editor
         .chain()
         .focus()
