@@ -507,6 +507,10 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
               <div class="fjw-cover-meta-label">Season</div>
               <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
             </div>
+            ${project?.budget_cover_label ? `<div class="fjw-cover-meta-col">
+              <div class="fjw-cover-meta-label">Estimated Budget</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project.budget_cover_label)}</div>
+            </div>` : ""}
           </div>
         </div>
 
