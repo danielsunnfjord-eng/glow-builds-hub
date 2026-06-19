@@ -80,6 +80,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<ItineraryEditorHandle>(null);
 
+  // Budget estimate (per-project, persisted in localStorage)
+  const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
+  const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
+
   // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
