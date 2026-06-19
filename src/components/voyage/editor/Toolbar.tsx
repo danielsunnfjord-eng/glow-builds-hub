@@ -1,14 +1,15 @@
 import { Editor } from "@tiptap/react";
 import { useTranslation } from "react-i18next";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ToolbarButton, { ToolbarSep } from "./ToolbarButton";
 import ColorPicker from "./ColorPicker";
 import LinkPopover from "./LinkPopover";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ImagePlus, FileText, Map as MapIcon } from "lucide-react";
+import { ImagePlus, FileText, Map as MapIcon, Coins } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
 import { extractMapStops } from "@/lib/itineraryMapStops";
+import BudgetEstimator, { type BudgetData } from "./BudgetEstimator";
 
 // Style + country bias hints based on the destination string.
 // "Norway", "Iceland", etc. → outdoors style; cities default to light.
@@ -25,10 +26,25 @@ function pickCountryBias(destination: string | null | undefined): string | undef
   return parts[parts.length - 1] || undefined;
 }
 
-const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string | null }) => {
+const Toolbar = ({
+  editor,
+  destination,
+  tripDuration,
+  budget,
+  coverLabel,
+  onBudgetSaved,
+}: {
+  editor: Editor;
+  destination?: string | null;
+  tripDuration?: string | null;
+  budget?: BudgetData | null;
+  coverLabel?: string | null;
+  onBudgetSaved?: (budget: BudgetData | null, coverLabel: string | null) => void;
+}) => {
   const { t } = useTranslation();
   const fileRef = useRef<HTMLInputElement>(null);
   const savedSelection = useRef<{ from: number; to: number } | null>(null);
+  const [budgetOpen, setBudgetOpen] = useState(false);
 
   const currentTextColor = editor.getAttributes("textStyle").color || "";
   const currentHighlight = editor.getAttributes("highlight").color || "";
@@ -359,6 +375,14 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
         <MapIcon className="w-3.5 h-3.5" />
       </ToolbarButton>
 
+      <ToolbarButton
+        onClick={() => setBudgetOpen(true)}
+        title="Estimate Budget"
+        className="inline-flex items-center gap-1"
+      >
+        <Coins className="w-3.5 h-3.5" />
+      </ToolbarButton>
+
       <ToolbarSep />
 
       {/* Page break */}
@@ -387,6 +411,17 @@ const Toolbar = ({ editor, destination }: { editor: Editor; destination?: string
         disabled={!editor.can().redo()}
         title={`${t("aa.redo")} (Ctrl+Y)`}
       >↪</ToolbarButton>
+
+      <BudgetEstimator
+        open={budgetOpen}
+        onOpenChange={setBudgetOpen}
+        editor={editor}
+        destination={destination}
+        tripDuration={tripDuration}
+        initialBudget={budget || null}
+        initialCoverLabel={coverLabel || null}
+        onSaved={(b, lbl) => onBudgetSaved?.(b, lbl)}
+      />
     </div>
   );
 };

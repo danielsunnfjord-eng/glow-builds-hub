@@ -212,6 +212,8 @@ const CatalogShopManager = () => {
   const [search, setSearch] = useState("");
   const [editorOpen, setEditorOpen] = useState(false);
   const [state, setState] = useState<EditorState>(blankEditor);
+  const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
+  const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -312,6 +314,27 @@ const CatalogShopManager = () => {
     latestSectionPromptRef.current = sectionPrompt;
     latestEditorOpenRef.current = editorOpen;
   }, [state, sectionPrompt, editorOpen]);
+
+  // Budget per catalog row (persisted in localStorage)
+  useEffect(() => {
+    import("@/lib/itineraryBudgetStore").then(({ loadBudget }) => {
+      const id = state.id || null;
+      const { budget, coverLabel } = loadBudget(id);
+      setBudget(budget);
+      setBudgetCoverLabel(coverLabel);
+    });
+  }, [state.id]);
+
+  const handleBudgetSaved = useCallback(
+    (b: import("./editor/BudgetEstimator").BudgetData | null, lbl: string | null) => {
+      setBudget(b);
+      setBudgetCoverLabel(lbl);
+      import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
+        saveBudget(state.id || null, { budget: b, coverLabel: lbl });
+      });
+    },
+    [state.id],
+  );
 
   const loadCatalogDraft = async (itineraryId: string) => {
     const { data, error } = await supabase
@@ -1464,6 +1487,11 @@ const CatalogShopManager = () => {
               content={state.content}
               onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
               placeholder="Write or generate the itinerary…"
+              destination={state.destination}
+              tripDuration={state.duration}
+              budget={budget}
+              coverLabel={budgetCoverLabel}
+              onBudgetSaved={handleBudgetSaved}
             />
           </EditorErrorBoundary>
 
@@ -1840,6 +1868,12 @@ const CatalogShopManager = () => {
                 hero_image_caption: previewRow.hero_image_caption,
                 cover_tagline: pickedSummary || null,
                 season: previewRow.season,
+                budget_cover_label: (() => {
+                  try {
+                    const raw = window.localStorage.getItem("fjw-budget-v1:" + previewRow.id);
+                    return raw ? (JSON.parse(raw)?.coverLabel ?? null) : null;
+                  } catch { return null; }
+                })(),
               }}
               hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
               onClose={() => setPreviewRow(null)}

@@ -80,6 +80,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<ItineraryEditorHandle>(null);
 
+  // Budget estimate (per-project, persisted in localStorage)
+  const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
+  const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
+
   // Draft state (per-project auto-save)
   const [currentDraftId, setCurrentDraftId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -149,6 +153,26 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
 
     loadProjectDraft();
   }, [selectedProjectId]);
+
+  // Load persisted budget per project
+  useEffect(() => {
+    import("@/lib/itineraryBudgetStore").then(({ loadBudget }) => {
+      const { budget, coverLabel } = loadBudget(selectedProjectId);
+      setBudget(budget);
+      setBudgetCoverLabel(coverLabel);
+    });
+  }, [selectedProjectId]);
+
+  const handleBudgetSaved = useCallback(
+    (b: import("./editor/BudgetEstimator").BudgetData | null, lbl: string | null) => {
+      setBudget(b);
+      setBudgetCoverLabel(lbl);
+      import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
+        saveBudget(selectedProjectId, { budget: b, coverLabel: lbl });
+      });
+    },
+    [selectedProjectId],
+  );
 
   // --- Save draft (manual or auto) ---
   const saveDraft = useCallback(async (content: string, chatMessages: Message[], silent = false) => {
@@ -1692,6 +1716,10 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   ref={editorRef}
                   content={itineraryContent}
                   destination={selectedProject.destination}
+                  tripDuration={selectedProject.trip_duration}
+                  budget={budget}
+                  coverLabel={budgetCoverLabel}
+                  onBudgetSaved={handleBudgetSaved}
                   onContentChange={(md) => {
                     setItineraryContent(md);
                   }}
@@ -1729,6 +1757,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             destination: selectedProject.destination,
             trip_duration: selectedProject.trip_duration,
             group_size: selectedProject.group_size,
+            budget_cover_label: budgetCoverLabel,
           } : null}
           onClose={() => setShowPdfPreview(false)}
           onExport={() => { setShowPdfPreview(false); handleExportPdf(); }}
