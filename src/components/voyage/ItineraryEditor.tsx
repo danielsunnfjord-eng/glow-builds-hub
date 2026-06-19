@@ -22,6 +22,7 @@ interface ItineraryEditorProps {
   content: string;
   onContentChange: (markdown: string) => void;
   placeholder?: string;
+  destination?: string | null;
 }
 
 export interface ItineraryEditorHandle {
@@ -29,7 +30,7 @@ export interface ItineraryEditorHandle {
 }
 
 const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
-  ({ content, onContentChange, placeholder }, ref) => {
+  ({ content, onContentChange, placeholder, destination }, ref) => {
     const isInternalUpdate = useRef(false);
     const lastExternalContent = useRef(content);
     const sheetRef = useRef<HTMLDivElement>(null);
