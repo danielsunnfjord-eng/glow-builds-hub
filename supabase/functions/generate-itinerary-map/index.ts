@@ -154,7 +154,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         url: pub.publicUrl,
-        stops: resolved.map((r) => ({ n: r.n, title: r.title, location: r.location })),
+        stops: resolved.map((r) => ({ n: r.n, title: r.title, location: r.location, day: r.day })),
         skipped: stops.length - resolved.length,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
