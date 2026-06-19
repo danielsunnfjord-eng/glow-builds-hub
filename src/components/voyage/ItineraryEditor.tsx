@@ -161,7 +161,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
     return (
       <div className="relative fjw-editor-shell">
         <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm fjw-no-print">
-          <Toolbar editor={editor} />
+          <Toolbar editor={editor} destination={destination ?? null} />
         </div>
         <div className="relative py-6 px-4 flex justify-center">
           <div ref={sheetRef} className="fjw-a4-sheet" data-page-sheet>
