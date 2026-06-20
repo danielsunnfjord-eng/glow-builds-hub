@@ -636,14 +636,9 @@ const ItineraryShopDetail = () => {
                         className="p-5 rounded-lg border border-ink/[0.06] bg-voyage-white"
                       >
                         {d.label && (
-                          <div className="font-serif text-[1.05rem] font-bold text-ink mb-1">
+                          <div className="font-serif text-[1.05rem] font-bold text-ink">
                             {d.label}
                           </div>
-                        )}
-                        {d.description && (
-                          <p className="text-[0.9rem] text-ink/75 leading-relaxed">
-                            {d.description}
-                          </p>
                         )}
                       </li>
                     ))}
