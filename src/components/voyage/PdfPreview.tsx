@@ -556,11 +556,11 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         </div>
 
       </section>
-      <section class="fjw-itinerary-section">
+      ${usePdfMerge ? "" : `<section class="fjw-itinerary-section">
         <header class="fjw-running-header"><img src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" /><p>${escapeHtml(destinationLine)}</p></header>
         <main class="pdf-preview-content">${bodyHtml}</main>
         <footer class="fjw-print-footer">© ${new Date().getFullYear()} Fjord &amp; Waves Travel · Org.nr: 928804860</footer>
-      </section>
+      </section>`}
       ${hotelHtml}
       <section class="fjw-back-page">
         <img src="${escapeHtml(logoBadgeHd)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" />
