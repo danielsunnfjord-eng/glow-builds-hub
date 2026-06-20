@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Previewer } from "pagedjs";
 import { markdownToHtml } from "./editor/markdownHelpers";
+import PdfJsViewer from "./PdfJsViewer";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
 import logoBadgeHd from "@/assets/logo-badge-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
