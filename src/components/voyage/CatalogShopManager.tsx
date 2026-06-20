@@ -1109,6 +1109,34 @@ const CatalogShopManager = () => {
     }
   };
 
+  const [bodyPdfUploading, setBodyPdfUploading] = useState(false);
+
+  const uploadBodyPdf = async (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a PDF file.");
+      return;
+    }
+    setBodyPdfUploading(true);
+    try {
+      const path = `body-pdfs/${crypto.randomUUID()}.pdf`;
+      const { error } = await supabase.storage.from("catalog-images").upload(path, file, {
+        cacheControl: "3600", upsert: false, contentType: "application/pdf",
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+      setState((s) => ({ ...s, bodyPdfUrl: data.publicUrl }));
+      toast.success("Body PDF uploaded");
+    } catch (e: any) {
+      toast.error(e?.message || "PDF upload failed");
+    } finally {
+      setBodyPdfUploading(false);
+    }
+  };
+
+  const removeBodyPdf = () => setState((s) => ({ ...s, bodyPdfUrl: "" }));
+
+  const [previewMergedOpen, setPreviewMergedOpen] = useState(false);
+
   const uploadHotelPhoto = async (hotelId: string, slot: number, file: File) => {
     try {
       const ext = file.name.split(".").pop() || "jpg";
