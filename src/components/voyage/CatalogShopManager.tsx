@@ -510,6 +510,7 @@ const CatalogShopManager = () => {
     setCloseConfirmOpen(false);
     setGdocInfo({ id: null, url: null, lastSyncedAt: null });
     setGdocError(null);
+    setGdocConflict(null);
     setEditorOpen(true);
   };
 
