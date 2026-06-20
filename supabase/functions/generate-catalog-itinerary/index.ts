@@ -158,7 +158,7 @@ Itinerary excerpt (markdown, may be partial):
 ${excerpt}
 """
 
-Write the following six pieces of copy and return them as a single JSON object with EXACTLY these keys:
+Write the following pieces of copy and return them as a single JSON object with EXACTLY these keys:
 
 {
   "cover_intro_en": "3–4 sentence evocative cover-page introduction in English. Sets the emotional tone, names the destination and a couple of grounding specifics from the itinerary. Reads like a luxury travel atelier — calm, confident, sensory but restrained. No headings, no markdown, no quotes.",
@@ -166,8 +166,16 @@ Write the following six pieces of copy and return them as a single JSON object w
   "cover_intro_no": "Same as cover_intro_en but written natively in Norwegian (Bokmål).",
   "summary_en": "2–3 sentence catalogue teaser in English — suitable for catalogue cards and listings. Tight, inviting, specific. No markdown, no quotes.",
   "summary_pt": "Same as summary_en but written natively in Brazilian Portuguese (pt-BR).",
-  "summary_no": "Same as summary_en but written natively in Norwegian (Bokmål)."
+  "summary_no": "Same as summary_en but written natively in Norwegian (Bokmål).",
+  "subpage_checklist": ["Exactly 4 short strings (max ~10 words each) describing what the customer specifically gets from THIS itinerary — grounded in the actual places, experiences and themes in the excerpt. Not generic. English."],
+  "subpage_day_overview": [{"label": "Day 1 — <concise route or theme drawn from the actual day in the excerpt>", "description": "1–2 sentence preview of that day, grounded in real places/experiences from the excerpt. English."}],
+  "subpage_expectations": [{"title": "Short evocative title (2–4 words)", "description": "1–2 sentence card based on the tone and content of this itinerary. English."}]
 }
+
+Rules for the new arrays:
+- "subpage_checklist": EXACTLY 4 items, each a single short line, specific to this itinerary.
+- "subpage_day_overview": ONE entry per day present in the itinerary excerpt, in order. Use the same day count as the excerpt. The "label" should start with "Day N — " and reflect that day's actual route/theme.
+- "subpage_expectations": EXACTLY 4 cards capturing the distinctive feel of THIS trip (not boilerplate). Titles must be short and evocative.
 
 Return ONLY the JSON object. No code fences, no explanation.`;
 
