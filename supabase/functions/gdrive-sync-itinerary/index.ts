@@ -107,6 +107,14 @@ async function driveGetMeta(fileId: string): Promise<{ modifiedTime: string | nu
   return { modifiedTime: j.modifiedTime ?? null, webViewLink: j.webViewLink ?? null, trashed: !!j.trashed };
 }
 
+// Export a Google Doc to Markdown via Drive's export endpoint.
+async function driveExportMarkdown(fileId: string): Promise<string> {
+  const url = `${GATEWAY}/files/${fileId}/export?mimeType=${encodeURIComponent("text/markdown")}`;
+  const r = await fetch(url, { method: "GET", headers: gwHeaders() });
+  if (!r.ok) throw new Error(`Drive export failed: ${r.status} ${await r.text()}`);
+  return await r.text();
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -152,7 +160,9 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const itinerary_id = body?.itinerary_id;
-    const action: "sync" | "check" = body?.action === "check" ? "check" : "sync";
+    const requested = body?.action;
+    const action: "sync" | "check" | "pull" =
+      requested === "check" ? "check" : requested === "pull" ? "pull" : "sync";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -201,6 +211,40 @@ Deno.serve(async (req) => {
           last_synced_at: row.gdoc_last_synced_at ?? null,
           doc_modified_time: meta.modifiedTime,
           conflict,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // PULL MODE: export the Google Doc as Markdown and return it. Also bump
+    // gdoc_last_synced_at to the doc's modifiedTime so the client clears the
+    // conflict banner once it has replaced its editor content.
+    if (action === "pull") {
+      if (!row.gdoc_id) {
+        return new Response(JSON.stringify({ error: "No Google Doc linked to this itinerary yet." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const meta = await driveGetMeta(row.gdoc_id);
+      if (meta.trashed) {
+        return new Response(JSON.stringify({ error: "Linked Google Doc has been moved to trash." }), {
+          status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const markdown = await driveExportMarkdown(row.gdoc_id);
+      const syncedAt = meta.modifiedTime ?? new Date().toISOString();
+      await supabase
+        .from("catalog_itineraries")
+        .update({ gdoc_last_synced_at: syncedAt, gdoc_url: meta.webViewLink ?? row.gdoc_url })
+        .eq("id", itinerary_id);
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          gdoc_id: row.gdoc_id,
+          gdoc_url: meta.webViewLink ?? row.gdoc_url ?? null,
+          synced_at: syncedAt,
+          doc_modified_time: meta.modifiedTime,
+          markdown,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );

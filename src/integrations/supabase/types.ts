@@ -193,6 +193,41 @@ export type Database = {
           },
         ]
       }
+      catalog_itinerary_snapshots: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          draft: Json
+          id: string
+          itinerary_id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          draft: Json
+          id?: string
+          itinerary_id: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          draft?: Json
+          id?: string
+          itinerary_id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_itinerary_snapshots_itinerary_id_fkey"
+            columns: ["itinerary_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_itineraries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       catalog_purchases: {
         Row: {
           amount_total: number

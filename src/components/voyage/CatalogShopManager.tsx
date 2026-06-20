@@ -255,6 +255,69 @@ const CatalogShopManager = () => {
   const [gdocError, setGdocError] = useState<string | null>(null);
   const [gdocConflict, setGdocConflict] = useState<{ docModifiedTime: string; lastSyncedAt: string | null; url: string | null; acknowledged: boolean } | null>(null);
   const [gdocChecking, setGdocChecking] = useState(false);
+  const [gdocPulling, setGdocPulling] = useState(false);
+  const [pullConfirmOpen, setPullConfirmOpen] = useState(false);
+
+  const saveSnapshot = async (itineraryId: string, label: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const payload = catalogDraftPayload(
+      { ...latestStateRef.current, id: itineraryId },
+      latestSectionPromptRef.current,
+    );
+    const { error } = await supabase
+      .from("catalog_itinerary_snapshots" as any)
+      .insert({
+        itinerary_id: itineraryId,
+        label,
+        draft: payload as any,
+        created_by: user?.id ?? null,
+      } as any);
+    if (error) throw error;
+  };
+
+  const pullFromGoogleDoc = async (itineraryId: string) => {
+    setGdocPulling(true);
+    setGdocError(null);
+    try {
+      // 1. Safety snapshot of current editor state BEFORE replacing anything.
+      const snapshotLabel = `Before Google Doc import — ${new Date().toLocaleString()}`;
+      await saveSnapshot(itineraryId, snapshotLabel);
+
+      // 2. Fetch markdown from the Google Doc.
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: itineraryId, action: "pull" },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const md: string = (data as any).markdown ?? "";
+
+      // 3. Replace editor content. Other fields (title, hotels, cover, etc.)
+      //    remain app-managed; the Google Doc only mirrors narrative copy.
+      setState((s) => ({ ...s, content: md, previousContent: s.content }));
+
+      // 4. Persist a draft immediately so the import survives reloads.
+      await persistCatalogDraft(true);
+
+      // 5. Update sync metadata and clear the conflict banner.
+      setGdocInfo((prev) => ({
+        ...prev,
+        id: (data as any).gdoc_id ?? prev.id,
+        url: (data as any).gdoc_url ?? prev.url,
+        lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
+      }));
+      setGdocConflict(null);
+      toast.success("Google Doc changes imported successfully", {
+        description: `A backup snapshot "${snapshotLabel}" was saved first.`,
+      });
+    } catch (e: any) {
+      setGdocError(e?.message || "Google Doc import failed");
+      toast.error(e?.message || "Google Doc import failed");
+    } finally {
+      setGdocPulling(false);
+      setPullConfirmOpen(false);
+    }
+  };
+
 
   const checkGoogleDocFreshness = async (itineraryId: string) => {
     setGdocChecking(true);
@@ -1436,6 +1499,16 @@ const CatalogShopManager = () => {
                         Open Google Doc to review ↗
                       </a>
                     )}
+                    {state.id && (
+                      <button
+                        type="button"
+                        onClick={() => setPullConfirmOpen(true)}
+                        disabled={gdocPulling}
+                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100 disabled:opacity-50"
+                      >
+                        {gdocPulling ? "Importing…" : "Pull Doc changes into editor"}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setGdocConflict((c) => (c ? { ...c, acknowledged: true } : c))}
@@ -1991,6 +2064,31 @@ const CatalogShopManager = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Editing</AlertDialogCancel>
             <AlertDialogAction onClick={closeEditorAnyway}>Close Anyway</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Import from Google Doc?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ⚠️ This will replace all content in the editor with the current Google Doc
+              version. This cannot be undone. A backup snapshot of your current draft will
+              be saved automatically so you can recover if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={gdocPulling || !state.id}
+              onClick={(e) => {
+                e.preventDefault();
+                if (state.id) void pullFromGoogleDoc(state.id);
+              }}
+            >
+              {gdocPulling ? "Importing…" : "Import from Google Doc"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
