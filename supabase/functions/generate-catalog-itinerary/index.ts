@@ -188,7 +188,7 @@ Return ONLY the JSON object. No code fences, no explanation.`;
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
-          max_tokens: 2048,
+          max_tokens: 4096,
           system: metaSystem,
           messages: [{ role: 'user', content: metaUser }],
         }),
