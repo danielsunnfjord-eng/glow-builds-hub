@@ -963,7 +963,7 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
-      setState((s) => ({ ...s, heroImageUrl: data.publicUrl }));
+      setState((s) => ({ ...s, heroImageUrl: data.publicUrl, heroImageCredit: "", heroImageCaption: "" }));
       toast.success("Cover uploaded");
     } catch (e: any) {
       toast.error(e?.message || "Upload failed");
