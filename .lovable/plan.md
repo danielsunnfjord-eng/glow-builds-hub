@@ -1,88 +1,41 @@
-# Architecture: Google Docs as body editor, app as PDF assembler
 
-We separate **content editing** (Google Docs, freeform) from **PDF layout** (app, fixed templates). The TipTap editor disappears entirely; the PDF preview becomes the only preview.
+## Where the first itinerary stands today
 
-## New workflow
+Sogn og Fjordane is the only itinerary with `is_published = true`, price €30, full content, hero image, body PDF, map and budget. The buy button + checkout edge function already exist. But three concrete blockers will stop a real customer from completing a purchase and getting their PDF.
 
-```text
-Create itinerary
-  → AI generates body content
-  → app pushes once to a new Google Doc (one-way, on creation)
-  → user edits freely in Google Docs
-  → returns to app, clicks "Finalise & Preview PDF"
-  → app pulls Doc, strips formatting, keeps only structure
-  → app assembles: Cover + Body + Hotels + Back page
-  → Paged.js renders PDF in full-screen modal
-  → Approve & Publish → saves PDF to Drive, publishes to catalogue
-```
+## Blockers (in priority order)
 
-## New itinerary management panel (replaces editor window)
+### 1. The downloadable PDF is not wired up (will break post-payment)
+- `download-catalog-pdf` reads from `catalog_itineraries.pdf_path` (a Storage path in the `catalog-pdfs` bucket).
+- For Sogn og Fjordane, `pdf_path` is **NULL**. Only `body_pdf_url` (a public URL to a body-only PDF in `catalog-images`) is set.
+- Result: customer pays, lands on success page, clicks Download → "PDF not available yet".
 
-**Section 1 — Cover page fields** (unchanged): title, hero image, photo credit, caption, tagline, duration, region, season, estimated budget, cover intros (EN/PT/NO), short descriptions (EN/PT/NO).
+**Fix options (pick one):**
+- **A.** Generate the full deliverable PDF (cover + body + practical info) via the existing `generate-catalog-pdf` function, save it to the private `catalog-pdfs` bucket, and store the path in `pdf_path`. *Recommended — this is what the function was built for.*
+- **B.** Upload a final PDF manually in the editor and save its path to `pdf_path`.
 
-**Section 2 — Body content** (no editor):
-```text
-📄 Google Doc linked
-[Open in Google Docs ↗]
-Last edited in Docs: 20.6.2026 12:30
-[Finalise & Preview PDF]
-```
+### 2. Stripe is hardcoded to sandbox
+- Both `create-catalog-checkout` and `verify-catalog-purchase` call `createStripeClient("sandbox")`.
+- Real payments will not go through until we (a) complete Stripe go-live so `STRIPE_LIVE_API_KEY` exists, and (b) switch the env based on the build (`pk_test_` → sandbox, `pk_live_` → live) like the rest of the platform expects.
 
-**Section 3 — Additional pages**:
-- Hotel recommendations: repeatable form rows (hotel name, location, description, price range, link) stored as JSON on the itinerary, rendered into a fixed-template hotel page.
-- Back page: fixed template, no fields.
+**Action:** trigger Stripe go-live from the project, then update the two edge functions to derive `StripeEnv` from a value passed in by the client (`getStripeEnvironment()`).
 
-## Content sanitisation (Google Doc → PDF body)
+### 3. No webhook → purchases only confirmed if the user returns to the success page
+- `verify-catalog-purchase` runs only when the browser hits `/catalogue/success?...`. If the customer closes the tab after paying, `catalog_purchases.status` stays `pending` forever and they never get the download email.
+- Add a `stripe-webhook` edge function listening for `checkout.session.completed` that marks the purchase paid and triggers the delivery email (using `PAYMENTS_SANDBOX_WEBHOOK_SECRET` / `PAYMENTS_LIVE_WEBHOOK_SECRET`, which are already in secrets).
 
-Pull Doc as HTML via Drive export (`mimeType=text/html`), then sanitise with an allow-list:
+## Nice-to-have, not blockers
+- Delivery email with the download link (currently the success page is the only path to the PDF).
+- Multi-currency at checkout (today price is forced to EUR even though we display NOK/BRL elsewhere).
+- Move from redirect checkout to embedded checkout to match the platform standard.
 
-```js
-const allowedTags = ['h1','h2','h3','p','ul','ol','li','strong','em','a'];
-// Strip: inline styles, <span>, <font>, classes, Google wrapper divs, colours, fonts.
-// Keep: href on <a>, structural nesting only.
-```
+## Suggested order
 
-Sanitised HTML is injected into the Paged.js body section. All typography comes from existing brand CSS — never from Google Docs.
+1. Generate & attach the full PDF for Sogn og Fjordane (Blocker 1).
+2. Add the Stripe webhook + a simple delivery email so paid status + PDF link reach the customer reliably (Blocker 3).
+3. Run Stripe go-live, then switch the two functions to env-aware (Blocker 2).
+4. Test end-to-end in sandbox with card `4242 4242 4242 4242`, then once more in live with a real card after go-live.
 
-## What we remove
+## Question before I build
 
-- TipTap editor + all extensions specific to body editing
-- Live in-app editor preview
-- Sync conflict detection UI (banners, "pull from Doc" dialog, freshness check, snapshots before pull)
-- The `check` and `pull` actions of `gdrive-sync-itinerary` become unused (we keep `push` for creation, add `export-html` for finalise)
-- The `runAutoMetadata` regeneration is unaffected (cover fields only)
-
-## What we keep, untouched
-
-- Cover page component (`ItineraryCoverPage.tsx`) and all its styling
-- Paged.js pipeline (`PdfPreview.tsx`, `PdfJsViewer.tsx`)
-- Google Drive/Docs connector integration
-- Cover field auto-generation (intros + short descriptions)
-- i18n, currency, AI generation step
-
-## Files changed
-
-- `src/components/voyage/CatalogShopManager.tsx`: strip TipTap, conflict UI, snapshot UI; add Body section (link + Finalise button), Hotels section (repeatable form), Finalise & Preview modal flow.
-- `src/components/voyage/ItineraryEditor.tsx`: delete (or reduce to a thin re-export if still imported elsewhere — to be checked).
-- `src/components/voyage/PdfPreview.tsx`: accept sanitised body HTML + hotels array + back-page template; assemble full document.
-- `supabase/functions/gdrive-sync-itinerary/index.ts`: keep `push` (creation only), add `export-html` action (fetch Doc as HTML + `modifiedTime`), retire `check`/`pull` (leave handler returning 410 to be safe, then remove next pass).
-- `supabase/migrations/<new>.sql`: add `hotels jsonb` column on `catalog_itineraries`; we will NOT drop the unused cols (`gdoc_last_synced_at`, snapshot table) in this change to avoid risk — they become dormant.
-
-## Dependencies
-
-- Add a small sanitiser (`sanitize-html` or a tiny custom allow-list walker). No new heavy deps.
-- TipTap packages: leave installed until we confirm no other surface uses them, then remove in a follow-up.
-
-## Out of scope (explicit)
-
-- No new in-app body preview.
-- No editing of Doc content inside the app.
-- No bidirectional sync. App → Doc only on creation. Doc → App only at Finalise time, and only as render input (not persisted as editable state).
-- No changes to cover styling, brand fonts, or Paged.js CSS.
-
-## Open questions before I build
-
-1. **Hotels page**: how many hotels per itinerary (max), and should each hotel have an image, or text-only for v1?
-2. **Back page**: what content goes on it — contact block, advisor signature, legal line, logo? Anything dynamic, or fully static?
-3. **Finalise & Publish**: when "Approve & Publish" runs, do we (a) save the rendered PDF to Google Drive in the same folder as the Doc, (b) upload to Supabase Storage, or (c) both?
-4. **Existing itineraries** that currently have TipTap draft content but no Google Doc — do we auto-create a Doc from the existing draft on first open, or require the user to regenerate?
+Which blocker do you want me to tackle first — **(1) wire up the downloadable PDF**, **(2) add the webhook + delivery email**, or **(3) start the Stripe go-live flow**? I'd recommend (1) since nothing else matters if the file can't be delivered.
