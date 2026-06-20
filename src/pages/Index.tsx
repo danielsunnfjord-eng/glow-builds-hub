@@ -33,7 +33,7 @@ const Index = () => {
         <CuratedSection />
         <Suspense fallback={null}>
           <MeetDaniel />
-          <ItineraryExamples />
+          
           <Reviews />
           <PlanMyTrip />
         </Suspense>
