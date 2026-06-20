@@ -6,7 +6,7 @@ import Seo from "@/components/Seo";
 
 // Below-the-fold sections are code-split to keep the initial JS small.
 const MeetDaniel = lazy(() => import("@/components/voyage/MeetDaniel"));
-const ItineraryExamples = lazy(() => import("@/components/voyage/ItineraryExamples"));
+
 const Reviews = lazy(() => import("@/components/voyage/Reviews"));
 const PlanMyTrip = lazy(() => import("@/components/voyage/PlanMyTrip"));
 const Footer = lazy(() => import("@/components/voyage/Footer"));
@@ -33,7 +33,7 @@ const Index = () => {
         <CuratedSection />
         <Suspense fallback={null}>
           <MeetDaniel />
-          <ItineraryExamples />
+          
           <Reviews />
           <PlanMyTrip />
         </Suspense>
