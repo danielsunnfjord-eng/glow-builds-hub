@@ -472,7 +472,7 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
           <h2>${escapeHtml(L.hotelRecs)}</h2>
           ${visibleHotels
             .map((h) => {
-              const photos = (h.photos || []).map(normalizePhoto).filter((p): p is HotelPhoto => !!p && !!p.url).slice(0, 3);
+              const photos = (h.photos || []).map(normalizePhoto).filter((p): p is HotelPhoto => !!p && !!p.url).slice(0, 1);
               return `<article class="fjw-hotel-card">
                 <h3>${escapeHtml(h.name)}</h3>
                 ${h.location ? `<div class="fjw-hotel-location">${escapeHtml(h.location)}</div>` : ""}
