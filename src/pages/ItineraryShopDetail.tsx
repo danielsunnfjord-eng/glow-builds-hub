@@ -99,6 +99,10 @@ interface CatalogItem {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   season: string[] | null;
+  subpage_highlights: Array<{ title: string; text: string }> | null;
+  subpage_checklist: string[] | null;
+  subpage_day_overview: Array<{ day_number: number; title: string }> | null;
+  subpage_map_url: string | null;
 }
 
 
@@ -126,7 +130,7 @@ const ItineraryShopDetail = () => {
         .eq("slug", slug!)
         .maybeSingle();
       if (error) throw error;
-      return data as CatalogItem | null;
+      return data as unknown as CatalogItem | null;
     },
     enabled: !!slug,
   });
@@ -173,7 +177,13 @@ const ItineraryShopDetail = () => {
     t("shop.includes.practical", "Practical tips, logistics & best times to visit"),
     t("shop.includes.pdf", "Instant premium PDF download"),
   ];
-  const includes = wygItems.length > 0 ? wygItems : defaultIncludes;
+  const checklistFromDb = Array.isArray(data?.subpage_checklist) ? data!.subpage_checklist! : [];
+  const includes = checklistFromDb.length > 0
+    ? checklistFromDb
+    : (wygItems.length > 0 ? wygItems : defaultIncludes);
+
+  const dayOverview = Array.isArray(data?.subpage_day_overview) ? data!.subpage_day_overview! : [];
+  const subpageMapUrl = data?.subpage_map_url || null;
 
   useEffect(() => {
     if (title) document.title = `${title} · Fjord & Waves Travel`;
@@ -238,28 +248,21 @@ const ItineraryShopDetail = () => {
 
   const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
 
-  const expectations = [
-    {
-      icon: Coffee,
-      label: t("shop.expect.mornings", "Unhurried mornings"),
-      text: t("shop.expect.morningsText", "Slow starts in places worth lingering — markets, coastlines, quiet cafés."),
-    },
-    {
-      icon: Compass,
-      label: t("shop.expect.local", "Local insider access"),
-      text: t("shop.expect.localText", "Hand-picked guides, family-run tables and out-of-the-way detours you'd miss alone."),
-    },
-    {
-      icon: Sparkles,
-      label: t("shop.expect.signature", "Signature moments"),
-      text: t("shop.expect.signatureText", "One unforgettable experience each day — the kind you'll still talk about years later."),
-    },
-    {
-      icon: MoonIcon,
-      label: t("shop.expect.evenings", "Evenings, considered"),
-      text: t("shop.expect.eveningsText", "Where to dine, where to walk, and where to watch the day end well."),
-    },
+  const fallbackExpectations = [
+    { icon: Coffee, label: t("shop.expect.mornings", "Unhurried mornings"), text: t("shop.expect.morningsText", "Slow starts in places worth lingering — markets, coastlines, quiet cafés.") },
+    { icon: Compass, label: t("shop.expect.local", "Local insider access"), text: t("shop.expect.localText", "Hand-picked guides, family-run tables and out-of-the-way detours you'd miss alone.") },
+    { icon: Sparkles, label: t("shop.expect.signature", "Signature moments"), text: t("shop.expect.signatureText", "One unforgettable experience each day — the kind you'll still talk about years later.") },
+    { icon: MoonIcon, label: t("shop.expect.evenings", "Evenings, considered"), text: t("shop.expect.eveningsText", "Where to dine, where to walk, and where to watch the day end well.") },
   ];
+  const highlightIcons = [Sparkles, Compass, Coffee, MoonIcon];
+  const dbHighlights = Array.isArray(data.subpage_highlights) ? data.subpage_highlights : [];
+  const expectations = dbHighlights.length > 0
+    ? dbHighlights.slice(0, 4).map((h, i) => ({
+        icon: highlightIcons[i % highlightIcons.length],
+        label: h.title,
+        text: h.text,
+      }))
+    : fallbackExpectations;
 
   const valueProps = [
     {
@@ -667,6 +670,59 @@ const ItineraryShopDetail = () => {
                   })}
                 </div>
               </div>
+
+              {/* Day-by-day preview (compact TOC) */}
+              {dayOverview.length > 0 && (
+                <details open className="mb-14 group">
+                  <summary className="list-none cursor-pointer flex items-end justify-between mb-2">
+                    <div>
+                      <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-2">
+                        {t("shop.dayPreviewBadge", "Day-by-day preview")}
+                      </div>
+                      <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink">
+                        {t("shop.dayPreview", "What's inside, day by day")}
+                      </h2>
+                    </div>
+                    <span className="text-[0.7rem] tracking-[0.14em] uppercase text-voyage-muted group-open:opacity-60">
+                      {t("shop.toggle", "Toggle")}
+                    </span>
+                  </summary>
+                  <div className="h-px w-12 bg-gold mb-6 mt-1" />
+                  <ol className="max-h-[26rem] overflow-y-auto pr-2 divide-y divide-ink/[0.06] border border-ink/[0.06] rounded-lg bg-voyage-white">
+                    {dayOverview.map((d) => (
+                      <li key={d.day_number} className="flex gap-4 items-baseline px-5 py-3.5">
+                        <span className="font-serif text-[1rem] font-bold text-gold w-14 shrink-0">
+                          {t("shop.dayLabel", "Day")} {d.day_number}
+                        </span>
+                        <span className="text-[0.95rem] text-ink/85 leading-snug">{d.title}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              )}
+
+              {/* Route map */}
+              {subpageMapUrl && (
+                <div className="mb-14">
+                  <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
+                    {t("shop.routeMapBadge", "Your route")}
+                  </div>
+                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                    {t("shop.routeMap", "Route map")}
+                  </h2>
+                  <div className="h-px w-12 bg-gold mb-6" />
+                  <div className="rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white">
+                    <img
+                      src={subpageMapUrl}
+                      alt={t("shop.routeMapAlt", "Route map for {{title}}", { title })}
+                      loading="lazy"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+
+
 
               {/* Gallery — asymmetric masonry */}
               {gallery.length > 0 && (
