@@ -35,12 +35,29 @@ const Login = () => {
     e.preventDefault();
     if (!email || !password || loading) return;
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
-    } else {
-      navigate("/admin");
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        console.error("[Login] signInWithPassword error:", error, JSON.stringify(error));
+        const status = (error as { status?: number }).status;
+        const description =
+          error.message?.trim() ||
+          (status && status >= 500
+            ? "The backend is temporarily unreachable. Please try again in a moment."
+            : "Unable to sign in. Please check your email and password.");
+        toast({ title: "Login failed", description, variant: "destructive" });
+      } else {
+        navigate("/admin");
+      }
+    } catch (err) {
+      console.error("[Login] unexpected error:", err);
+      toast({
+        title: "Login failed",
+        description: err instanceof Error && err.message ? err.message : "Network error — please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
