@@ -124,6 +124,9 @@ interface EditorState {
   summary: string;
   summaryPt: string;
   summaryNo: string;
+  coverIntroEn: string;
+  coverIntroPt: string;
+  coverIntroNo: string;
   content: string;
   priceEur: string;
   heroImageUrl: string;
