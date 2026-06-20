@@ -1,65 +1,105 @@
-## Itinerary Map Generator (Mapbox Static Images API)
+# Google Drive Hybrid Integration for Itinerary Editor
 
-Generate a clean, print-ready static map of every location mentioned across an itinerary's days, connected by a numbered route line, then embed it into the editor document and the exported PDF.
+## Goal
+Add Google Drive as a **backup, version-history and export target** for itineraries, while keeping the current TipTap editor + Paged.js PDF pipeline as the source of truth and the only renderer of the bespoke cover page, budget table, and styled output.
 
-### 1. Secret
+## Why this architecture
+You answered:
+- **Hybrid** — Drive is backup + export target, not master
+- **Small team, sometimes editing in Docs** — needs round-trip but not real-time CRDT sync
+- **Workspace Drive (connector)** — one account owns all docs, no per-user OAuth
+- **Styling is critical** — Google Docs cannot reproduce the A4 cover, fluid intro, teal-accent budget table, or Paged.js page flow. Drive's "export to PDF" is therefore not usable for the final PDF; we keep the current renderer.
 
-Add `MAPBOX_ACCESS_TOKEN` via the secret tool (backend only — never exposed to the browser). Used exclusively from an edge function.
+This means: the editor and database stay authoritative for what ships. Google Docs becomes a **mirror** the team can read/comment/edit in, and a **revision archive**. Edits made in Docs are pulled back on demand (manual "Pull from Google Doc"), not auto-merged, to avoid silently overwriting styled content.
 
-### 2. Edge function: `generate-itinerary-map`
+## What gets built
 
-`supabase/functions/generate-itinerary-map/index.ts`
+### 1. Drive folder structure (auto-created)
+```text
+Fjord & Waves Itineraries/
+├── Drafts/
+│   └── {Itinerary Title} — {id-short}/
+│       ├── {Title}.gdoc          ← live mirror of editor body
+│       └── assets/               ← cover image, gallery (optional, phase 2)
+└── Published/
+    └── {Title} — {id-short}/
+        ├── {Title}.gdoc          ← final mirror
+        └── {Title}.pdf           ← Paged.js-rendered PDF
+```
 
-Input (POST JSON):
-- `itineraryId` (uuid) — used to look up the itinerary and persist the map
-- OR `stops`: `[{ day, order, title, location, lat?, lng? }]` for ad-hoc generation
+Folder IDs are stored in a `drive_settings` table so the team can change root locations without code changes.
 
-Flow:
-1. Validate input (Zod).
-2. For each stop without coords, geocode via Mapbox Geocoding API (`/geocoding/v5/mapbox.places/{query}.json`), biased by destination context. Cache results in a new `geocode_cache` table (`query text pk`, `lat`, `lng`, `created_at`) to avoid repeat calls.
-3. Build a Mapbox Static Images API URL using style `mapbox/light-v11`:
-   - Numbered pin overlays: `pin-l-{n}+b8935a({lng},{lat})` per stop (Fjord & Waves sand/gold).
-   - Route line overlay: encoded GeoJSON LineString through stops in day/order sequence, stroke `#1f3a5f` (Fjord), width 3.
-   - `auto` bounding + `1280x1280@2x` for print-ready resolution.
-4. Fetch the PNG server-side, upload to existing `itinerary-images` storage bucket at `maps/{itineraryId}-{hash}.png`, return the public URL + stop legend `[{n, title, location}]`.
+### 2. Connectors to link
+- **Google Drive** connector (for folder/file CRUD, PDF upload)
+- **Google Docs** connector (for content read/write via batchUpdate)
 
-### 3. Editor integration
+Both use the workspace connector — no per-user OAuth.
 
-In `ItineraryEditor.tsx` toolbar, add a "Generate route map" action that:
-1. Parses current itinerary stops from the markdown (reuse `lib/itineraryParser.ts`).
-2. Calls the edge function via `supabase.functions.invoke`.
-3. Inserts a centered figure block into the document at cursor:
-   ```html
-   <figure class="fjw-route-map">
-     <img src="{url}" alt="Route map" />
-     <figcaption>Route overview — {n} stops</figcaption>
-   </figure>
-   ```
-4. Persists with the rest of the document, so reopening and PDF export both show the same image (no regen needed).
+### 3. Database additions
+New columns on `catalog_itineraries` (and `shared_itineraries` if applicable):
+- `gdrive_folder_id text`
+- `gdoc_id text`
+- `gdoc_last_synced_at timestamptz`
+- `gdoc_last_pulled_at timestamptz`
+- `pdf_drive_file_id text`
 
-### 4. PDF rendering
+New table `drive_settings` (single-row config: root folder IDs for Drafts/Published).
 
-The PDF pipeline already serializes editor HTML — the `<figure class="fjw-route-map">` flows through unchanged. Add a small print CSS rule in `index.css` to keep the figure on one page (`break-inside: avoid`) and constrain width to the content area.
+### 4. Edge functions (Lovable Cloud)
+| Function | Trigger | Job |
+|---|---|---|
+| `gdrive-create-itinerary-doc` | On new itinerary creation | Create draft folder, create empty Google Doc, save `gdoc_id` and `gdrive_folder_id` |
+| `gdrive-push-itinerary` | "Save to Drive" button + autosave debounce (~30s) | Convert current TipTap JSON → Google Docs `batchUpdate` requests; replace doc content. Records `gdoc_last_synced_at`. |
+| `gdrive-pull-itinerary` | "Pull from Google Doc" button | Fetch doc JSON, convert → TipTap JSON, return as a **diff preview** the user must accept before it replaces editor content. Records `gdoc_last_pulled_at`. |
+| `gdrive-publish-itinerary` | "Publish to Catalogue" button | (a) push latest TipTap → gdoc, (b) move folder Drafts → Published, (c) upload generated PDF to the Published folder, (d) flip `is_published`, (e) save `pdf_drive_file_id` |
 
-### 5. Caching / cost control
+All functions go through the **connector gateway** (`https://connector-gateway.lovable.dev/google_drive/...` and `/google_docs/...`) using the linked workspace connection.
 
-- `geocode_cache` table (public, service-role only, no anon/auth grants) avoids re-geocoding the same place.
-- Map image stored once in storage; editor stores the URL, so regeneration is opt-in.
+### 5. Editor UI changes (minimal)
+Toolbar additions in `ItineraryEditor.tsx` / `Toolbar.tsx`:
+- **"Drive" status pill** — shows `Synced 2 min ago` / `Draft — not synced` / `Pull available (edited in Docs)` with a link to open the Doc in a new tab
+- **"Pull from Google Doc"** button — opens diff modal
+- **"Publish to catalogue"** button — runs publish flow with progress toast
 
-### Files to add / change
+No change to the editor itself, the cover page, the budget estimator, or the PDF preview. The existing Paged.js pipeline continues to render the final PDF; we just upload that PDF to Drive after generation.
 
-- new: `supabase/functions/generate-itinerary-map/index.ts`
-- new migration: `geocode_cache` table + grants (service_role only) + RLS
-- edit: `src/components/voyage/editor/Toolbar.tsx` — new button + handler
-- edit: `src/components/voyage/ItineraryEditor.tsx` — wire handler, insert figure
-- edit: `src/index.css` — `.fjw-route-map` styles for editor + print
+### 6. Sync model & conflict handling
+- **Editor → Doc**: one-way push, debounced autosave. Always wins; replaces the doc body in one batchUpdate call.
+- **Doc → Editor**: manual pull only, shown as a diff. Never auto-applied.
+- **Last-write tracking**: `gdoc_last_synced_at` vs `gdoc_last_pulled_at` vs doc's `modifiedTime` from Drive metadata. If `modifiedTime > gdoc_last_synced_at`, surface the "Pull available" pill so the user knows Docs has newer changes before they push and overwrite.
+- This avoids real-time CRDT complexity while making "edited in Docs" visible and recoverable.
 
-### Out of scope
+### 7. Catalogue integration
+`CatalogShopManager.tsx` already publishes itineraries. The Publish action gains one extra step (call `gdrive-publish-itinerary`) and stores `pdf_drive_file_id` so the catalogue can offer a "Open source doc" link to staff alongside the existing PDF download link for customers.
 
-- Interactive Mapbox GL JS map (static image only, per request).
-- Per-day mini-maps (existing `DayMap` keeps OSM/Leaflet).
-- Editing the existing PDF design.
+## Technical Notes
 
-### Next step
+### TipTap ⇄ Google Docs conversion
+Per the `google_docs` knowledge: convert **directly between TipTap JSON and Google Docs JSON**, not through HTML. Build two utilities in `src/lib/`:
+- `tiptapToGoogleDocsRequests.ts` — TipTap doc → `batchUpdate` requests (insertText, updateTextStyle, updateParagraphStyle, deleteContentRange to clear first)
+- `googleDocsToTiptap.ts` — Google Docs `body.content` → TipTap doc JSON
 
-After plan approval I will request the `MAPBOX_ACCESS_TOKEN` via the add_secret tool, then implement the function, table, and UI in one pass.
+Mapping covers: paragraphs, heading levels, bold/italic/underline/strike, bullet/numbered lists, links, images. The **cover page block and budget table are not pushed to Docs** (they are tagged as non-portable nodes); a placeholder line like `[Cover page — edit in app]` and `[Budget table — edit in app]` is inserted in their place. This keeps Docs as a readable narrative mirror without letting collaborators break the styled blocks.
+
+### PDF upload
+The PDF is already produced in-browser by Paged.js (`PdfPreview.tsx`). On publish:
+1. Trigger the existing PDF generation, capture the Blob
+2. POST to `gdrive-publish-itinerary` as multipart with the blob + itinerary id
+3. The function uploads to Drive via `POST /upload/drive/v3/files?uploadType=multipart`
+
+### Connector scope warning
+The Google Drive/Docs connector authenticates **one workspace account**. Every Doc and PDF lives in that account's Drive. Other team members access them via standard Drive sharing on the folder (set folder permissions once; new files inherit). This is fine for a small team and matches your answer.
+
+### Out of scope (deliberately)
+- Real-time bidirectional sync / operational transforms
+- Per-user Google sign-in
+- Replacing the Paged.js renderer with Drive's export-to-PDF
+- Pushing/pulling cover-page styling or budget-table HTML to Docs
+
+## Build order
+1. Add Drive + Docs connectors, create `drive_settings` table + columns on itineraries
+2. Build TipTap ⇄ Docs converters with unit-style smoke tests
+3. `gdrive-create-itinerary-doc` + `gdrive-push-itinerary` + autosave + status pill
+4. `gdrive-pull-itinerary` + diff modal
+5. `gdrive-publish-itinerary` + PDF upload + catalogue wiring
+6. Backfill: one-off action to create Drive docs for existing itineraries
