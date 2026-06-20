@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Previewer } from "pagedjs";
 import { markdownToHtml } from "./editor/markdownHelpers";
+import PdfJsViewer from "./PdfJsViewer";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
 import logoBadgeHd from "@/assets/logo-badge-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
@@ -25,7 +26,8 @@ interface HotelRecPreview {
 
 interface PdfPreviewProps {
   content: string;
-  contentHtml?: string; // pre-sanitised HTML from Google Doc; overrides markdown rendering when present
+  contentHtml?: string; // pre-sanitised HTML; overrides markdown rendering when present
+  bodyPdfUrl?: string | null; // when present, the body HTML is skipped and this PDF is merged between cover and hotels/back
   language?: string;
   project: {
     client_name: string;
@@ -444,14 +446,18 @@ const cleanPageBreaks = (html: string) =>
     .filter(isMeaningfulChunk)
     .join('<div class="fjw-page-break" data-page-break="true"></div>');
 
-const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }: PdfPreviewProps) => {
+const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language }: PdfPreviewProps) => {
   const { i18n } = useTranslation();
   const renderRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [pageInfo, setPageInfo] = useState({ current: 1, total: 1 });
   const [isRendering, setIsRendering] = useState(true);
+  const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
+  const [merging, setMerging] = useState(false);
+  const [mergeError, setMergeError] = useState<string | null>(null);
   const lang = (language || i18n.language || "en").slice(0, 2).toLowerCase();
   const L = I18N[lang] || I18N.en;
+  const usePdfMerge = !!bodyPdfUrl;
 
   const formatDateRange = (start?: string | null, end?: string | null) => {
     if (!start && !end) return "";
@@ -550,11 +556,11 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
         </div>
 
       </section>
-      <section class="fjw-itinerary-section">
+      ${usePdfMerge ? "" : `<section class="fjw-itinerary-section">
         <header class="fjw-running-header"><img src="${escapeHtml(logoHorizontal)}" alt="Fjord &amp; Waves" crossorigin="anonymous" /><p>${escapeHtml(destinationLine)}</p></header>
         <main class="pdf-preview-content">${bodyHtml}</main>
         <footer class="fjw-print-footer">© ${new Date().getFullYear()} Fjord &amp; Waves Travel · Org.nr: 928804860</footer>
-      </section>
+      </section>`}
       ${hotelHtml}
       <section class="fjw-back-page">
         <img src="${escapeHtml(logoBadgeHd)}" alt="Fjord &amp; Waves Travel" crossorigin="anonymous" />
@@ -572,7 +578,7 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, contentHtml, hotels, project, L]);
+  }, [content, contentHtml, hotels, project, L, usePdfMerge]);
 
   useEffect(() => {
     let cancelled = false;
@@ -625,6 +631,77 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
 
   const handlePrint = () => window.requestAnimationFrame(() => window.print());
 
+  const handleExportMerged = () => {
+    if (!mergedPdfUrl) return;
+    const a = document.createElement("a");
+    a.href = mergedPdfUrl;
+    a.download = `${project?.title || project?.client_name || "itinerary"}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  // Merge: capture Paged.js pages (cover + hotels + back) and splice the
+  // uploaded body PDF between the cover (page 1) and the tail pages.
+  useEffect(() => {
+    if (!usePdfMerge || isRendering) return;
+    let cancelled = false;
+    let createdUrl: string | null = null;
+    setMerging(true);
+    setMergeError(null);
+    (async () => {
+      try {
+        const target = renderRef.current;
+        if (!target) return;
+        const pages = Array.from(target.querySelectorAll<HTMLElement>(".pagedjs_page"));
+        if (!pages.length) throw new Error("Cover/back pages did not render.");
+        const [{ default: html2canvas }, { PDFDocument }] = await Promise.all([
+          import("html2canvas"),
+          import("pdf-lib"),
+        ]);
+        const merged = await PDFDocument.create();
+        const A4_W = 595.28;
+        const A4_H = 841.89;
+        const addRenderedPage = async (el: HTMLElement) => {
+          const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false });
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+          const bytes = await (await fetch(dataUrl)).arrayBuffer();
+          const img = await merged.embedJpg(bytes);
+          const page = merged.addPage([A4_W, A4_H]);
+          page.drawImage(img, { x: 0, y: 0, width: A4_W, height: A4_H });
+        };
+        // 1. Cover (first rendered page).
+        await addRenderedPage(pages[0]);
+        // 2. Uploaded body PDF.
+        const bodyBytes = await fetch(bodyPdfUrl!).then((r) => {
+          if (!r.ok) throw new Error(`Could not fetch uploaded PDF (${r.status})`);
+          return r.arrayBuffer();
+        });
+        const bodyDoc = await PDFDocument.load(bodyBytes);
+        const copied = await merged.copyPages(bodyDoc, bodyDoc.getPageIndices());
+        copied.forEach((p) => merged.addPage(p));
+        // 3. Tail pages (hotels + back).
+        for (let i = 1; i < pages.length; i++) await addRenderedPage(pages[i]);
+        const out = await merged.save();
+        const blob = new Blob([out as BlobPart], { type: "application/pdf" });
+        createdUrl = URL.createObjectURL(blob);
+        if (!cancelled) {
+          setMergedPdfUrl(createdUrl);
+          setPageInfo({ current: 1, total: merged.getPageCount() });
+        }
+      } catch (e: any) {
+        console.error("[PdfPreview] PDF merge failed", e);
+        if (!cancelled) setMergeError(e?.message || "PDF merge failed");
+      } finally {
+        if (!cancelled) setMerging(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+      if (createdUrl) URL.revokeObjectURL(createdUrl);
+    };
+  }, [usePdfMerge, isRendering, bodyPdfUrl]);
+
   // Escape closes the preview — match the visual ✕ button.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -636,6 +713,8 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   }, [onClose]);
+
+  const showMergedViewer = usePdfMerge && mergedPdfUrl;
 
   const overlay = (
     <div
@@ -652,14 +731,24 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
           <h3 className="text-sm font-serif font-semibold text-ink">PDF Preview</h3>
           <div className="flex items-center gap-3">
             <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-voyage-muted">
-              Page {pageInfo.current} of {pageInfo.total}
+              {usePdfMerge
+                ? (mergedPdfUrl ? `${pageInfo.total} pages` : (merging ? "Merging…" : "Preparing…"))
+                : `Page ${pageInfo.current} of ${pageInfo.total}`}
             </span>
-            <button type="button" onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors">
-              🖨 Print
-            </button>
-            <button type="button" onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
-              📄 Export PDF
-            </button>
+            {showMergedViewer ? (
+              <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
+                📄 Download PDF
+              </button>
+            ) : (
+              <>
+                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40">
+                  🖨 Print
+                </button>
+                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40">
+                  📄 Export PDF
+                </button>
+              </>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -670,12 +759,35 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
             </button>
           </div>
         </div>
-        <div ref={scrollRef} className="relative flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y p-6 bg-[#e8e0d0] fjw-print-root">
-          {isRendering && <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">Paginating…</div>}
-          <div ref={renderRef} className="fjw-paged-render" />
+        <div ref={scrollRef} className="relative flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y bg-[#e8e0d0] fjw-print-root">
+          {(isRendering || (usePdfMerge && merging)) && (
+            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
+              {usePdfMerge ? "Merging uploaded body PDF…" : "Paginating…"}
+            </div>
+          )}
+          {mergeError && (
+            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded bg-destructive px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
+              {mergeError}
+            </div>
+          )}
+          {/* Paged.js render. When merging, keep mounted but visually hidden (html2canvas needs layout). */}
+          <div
+            ref={renderRef}
+            className="fjw-paged-render"
+            style={
+              showMergedViewer
+                ? { position: "absolute", left: -100000, top: 0, width: "210mm", visibility: "hidden", pointerEvents: "none" }
+                : { padding: 24 }
+            }
+          />
+          {showMergedViewer && (
+            <div className="flex flex-col h-full">
+              <PdfJsViewer url={mergedPdfUrl} />
+            </div>
+          )}
         </div>
       </div>
-      <div className="fjw-page-pill fjw-no-print">Page {pageInfo.current} of {pageInfo.total}</div>
+      <div className="fjw-page-pill fjw-no-print">{usePdfMerge ? `${pageInfo.total} pages` : `Page ${pageInfo.current} of ${pageInfo.total}`}</div>
     </div>
   );
 

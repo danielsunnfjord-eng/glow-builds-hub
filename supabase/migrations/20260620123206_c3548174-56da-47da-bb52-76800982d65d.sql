@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_itineraries ADD COLUMN IF NOT EXISTS body_pdf_url text;
