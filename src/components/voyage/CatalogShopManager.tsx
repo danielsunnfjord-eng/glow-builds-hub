@@ -788,6 +788,25 @@ const CatalogShopManager = () => {
       throw new Error(errText || `Metadata generation failed (${res.status})`);
     }
     const data = await res.json();
+    const checklist = Array.isArray(data.subpage_checklist)
+      ? (data.subpage_checklist as any[]).map((s) => String(s ?? "").trim()).filter((s) => s.length > 0)
+      : [];
+    const dayOverview = Array.isArray(data.subpage_day_overview)
+      ? (data.subpage_day_overview as any[])
+          .map((d) => ({
+            label: String(d?.label ?? "").trim(),
+            description: String(d?.description ?? "").trim(),
+          }))
+          .filter((d) => d.label.length > 0 || d.description.length > 0)
+      : [];
+    const expectations = Array.isArray(data.subpage_expectations)
+      ? (data.subpage_expectations as any[])
+          .map((e) => ({
+            title: String(e?.title ?? "").trim(),
+            description: String(e?.description ?? "").trim(),
+          }))
+          .filter((e) => e.title.length > 0 || e.description.length > 0)
+      : [];
     setState((s) => ({
       ...s,
       coverIntroEn: data.cover_intro_en || s.coverIntroEn,
@@ -796,6 +815,9 @@ const CatalogShopManager = () => {
       summary: data.summary_en || s.summary,
       summaryPt: data.summary_pt || s.summaryPt,
       summaryNo: data.summary_no || s.summaryNo,
+      subpageChecklist: checklist.length > 0 ? checklist : s.subpageChecklist,
+      subpageDayOverview: dayOverview.length > 0 ? dayOverview : s.subpageDayOverview,
+      subpageExpectations: expectations.length > 0 ? expectations : s.subpageExpectations,
     }));
   };
 
