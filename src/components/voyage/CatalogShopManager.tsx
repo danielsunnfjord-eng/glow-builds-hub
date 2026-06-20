@@ -1106,7 +1106,7 @@ const CatalogShopManager = () => {
     }
   };
 
-  const uploadHotelPhoto = async (hotelId: string, file: File) => {
+  const uploadHotelPhoto = async (hotelId: string, slot: number, file: File) => {
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const path = `hotels/${crypto.randomUUID()}.${ext}`;
@@ -1115,14 +1115,15 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
-      // v1 spec: one thumbnail per hotel. Replace any existing photo.
       setState((s) => ({
         ...s,
-        hotels: s.hotels.map((h) =>
-          h.id === hotelId
-            ? { ...h, photos: [{ url: data.publicUrl, credit: "", caption: "" }] }
-            : h,
-        ),
+        hotels: s.hotels.map((h) => {
+          if (h.id !== hotelId) return h;
+          const next = [...h.photos];
+          while (next.length <= slot) next.push({ url: "", credit: "", caption: "" });
+          next[slot] = { url: data.publicUrl, credit: next[slot]?.credit || "", caption: next[slot]?.caption || "" };
+          return { ...h, photos: next.slice(0, 3) };
+        }),
       }));
     } catch (e: any) {
       toast.error(e?.message || "Photo upload failed");
