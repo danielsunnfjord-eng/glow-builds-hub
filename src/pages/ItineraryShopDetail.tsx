@@ -99,6 +99,10 @@ interface CatalogItem {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   season: string[] | null;
+  subpage_highlights: Array<{ title: string; text: string }> | null;
+  subpage_checklist: string[] | null;
+  subpage_day_overview: Array<{ day_number: number; title: string }> | null;
+  subpage_map_url: string | null;
 }
 
 
