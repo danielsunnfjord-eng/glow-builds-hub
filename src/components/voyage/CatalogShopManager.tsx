@@ -22,10 +22,11 @@ import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
-  FileText, ExternalLink,
+  FileText, ExternalLink, Coins, ChevronDown,
 } from "lucide-react";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
+import BudgetEstimator from "./editor/BudgetEstimator";
 import {
   parseAuditItems,
   serializeAuditItems,
@@ -226,6 +227,8 @@ const CatalogShopManager = () => {
   const [state, setState] = useState<EditorState>(blankEditor);
   const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
   const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [bodySnapshotOpen, setBodySnapshotOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -1742,7 +1745,31 @@ const CatalogShopManager = () => {
                 {docMissingError}
               </div>
             )}
+
+            {/* Read-only snapshot of the last content pushed to / pulled from Google Docs.
+                Lets the advisor verify body copy without opening the Doc. */}
+            {state.content.trim() && (
+              <div className="mt-3 rounded border border-parchment-3 bg-parchment/20">
+                <button
+                  type="button"
+                  onClick={() => setBodySnapshotOpen((v) => !v)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-[0.78rem] font-medium text-ink hover:bg-parchment/40 rounded-t"
+                >
+                  <span className="flex items-center gap-2">
+                    <FileText className="w-3.5 h-3.5" />
+                    Last synced body content ({state.content.trim().length.toLocaleString()} chars)
+                  </span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${bodySnapshotOpen ? "rotate-180" : ""}`} />
+                </button>
+                {bodySnapshotOpen && (
+                  <pre className="max-h-[320px] overflow-y-auto px-3 py-2 text-[0.74rem] whitespace-pre-wrap font-mono text-ink-2 border-t border-parchment-3 bg-voyage-white rounded-b">
+{state.content}
+                  </pre>
+                )}
+              </div>
+            )}
           </div>
+
 
 
           {/* HOTELS */}
@@ -1898,6 +1925,49 @@ const CatalogShopManager = () => {
               ))}
             </div>
           </div>
+
+          {/* BUDGET ESTIMATOR — AI-generated per-person budget, drives the cover label. */}
+          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <div className="font-serif text-lg font-bold flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-[#B8975A]" /> Budget estimate
+                </div>
+                <p className="text-[0.78rem] text-voyage-muted">
+                  Generate an AI-assisted per-person budget. The cover-page label is rendered into the PDF;
+                  the full table can be copied as HTML and pasted into the Google Doc.
+                </p>
+                {budgetCoverLabel && (
+                  <p className="text-[0.78rem] text-ink mt-1">
+                    Cover label: <span className="font-medium">{budgetCoverLabel}</span>
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setBudgetOpen(true)}
+                disabled={!state.content.trim()}
+                title={!state.content.trim() ? "Generate or import body content first" : ""}
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                {budget ? "Edit budget" : "Create budget estimate"}
+              </Button>
+            </div>
+          </div>
+
+          <BudgetEstimator
+            open={budgetOpen}
+            onOpenChange={setBudgetOpen}
+            sourceContent={state.content}
+            destination={state.destination}
+            tripDuration={state.duration}
+            initialBudget={budget}
+            initialCoverLabel={budgetCoverLabel}
+            onSaved={handleBudgetSaved}
+          />
+
+
 
           {/* CHECKLIST */}
           <div className="mt-6 p-4 border border-parchment-3 rounded bg-parchment/30">

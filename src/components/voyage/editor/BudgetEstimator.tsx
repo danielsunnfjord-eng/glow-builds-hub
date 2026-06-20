@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Editor } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, RefreshCcw, Coins } from "lucide-react";
+import { Loader2, Plus, Trash2, RefreshCcw, Coins, Copy } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
 
 export type BudgetLine = { low: number; high: number; note?: string };
@@ -56,7 +56,11 @@ function recomputeTotals(b: BudgetData): BudgetData {
 interface BudgetEstimatorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editor: Editor;
+  /** Legacy TipTap editor instance — optional. When omitted, the dialog reads from
+   * `sourceContent` for AI generation and offers a copy-to-clipboard fallback in
+   * place of inline insertion (the Google Docs workflow). */
+  editor?: Editor | null;
+  sourceContent?: string;
   destination?: string | null;
   tripDuration?: string | null;
   initialBudget?: BudgetData | null;
@@ -65,7 +69,7 @@ interface BudgetEstimatorProps {
 }
 
 const BudgetEstimator = ({
-  open, onOpenChange, editor, destination, tripDuration,
+  open, onOpenChange, editor, sourceContent, destination, tripDuration,
   initialBudget, initialCoverLabel, onSaved,
 }: BudgetEstimatorProps) => {
   const [budget, setBudget] = useState<BudgetData | null>(initialBudget || null);
@@ -85,7 +89,9 @@ const BudgetEstimator = ({
   const generate = async () => {
     setLoading(true);
     try {
-      const content = htmlToMarkdown(editor.getHTML()).trim();
+      const content = editor
+        ? htmlToMarkdown(editor.getHTML()).trim()
+        : (sourceContent || "").trim();
       if (content.length < 20) {
         toast.error("Itinerary is empty — write some content first.");
         return;
@@ -195,15 +201,38 @@ const BudgetEstimator = ({
   const handleInsert = () => {
     if (!budget) return;
     const html = buildTableHtml();
-    const endPos = editor.state.doc.content.size;
-    (editor.chain().focus() as any)
-      .setTextSelection(endPos)
-      .createParagraphNear()
-      .insertContent(`<h2>Estimated Budget</h2>${html}`)
-      .run();
+    if (editor) {
+      const endPos = editor.state.doc.content.size;
+      (editor.chain().focus() as any)
+        .setTextSelection(endPos)
+        .createParagraphNear()
+        .insertContent(`<h2>Estimated Budget</h2>${html}`)
+        .run();
+      const lbl = coverLabel.trim() || autoCoverLabel(budget);
+      onSaved?.(budget, lbl);
+      toast.success("Budget table inserted");
+      onOpenChange(false);
+      return;
+    }
+    // Google Docs workflow — copy the table HTML to clipboard for paste-in.
     const lbl = coverLabel.trim() || autoCoverLabel(budget);
     onSaved?.(budget, lbl);
-    toast.success("Budget table inserted");
+    const fullHtml = `<h2>Estimated Budget</h2>${html}`;
+    if (navigator.clipboard && (navigator.clipboard as any).write && (window as any).ClipboardItem) {
+      const item = new (window as any).ClipboardItem({
+        "text/html": new Blob([fullHtml], { type: "text/html" }),
+        "text/plain": new Blob([fullHtml.replace(/<[^>]+>/g, " ")], { type: "text/plain" }),
+      });
+      (navigator.clipboard as any).write([item])
+        .then(() => toast.success("Budget saved · table HTML copied — paste into the Google Doc"))
+        .catch(() => {
+          navigator.clipboard?.writeText(fullHtml);
+          toast.success("Budget saved · HTML copied to clipboard");
+        });
+    } else {
+      navigator.clipboard?.writeText(fullHtml);
+      toast.success("Budget saved · HTML copied to clipboard");
+    }
     onOpenChange(false);
   };
 
@@ -363,7 +392,9 @@ const BudgetEstimator = ({
           {budget && (
             <>
               <Button variant="outline" onClick={handleSaveOnly}>Save (cover only)</Button>
-              <Button onClick={handleInsert}>Insert Budget Table</Button>
+              <Button onClick={handleInsert}>
+                {editor ? "Insert Budget Table" : (<><Copy className="w-4 h-4 mr-2" />Save &amp; Copy Table HTML</>)}
+              </Button>
             </>
           )}
         </DialogFooter>

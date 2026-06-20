@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Previewer } from "pagedjs";
 import { markdownToHtml } from "./editor/markdownHelpers";
@@ -365,18 +366,24 @@ const PAGE_CSS = `
 `;
 
 const PREVIEW_FRAME_CSS = `
+.fjw-pdf-shell { pointer-events: auto; }
 .fjw-paged-render .pagedjs_pages {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
   width: 100%;
+  /* Paged.js renders pages with their own root flexbox that can otherwise
+     intercept pointer events across the whole modal. Let clicks pass through
+     to the underlying scroll container; individual pages re-enable them. */
+  pointer-events: none;
 }
 .fjw-paged-render .pagedjs_page {
   background: #ffffff;
   box-shadow: 0 8px 40px rgba(19,17,14,0.18);
   margin: 0 auto;
   overflow: hidden;
+  pointer-events: auto;
 }
 .fjw-paged-render .pagedjs_pagebox {
   background: #ffffff;
@@ -405,7 +412,7 @@ const PREVIEW_FRAME_CSS = `
   .fjw-pdf-shell { position: absolute !important; inset: auto !important; top: 0 !important; left: 0 !important; right: 0 !important; padding: 0 !important; margin: 0 !important; background: #fff !important; display: block !important; height: auto !important; overflow: visible !important; }
   .fjw-pdf-window { width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; background: #fff !important; display: block !important; }
   .fjw-print-root { padding: 0 !important; background: #fff !important; overflow: visible !important; height: auto !important; min-height: 0 !important; display: block !important; }
-  .fjw-paged-render .pagedjs_pages { display: block !important; width: 210mm !important; }
+  .fjw-paged-render .pagedjs_pages { display: block !important; width: 210mm !important; pointer-events: auto !important; }
   .fjw-paged-render .pagedjs_page { margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; }
   .fjw-paged-render .pagedjs_page:last-child { page-break-after: auto !important; break-after: auto !important; }
 }
@@ -618,9 +625,22 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
 
   const handlePrint = () => window.requestAnimationFrame(() => window.print());
 
-  return (
+  // Escape closes the preview — match the visual ✕ button.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
+
+  const overlay = (
     <div
-      className="absolute inset-0 z-[60] bg-ink/60 flex items-stretch justify-center p-4 fjw-pdf-shell"
+      className="fixed inset-0 z-[9999] bg-ink/60 flex items-stretch justify-center p-4 fjw-pdf-shell"
+      style={{ pointerEvents: "auto" }}
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
@@ -628,19 +648,24 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
     >
       <style>{PREVIEW_FRAME_CSS}</style>
       <div className="bg-[#f5f5f0] rounded-lg shadow-2xl w-full max-w-[940px] h-full min-h-0 flex flex-col overflow-hidden fjw-pdf-window">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-parchment-3 bg-voyage-white fjw-no-print">
+        <div className="relative z-[10000] flex items-center justify-between px-5 py-3 border-b border-parchment-3 bg-voyage-white fjw-no-print" style={{ pointerEvents: "auto" }}>
           <h3 className="text-sm font-serif font-semibold text-ink">PDF Preview</h3>
           <div className="flex items-center gap-3">
             <span className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-voyage-muted">
               Page {pageInfo.current} of {pageInfo.total}
             </span>
-            <button onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors">
+            <button type="button" onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors">
               🖨 Print
             </button>
-            <button onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
+            <button type="button" onClick={handlePrint} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
               📄 Export PDF
             </button>
-            <button onClick={onClose} className="text-voyage-muted hover:text-ink text-lg leading-none px-2" aria-label="Close PDF preview">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close PDF preview"
+              className="ml-1 inline-flex items-center justify-center w-8 h-8 rounded-full border border-ink/20 bg-voyage-white text-ink hover:bg-destructive hover:text-white hover:border-destructive transition-colors text-base leading-none shadow-sm"
+            >
               ✕
             </button>
           </div>
@@ -653,6 +678,9 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
       <div className="fjw-page-pill fjw-no-print">Page {pageInfo.current} of {pageInfo.total}</div>
     </div>
   );
+
+  if (typeof document === "undefined") return overlay;
+  return createPortal(overlay, document.body);
 };
 
 export default PdfPreview;
