@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (itinErr || !itin || !itin.is_published) {
+      console.error("itinerary lookup failed", { itinErr, itin, id: body.itinerary_id });
       return json({ error: "Itinerary not found" }, 404);
     }
 
