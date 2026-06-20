@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     let query = supabase
       .from("catalog_itineraries")
       .select(
-        `id, slug, title_en, subtitle_en, hero_image_url, stripe_tax_code,
+        `id, slug, title_en, summary_en, hero_image_url, stripe_tax_code,
          stripe_product_id_sandbox, stripe_product_id_live, is_published`,
       );
 
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
 
     for (const itin of itineraries) {
       const name = itin.title_en || `Itinerary ${itin.slug}`;
-      const description = itin.subtitle_en || undefined;
+      const description = itin.summary_en || undefined;
       const images = itin.hero_image_url ? [itin.hero_image_url] : undefined;
       const taxCode = itin.stripe_tax_code || "txcd_10000000";
       const existingId = (itin as any)[idColumn] as string | null;
