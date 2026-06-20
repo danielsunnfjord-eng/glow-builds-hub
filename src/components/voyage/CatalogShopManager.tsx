@@ -588,7 +588,12 @@ const CatalogShopManager = () => {
       lastSyncedAt: (r as any).gdoc_last_synced_at ?? null,
     });
     setGdocError(null);
+    setGdocConflict(null);
     setEditorOpen(true);
+    // Fire-and-forget freshness check: warn if the Google Doc has newer edits than our last sync.
+    if ((r as any).gdoc_id) {
+      void checkGoogleDocFreshness(r.id);
+    }
   };
 
   const callCatalogStream = async (body: Record<string, unknown>): Promise<string> => {
