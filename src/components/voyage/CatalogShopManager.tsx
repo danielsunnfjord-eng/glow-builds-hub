@@ -1403,6 +1403,50 @@ const CatalogShopManager = () => {
             </DialogDescription>
             <div className="mt-2 space-y-1 text-[0.75rem]">
               {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+
+              {/* Always-on one-way-sync warning. The app is the write master; saving here overwrites the Google Doc. */}
+              <div className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
+                <div className="font-medium">⚠️ Editing here will overwrite your Google Doc on save.</div>
+                <div className="text-[0.7rem] opacity-90">
+                  The app is the source of truth — it only pushes to Google Docs, never pulls. Close this window before editing the Doc directly, or your Doc edits will be lost on the next save.
+                </div>
+              </div>
+
+              {/* Conflict warning: Doc was edited more recently than our last sync. */}
+              {gdocConflict && !gdocConflict.acknowledged && (
+                <div className="rounded border border-red-400 bg-red-50 px-3 py-2 text-red-900">
+                  <div className="font-medium">
+                    ⚠️ Your Google Doc has changes newer than this editor
+                  </div>
+                  <div className="text-[0.7rem] opacity-90">
+                    Doc last edited {new Date(gdocConflict.docModifiedTime).toLocaleString()}
+                    {gdocConflict.lastSyncedAt
+                      ? ` · last synced ${new Date(gdocConflict.lastSyncedAt).toLocaleString()}`
+                      : " · never synced from this editor"}.
+                    Saving here will overwrite those Doc changes.
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {gdocConflict.url && (
+                      <a
+                        href={gdocConflict.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100"
+                      >
+                        Open Google Doc to review ↗
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setGdocConflict((c) => (c ? { ...c, acknowledged: true } : c))}
+                      className="rounded border border-red-400 bg-red-600 px-2 py-1 text-white hover:bg-red-700"
+                    >
+                      Continue editing here — Doc will be overwritten
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="text-voyage-muted">
                 {autoSaveStatus === "saving" && "Auto-saving draft…"}
                 {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
