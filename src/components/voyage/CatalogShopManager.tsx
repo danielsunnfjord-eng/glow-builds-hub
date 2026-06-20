@@ -238,6 +238,30 @@ const CatalogShopManager = () => {
   const latestStateRef = useRef(state);
   const latestSectionPromptRef = useRef(sectionPrompt);
   const latestEditorOpenRef = useRef(editorOpen);
+  const [gdocInfo, setGdocInfo] = useState<{ id: string | null; url: string | null; lastSyncedAt: string | null }>({ id: null, url: null, lastSyncedAt: null });
+  const [gdocSyncing, setGdocSyncing] = useState(false);
+  const [gdocError, setGdocError] = useState<string | null>(null);
+
+  const syncToGoogleDoc = async (itineraryId: string) => {
+    setGdocSyncing(true);
+    setGdocError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: itineraryId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setGdocInfo({
+        id: (data as any).gdoc_id ?? null,
+        url: (data as any).gdoc_url ?? null,
+        lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
+      });
+    } catch (e: any) {
+      setGdocError(e?.message || "Google Drive sync failed");
+    } finally {
+      setGdocSyncing(false);
+    }
+  };
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
