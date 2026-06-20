@@ -183,6 +183,15 @@ const ItineraryShopDetail = () => {
     ? checklistFromDb
     : (wygItems.length > 0 ? wygItems : defaultIncludes);
 
+  const dayOverview = Array.isArray(data?.subpage_day_overview)
+    ? (data!.subpage_day_overview as { label: string; description: string }[])
+        .map((d) => ({
+          label: String(d?.label ?? "").trim(),
+          description: String(d?.description ?? "").trim(),
+        }))
+        .filter((d) => d.label.length > 0 || d.description.length > 0)
+    : [];
+
 
   useEffect(() => {
     if (title) document.title = `${title} · Fjord & Waves Travel`;
