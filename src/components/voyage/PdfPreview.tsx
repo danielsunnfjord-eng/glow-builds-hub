@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Previewer } from "pagedjs";
 import { markdownToHtml } from "./editor/markdownHelpers";
