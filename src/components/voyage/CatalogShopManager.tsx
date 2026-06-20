@@ -1276,6 +1276,9 @@ const CatalogShopManager = () => {
         audit_report: state.auditReport || null,
         audited_at: state.auditedAt,
         subpage_checklist: state.subpageChecklist.filter((s) => s.trim().length > 0),
+        subpage_day_overview: state.subpageDayOverview
+          .map((d) => ({ label: (d.label || "").trim(), description: (d.description || "").trim() }))
+          .filter((d) => d.label.length > 0 || d.description.length > 0),
       };
 
 
