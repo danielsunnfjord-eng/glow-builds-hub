@@ -1223,6 +1223,7 @@ const CatalogShopManager = () => {
         is_published: publish !== undefined ? publish : state.isPublished,
         slug,
         hotels: state.hotels,
+        body_pdf_url: state.bodyPdfUrl || null,
         audit_report: state.auditReport || null,
         audited_at: state.auditedAt,
       };
