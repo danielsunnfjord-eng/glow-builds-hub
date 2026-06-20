@@ -50,7 +50,9 @@ interface PdfPreviewProps {
   hotels?: HotelRecPreview[];
   onClose: () => void;
   onExport: () => void;
+  attachToCatalogId?: string; // when set, shows an "Attach to Store" button that uploads the merged PDF to catalog-pdfs and updates pdf_path
 }
+
 
 const I18N: Record<string, Record<string, string>> = {
   en: {
