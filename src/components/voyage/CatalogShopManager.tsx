@@ -20,7 +20,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  Sparkles, Loader2, Upload, Eye, RefreshCcw,
+  Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
   FileText, ExternalLink,
 } from "lucide-react";
