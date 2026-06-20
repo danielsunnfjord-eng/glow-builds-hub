@@ -668,6 +668,50 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
 
+              {/* Highlights */}
+              <div className="mb-14">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
+                    <Clock className="w-5 h-5 text-gold mb-2" />
+                    <span className="text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted mb-1">
+                      {t("shop.duration")}
+                    </span>
+                    <span className="text-[0.85rem] font-semibold text-ink">
+                      {data.duration || "—"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
+                    <MapPin className="w-5 h-5 text-gold mb-2" />
+                    <span className="text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted mb-1">
+                      {t("shop.destination")}
+                    </span>
+                    <span className="text-[0.85rem] font-semibold text-ink">
+                      {data.destination || "—"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
+                    <Sun className="w-5 h-5 text-gold mb-2" />
+                    <span className="text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted mb-1">
+                      {t("shop.bestSeason", "Best season")}
+                    </span>
+                    <span className="text-[0.85rem] font-semibold text-ink">
+                      {data.season && data.season.length > 0 ? data.season[0] : "—"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
+                    <Wallet className="w-5 h-5 text-gold mb-2" />
+                    <span className="text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted mb-1">
+                      {t("shop.estimatedBudget")}
+                    </span>
+                    <span className="text-[0.85rem] font-semibold text-ink">
+                      {data.estimated_trip_budget || "—"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+
+
               {/* Gallery — asymmetric masonry */}
               {gallery.length > 0 && (
                 <div className="mb-14">
