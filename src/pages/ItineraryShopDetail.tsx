@@ -631,7 +631,7 @@ const ItineraryShopDetail = () => {
                       {t("shop.estimatedBudget")}
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.estimated_trip_budget || "—"}
+                      {data.budget_cover_label || "—"}
                     </span>
                   </div>
                 </div>
