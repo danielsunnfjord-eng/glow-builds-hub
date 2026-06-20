@@ -261,6 +261,36 @@ Deno.serve(async (req) => {
       );
     }
 
+    // EXPORT-HTML MODE: export the linked Google Doc as raw HTML. The client
+    // sanitises it down to a structural allow-list before feeding it to
+    // Paged.js. Read-only; does not write back.
+    if (action === "export-html") {
+      if (!row.gdoc_id) {
+        return new Response(JSON.stringify({ error: "No Google Doc linked to this itinerary yet." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const meta = await driveGetMeta(row.gdoc_id);
+      if (meta.trashed) {
+        return new Response(JSON.stringify({ error: "Linked Google Doc has been moved to trash." }), {
+          status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const html = await driveExportHtml(row.gdoc_id);
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          gdoc_id: row.gdoc_id,
+          gdoc_url: meta.webViewLink ?? row.gdoc_url ?? null,
+          doc_modified_time: meta.modifiedTime,
+          html,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+
+
     // Load (or initialize) the Drafts root folder.
     let { data: settings } = await supabase
       .from("drive_settings")
