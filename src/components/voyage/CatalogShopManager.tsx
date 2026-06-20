@@ -76,6 +76,9 @@ interface CatalogRow {
   hotels: any[] | null;
   audit_report: string | null;
   audited_at: string | null;
+  gdoc_id?: string | null;
+  gdoc_url?: string | null;
+  gdoc_last_synced_at?: string | null;
 }
 
 interface SuggestionRow {
@@ -238,6 +241,30 @@ const CatalogShopManager = () => {
   const latestStateRef = useRef(state);
   const latestSectionPromptRef = useRef(sectionPrompt);
   const latestEditorOpenRef = useRef(editorOpen);
+  const [gdocInfo, setGdocInfo] = useState<{ id: string | null; url: string | null; lastSyncedAt: string | null }>({ id: null, url: null, lastSyncedAt: null });
+  const [gdocSyncing, setGdocSyncing] = useState(false);
+  const [gdocError, setGdocError] = useState<string | null>(null);
+
+  const syncToGoogleDoc = async (itineraryId: string) => {
+    setGdocSyncing(true);
+    setGdocError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: itineraryId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setGdocInfo({
+        id: (data as any).gdoc_id ?? null,
+        url: (data as any).gdoc_url ?? null,
+        lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
+      });
+    } catch (e: any) {
+      setGdocError(e?.message || "Google Drive sync failed");
+    } finally {
+      setGdocSyncing(false);
+    }
+  };
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -271,7 +298,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -438,6 +465,8 @@ const CatalogShopManager = () => {
     setAutoSaveError("");
     setRestoredNotice("");
     setCloseConfirmOpen(false);
+    setGdocInfo({ id: null, url: null, lastSyncedAt: null });
+    setGdocError(null);
     setEditorOpen(true);
   };
 
@@ -506,6 +535,12 @@ const CatalogShopManager = () => {
     setAutoSaveError("");
     setRestoredNotice(restoredAt ? `Draft restored from ${new Date(restoredAt).toLocaleString()}` : "");
     setCloseConfirmOpen(false);
+    setGdocInfo({
+      id: (r as any).gdoc_id ?? null,
+      url: (r as any).gdoc_url ?? null,
+      lastSyncedAt: (r as any).gdoc_last_synced_at ?? null,
+    });
+    setGdocError(null);
     setEditorOpen(true);
   };
 
@@ -1038,13 +1073,19 @@ const CatalogShopManager = () => {
         audited_at: state.auditedAt,
       };
 
+      let savedId = state.id;
       if (state.id) {
         const { error } = await supabase.from("catalog_itineraries").update(payload).eq("id", state.id);
         if (error) throw error;
       } else {
         const { data, error } = await supabase.from("catalog_itineraries").insert(payload).select("id").single();
         if (error) throw error;
+        savedId = data.id;
         setState((s) => ({ ...s, id: data.id }));
+      }
+      // Mirror to Google Drive (fire-and-forget; status pill shows result).
+      if (savedId) {
+        void syncToGoogleDoc(savedId);
       }
       setLastPersistedSignature(catalogDraftSignature(state, sectionPrompt));
       setLastAutoSavedAt(new Date().toISOString());
@@ -1321,6 +1362,52 @@ const CatalogShopManager = () => {
                 {autoSaveStatus === "error" && `Auto-save failed: ${autoSaveError}`}
                 {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
                 {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
+              </div>
+              <div className="flex items-center gap-2 text-[0.75rem]">
+                <span
+                  className={
+                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 " +
+                    (gdocError
+                      ? "border-red-300 bg-red-50 text-red-700"
+                      : gdocSyncing
+                        ? "border-blue-300 bg-blue-50 text-blue-700"
+                        : gdocInfo.id
+                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                          : "border-neutral-300 bg-neutral-50 text-neutral-600")
+                  }
+                  title={gdocError || ""}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {gdocSyncing
+                    ? "Syncing to Google Drive…"
+                    : gdocError
+                      ? "Drive sync failed"
+                      : gdocInfo.lastSyncedAt
+                        ? `Synced to Drive · ${new Date(gdocInfo.lastSyncedAt).toLocaleTimeString()}`
+                        : state.id
+                          ? "Not yet synced"
+                          : "Drive doc will be created on first save"}
+                </span>
+                {gdocInfo.url && (
+                  <a
+                    href={gdocInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fjord underline-offset-2 hover:underline"
+                  >
+                    Open in Google Docs ↗
+                  </a>
+                )}
+                {state.id && (
+                  <button
+                    type="button"
+                    onClick={() => syncToGoogleDoc(state.id!)}
+                    disabled={gdocSyncing}
+                    className="rounded border border-neutral-300 bg-white px-2 py-0.5 text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
+                  >
+                    Sync now
+                  </button>
+                )}
               </div>
             </div>
           </DialogHeader>
