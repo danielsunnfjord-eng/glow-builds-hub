@@ -1,21 +1,17 @@
-## Stripe Products + Sale Notifications
+Live Stripe is fully provisioned (all 5 go-live steps complete), but no published itineraries are mirrored to the live account yet — only the sandbox account holds products. One itinerary is currently published: **Sogn og Fjordane: The soul of Norwegian fjords** (€35).
 
-**1. Mirror catalogue itineraries as Stripe Products**
-- Add a sync function that, for each published `catalog_itineraries` row, creates/updates a Stripe Product (name = itinerary title, description = subtitle, tax code for digital travel guides) and stores the resulting `stripe_product_id` on the row.
-- Add `stripe_product_id` column to `catalog_itineraries` (migration).
-- Update `create-checkout` edge function to attach the Stripe Product to the line item (via `price_data.product = stripe_product_id`) instead of inline `product_data.name`. Keep dynamic per-currency pricing + 7% service fee logic as-is.
-- Run sync once for existing published itineraries; auto-sync on publish/update going forward via trigger from the admin save flow.
+## Steps
 
-**2. Internal "new sale" email to Daniel**
-- In the existing Stripe webhook handler (where `catalog_purchases.status` is set to `paid`), enqueue a second email to Daniel's address containing: buyer name, buyer email, itinerary title, amount, currency, purchase timestamp.
-- Reuse the existing email infrastructure (same queue as the customer PDF email).
-- Daniel's notification address: confirm which address to use (the admin login email, or a different one?).
+1. **Run live sync** — invoke `sync-catalog-stripe-products` with `{"environment":"live"}` to mirror every published itinerary to the live Stripe account. This creates the live Product + Price and writes `stripe_product_id_live` back to the database.
 
-**3. No changes to**
-- Subscription model (staying one-off only)
-- Newsletter auto-subscribe (skipped — GDPR)
-- Upsell emails (skipped for now)
-- Existing 7-day signed download window
-- Customer-facing post-purchase email
+2. **Verify a live checkout session** — call `create-catalog-checkout` with `environment: "live"` against the published itinerary, confirm a `clientSecret` comes back (proves live keys, live product, and live price all resolve), and check the edge-function logs for errors.
 
-**One question before building:** Which email address should receive the internal sale notifications?
+3. **Smoke-test the customer flow in the preview** — open `/catalogue/sogn-og-fjordane-…`, click the purchase CTA, confirm the embedded Stripe checkout renders in **live mode** (no orange "test mode" banner, no `pk_test_` indicator). I will not complete a real card charge — the goal is to confirm the form loads against live keys.
+
+4. **Report status** — confirm whether customers can now purchase, and flag any remaining issues (e.g. unpublished itineraries that need publishing before they appear for sale).
+
+## Technical notes
+
+- No code changes expected. Sync function and checkout function already support `environment: "live"`.
+- Only `is_published = true` itineraries are synced. The other 18 drafts will remain unsynced until you publish them.
+- If the live sync fails (e.g. tax code missing, gateway auth), I'll diagnose from edge function logs and propose a fix in a follow-up plan.
