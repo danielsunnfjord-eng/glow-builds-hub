@@ -1,105 +1,88 @@
-# Google Drive Hybrid Integration for Itinerary Editor
+# Architecture: Google Docs as body editor, app as PDF assembler
 
-## Goal
-Add Google Drive as a **backup, version-history and export target** for itineraries, while keeping the current TipTap editor + Paged.js PDF pipeline as the source of truth and the only renderer of the bespoke cover page, budget table, and styled output.
+We separate **content editing** (Google Docs, freeform) from **PDF layout** (app, fixed templates). The TipTap editor disappears entirely; the PDF preview becomes the only preview.
 
-## Why this architecture
-You answered:
-- **Hybrid** — Drive is backup + export target, not master
-- **Small team, sometimes editing in Docs** — needs round-trip but not real-time CRDT sync
-- **Workspace Drive (connector)** — one account owns all docs, no per-user OAuth
-- **Styling is critical** — Google Docs cannot reproduce the A4 cover, fluid intro, teal-accent budget table, or Paged.js page flow. Drive's "export to PDF" is therefore not usable for the final PDF; we keep the current renderer.
+## New workflow
 
-This means: the editor and database stay authoritative for what ships. Google Docs becomes a **mirror** the team can read/comment/edit in, and a **revision archive**. Edits made in Docs are pulled back on demand (manual "Pull from Google Doc"), not auto-merged, to avoid silently overwriting styled content.
-
-## What gets built
-
-### 1. Drive folder structure (auto-created)
 ```text
-Fjord & Waves Itineraries/
-├── Drafts/
-│   └── {Itinerary Title} — {id-short}/
-│       ├── {Title}.gdoc          ← live mirror of editor body
-│       └── assets/               ← cover image, gallery (optional, phase 2)
-└── Published/
-    └── {Title} — {id-short}/
-        ├── {Title}.gdoc          ← final mirror
-        └── {Title}.pdf           ← Paged.js-rendered PDF
+Create itinerary
+  → AI generates body content
+  → app pushes once to a new Google Doc (one-way, on creation)
+  → user edits freely in Google Docs
+  → returns to app, clicks "Finalise & Preview PDF"
+  → app pulls Doc, strips formatting, keeps only structure
+  → app assembles: Cover + Body + Hotels + Back page
+  → Paged.js renders PDF in full-screen modal
+  → Approve & Publish → saves PDF to Drive, publishes to catalogue
 ```
 
-Folder IDs are stored in a `drive_settings` table so the team can change root locations without code changes.
+## New itinerary management panel (replaces editor window)
 
-### 2. Connectors to link
-- **Google Drive** connector (for folder/file CRUD, PDF upload)
-- **Google Docs** connector (for content read/write via batchUpdate)
+**Section 1 — Cover page fields** (unchanged): title, hero image, photo credit, caption, tagline, duration, region, season, estimated budget, cover intros (EN/PT/NO), short descriptions (EN/PT/NO).
 
-Both use the workspace connector — no per-user OAuth.
+**Section 2 — Body content** (no editor):
+```text
+📄 Google Doc linked
+[Open in Google Docs ↗]
+Last edited in Docs: 20.6.2026 12:30
+[Finalise & Preview PDF]
+```
 
-### 3. Database additions
-New columns on `catalog_itineraries` (and `shared_itineraries` if applicable):
-- `gdrive_folder_id text`
-- `gdoc_id text`
-- `gdoc_last_synced_at timestamptz`
-- `gdoc_last_pulled_at timestamptz`
-- `pdf_drive_file_id text`
+**Section 3 — Additional pages**:
+- Hotel recommendations: repeatable form rows (hotel name, location, description, price range, link) stored as JSON on the itinerary, rendered into a fixed-template hotel page.
+- Back page: fixed template, no fields.
 
-New table `drive_settings` (single-row config: root folder IDs for Drafts/Published).
+## Content sanitisation (Google Doc → PDF body)
 
-### 4. Edge functions (Lovable Cloud)
-| Function | Trigger | Job |
-|---|---|---|
-| `gdrive-create-itinerary-doc` | On new itinerary creation | Create draft folder, create empty Google Doc, save `gdoc_id` and `gdrive_folder_id` |
-| `gdrive-push-itinerary` | "Save to Drive" button + autosave debounce (~30s) | Convert current TipTap JSON → Google Docs `batchUpdate` requests; replace doc content. Records `gdoc_last_synced_at`. |
-| `gdrive-pull-itinerary` | "Pull from Google Doc" button | Fetch doc JSON, convert → TipTap JSON, return as a **diff preview** the user must accept before it replaces editor content. Records `gdoc_last_pulled_at`. |
-| `gdrive-publish-itinerary` | "Publish to Catalogue" button | (a) push latest TipTap → gdoc, (b) move folder Drafts → Published, (c) upload generated PDF to the Published folder, (d) flip `is_published`, (e) save `pdf_drive_file_id` |
+Pull Doc as HTML via Drive export (`mimeType=text/html`), then sanitise with an allow-list:
 
-All functions go through the **connector gateway** (`https://connector-gateway.lovable.dev/google_drive/...` and `/google_docs/...`) using the linked workspace connection.
+```js
+const allowedTags = ['h1','h2','h3','p','ul','ol','li','strong','em','a'];
+// Strip: inline styles, <span>, <font>, classes, Google wrapper divs, colours, fonts.
+// Keep: href on <a>, structural nesting only.
+```
 
-### 5. Editor UI changes (minimal)
-Toolbar additions in `ItineraryEditor.tsx` / `Toolbar.tsx`:
-- **"Drive" status pill** — shows `Synced 2 min ago` / `Draft — not synced` / `Pull available (edited in Docs)` with a link to open the Doc in a new tab
-- **"Pull from Google Doc"** button — opens diff modal
-- **"Publish to catalogue"** button — runs publish flow with progress toast
+Sanitised HTML is injected into the Paged.js body section. All typography comes from existing brand CSS — never from Google Docs.
 
-No change to the editor itself, the cover page, the budget estimator, or the PDF preview. The existing Paged.js pipeline continues to render the final PDF; we just upload that PDF to Drive after generation.
+## What we remove
 
-### 6. Sync model & conflict handling
-- **Editor → Doc**: one-way push, debounced autosave. Always wins; replaces the doc body in one batchUpdate call.
-- **Doc → Editor**: manual pull only, shown as a diff. Never auto-applied.
-- **Last-write tracking**: `gdoc_last_synced_at` vs `gdoc_last_pulled_at` vs doc's `modifiedTime` from Drive metadata. If `modifiedTime > gdoc_last_synced_at`, surface the "Pull available" pill so the user knows Docs has newer changes before they push and overwrite.
-- This avoids real-time CRDT complexity while making "edited in Docs" visible and recoverable.
+- TipTap editor + all extensions specific to body editing
+- Live in-app editor preview
+- Sync conflict detection UI (banners, "pull from Doc" dialog, freshness check, snapshots before pull)
+- The `check` and `pull` actions of `gdrive-sync-itinerary` become unused (we keep `push` for creation, add `export-html` for finalise)
+- The `runAutoMetadata` regeneration is unaffected (cover fields only)
 
-### 7. Catalogue integration
-`CatalogShopManager.tsx` already publishes itineraries. The Publish action gains one extra step (call `gdrive-publish-itinerary`) and stores `pdf_drive_file_id` so the catalogue can offer a "Open source doc" link to staff alongside the existing PDF download link for customers.
+## What we keep, untouched
 
-## Technical Notes
+- Cover page component (`ItineraryCoverPage.tsx`) and all its styling
+- Paged.js pipeline (`PdfPreview.tsx`, `PdfJsViewer.tsx`)
+- Google Drive/Docs connector integration
+- Cover field auto-generation (intros + short descriptions)
+- i18n, currency, AI generation step
 
-### TipTap ⇄ Google Docs conversion
-Per the `google_docs` knowledge: convert **directly between TipTap JSON and Google Docs JSON**, not through HTML. Build two utilities in `src/lib/`:
-- `tiptapToGoogleDocsRequests.ts` — TipTap doc → `batchUpdate` requests (insertText, updateTextStyle, updateParagraphStyle, deleteContentRange to clear first)
-- `googleDocsToTiptap.ts` — Google Docs `body.content` → TipTap doc JSON
+## Files changed
 
-Mapping covers: paragraphs, heading levels, bold/italic/underline/strike, bullet/numbered lists, links, images. The **cover page block and budget table are not pushed to Docs** (they are tagged as non-portable nodes); a placeholder line like `[Cover page — edit in app]` and `[Budget table — edit in app]` is inserted in their place. This keeps Docs as a readable narrative mirror without letting collaborators break the styled blocks.
+- `src/components/voyage/CatalogShopManager.tsx`: strip TipTap, conflict UI, snapshot UI; add Body section (link + Finalise button), Hotels section (repeatable form), Finalise & Preview modal flow.
+- `src/components/voyage/ItineraryEditor.tsx`: delete (or reduce to a thin re-export if still imported elsewhere — to be checked).
+- `src/components/voyage/PdfPreview.tsx`: accept sanitised body HTML + hotels array + back-page template; assemble full document.
+- `supabase/functions/gdrive-sync-itinerary/index.ts`: keep `push` (creation only), add `export-html` action (fetch Doc as HTML + `modifiedTime`), retire `check`/`pull` (leave handler returning 410 to be safe, then remove next pass).
+- `supabase/migrations/<new>.sql`: add `hotels jsonb` column on `catalog_itineraries`; we will NOT drop the unused cols (`gdoc_last_synced_at`, snapshot table) in this change to avoid risk — they become dormant.
 
-### PDF upload
-The PDF is already produced in-browser by Paged.js (`PdfPreview.tsx`). On publish:
-1. Trigger the existing PDF generation, capture the Blob
-2. POST to `gdrive-publish-itinerary` as multipart with the blob + itinerary id
-3. The function uploads to Drive via `POST /upload/drive/v3/files?uploadType=multipart`
+## Dependencies
 
-### Connector scope warning
-The Google Drive/Docs connector authenticates **one workspace account**. Every Doc and PDF lives in that account's Drive. Other team members access them via standard Drive sharing on the folder (set folder permissions once; new files inherit). This is fine for a small team and matches your answer.
+- Add a small sanitiser (`sanitize-html` or a tiny custom allow-list walker). No new heavy deps.
+- TipTap packages: leave installed until we confirm no other surface uses them, then remove in a follow-up.
 
-### Out of scope (deliberately)
-- Real-time bidirectional sync / operational transforms
-- Per-user Google sign-in
-- Replacing the Paged.js renderer with Drive's export-to-PDF
-- Pushing/pulling cover-page styling or budget-table HTML to Docs
+## Out of scope (explicit)
 
-## Build order
-1. Add Drive + Docs connectors, create `drive_settings` table + columns on itineraries
-2. Build TipTap ⇄ Docs converters with unit-style smoke tests
-3. `gdrive-create-itinerary-doc` + `gdrive-push-itinerary` + autosave + status pill
-4. `gdrive-pull-itinerary` + diff modal
-5. `gdrive-publish-itinerary` + PDF upload + catalogue wiring
-6. Backfill: one-off action to create Drive docs for existing itineraries
+- No new in-app body preview.
+- No editing of Doc content inside the app.
+- No bidirectional sync. App → Doc only on creation. Doc → App only at Finalise time, and only as render input (not persisted as editable state).
+- No changes to cover styling, brand fonts, or Paged.js CSS.
+
+## Open questions before I build
+
+1. **Hotels page**: how many hotels per itinerary (max), and should each hotel have an image, or text-only for v1?
+2. **Back page**: what content goes on it — contact block, advisor signature, legal line, logo? Anything dynamic, or fully static?
+3. **Finalise & Publish**: when "Approve & Publish" runs, do we (a) save the rendered PDF to Google Drive in the same folder as the Doc, (b) upload to Supabase Storage, or (c) both?
+4. **Existing itineraries** that currently have TipTap draft content but no Google Doc — do we auto-create a Doc from the existing draft on first open, or require the user to regenerate?
