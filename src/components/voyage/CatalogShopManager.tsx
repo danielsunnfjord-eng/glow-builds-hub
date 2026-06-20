@@ -684,6 +684,13 @@ const CatalogShopManager = () => {
               description: String(d?.description ?? ""),
             }))
         : [],
+      subpageExpectations: Array.isArray((r as any).subpage_expectations)
+        ? ((r as any).subpage_expectations as any[])
+            .map((e) => ({
+              title: String(e?.title ?? ""),
+              description: String(e?.description ?? ""),
+            }))
+        : [],
     };
 
     let nextState = baseState;
