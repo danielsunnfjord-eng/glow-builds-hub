@@ -1112,11 +1112,12 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+      // v1 spec: one thumbnail per hotel. Replace any existing photo.
       setState((s) => ({
         ...s,
         hotels: s.hotels.map((h) =>
           h.id === hotelId
-            ? { ...h, photos: [...h.photos, { url: data.publicUrl, credit: "", caption: "" }].slice(0, 3) }
+            ? { ...h, photos: [{ url: data.publicUrl, credit: "", caption: "" }] }
             : h,
         ),
       }));
