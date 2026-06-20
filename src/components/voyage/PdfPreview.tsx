@@ -683,7 +683,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         // 3. Tail pages (hotels + back).
         for (let i = 1; i < pages.length; i++) await addRenderedPage(pages[i]);
         const out = await merged.save();
-        const blob = new Blob([out], { type: "application/pdf" });
+        const blob = new Blob([out as BlobPart], { type: "application/pdf" });
         createdUrl = URL.createObjectURL(blob);
         if (!cancelled) {
           setMergedPdfUrl(createdUrl);
