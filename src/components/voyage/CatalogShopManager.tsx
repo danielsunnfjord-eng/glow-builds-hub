@@ -66,6 +66,9 @@ interface CatalogRow {
   summary_en: string;
   summary_pt: string | null;
   summary_no: string | null;
+  cover_intro_en?: string | null;
+  cover_intro_pt?: string | null;
+  cover_intro_no?: string | null;
   description_en: string;
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
@@ -124,6 +127,9 @@ interface EditorState {
   summary: string;
   summaryPt: string;
   summaryNo: string;
+  coverIntroEn: string;
+  coverIntroPt: string;
+  coverIntroNo: string;
   content: string;
   priceEur: string;
   heroImageUrl: string;
@@ -171,6 +177,9 @@ const blankEditor: EditorState = {
   summary: "",
   summaryPt: "",
   summaryNo: "",
+  coverIntroEn: "",
+  coverIntroPt: "",
+  coverIntroNo: "",
   content: "",
   priceEur: "0",
   heroImageUrl: "",
@@ -298,7 +307,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -498,6 +507,9 @@ const CatalogShopManager = () => {
       summary: r.summary_en || "",
       summaryPt: r.summary_pt || "",
       summaryNo: r.summary_no || "",
+      coverIntroEn: (r as any).cover_intro_en || "",
+      coverIntroPt: (r as any).cover_intro_pt || "",
+      coverIntroNo: (r as any).cover_intro_no || "",
       content,
       priceEur: String(r.price_eur ?? 0),
       heroImageUrl: r.hero_image_url || "",
@@ -574,51 +586,43 @@ const CatalogShopManager = () => {
     return text;
   };
 
-  const runAutoSummaries = async (itineraryText: string) => {
-    const langs: Array<{ key: "en" | "pt" | "no"; name: string }> = [
-      { key: "en", name: "English" },
-      { key: "pt", name: "Brazilian Portuguese" },
-      { key: "no", name: "Norwegian (Bokmål)" },
-    ];
-    const titleLine = state.title || state.destination || "this trip";
-    const meta = [
-      `Title: ${state.title || "(untitled)"}`,
-      `Destination: ${state.destination || "(unspecified)"}`,
-      `Experience: ${state.experienceType.join(", ") || "(unspecified)"}`,
-      `Duration: ${state.duration || "(unspecified)"}`,
-      `Editor brief: ${state.brief || "(none)"}`,
-    ].join("\n");
-    const excerpt = (itineraryText || "").slice(0, 2500);
-
-    const results = await Promise.all(
-      langs.map(async (l) => {
-        try {
-          const customPrompt = `Write a 2–3 sentence short description for the travel itinerary "${titleLine}", written natively in ${l.name} (NOT translated from English). Tone: inspiring, editorial, premium — worthy of a luxury travel atelier. No markdown, no quotes, no preamble. Return ONLY the description sentences as plain text.`;
-          const { data, error } = await supabase.functions.invoke("ai-text-transform", {
-            body: {
-              text: `${meta}\n\n--- Itinerary excerpt ---\n${excerpt}`,
-              customPrompt,
-            },
-          });
-          if (error || !data?.result) return { key: l.key, text: "" };
-          return { key: l.key, text: String(data.result).trim() };
-        } catch {
-          return { key: l.key, text: "" };
-        }
+  const runAutoMetadata = async (itineraryText: string) => {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess?.session?.access_token;
+    const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/generate-catalog-itinerary`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        mode: "metadata",
+        title: state.title,
+        destination: state.destination,
+        experience_type: state.experienceType.join(", "),
+        duration: state.duration,
+        brief: state.brief,
+        existing_content: itineraryText,
       }),
-    );
-
-    setState((s) => {
-      const next = { ...s };
-      for (const r of results) {
-        if (!r.text) continue;
-        if (r.key === "en") next.summary = r.text;
-        if (r.key === "pt") next.summaryPt = r.text;
-        if (r.key === "no") next.summaryNo = r.text;
-      }
-      return next;
     });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(errText || `Metadata generation failed (${res.status})`);
+    }
+    const data = await res.json();
+    setState((s) => ({
+      ...s,
+      coverIntroEn: data.cover_intro_en || s.coverIntroEn,
+      coverIntroPt: data.cover_intro_pt || s.coverIntroPt,
+      coverIntroNo: data.cover_intro_no || s.coverIntroNo,
+      summary: data.summary_en || s.summary,
+      summaryPt: data.summary_pt || s.summaryPt,
+      summaryNo: data.summary_no || s.summaryNo,
+    }));
   };
+
 
   const runGenerate = async () => {
     if (!state.destination && !state.title) {
@@ -638,10 +642,10 @@ const CatalogShopManager = () => {
       });
       if (!text) throw new Error("No content returned");
       setState((s) => ({ ...s, content: text }));
-      toast.success("Itinerary generated. Crafting short descriptions…");
-      runAutoSummaries(text)
-        .then(() => toast.success("Short descriptions filled in for EN · PT · NO"))
-        .catch(() => {/* silent */});
+      toast.success("Itinerary generated. Writing cover intro & short descriptions…");
+      runAutoMetadata(text)
+        .then(() => toast.success("Cover intro & short descriptions filled in for EN · PT · NO"))
+        .catch((err) => toast.error(err?.message || "Could not generate cover intro / summaries"));
     } catch (e: any) {
       toast.error(e?.message || "Failed to generate");
     } finally {
@@ -951,7 +955,7 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
-      setState((s) => ({ ...s, heroImageUrl: data.publicUrl }));
+      setState((s) => ({ ...s, heroImageUrl: data.publicUrl, heroImageCredit: "", heroImageCaption: "" }));
       toast.success("Cover uploaded");
     } catch (e: any) {
       toast.error(e?.message || "Upload failed");
@@ -1056,6 +1060,9 @@ const CatalogShopManager = () => {
         summary_en: state.summary || "",
         summary_pt: state.summaryPt || "",
         summary_no: state.summaryNo || "",
+        cover_intro_en: state.coverIntroEn || null,
+        cover_intro_pt: state.coverIntroPt || null,
+        cover_intro_no: state.coverIntroNo || null,
         [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
@@ -1920,12 +1927,19 @@ const CatalogShopManager = () => {
           pt: previewRow.summary_pt,
           no: previewRow.summary_no,
         };
+        const coverIntroByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.cover_intro_en,
+          pt: previewRow.cover_intro_pt,
+          no: previewRow.cover_intro_no,
+        };
         const pickedContent =
           contentByLang[previewLang] || contentByLang.en || contentByLang.pt || contentByLang.no || "";
         const pickedTitle =
           titleByLang[previewLang] || titleByLang.en || titleByLang.pt || titleByLang.no || "";
         const pickedSummary =
           summaryByLang[previewLang] || summaryByLang.en || summaryByLang.pt || summaryByLang.no || "";
+        const pickedCoverIntro =
+          coverIntroByLang[previewLang] || coverIntroByLang.en || coverIntroByLang.pt || coverIntroByLang.no || "";
         const available: Lang[] = (["en", "pt", "no"] as Lang[]).filter((l) => !!contentByLang[l]);
         return (
           <>
@@ -1953,7 +1967,7 @@ const CatalogShopManager = () => {
                 hero_image_url: previewRow.hero_image_url,
                 hero_image_credit: previewRow.hero_image_credit,
                 hero_image_caption: previewRow.hero_image_caption,
-                cover_tagline: pickedSummary || null,
+                cover_tagline: pickedCoverIntro || pickedSummary || null,
                 season: previewRow.season,
                 budget_cover_label: (() => {
                   try {
