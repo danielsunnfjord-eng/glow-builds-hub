@@ -146,7 +146,9 @@ interface EditorState {
   auditItems: SelectableAuditItem[];
   auditedAt: string | null;
   previousContent: string | null;
+  subpageChecklist: string[];
 }
+
 
 type AuditActionState = {
   status: "idle" | "running" | "error";
