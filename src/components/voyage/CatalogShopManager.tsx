@@ -86,6 +86,7 @@ interface CatalogRow {
   body_pdf_url?: string | null;
   subpage_checklist?: string[] | null;
   subpage_day_overview?: { label: string; description: string }[] | null;
+  subpage_expectations?: { title: string; description: string }[] | null;
 }
 
 
