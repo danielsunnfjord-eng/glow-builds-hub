@@ -201,15 +201,38 @@ const BudgetEstimator = ({
   const handleInsert = () => {
     if (!budget) return;
     const html = buildTableHtml();
-    const endPos = editor.state.doc.content.size;
-    (editor.chain().focus() as any)
-      .setTextSelection(endPos)
-      .createParagraphNear()
-      .insertContent(`<h2>Estimated Budget</h2>${html}`)
-      .run();
+    if (editor) {
+      const endPos = editor.state.doc.content.size;
+      (editor.chain().focus() as any)
+        .setTextSelection(endPos)
+        .createParagraphNear()
+        .insertContent(`<h2>Estimated Budget</h2>${html}`)
+        .run();
+      const lbl = coverLabel.trim() || autoCoverLabel(budget);
+      onSaved?.(budget, lbl);
+      toast.success("Budget table inserted");
+      onOpenChange(false);
+      return;
+    }
+    // Google Docs workflow — copy the table HTML to clipboard for paste-in.
     const lbl = coverLabel.trim() || autoCoverLabel(budget);
     onSaved?.(budget, lbl);
-    toast.success("Budget table inserted");
+    const fullHtml = `<h2>Estimated Budget</h2>${html}`;
+    if (navigator.clipboard && (navigator.clipboard as any).write && (window as any).ClipboardItem) {
+      const item = new (window as any).ClipboardItem({
+        "text/html": new Blob([fullHtml], { type: "text/html" }),
+        "text/plain": new Blob([fullHtml.replace(/<[^>]+>/g, " ")], { type: "text/plain" }),
+      });
+      (navigator.clipboard as any).write([item])
+        .then(() => toast.success("Budget saved · table HTML copied — paste into the Google Doc"))
+        .catch(() => {
+          navigator.clipboard?.writeText(fullHtml);
+          toast.success("Budget saved · HTML copied to clipboard");
+        });
+    } else {
+      navigator.clipboard?.writeText(fullHtml);
+      toast.success("Budget saved · HTML copied to clipboard");
+    }
     onOpenChange(false);
   };
 
