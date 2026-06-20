@@ -107,6 +107,14 @@ async function driveGetMeta(fileId: string): Promise<{ modifiedTime: string | nu
   return { modifiedTime: j.modifiedTime ?? null, webViewLink: j.webViewLink ?? null, trashed: !!j.trashed };
 }
 
+// Export a Google Doc to Markdown via Drive's export endpoint.
+async function driveExportMarkdown(fileId: string): Promise<string> {
+  const url = `${GATEWAY}/files/${fileId}/export?mimeType=${encodeURIComponent("text/markdown")}`;
+  const r = await fetch(url, { method: "GET", headers: gwHeaders() });
+  if (!r.ok) throw new Error(`Drive export failed: ${r.status} ${await r.text()}`);
+  return await r.text();
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -152,7 +160,9 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const itinerary_id = body?.itinerary_id;
-    const action: "sync" | "check" = body?.action === "check" ? "check" : "sync";
+    const requested = body?.action;
+    const action: "sync" | "check" | "pull" =
+      requested === "check" ? "check" : requested === "pull" ? "pull" : "sync";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
