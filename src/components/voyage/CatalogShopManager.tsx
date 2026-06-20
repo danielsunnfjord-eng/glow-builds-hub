@@ -673,6 +673,13 @@ const CatalogShopManager = () => {
       subpageChecklist: Array.isArray((r as any).subpage_checklist)
         ? ((r as any).subpage_checklist as any[]).map((s) => String(s ?? "")).filter((s) => s.trim().length > 0)
         : [],
+      subpageDayOverview: Array.isArray((r as any).subpage_day_overview)
+        ? ((r as any).subpage_day_overview as any[])
+            .map((d) => ({
+              label: String(d?.label ?? ""),
+              description: String(d?.description ?? ""),
+            }))
+        : [],
     };
 
     let nextState = baseState;
