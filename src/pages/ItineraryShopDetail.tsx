@@ -101,6 +101,7 @@ interface CatalogItem {
   season: string[] | null;
   subpage_checklist: string[] | null;
   subpage_day_overview: { label: string; description: string }[] | null;
+  subpage_expectations: { title: string; description: string }[] | null;
 }
 
 
@@ -256,7 +257,7 @@ const ItineraryShopDetail = () => {
 
   const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
 
-  const expectations = [
+  const defaultExpectations = [
     {
       icon: Coffee,
       label: t("shop.expect.mornings", "Unhurried mornings"),
@@ -278,6 +279,18 @@ const ItineraryShopDetail = () => {
       text: t("shop.expect.eveningsText", "Where to dine, where to walk, and where to watch the day end well."),
     },
   ];
+
+  const expectationsFromDb = Array.isArray(data?.subpage_expectations)
+    ? (data!.subpage_expectations as { title: string; description: string }[])
+        .map((e) => ({
+          label: String(e?.title ?? "").trim(),
+          text: String(e?.description ?? "").trim(),
+          icon: Sparkles,
+        }))
+        .filter((e) => e.label.length > 0 || e.text.length > 0)
+    : [];
+
+  const expectations = expectationsFromDb.length > 0 ? expectationsFromDb : defaultExpectations;
 
   const valueProps = [
     {

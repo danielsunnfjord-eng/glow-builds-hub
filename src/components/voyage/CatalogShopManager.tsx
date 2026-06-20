@@ -86,6 +86,7 @@ interface CatalogRow {
   body_pdf_url?: string | null;
   subpage_checklist?: string[] | null;
   subpage_day_overview?: { label: string; description: string }[] | null;
+  subpage_expectations?: { title: string; description: string }[] | null;
 }
 
 
@@ -149,6 +150,7 @@ interface EditorState {
   previousContent: string | null;
   subpageChecklist: string[];
   subpageDayOverview: { label: string; description: string }[];
+  subpageExpectations: { title: string; description: string }[];
 }
 
 
@@ -203,6 +205,7 @@ const blankEditor: EditorState = {
   previousContent: null,
   subpageChecklist: [],
   subpageDayOverview: [],
+  subpageExpectations: [],
 };
 
 
@@ -455,7 +458,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -679,6 +682,13 @@ const CatalogShopManager = () => {
             .map((d) => ({
               label: String(d?.label ?? ""),
               description: String(d?.description ?? ""),
+            }))
+        : [],
+      subpageExpectations: Array.isArray((r as any).subpage_expectations)
+        ? ((r as any).subpage_expectations as any[])
+            .map((e) => ({
+              title: String(e?.title ?? ""),
+              description: String(e?.description ?? ""),
             }))
         : [],
     };
@@ -1279,6 +1289,9 @@ const CatalogShopManager = () => {
         subpage_day_overview: state.subpageDayOverview
           .map((d) => ({ label: (d.label || "").trim(), description: (d.description || "").trim() }))
           .filter((d) => d.label.length > 0 || d.description.length > 0),
+        subpage_expectations: state.subpageExpectations
+          .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
+          .filter((e) => e.title.length > 0 || e.description.length > 0),
       };
 
 
@@ -1782,6 +1795,65 @@ const CatalogShopManager = () => {
                   }
                 >
                   + Add day
+                </Button>
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <Label>What to expect (subpage cards)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Add one card per expectation. Shown on the catalogue subpage. Leave empty to fall back to default cards.
+              </p>
+              <div className="space-y-3">
+                {state.subpageExpectations.map((ex, idx) => (
+                  <div key={idx} className="space-y-2 p-3 rounded border border-ink/[0.08] bg-voyage-white">
+                    <div className="flex gap-2 items-start">
+                      <Input
+                        value={ex.title}
+                        onChange={(e) => {
+                          const next = [...state.subpageExpectations];
+                          next[idx] = { ...next[idx], title: e.target.value };
+                          setState({ ...state, subpageExpectations: next });
+                        }}
+                        placeholder='e.g. Unhurried mornings'
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setState({
+                            ...state,
+                            subpageExpectations: state.subpageExpectations.filter((_, i) => i !== idx),
+                          })
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      value={ex.description}
+                      onChange={(e) => {
+                        const next = [...state.subpageExpectations];
+                        next[idx] = { ...next[idx], description: e.target.value };
+                        setState({ ...state, subpageExpectations: next });
+                      }}
+                      placeholder="Short description (1–2 sentences)"
+                    />
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      subpageExpectations: [...state.subpageExpectations, { title: "", description: "" }],
+                    })
+                  }
+                >
+                  + Add card
                 </Button>
               </div>
             </div>
