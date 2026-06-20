@@ -1781,7 +1781,66 @@ const CatalogShopManager = () => {
                       }}
                       placeholder="Short description (1–2 sentences)"
                     />
+            </div>
+            <div className="md:col-span-2">
+              <Label>What to expect (subpage cards)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Add one card per expectation. Shown on the catalogue subpage. Leave empty to fall back to default cards.
+              </p>
+              <div className="space-y-3">
+                {state.subpageExpectations.map((ex, idx) => (
+                  <div key={idx} className="space-y-2 p-3 rounded border border-ink/[0.08] bg-voyage-white">
+                    <div className="flex gap-2 items-start">
+                      <Input
+                        value={ex.title}
+                        onChange={(e) => {
+                          const next = [...state.subpageExpectations];
+                          next[idx] = { ...next[idx], title: e.target.value };
+                          setState({ ...state, subpageExpectations: next });
+                        }}
+                        placeholder='e.g. Unhurried mornings'
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setState({
+                            ...state,
+                            subpageExpectations: state.subpageExpectations.filter((_, i) => i !== idx),
+                          })
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      value={ex.description}
+                      onChange={(e) => {
+                        const next = [...state.subpageExpectations];
+                        next[idx] = { ...next[idx], description: e.target.value };
+                        setState({ ...state, subpageExpectations: next });
+                      }}
+                      placeholder="Short description (1–2 sentences)"
+                    />
                   </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      subpageExpectations: [...state.subpageExpectations, { title: "", description: "" }],
+                    })
+                  }
+                >
+                  + Add card
+                </Button>
+              </div>
+            </div>
                 ))}
                 <Button
                   type="button"
