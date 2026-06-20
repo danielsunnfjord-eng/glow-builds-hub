@@ -84,7 +84,9 @@ interface CatalogRow {
   gdoc_url?: string | null;
   gdoc_last_synced_at?: string | null;
   body_pdf_url?: string | null;
+  subpage_checklist?: string[] | null;
 }
+
 
 interface SuggestionRow {
   id: string;
@@ -144,7 +146,9 @@ interface EditorState {
   auditItems: SelectableAuditItem[];
   auditedAt: string | null;
   previousContent: string | null;
+  subpageChecklist: string[];
 }
+
 
 type AuditActionState = {
   status: "idle" | "running" | "error";
@@ -195,7 +199,9 @@ const blankEditor: EditorState = {
   auditItems: [],
   auditedAt: null,
   previousContent: null,
+  subpageChecklist: [],
 };
+
 
 const catalogDraftPayload = (editorState: EditorState, sectionPrompt: string) => ({
   version: 1,
@@ -446,7 +452,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -662,7 +668,11 @@ const CatalogShopManager = () => {
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
+      subpageChecklist: Array.isArray((r as any).subpage_checklist)
+        ? ((r as any).subpage_checklist as any[]).map((s) => String(s ?? "")).filter((s) => s.trim().length > 0)
+        : [],
     };
+
     let nextState = baseState;
     let nextSectionPrompt = "";
     let restoredAt: string | null = null;
@@ -1255,7 +1265,9 @@ const CatalogShopManager = () => {
         body_pdf_url: state.bodyPdfUrl || null,
         audit_report: state.auditReport || null,
         audited_at: state.auditedAt,
+        subpage_checklist: state.subpageChecklist.filter((s) => s.trim().length > 0),
       };
+
 
       let savedId = state.id;
       if (state.id) {
@@ -1658,7 +1670,52 @@ const CatalogShopManager = () => {
               </div>
             </div>
             <div className="md:col-span-2">
+              <Label>What you get (subpage checklist)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                One bullet per row. Shown on the catalogue subpage's "What you get" sidebar. Leave empty to use the default list.
+              </p>
+              <div className="space-y-2">
+                {state.subpageChecklist.map((item, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const next = [...state.subpageChecklist];
+                        next[idx] = e.target.value;
+                        setState({ ...state, subpageChecklist: next });
+                      }}
+                      placeholder="e.g. Hidden fjord viewpoints with arrival timing"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setState({
+                          ...state,
+                          subpageChecklist: state.subpageChecklist.filter((_, i) => i !== idx),
+                        })
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({ ...state, subpageChecklist: [...state.subpageChecklist, ""] })
+                  }
+                >
+                  + Add item
+                </Button>
+              </div>
+            </div>
+            <div className="md:col-span-2">
               <Label>Cover image</Label>
+
               <div className="flex items-center gap-3">
                 {state.heroImageUrl && <img src={state.heroImageUrl} alt="cover" className="w-24 h-16 object-cover rounded" />}
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUploadCover(e.target.files[0])} />

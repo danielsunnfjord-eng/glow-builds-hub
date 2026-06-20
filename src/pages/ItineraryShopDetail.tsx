@@ -99,7 +99,9 @@ interface CatalogItem {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   season: string[] | null;
+  subpage_checklist: string[] | null;
 }
+
 
 
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
@@ -173,7 +175,13 @@ const ItineraryShopDetail = () => {
     t("shop.includes.practical", "Practical tips, logistics & best times to visit"),
     t("shop.includes.pdf", "Instant premium PDF download"),
   ];
-  const includes = wygItems.length > 0 ? wygItems : defaultIncludes;
+  const checklistFromDb = Array.isArray(data?.subpage_checklist)
+    ? (data!.subpage_checklist as string[]).map((s) => String(s ?? "").trim()).filter(Boolean)
+    : [];
+  const includes = checklistFromDb.length > 0
+    ? checklistFromDb
+    : (wygItems.length > 0 ? wygItems : defaultIncludes);
+
 
   useEffect(() => {
     if (title) document.title = `${title} · Fjord & Waves Travel`;
