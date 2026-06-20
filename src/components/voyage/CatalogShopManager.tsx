@@ -1106,7 +1106,7 @@ const CatalogShopManager = () => {
     }
   };
 
-  const uploadHotelPhoto = async (hotelId: string, file: File) => {
+  const uploadHotelPhoto = async (hotelId: string, slot: number, file: File) => {
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const path = `hotels/${crypto.randomUUID()}.${ext}`;
@@ -1115,14 +1115,15 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
-      // v1 spec: one thumbnail per hotel. Replace any existing photo.
       setState((s) => ({
         ...s,
-        hotels: s.hotels.map((h) =>
-          h.id === hotelId
-            ? { ...h, photos: [{ url: data.publicUrl, credit: "", caption: "" }] }
-            : h,
-        ),
+        hotels: s.hotels.map((h) => {
+          if (h.id !== hotelId) return h;
+          const next = [...h.photos];
+          while (next.length <= slot) next.push({ url: "", credit: "", caption: "" });
+          next[slot] = { url: data.publicUrl, credit: next[slot]?.credit || "", caption: next[slot]?.caption || "" };
+          return { ...h, photos: next.slice(0, 3) };
+        }),
       }));
     } catch (e: any) {
       toast.error(e?.message || "Photo upload failed");
@@ -1780,7 +1781,7 @@ const CatalogShopManager = () => {
                   <HotelIcon className="w-4 h-4" /> Hotel Recommendations
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Up to 4 hotels — name, location, description and a thumbnail each. Rendered onto the fixed hotel page in the PDF.
+                  Up to 4 hotels — name, location, description and up to 3 images each. Rendered onto the fixed hotel page in the PDF.
                 </p>
               </div>
               <Button
@@ -1869,19 +1870,20 @@ const CatalogShopManager = () => {
                   </div>
 
                   <div>
-                    <Label className="text-[0.75rem]">Thumbnail (one image)</Label>
+                    <Label className="text-[0.75rem]">Images (up to 3 — at least 1 required)</Label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
-                      {(() => {
-                        const photo = h.photos[0];
+                      {[0, 1, 2].map((slot) => {
+                        const photo = h.photos[slot];
                         return (
-                          <div className="space-y-1.5">
+                          <div key={slot} className="space-y-1.5">
+                            <div className="text-[0.7rem] text-voyage-muted">Image {slot + 1}{slot === 0 ? " (required)" : " (optional)"}</div>
                             <div className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
-                              {photo ? (
+                              {photo?.url ? (
                                 <>
                                   <img src={photo.url} alt={photo.caption || ""} className="w-full h-full object-cover" />
                                   <button
                                     type="button"
-                                    onClick={() => updateHotel(h.id, { photos: [] })}
+                                    onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, i) => i !== slot) })}
                                     className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     <XIcon className="w-3 h-3" />
@@ -1890,35 +1892,35 @@ const CatalogShopManager = () => {
                               ) : (
                                 <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
                                   <Upload className="w-4 h-4 mb-1" />
-                                  Add thumbnail
+                                  Add image
                                   <input
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
-                                    onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, e.target.files[0])}
+                                    onChange={(e) => e.target.files?.[0] && uploadHotelPhoto(h.id, slot, e.target.files[0])}
                                   />
                                 </label>
                               )}
                             </div>
-                            {photo && (
+                            {photo?.url && (
                               <>
                                 <Input
                                   className="h-7 text-[0.72rem]"
                                   placeholder="Photo credit (optional)"
                                   value={photo.credit || ""}
-                                  onChange={(e) => updateHotelPhoto(h.id, 0, { credit: e.target.value })}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { credit: e.target.value })}
                                 />
                                 <Input
                                   className="h-7 text-[0.72rem]"
                                   placeholder="Caption / description (optional)"
                                   value={photo.caption || ""}
-                                  onChange={(e) => updateHotelPhoto(h.id, 0, { caption: e.target.value })}
+                                  onChange={(e) => updateHotelPhoto(h.id, slot, { caption: e.target.value })}
                                 />
                               </>
                             )}
                           </div>
                         );
-                      })()}
+                      })}
                     </div>
                   </div>
                 </div>
