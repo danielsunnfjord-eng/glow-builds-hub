@@ -1781,7 +1781,7 @@ const CatalogShopManager = () => {
                   <HotelIcon className="w-4 h-4" /> Hotel Recommendations
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Up to 4 hotels — name, location, description and a thumbnail each. Rendered onto the fixed hotel page in the PDF.
+                  Up to 4 hotels — name, location, description and up to 3 images each. Rendered onto the fixed hotel page in the PDF.
                 </p>
               </div>
               <Button
