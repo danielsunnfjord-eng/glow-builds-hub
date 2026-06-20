@@ -205,6 +205,7 @@ const blankEditor: EditorState = {
   previousContent: null,
   subpageChecklist: [],
   subpageDayOverview: [],
+  subpageExpectations: [],
 };
 
 
