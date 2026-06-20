@@ -38,7 +38,11 @@ Deno.serve(async (req) => {
 
     const { data: itin, error: itinErr } = await supabase
       .from("catalog_itineraries")
-      .select("id, slug, title_en, title_pt, title_no, price_eur, hero_image_url, is_published")
+      .select(
+        `id, slug, title_en, title_pt, title_no, subtitle_en, price_eur,
+         hero_image_url, is_published, stripe_tax_code,
+         stripe_product_id_sandbox, stripe_product_id_live`,
+      )
       .eq("id", body.itinerary_id)
       .maybeSingle();
 
@@ -72,7 +76,35 @@ Deno.serve(async (req) => {
     const successUrl = `${body.origin}/catalogue/success?token=${purchase.download_token}&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${body.origin}/catalogue/${itin.slug}?canceled=1`;
 
-    const stripe = createStripeClient("sandbox");
+    const stripeEnv = "sandbox" as const;
+    const stripe = createStripeClient(stripeEnv);
+
+    // Resolve (or lazily create) a Stripe Product for this itinerary so the
+    // Stripe dashboard, receipts, and Stripe Tax see proper product metadata
+    // instead of an ad-hoc line item.
+    let productId =
+      stripeEnv === "live"
+        ? itin.stripe_product_id_live
+        : itin.stripe_product_id_sandbox;
+
+    if (!productId) {
+      const created = await stripe.products.create({
+        name: itin.title_en || title,
+        ...(itin.subtitle_en ? { description: itin.subtitle_en } : {}),
+        ...(itin.hero_image_url ? { images: [itin.hero_image_url] } : {}),
+        tax_code: itin.stripe_tax_code || "txcd_10000000",
+        metadata: { lovable_itinerary_id: itin.id, slug: itin.slug },
+      });
+      productId = created.id;
+      const col =
+        stripeEnv === "live"
+          ? "stripe_product_id_live"
+          : "stripe_product_id_sandbox";
+      await supabase
+        .from("catalog_itineraries")
+        .update({ [col]: productId, stripe_synced_at: new Date().toISOString() })
+        .eq("id", itin.id);
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -84,10 +116,7 @@ Deno.serve(async (req) => {
           price_data: {
             currency: "eur",
             unit_amount: Math.round(Number(itin.price_eur) * 100),
-            product_data: {
-              name: title,
-              ...(itin.hero_image_url ? { images: [itin.hero_image_url] } : {}),
-            },
+            product: productId,
           },
           quantity: 1,
         },
