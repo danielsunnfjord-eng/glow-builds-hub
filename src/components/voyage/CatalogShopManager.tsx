@@ -1318,6 +1318,12 @@ const CatalogShopManager = () => {
       .eq("id", r.id);
     if (error) return toast.error(error.message);
     toast.success(r.is_published ? "Unpublished" : "Published");
+    // When publishing, refresh subpage content (fire-and-forget).
+    if (!r.is_published) {
+      void supabase.functions
+        .invoke("generate-subpage-content", { body: { itinerary_id: r.id } })
+        .then(({ error: e }) => { if (e) toast.error("Sub-page content refresh failed: " + e.message); });
+    }
     qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
   };
 
