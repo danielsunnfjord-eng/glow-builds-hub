@@ -1727,6 +1727,65 @@ const CatalogShopManager = () => {
               </div>
             </div>
             <div className="md:col-span-2">
+              <Label>Day overview (subpage)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Add one row per day. Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.
+              </p>
+              <div className="space-y-3">
+                {state.subpageDayOverview.map((day, idx) => (
+                  <div key={idx} className="space-y-2 p-3 rounded border border-ink/[0.08] bg-voyage-white">
+                    <div className="flex gap-2 items-start">
+                      <Input
+                        value={day.label}
+                        onChange={(e) => {
+                          const next = [...state.subpageDayOverview];
+                          next[idx] = { ...next[idx], label: e.target.value };
+                          setState({ ...state, subpageDayOverview: next });
+                        }}
+                        placeholder='e.g. Day 1 — Bergen - Voss - Flåm Railway'
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setState({
+                            ...state,
+                            subpageDayOverview: state.subpageDayOverview.filter((_, i) => i !== idx),
+                          })
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      rows={2}
+                      value={day.description}
+                      onChange={(e) => {
+                        const next = [...state.subpageDayOverview];
+                        next[idx] = { ...next[idx], description: e.target.value };
+                        setState({ ...state, subpageDayOverview: next });
+                      }}
+                      placeholder="Short description (1–2 sentences)"
+                    />
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      subpageDayOverview: [...state.subpageDayOverview, { label: "", description: "" }],
+                    })
+                  }
+                >
+                  + Add day
+                </Button>
+              </div>
+            </div>
+            <div className="md:col-span-2">
               <Label>Cover image</Label>
 
               <div className="flex items-center gap-3">
