@@ -1926,6 +1926,49 @@ const CatalogShopManager = () => {
             </div>
           </div>
 
+          {/* BUDGET ESTIMATOR — AI-generated per-person budget, drives the cover label. */}
+          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <div className="font-serif text-lg font-bold flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-[#B8975A]" /> Budget estimate
+                </div>
+                <p className="text-[0.78rem] text-voyage-muted">
+                  Generate an AI-assisted per-person budget. The cover-page label is rendered into the PDF;
+                  the full table can be copied as HTML and pasted into the Google Doc.
+                </p>
+                {budgetCoverLabel && (
+                  <p className="text-[0.78rem] text-ink mt-1">
+                    Cover label: <span className="font-medium">{budgetCoverLabel}</span>
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setBudgetOpen(true)}
+                disabled={!state.content.trim()}
+                title={!state.content.trim() ? "Generate or import body content first" : ""}
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                {budget ? "Edit budget" : "Create budget estimate"}
+              </Button>
+            </div>
+          </div>
+
+          <BudgetEstimator
+            open={budgetOpen}
+            onOpenChange={setBudgetOpen}
+            sourceContent={state.content}
+            destination={state.destination}
+            tripDuration={state.duration}
+            initialBudget={budget}
+            initialCoverLabel={budgetCoverLabel}
+            onSaved={handleBudgetSaved}
+          />
+
+
+
           {/* CHECKLIST */}
           <div className="mt-6 p-4 border border-parchment-3 rounded bg-parchment/30">
             <div className="font-serif text-lg font-bold mb-2">Pre-publish checklist</div>
