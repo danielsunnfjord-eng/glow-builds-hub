@@ -455,7 +455,7 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
     const dateRange = formatDateRange(project?.start_date, project?.end_date);
     const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
     const destinationLine = [project?.destination || L.itinerary, dateRange].filter(Boolean).join(" · ");
-    const bodyHtml = cleanPageBreaks(markdownToHtml(content));
+    const bodyHtml = cleanPageBreaks(contentHtml && contentHtml.trim() ? contentHtml : markdownToHtml(content));
     const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
 
     const coverHero = project?.hero_image_url
