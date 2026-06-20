@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           audit_report: string | null
           audited_at: string | null
+          body_pdf_url: string | null
           cover_intro_en: string | null
           cover_intro_no: string | null
           cover_intro_pt: string | null
@@ -65,6 +66,7 @@ export type Database = {
         Insert: {
           audit_report?: string | null
           audited_at?: string | null
+          body_pdf_url?: string | null
           cover_intro_en?: string | null
           cover_intro_no?: string | null
           cover_intro_pt?: string | null
@@ -112,6 +114,7 @@ export type Database = {
         Update: {
           audit_report?: string | null
           audited_at?: string | null
+          body_pdf_url?: string | null
           cover_intro_en?: string | null
           cover_intro_no?: string | null
           cover_intro_pt?: string | null
