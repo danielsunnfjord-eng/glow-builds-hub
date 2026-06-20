@@ -93,9 +93,6 @@ const Navbar = () => {
           >
             {t("nav.shop")}
           </a>
-          <div className="pt-2">
-            <LanguageSelector variant="light" />
-          </div>
           <button
             onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
             className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
