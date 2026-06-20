@@ -1073,13 +1073,19 @@ const CatalogShopManager = () => {
         audited_at: state.auditedAt,
       };
 
+      let savedId = state.id;
       if (state.id) {
         const { error } = await supabase.from("catalog_itineraries").update(payload).eq("id", state.id);
         if (error) throw error;
       } else {
         const { data, error } = await supabase.from("catalog_itineraries").insert(payload).select("id").single();
         if (error) throw error;
+        savedId = data.id;
         setState((s) => ({ ...s, id: data.id }));
+      }
+      // Mirror to Google Drive (fire-and-forget; status pill shows result).
+      if (savedId) {
+        void syncToGoogleDoc(savedId);
       }
       setLastPersistedSignature(catalogDraftSignature(state, sectionPrompt));
       setLastAutoSavedAt(new Date().toISOString());
