@@ -189,6 +189,7 @@ const blankEditor: EditorState = {
   heroImageCaption: "",
   isPublished: false,
   hotels: [],
+  bodyPdfUrl: "",
   auditReport: "",
   auditItems: [],
   auditedAt: null,
