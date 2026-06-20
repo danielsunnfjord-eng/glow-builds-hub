@@ -2082,11 +2082,11 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Finalise & Preview: opens the assembled PDF (cover + Google Doc body + hotels + back page). */}
-      {finalisedHtml !== null && state.id && (
+      {/* Preview PDF: opens the assembled PDF (cover + uploaded body PDF + hotels + back page). */}
+      {previewMergedOpen && state.bodyPdfUrl && (
         <PdfPreview
           content=""
-          contentHtml={finalisedHtml}
+          bodyPdfUrl={state.bodyPdfUrl}
           language={state.language}
           project={{
             client_name: state.title,
@@ -2104,10 +2104,11 @@ const CatalogShopManager = () => {
             budget_cover_label: budgetCoverLabel,
           }}
           hotels={state.hotels}
-          onClose={() => setFinalisedHtml(null)}
-          onExport={() => window.print()}
+          onClose={() => setPreviewMergedOpen(false)}
+          onExport={() => {}}
         />
       )}
+
 
 
 
