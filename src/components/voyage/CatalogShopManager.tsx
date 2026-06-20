@@ -2443,7 +2443,9 @@ const CatalogShopManager = () => {
               hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
               onClose={() => setPreviewRow(null)}
               onExport={() => window.print()}
+              attachToCatalogId={previewRow.id}
             />
+
           </>
         );
       })()}
