@@ -657,6 +657,7 @@ const CatalogShopManager = () => {
       isPublished: r.is_published,
       hotels,
       bodyPdfUrl: (r as any).body_pdf_url || "",
+      auditReport: r.audit_report || "",
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
