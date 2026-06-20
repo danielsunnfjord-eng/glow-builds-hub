@@ -99,7 +99,9 @@ interface CatalogItem {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   season: string[] | null;
+  subpage_checklist: string[] | null;
 }
+
 
 
 const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
