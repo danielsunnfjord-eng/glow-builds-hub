@@ -1781,6 +1781,23 @@ const CatalogShopManager = () => {
                       }}
                       placeholder="Short description (1–2 sentences)"
                     />
+                    </div>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({
+                      ...state,
+                      subpageDayOverview: [...state.subpageDayOverview, { label: "", description: "" }],
+                    })
+                  }
+                >
+                  + Add day
+                </Button>
+              </div>
             </div>
             <div className="md:col-span-2">
               <Label>What to expect (subpage cards)</Label>
@@ -1838,22 +1855,6 @@ const CatalogShopManager = () => {
                   }
                 >
                   + Add card
-                </Button>
-              </div>
-            </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setState({
-                      ...state,
-                      subpageDayOverview: [...state.subpageDayOverview, { label: "", description: "" }],
-                    })
-                  }
-                >
-                  + Add day
                 </Button>
               </div>
             </div>
