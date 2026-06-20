@@ -646,6 +646,32 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
     a.remove();
   };
 
+  const [attaching, setAttaching] = useState(false);
+  const handleAttachToStore = async () => {
+    if (!attachToCatalogId || !mergedPdfUrl) return;
+    setAttaching(true);
+    try {
+      const blob = await fetch(mergedPdfUrl).then((r) => r.blob());
+      const path = `${attachToCatalogId}/itinerary-${Date.now()}.pdf`;
+      const { error: upErr } = await supabase.storage
+        .from("catalog-pdfs")
+        .upload(path, blob, { contentType: "application/pdf", upsert: true });
+      if (upErr) throw upErr;
+      const { error: dbErr } = await supabase
+        .from("catalog_itineraries")
+        .update({ pdf_path: path })
+        .eq("id", attachToCatalogId);
+      if (dbErr) throw dbErr;
+      toast.success("PDF attached to store. Customers will download this file.");
+    } catch (e: any) {
+      console.error("[PdfPreview] attach to store failed", e);
+      toast.error(e?.message || "Failed to attach PDF to store");
+    } finally {
+      setAttaching(false);
+    }
+  };
+
+
   // Merge: capture Paged.js pages (cover + hotels + back) and splice the
   // uploaded body PDF between the cover (page 1) and the tail pages.
   useEffect(() => {
