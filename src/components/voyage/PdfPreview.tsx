@@ -551,11 +551,18 @@ const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }
         <h2>${escapeHtml(L.thankYou)}</h2>
         <p>${escapeHtml(L.closingNote)}</p>
         <div class="fjw-back-rule"></div>
-        <div class="fjw-contact"><div>hello@fjordwavestravel.com</div><div>fjordwavestravel.com</div></div>
+        <div class="fjw-advisor-signature">
+          <div class="fjw-advisor-name">Daniel Lira Figueiredo</div>
+          <div class="fjw-advisor-role">Your Travel Advisor · Fjord &amp; Waves Travel</div>
+        </div>
+        <div class="fjw-contact">
+          <div>hello@fjordwavestravel.com</div>
+          <div>fjordwavestravel.com</div>
+        </div>
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, hotels, project, L]);
+  }, [content, contentHtml, hotels, project, L]);
 
   useEffect(() => {
     let cancelled = false;
