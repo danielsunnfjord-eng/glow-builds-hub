@@ -2068,6 +2068,31 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Import from Google Doc?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ⚠️ This will replace all content in the editor with the current Google Doc
+              version. This cannot be undone. A backup snapshot of your current draft will
+              be saved automatically so you can recover if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={gdocPulling || !state.id}
+              onClick={(e) => {
+                e.preventDefault();
+                if (state.id) void pullFromGoogleDoc(state.id);
+              }}
+            >
+              {gdocPulling ? "Importing…" : "Import from Google Doc"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {previewRow && (() => {
         const contentByLang: Record<Lang, string | null | undefined> = {
           en: previewRow.itinerary_content_en,
