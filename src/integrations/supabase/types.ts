@@ -53,6 +53,7 @@ export type Database = {
           sort_order: number
           subpage_checklist: Json | null
           subpage_day_overview: Json | null
+          subpage_expectations: Json | null
           subpage_highlights: Json | null
           subpage_map_url: string | null
           summary_en: string
@@ -105,6 +106,7 @@ export type Database = {
           sort_order?: number
           subpage_checklist?: Json | null
           subpage_day_overview?: Json | null
+          subpage_expectations?: Json | null
           subpage_highlights?: Json | null
           subpage_map_url?: string | null
           summary_en?: string
@@ -157,6 +159,7 @@ export type Database = {
           sort_order?: number
           subpage_checklist?: Json | null
           subpage_day_overview?: Json | null
+          subpage_expectations?: Json | null
           subpage_highlights?: Json | null
           subpage_map_url?: string | null
           summary_en?: string

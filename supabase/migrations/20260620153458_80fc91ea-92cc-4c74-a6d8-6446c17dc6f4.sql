@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_itineraries ADD COLUMN IF NOT EXISTS subpage_expectations jsonb;
