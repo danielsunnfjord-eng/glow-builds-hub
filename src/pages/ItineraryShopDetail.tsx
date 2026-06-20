@@ -89,6 +89,7 @@ interface CatalogItem {
   duration: string | null;
   group_size_label: string | null;
   estimated_trip_budget: string | null;
+  budget_cover_label: string | null;
   hero_image_url: string | null;
   hero_image_credit: string | null;
   hero_image_caption: string | null;
