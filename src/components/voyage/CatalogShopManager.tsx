@@ -465,6 +465,8 @@ const CatalogShopManager = () => {
     setAutoSaveError("");
     setRestoredNotice("");
     setCloseConfirmOpen(false);
+    setGdocInfo({ id: null, url: null, lastSyncedAt: null });
+    setGdocError(null);
     setEditorOpen(true);
   };
 
