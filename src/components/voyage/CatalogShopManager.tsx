@@ -1967,7 +1967,7 @@ const CatalogShopManager = () => {
                 hero_image_url: previewRow.hero_image_url,
                 hero_image_credit: previewRow.hero_image_credit,
                 hero_image_caption: previewRow.hero_image_caption,
-                cover_tagline: pickedSummary || null,
+                cover_tagline: pickedCoverIntro || pickedSummary || null,
                 season: previewRow.season,
                 budget_cover_label: (() => {
                   try {
