@@ -2366,7 +2366,9 @@ const CatalogShopManager = () => {
           hotels={state.hotels}
           onClose={() => setPreviewMergedOpen(false)}
           onExport={() => {}}
+          attachToCatalogId={state.id || undefined}
         />
+
       )}
 
 
