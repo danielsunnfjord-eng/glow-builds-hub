@@ -20,13 +20,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2, ArrowUp, ArrowDown,
+  Sparkles, Loader2, Upload, Eye, RefreshCcw,
+  Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
+  FileText, ExternalLink,
 } from "lucide-react";
-import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
-import AuditChecklist from "./AuditChecklist";
 import {
   parseAuditItems,
   serializeAuditItems,
@@ -35,6 +34,7 @@ import {
 import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
+import { sanitizeDocHtml } from "@/lib/sanitizeDocHtml";
 
 type Lang = "en" | "pt" | "no";
 
