@@ -56,7 +56,11 @@ function recomputeTotals(b: BudgetData): BudgetData {
 interface BudgetEstimatorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editor: Editor;
+  /** Legacy TipTap editor instance — optional. When omitted, the dialog reads from
+   * `sourceContent` for AI generation and offers a copy-to-clipboard fallback in
+   * place of inline insertion (the Google Docs workflow). */
+  editor?: Editor | null;
+  sourceContent?: string;
   destination?: string | null;
   tripDuration?: string | null;
   initialBudget?: BudgetData | null;
@@ -65,7 +69,7 @@ interface BudgetEstimatorProps {
 }
 
 const BudgetEstimator = ({
-  open, onOpenChange, editor, destination, tripDuration,
+  open, onOpenChange, editor, sourceContent, destination, tripDuration,
   initialBudget, initialCoverLabel, onSaved,
 }: BudgetEstimatorProps) => {
   const [budget, setBudget] = useState<BudgetData | null>(initialBudget || null);
