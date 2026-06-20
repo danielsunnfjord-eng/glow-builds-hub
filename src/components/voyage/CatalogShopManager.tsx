@@ -199,7 +199,9 @@ const blankEditor: EditorState = {
   auditItems: [],
   auditedAt: null,
   previousContent: null,
+  subpageChecklist: [],
 };
+
 
 const catalogDraftPayload = (editorState: EditorState, sectionPrompt: string) => ({
   version: 1,
