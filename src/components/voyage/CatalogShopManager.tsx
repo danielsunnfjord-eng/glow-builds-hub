@@ -642,10 +642,10 @@ const CatalogShopManager = () => {
       });
       if (!text) throw new Error("No content returned");
       setState((s) => ({ ...s, content: text }));
-      toast.success("Itinerary generated. Crafting short descriptions…");
-      runAutoSummaries(text)
-        .then(() => toast.success("Short descriptions filled in for EN · PT · NO"))
-        .catch(() => {/* silent */});
+      toast.success("Itinerary generated. Writing cover intro & short descriptions…");
+      runAutoMetadata(text)
+        .then(() => toast.success("Cover intro & short descriptions filled in for EN · PT · NO"))
+        .catch((err) => toast.error(err?.message || "Could not generate cover intro / summaries"));
     } catch (e: any) {
       toast.error(e?.message || "Failed to generate");
     } finally {
