@@ -100,6 +100,7 @@ interface CatalogItem {
   itinerary_content_no: string | null;
   season: string[] | null;
   subpage_checklist: string[] | null;
+  subpage_day_overview: { label: string; description: string }[] | null;
 }
 
 
