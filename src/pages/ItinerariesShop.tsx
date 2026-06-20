@@ -173,17 +173,17 @@ const ItinerariesShop = () => {
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/50 to-ink/80" />
-        <div className="absolute top-24 right-6 md:top-28 md:right-10 z-10">
+        <div className="hidden md:block absolute top-28 right-10 z-10">
           <LanguageSelector variant="dark" />
         </div>
-        <div className="relative z-0 max-w-[1200px] mx-auto px-6 md:px-16 pt-40 pb-32 md:pt-52 md:pb-44 text-voyage-white">
-          <div className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-gold mb-5">
+        <div className="relative z-0 max-w-[1200px] mx-auto px-6 md:px-16 pt-28 pb-20 md:pt-52 md:pb-44 text-voyage-white">
+          <div className="text-[0.65rem] font-semibold tracking-[0.28em] uppercase text-gold mb-4 md:mb-5">
             {t("catalogue.eyebrow")}
           </div>
-          <h1 className="font-serif text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[1.02] tracking-tight mb-6 max-w-3xl">
+          <h1 className="font-serif text-[clamp(2rem,6vw,5rem)] font-bold leading-[1.05] tracking-tight mb-4 md:mb-6 max-w-3xl">
             {t("catalogue.title")}
           </h1>
-          <p className="text-[1rem] md:text-[1.1rem] text-voyage-white/85 max-w-xl leading-relaxed font-light">
+          <p className="text-[0.95rem] md:text-[1.1rem] text-voyage-white/85 max-w-xl leading-relaxed font-light">
             {t("catalogue.subtitle")}
           </p>
         </div>
@@ -191,9 +191,9 @@ const ItinerariesShop = () => {
 
       {/* FILTER BAR */}
       <section className="border-b border-ink/10 bg-voyage-white sticky top-0 z-30 shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-16 py-5">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-3">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-16 py-3 md:py-5">
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3">
+            <div className="col-span-2 md:col-span-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-voyage-muted" />
                 <input
@@ -235,20 +235,20 @@ const ItinerariesShop = () => {
                 ))}
               </select>
             </div>
-            <div className="md:col-span-1 flex items-center justify-end">
-              {hasActiveFilters && (
+            {hasActiveFilters && (
+              <div className="col-span-2 md:col-span-1 flex items-center md:justify-end">
                 <button onClick={resetFilters} className="inline-flex items-center gap-1 text-[0.7rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
                   <X className="w-3 h-3" />
                   {t("catalogue.filters.reset")}
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* GRID */}
-      <main className="max-w-[1200px] mx-auto px-6 md:px-16 py-16 md:py-24">
+      <main className="max-w-[1200px] mx-auto px-4 md:px-16 py-10 md:py-24">
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[0, 1, 2].map((i) => (
@@ -275,7 +275,7 @@ const ItinerariesShop = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {filtered.map((trip) => {
             const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no) || trip.title_en;
             const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no) || trip.summary_en;
