@@ -201,6 +201,7 @@ const blankEditor: EditorState = {
   auditedAt: null,
   previousContent: null,
   subpageChecklist: [],
+  subpageDayOverview: [],
 };
 
 
