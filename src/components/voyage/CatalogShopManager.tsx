@@ -1265,7 +1265,9 @@ const CatalogShopManager = () => {
         body_pdf_url: state.bodyPdfUrl || null,
         audit_report: state.auditReport || null,
         audited_at: state.auditedAt,
+        subpage_checklist: state.subpageChecklist.filter((s) => s.trim().length > 0),
       };
+
 
       let savedId = state.id;
       if (state.id) {
