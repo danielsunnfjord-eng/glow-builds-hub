@@ -129,7 +129,7 @@ const ItineraryShopDetail = () => {
         .eq("slug", slug!)
         .maybeSingle();
       if (error) throw error;
-      return data as CatalogItem | null;
+      return data as unknown as CatalogItem | null;
     },
     enabled: !!slug,
   });
