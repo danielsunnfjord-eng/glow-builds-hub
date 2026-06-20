@@ -15,6 +15,7 @@ interface Body {
   email: string;
   origin: string;
   language?: string;
+  environment?: "sandbox" | "live";
 }
 
 const json = (data: unknown, status = 200) =>
@@ -56,6 +57,9 @@ Deno.serve(async (req) => {
       (lang === "no" && itin.title_no) ||
       itin.title_en;
 
+    const stripeEnv: "sandbox" | "live" =
+      body.environment === "live" ? "live" : "sandbox";
+
     const { data: purchase, error: purchaseErr } = await supabase
       .from("catalog_purchases")
       .insert({
@@ -64,6 +68,7 @@ Deno.serve(async (req) => {
         amount_total: itin.price_eur,
         currency: "EUR",
         status: "pending",
+        stripe_environment: stripeEnv,
       })
       .select("id, download_token")
       .single();
@@ -76,7 +81,6 @@ Deno.serve(async (req) => {
     const successUrl = `${body.origin}/catalogue/success?token=${purchase.download_token}&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${body.origin}/catalogue/${itin.slug}?canceled=1`;
 
-    const stripeEnv = "sandbox" as const;
     const stripe = createStripeClient(stripeEnv);
 
     // Resolve (or lazily create) a Stripe Product for this itinerary so the
