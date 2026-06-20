@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     const { data: itin, error: itinErr } = await supabase
       .from("catalog_itineraries")
       .select(
-        `id, slug, title_en, title_pt, title_no, subtitle_en, price_eur,
+        `id, slug, title_en, title_pt, title_no, summary_en, price_eur,
          hero_image_url, is_published, stripe_tax_code,
          stripe_product_id_sandbox, stripe_product_id_live`,
       )
