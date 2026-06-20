@@ -1112,11 +1112,12 @@ const CatalogShopManager = () => {
       });
       if (error) throw error;
       const { data } = supabase.storage.from("catalog-images").getPublicUrl(path);
+      // v1 spec: one thumbnail per hotel. Replace any existing photo.
       setState((s) => ({
         ...s,
         hotels: s.hotels.map((h) =>
           h.id === hotelId
-            ? { ...h, photos: [...h.photos, { url: data.publicUrl, credit: "", caption: "" }].slice(0, 3) }
+            ? { ...h, photos: [{ url: data.publicUrl, credit: "", caption: "" }] }
             : h,
         ),
       }));
@@ -1841,19 +1842,19 @@ const CatalogShopManager = () => {
                   </div>
 
                   <div>
-                    <Label className="text-[0.75rem]">Photos (up to 3)</Label>
+                    <Label className="text-[0.75rem]">Thumbnail (one image)</Label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
-                      {[0, 1, 2].map((slot) => {
-                        const photo = h.photos[slot];
+                      {(() => {
+                        const photo = h.photos[0];
                         return (
-                          <div key={slot} className="space-y-1.5">
+                          <div className="space-y-1.5">
                             <div className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
                               {photo ? (
                                 <>
                                   <img src={photo.url} alt={photo.caption || ""} className="w-full h-full object-cover" />
                                   <button
                                     type="button"
-                                    onClick={() => updateHotel(h.id, { photos: h.photos.filter((_, k) => k !== slot) })}
+                                    onClick={() => updateHotel(h.id, { photos: [] })}
                                     className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     <XIcon className="w-3 h-3" />
@@ -1862,7 +1863,7 @@ const CatalogShopManager = () => {
                               ) : (
                                 <label className="w-full h-full flex flex-col items-center justify-center text-voyage-muted text-[0.7rem] cursor-pointer hover:bg-parchment/50">
                                   <Upload className="w-4 h-4 mb-1" />
-                                  Add photo
+                                  Add thumbnail
                                   <input
                                     type="file"
                                     accept="image/*"
@@ -1878,19 +1879,19 @@ const CatalogShopManager = () => {
                                   className="h-7 text-[0.72rem]"
                                   placeholder="Photo credit (optional)"
                                   value={photo.credit || ""}
-                                  onChange={(e) => updateHotelPhoto(h.id, slot, { credit: e.target.value })}
+                                  onChange={(e) => updateHotelPhoto(h.id, 0, { credit: e.target.value })}
                                 />
                                 <Input
                                   className="h-7 text-[0.72rem]"
                                   placeholder="Caption / description (optional)"
                                   value={photo.caption || ""}
-                                  onChange={(e) => updateHotelPhoto(h.id, slot, { caption: e.target.value })}
+                                  onChange={(e) => updateHotelPhoto(h.id, 0, { caption: e.target.value })}
                                 />
                               </>
                             )}
                           </div>
                         );
-                      })}
+                      })()}
                     </div>
                   </div>
                 </div>
