@@ -578,7 +578,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, contentHtml, hotels, project, L]);
+  }, [content, contentHtml, hotels, project, L, usePdfMerge]);
 
   useEffect(() => {
     let cancelled = false;
