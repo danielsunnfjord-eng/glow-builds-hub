@@ -51,10 +51,6 @@ export type Database = {
           season: string[] | null
           slug: string
           sort_order: number
-          subpage_checklist: Json | null
-          subpage_day_overview: Json | null
-          subpage_highlights: Json | null
-          subpage_map_url: string | null
           summary_en: string
           summary_no: string | null
           summary_pt: string | null
@@ -103,10 +99,6 @@ export type Database = {
           season?: string[] | null
           slug: string
           sort_order?: number
-          subpage_checklist?: Json | null
-          subpage_day_overview?: Json | null
-          subpage_highlights?: Json | null
-          subpage_map_url?: string | null
           summary_en?: string
           summary_no?: string | null
           summary_pt?: string | null
@@ -155,10 +147,6 @@ export type Database = {
           season?: string[] | null
           slug?: string
           sort_order?: number
-          subpage_checklist?: Json | null
-          subpage_day_overview?: Json | null
-          subpage_highlights?: Json | null
-          subpage_map_url?: string | null
           summary_en?: string
           summary_no?: string | null
           summary_pt?: string | null
