@@ -76,6 +76,9 @@ interface CatalogRow {
   hotels: any[] | null;
   audit_report: string | null;
   audited_at: string | null;
+  gdoc_id?: string | null;
+  gdoc_url?: string | null;
+  gdoc_last_synced_at?: string | null;
 }
 
 interface SuggestionRow {
