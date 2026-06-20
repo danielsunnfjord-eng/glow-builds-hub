@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
     if (!productId) {
       const created = await stripe.products.create({
         name: itin.title_en || title,
-        ...(itin.subtitle_en ? { description: itin.subtitle_en } : {}),
+        ...(itin.summary_en ? { description: itin.summary_en } : {}),
         ...(itin.hero_image_url ? { images: [itin.hero_image_url] } : {}),
         tax_code: itin.stripe_tax_code || "txcd_10000000",
         metadata: { lovable_itinerary_id: itin.id, slug: itin.slug },
