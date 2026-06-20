@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Editor } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, RefreshCcw, Coins } from "lucide-react";
+import { Loader2, Plus, Trash2, RefreshCcw, Coins, Copy } from "lucide-react";
 import { htmlToMarkdown } from "./markdownHelpers";
 
 export type BudgetLine = { low: number; high: number; note?: string };
