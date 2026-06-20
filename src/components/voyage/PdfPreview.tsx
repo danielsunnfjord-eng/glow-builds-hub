@@ -451,7 +451,7 @@ const cleanPageBreaks = (html: string) =>
     .filter(isMeaningfulChunk)
     .join('<div class="fjw-page-break" data-page-break="true"></div>');
 
-const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language }: PdfPreviewProps) => {
+const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language, attachToCatalogId }: PdfPreviewProps) => {
   const { i18n } = useTranslation();
   const renderRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
