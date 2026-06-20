@@ -767,9 +767,23 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
                 : `Page ${pageInfo.current} of ${pageInfo.total}`}
             </span>
             {showMergedViewer ? (
-              <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
-                📄 Download PDF
-              </button>
+              <>
+                {attachToCatalogId && (
+                  <button
+                    type="button"
+                    onClick={handleAttachToStore}
+                    disabled={attaching}
+                    title="Upload this PDF to the store. Customers who purchase this itinerary will download exactly this file."
+                    className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/40 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40"
+                  >
+                    {attaching ? "Attaching…" : "🛒 Attach to Store"}
+                  </button>
+                )}
+                <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
+                  📄 Download PDF
+                </button>
+              </>
+
             ) : (
               <>
                 <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40">
