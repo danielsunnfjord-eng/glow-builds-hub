@@ -83,6 +83,7 @@ interface CatalogRow {
   gdoc_id?: string | null;
   gdoc_url?: string | null;
   gdoc_last_synced_at?: string | null;
+  body_pdf_url?: string | null;
 }
 
 interface SuggestionRow {
