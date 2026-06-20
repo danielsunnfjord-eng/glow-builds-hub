@@ -161,8 +161,11 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const itinerary_id = body?.itinerary_id;
     const requested = body?.action;
-    const action: "sync" | "check" | "pull" =
-      requested === "check" ? "check" : requested === "pull" ? "pull" : "sync";
+    const action: "sync" | "check" | "pull" | "export-html" =
+      requested === "check" ? "check"
+        : requested === "pull" ? "pull"
+        : requested === "export-html" ? "export-html"
+        : "sync";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
