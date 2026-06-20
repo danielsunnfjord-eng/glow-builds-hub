@@ -100,6 +100,7 @@ interface CatalogItem {
   itinerary_content_no: string | null;
   season: string[] | null;
   subpage_checklist: string[] | null;
+  subpage_day_overview: { label: string; description: string }[] | null;
 }
 
 
@@ -128,7 +129,7 @@ const ItineraryShopDetail = () => {
         .eq("slug", slug!)
         .maybeSingle();
       if (error) throw error;
-      return data as CatalogItem | null;
+      return data as unknown as CatalogItem | null;
     },
     enabled: !!slug,
   });
@@ -181,6 +182,15 @@ const ItineraryShopDetail = () => {
   const includes = checklistFromDb.length > 0
     ? checklistFromDb
     : (wygItems.length > 0 ? wygItems : defaultIncludes);
+
+  const dayOverview = Array.isArray(data?.subpage_day_overview)
+    ? (data!.subpage_day_overview as { label: string; description: string }[])
+        .map((d) => ({
+          label: String(d?.label ?? "").trim(),
+          description: String(d?.description ?? "").trim(),
+        }))
+        .filter((d) => d.label.length > 0 || d.description.length > 0)
+    : [];
 
 
   useEffect(() => {
@@ -611,6 +621,35 @@ const ItineraryShopDetail = () => {
                   })}
                 </div>
               </div>
+
+              {/* Day overview */}
+              {dayOverview.length > 0 && (
+                <div className="mb-14">
+                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                    {t("shop.dayOverview", "Day-by-day overview")}
+                  </h2>
+                  <div className="h-px w-12 bg-gold mb-7" />
+                  <ol className="space-y-4">
+                    {dayOverview.map((d, i) => (
+                      <li
+                        key={i}
+                        className="p-5 rounded-lg border border-ink/[0.06] bg-voyage-white"
+                      >
+                        {d.label && (
+                          <div className="font-serif text-[1.05rem] font-bold text-ink mb-1">
+                            {d.label}
+                          </div>
+                        )}
+                        {d.description && (
+                          <p className="text-[0.9rem] text-ink/75 leading-relaxed">
+                            {d.description}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
 
               {/* Highlights */}
               <div className="mb-14">
