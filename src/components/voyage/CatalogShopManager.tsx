@@ -519,6 +519,16 @@ const CatalogShopManager = () => {
       import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
         saveBudget(state.id || null, { budget: b, coverLabel: lbl });
       });
+      // Persist cover-label to the DB so it feeds both the PDF cover and the subpage.
+      if (state.id) {
+        supabase
+          .from("catalog_itineraries")
+          .update({ estimated_trip_budget: lbl } as any)
+          .eq("id", state.id)
+          .then(({ error }) => {
+            if (error) console.error("Failed to persist estimated_trip_budget", error);
+          });
+      }
     },
     [state.id],
   );
@@ -1324,6 +1334,7 @@ const CatalogShopManager = () => {
         subpage_expectations: state.subpageExpectations
           .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
           .filter((e) => e.title.length > 0 || e.description.length > 0),
+        estimated_trip_budget: budgetCoverLabel,
       };
 
 
@@ -2335,7 +2346,7 @@ const CatalogShopManager = () => {
               (state.language === "no" ? state.summaryNo : state.language === "pt" ? state.summaryPt : state.summary) ||
               null,
             season: state.season,
-            budget_cover_label: budgetCoverLabel,
+            estimated_trip_budget: budgetCoverLabel,
           }}
           hotels={state.hotels}
           onClose={() => setPreviewMergedOpen(false)}
@@ -2405,7 +2416,7 @@ const CatalogShopManager = () => {
                 hero_image_caption: previewRow.hero_image_caption,
                 cover_tagline: pickedCoverIntro || pickedSummary || null,
                 season: previewRow.season,
-                budget_cover_label: (() => {
+                estimated_trip_budget: (previewRow as any).estimated_trip_budget ?? (() => {
                   try {
                     const raw = window.localStorage.getItem("fjw-budget-v1:" + previewRow.id);
                     return raw ? (JSON.parse(raw)?.coverLabel ?? null) : null;

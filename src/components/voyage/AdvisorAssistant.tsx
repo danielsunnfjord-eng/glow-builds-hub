@@ -1757,7 +1757,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
             destination: selectedProject.destination,
             trip_duration: selectedProject.trip_duration,
             group_size: selectedProject.group_size,
-            budget_cover_label: budgetCoverLabel,
+            estimated_trip_budget: budgetCoverLabel,
           } : null}
           onClose={() => setShowPdfPreview(false)}
           onExport={() => { setShowPdfPreview(false); handleExportPdf(); }}

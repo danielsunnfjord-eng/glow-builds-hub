@@ -42,7 +42,7 @@ interface PdfPreviewProps {
     hero_image_caption?: string | null;
     cover_tagline?: string | null;
     season?: string[] | string | null;
-    budget_cover_label?: string | null;
+    estimated_trip_budget?: string | null;
   } | null;
   hotels?: HotelRecPreview[];
   onClose: () => void;
@@ -548,9 +548,9 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
               <div class="fjw-cover-meta-label">Season</div>
               <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
             </div>
-            ${project?.budget_cover_label ? `<div class="fjw-cover-meta-col">
+            ${project?.estimated_trip_budget ? `<div class="fjw-cover-meta-col">
               <div class="fjw-cover-meta-label">Estimated Budget</div>
-              <div class="fjw-cover-meta-value">${escapeHtml(project.budget_cover_label)}</div>
+              <div class="fjw-cover-meta-value">${escapeHtml(project.estimated_trip_budget)}</div>
             </div>` : ""}
           </div>
         </div>

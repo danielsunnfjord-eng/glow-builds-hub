@@ -89,7 +89,6 @@ interface CatalogItem {
   duration: string | null;
   group_size_label: string | null;
   estimated_trip_budget: string | null;
-  budget_cover_label: string | null;
   hero_image_url: string | null;
   hero_image_credit: string | null;
   hero_image_caption: string | null;
@@ -632,7 +631,7 @@ const ItineraryShopDetail = () => {
                       {t("shop.estimatedBudget")}
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.budget_cover_label || "—"}
+                      {data.estimated_trip_budget || "—"}
                     </span>
                   </div>
                 </div>
