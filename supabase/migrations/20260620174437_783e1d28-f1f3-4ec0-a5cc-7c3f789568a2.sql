@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_purchases ADD COLUMN IF NOT EXISTS stripe_environment text NOT NULL DEFAULT 'sandbox' CHECK (stripe_environment IN ('sandbox','live'));
