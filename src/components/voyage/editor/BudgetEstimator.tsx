@@ -392,7 +392,9 @@ const BudgetEstimator = ({
           {budget && (
             <>
               <Button variant="outline" onClick={handleSaveOnly}>Save (cover only)</Button>
-              <Button onClick={handleInsert}>Insert Budget Table</Button>
+              <Button onClick={handleInsert}>
+                {editor ? "Insert Budget Table" : (<><Copy className="w-4 h-4 mr-2" />Save &amp; Copy Table HTML</>)}
+              </Button>
             </>
           )}
         </DialogFooter>
