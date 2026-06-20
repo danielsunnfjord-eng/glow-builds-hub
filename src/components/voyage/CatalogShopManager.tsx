@@ -150,6 +150,7 @@ interface EditorState {
   previousContent: string | null;
   subpageChecklist: string[];
   subpageDayOverview: { label: string; description: string }[];
+  subpageExpectations: { title: string; description: string }[];
 }
 
 
