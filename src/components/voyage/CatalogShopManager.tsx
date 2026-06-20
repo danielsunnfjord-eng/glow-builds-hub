@@ -1670,7 +1670,52 @@ const CatalogShopManager = () => {
               </div>
             </div>
             <div className="md:col-span-2">
+              <Label>What you get (subpage checklist)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                One bullet per row. Shown on the catalogue subpage's "What you get" sidebar. Leave empty to use the default list.
+              </p>
+              <div className="space-y-2">
+                {state.subpageChecklist.map((item, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Input
+                      value={item}
+                      onChange={(e) => {
+                        const next = [...state.subpageChecklist];
+                        next[idx] = e.target.value;
+                        setState({ ...state, subpageChecklist: next });
+                      }}
+                      placeholder="e.g. Hidden fjord viewpoints with arrival timing"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setState({
+                          ...state,
+                          subpageChecklist: state.subpageChecklist.filter((_, i) => i !== idx),
+                        })
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setState({ ...state, subpageChecklist: [...state.subpageChecklist, ""] })
+                  }
+                >
+                  + Add item
+                </Button>
+              </div>
+            </div>
+            <div className="md:col-span-2">
               <Label>Cover image</Label>
+
               <div className="flex items-center gap-3">
                 {state.heroImageUrl && <img src={state.heroImageUrl} alt="cover" className="w-24 h-16 object-cover rounded" />}
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUploadCover(e.target.files[0])} />
