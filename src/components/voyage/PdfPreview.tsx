@@ -7,6 +7,9 @@ import PdfJsViewer from "./PdfJsViewer";
 import logoHorizontal from "@/assets/logo-horizontal.webp";
 import logoBadgeHd from "@/assets/logo-badge-hd.png";
 import logoBadge from "@/assets/logo-badge.webp";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
 
 interface HotelPhoto {
   url?: string;
@@ -47,7 +50,9 @@ interface PdfPreviewProps {
   hotels?: HotelRecPreview[];
   onClose: () => void;
   onExport: () => void;
+  attachToCatalogId?: string; // when set, shows an "Attach to Store" button that uploads the merged PDF to catalog-pdfs and updates pdf_path
 }
+
 
 const I18N: Record<string, Record<string, string>> = {
   en: {
@@ -446,7 +451,7 @@ const cleanPageBreaks = (html: string) =>
     .filter(isMeaningfulChunk)
     .join('<div class="fjw-page-break" data-page-break="true"></div>');
 
-const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language }: PdfPreviewProps) => {
+const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language, attachToCatalogId }: PdfPreviewProps) => {
   const { i18n } = useTranslation();
   const renderRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -641,6 +646,32 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
     a.remove();
   };
 
+  const [attaching, setAttaching] = useState(false);
+  const handleAttachToStore = async () => {
+    if (!attachToCatalogId || !mergedPdfUrl) return;
+    setAttaching(true);
+    try {
+      const blob = await fetch(mergedPdfUrl).then((r) => r.blob());
+      const path = `${attachToCatalogId}/itinerary-${Date.now()}.pdf`;
+      const { error: upErr } = await supabase.storage
+        .from("catalog-pdfs")
+        .upload(path, blob, { contentType: "application/pdf", upsert: true });
+      if (upErr) throw upErr;
+      const { error: dbErr } = await supabase
+        .from("catalog_itineraries")
+        .update({ pdf_path: path })
+        .eq("id", attachToCatalogId);
+      if (dbErr) throw dbErr;
+      toast.success("PDF attached to store. Customers will download this file.");
+    } catch (e: any) {
+      console.error("[PdfPreview] attach to store failed", e);
+      toast.error(e?.message || "Failed to attach PDF to store");
+    } finally {
+      setAttaching(false);
+    }
+  };
+
+
   // Merge: capture Paged.js pages (cover + hotels + back) and splice the
   // uploaded body PDF between the cover (page 1) and the tail pages.
   useEffect(() => {
@@ -736,9 +767,23 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
                 : `Page ${pageInfo.current} of ${pageInfo.total}`}
             </span>
             {showMergedViewer ? (
-              <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
-                📄 Download PDF
-              </button>
+              <>
+                {attachToCatalogId && (
+                  <button
+                    type="button"
+                    onClick={handleAttachToStore}
+                    disabled={attaching}
+                    title="Upload this PDF to the store. Customers who purchase this itinerary will download exactly this file."
+                    className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/40 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40"
+                  >
+                    {attaching ? "Attaching…" : "🛒 Attach to Store"}
+                  </button>
+                )}
+                <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
+                  📄 Download PDF
+                </button>
+              </>
+
             ) : (
               <>
                 <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40">

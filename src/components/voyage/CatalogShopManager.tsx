@@ -2366,7 +2366,9 @@ const CatalogShopManager = () => {
           hotels={state.hotels}
           onClose={() => setPreviewMergedOpen(false)}
           onExport={() => {}}
+          attachToCatalogId={state.id || undefined}
         />
+
       )}
 
 
@@ -2441,7 +2443,9 @@ const CatalogShopManager = () => {
               hotels={Array.isArray(previewRow.hotels) ? (previewRow.hotels as any[]) : []}
               onClose={() => setPreviewRow(null)}
               onExport={() => window.print()}
+              attachToCatalogId={previewRow.id}
             />
+
           </>
         );
       })()}
