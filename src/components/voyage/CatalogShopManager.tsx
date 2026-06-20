@@ -22,10 +22,11 @@ import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
-  FileText, ExternalLink,
+  FileText, ExternalLink, Coins, ChevronDown,
 } from "lucide-react";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
+import BudgetEstimator from "./editor/BudgetEstimator";
 import {
   parseAuditItems,
   serializeAuditItems,
