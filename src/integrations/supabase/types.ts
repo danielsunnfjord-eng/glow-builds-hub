@@ -27,6 +27,10 @@ export type Database = {
           estimated_trip_budget: string | null
           experience_type: string[] | null
           gallery_images: Json
+          gdoc_id: string | null
+          gdoc_last_synced_at: string | null
+          gdoc_url: string | null
+          gdrive_folder_id: string | null
           group_size_label: string | null
           hero_image_caption: string | null
           hero_image_credit: string | null
@@ -37,6 +41,7 @@ export type Database = {
           itinerary_content_en: string | null
           itinerary_content_no: string | null
           itinerary_content_pt: string | null
+          pdf_drive_file_id: string | null
           pdf_path: string | null
           price_eur: number
           season: string[] | null
@@ -66,6 +71,10 @@ export type Database = {
           estimated_trip_budget?: string | null
           experience_type?: string[] | null
           gallery_images?: Json
+          gdoc_id?: string | null
+          gdoc_last_synced_at?: string | null
+          gdoc_url?: string | null
+          gdrive_folder_id?: string | null
           group_size_label?: string | null
           hero_image_caption?: string | null
           hero_image_credit?: string | null
@@ -76,6 +85,7 @@ export type Database = {
           itinerary_content_en?: string | null
           itinerary_content_no?: string | null
           itinerary_content_pt?: string | null
+          pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_eur?: number
           season?: string[] | null
@@ -105,6 +115,10 @@ export type Database = {
           estimated_trip_budget?: string | null
           experience_type?: string[] | null
           gallery_images?: Json
+          gdoc_id?: string | null
+          gdoc_last_synced_at?: string | null
+          gdoc_url?: string | null
+          gdrive_folder_id?: string | null
           group_size_label?: string | null
           hero_image_caption?: string | null
           hero_image_credit?: string | null
@@ -115,6 +129,7 @@ export type Database = {
           itinerary_content_en?: string | null
           itinerary_content_no?: string | null
           itinerary_content_pt?: string | null
+          pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_eur?: number
           season?: string[] | null
@@ -336,6 +351,33 @@ export type Database = {
           experience_type?: string | null
           id?: string
           status?: string
+        }
+        Relationships: []
+      }
+      drive_settings: {
+        Row: {
+          created_at: string
+          drafts_folder_id: string | null
+          id: string
+          published_folder_id: string | null
+          root_folder_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          drafts_folder_id?: string | null
+          id?: string
+          published_folder_id?: string | null
+          root_folder_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          drafts_folder_id?: string | null
+          id?: string
+          published_folder_id?: string | null
+          root_folder_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
