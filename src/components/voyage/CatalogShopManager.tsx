@@ -1363,6 +1363,52 @@ const CatalogShopManager = () => {
                 {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
                 {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
               </div>
+              <div className="flex items-center gap-2 text-[0.75rem]">
+                <span
+                  className={
+                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 " +
+                    (gdocError
+                      ? "border-red-300 bg-red-50 text-red-700"
+                      : gdocSyncing
+                        ? "border-blue-300 bg-blue-50 text-blue-700"
+                        : gdocInfo.id
+                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                          : "border-neutral-300 bg-neutral-50 text-neutral-600")
+                  }
+                  title={gdocError || ""}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {gdocSyncing
+                    ? "Syncing to Google Drive…"
+                    : gdocError
+                      ? "Drive sync failed"
+                      : gdocInfo.lastSyncedAt
+                        ? `Synced to Drive · ${new Date(gdocInfo.lastSyncedAt).toLocaleTimeString()}`
+                        : state.id
+                          ? "Not yet synced"
+                          : "Drive doc will be created on first save"}
+                </span>
+                {gdocInfo.url && (
+                  <a
+                    href={gdocInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-fjord underline-offset-2 hover:underline"
+                  >
+                    Open in Google Docs ↗
+                  </a>
+                )}
+                {state.id && (
+                  <button
+                    type="button"
+                    onClick={() => syncToGoogleDoc(state.id!)}
+                    disabled={gdocSyncing}
+                    className="rounded border border-neutral-300 bg-white px-2 py-0.5 text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
+                  >
+                    Sync now
+                  </button>
+                )}
+              </div>
             </div>
           </DialogHeader>
 
