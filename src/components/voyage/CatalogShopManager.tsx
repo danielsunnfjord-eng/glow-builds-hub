@@ -1289,6 +1289,9 @@ const CatalogShopManager = () => {
         subpage_day_overview: state.subpageDayOverview
           .map((d) => ({ label: (d.label || "").trim(), description: (d.description || "").trim() }))
           .filter((d) => d.label.length > 0 || d.description.length > 0),
+        subpage_expectations: state.subpageExpectations
+          .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
+          .filter((e) => e.title.length > 0 || e.description.length > 0),
       };
 
 
