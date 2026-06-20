@@ -586,51 +586,43 @@ const CatalogShopManager = () => {
     return text;
   };
 
-  const runAutoSummaries = async (itineraryText: string) => {
-    const langs: Array<{ key: "en" | "pt" | "no"; name: string }> = [
-      { key: "en", name: "English" },
-      { key: "pt", name: "Brazilian Portuguese" },
-      { key: "no", name: "Norwegian (Bokmål)" },
-    ];
-    const titleLine = state.title || state.destination || "this trip";
-    const meta = [
-      `Title: ${state.title || "(untitled)"}`,
-      `Destination: ${state.destination || "(unspecified)"}`,
-      `Experience: ${state.experienceType.join(", ") || "(unspecified)"}`,
-      `Duration: ${state.duration || "(unspecified)"}`,
-      `Editor brief: ${state.brief || "(none)"}`,
-    ].join("\n");
-    const excerpt = (itineraryText || "").slice(0, 2500);
-
-    const results = await Promise.all(
-      langs.map(async (l) => {
-        try {
-          const customPrompt = `Write a 2–3 sentence short description for the travel itinerary "${titleLine}", written natively in ${l.name} (NOT translated from English). Tone: inspiring, editorial, premium — worthy of a luxury travel atelier. No markdown, no quotes, no preamble. Return ONLY the description sentences as plain text.`;
-          const { data, error } = await supabase.functions.invoke("ai-text-transform", {
-            body: {
-              text: `${meta}\n\n--- Itinerary excerpt ---\n${excerpt}`,
-              customPrompt,
-            },
-          });
-          if (error || !data?.result) return { key: l.key, text: "" };
-          return { key: l.key, text: String(data.result).trim() };
-        } catch {
-          return { key: l.key, text: "" };
-        }
+  const runAutoMetadata = async (itineraryText: string) => {
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess?.session?.access_token;
+    const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.functions.supabase.co/generate-catalog-itinerary`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        mode: "metadata",
+        title: state.title,
+        destination: state.destination,
+        experience_type: state.experienceType.join(", "),
+        duration: state.duration,
+        brief: state.brief,
+        existing_content: itineraryText,
       }),
-    );
-
-    setState((s) => {
-      const next = { ...s };
-      for (const r of results) {
-        if (!r.text) continue;
-        if (r.key === "en") next.summary = r.text;
-        if (r.key === "pt") next.summaryPt = r.text;
-        if (r.key === "no") next.summaryNo = r.text;
-      }
-      return next;
     });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(errText || `Metadata generation failed (${res.status})`);
+    }
+    const data = await res.json();
+    setState((s) => ({
+      ...s,
+      coverIntroEn: data.cover_intro_en || s.coverIntroEn,
+      coverIntroPt: data.cover_intro_pt || s.coverIntroPt,
+      coverIntroNo: data.cover_intro_no || s.coverIntroNo,
+      summary: data.summary_en || s.summary,
+      summaryPt: data.summary_pt || s.summaryPt,
+      summaryNo: data.summary_no || s.summaryNo,
+    }));
   };
+
 
   const runGenerate = async () => {
     if (!state.destination && !state.title) {
