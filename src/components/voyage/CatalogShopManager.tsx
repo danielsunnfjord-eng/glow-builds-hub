@@ -1957,30 +1957,34 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Import from Google Doc?</AlertDialogTitle>
-            <AlertDialogDescription>
-              ⚠️ This will replace all content in the editor with the current Google Doc
-              version. This cannot be undone. A backup snapshot of your current draft will
-              be saved automatically so you can recover if needed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={gdocPulling || !state.id}
-              onClick={(e) => {
-                e.preventDefault();
-                if (state.id) void pullFromGoogleDoc(state.id);
-              }}
-            >
-              {gdocPulling ? "Importing…" : "Import from Google Doc"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Finalise & Preview: opens the assembled PDF (cover + Google Doc body + hotels + back page). */}
+      {finalisedHtml !== null && state.id && (
+        <PdfPreview
+          content=""
+          contentHtml={finalisedHtml}
+          language={state.language}
+          project={{
+            client_name: state.title,
+            title: state.title,
+            destination: state.destination || null,
+            trip_duration: state.duration || null,
+            hero_image_url: state.heroImageUrl || null,
+            hero_image_credit: state.heroImageCredit || null,
+            hero_image_caption: state.heroImageCaption || null,
+            cover_tagline:
+              (state.language === "no" ? state.coverIntroNo : state.language === "pt" ? state.coverIntroPt : state.coverIntroEn) ||
+              (state.language === "no" ? state.summaryNo : state.language === "pt" ? state.summaryPt : state.summary) ||
+              null,
+            season: state.season,
+            budget_cover_label: budgetCoverLabel,
+          }}
+          hotels={state.hotels}
+          onClose={() => setFinalisedHtml(null)}
+          onExport={() => window.print()}
+        />
+      )}
+
+
 
       {previewRow && (() => {
         const contentByLang: Record<Lang, string | null | undefined> = {
