@@ -89,7 +89,9 @@ const BudgetEstimator = ({
   const generate = async () => {
     setLoading(true);
     try {
-      const content = htmlToMarkdown(editor.getHTML()).trim();
+      const content = editor
+        ? htmlToMarkdown(editor.getHTML()).trim()
+        : (sourceContent || "").trim();
       if (content.length < 20) {
         toast.error("Itinerary is empty — write some content first.");
         return;
