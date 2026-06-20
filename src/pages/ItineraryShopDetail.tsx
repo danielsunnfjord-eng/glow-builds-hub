@@ -248,28 +248,21 @@ const ItineraryShopDetail = () => {
 
   const gallery = Array.isArray(data.gallery_images) ? data.gallery_images : [];
 
-  const expectations = [
-    {
-      icon: Coffee,
-      label: t("shop.expect.mornings", "Unhurried mornings"),
-      text: t("shop.expect.morningsText", "Slow starts in places worth lingering — markets, coastlines, quiet cafés."),
-    },
-    {
-      icon: Compass,
-      label: t("shop.expect.local", "Local insider access"),
-      text: t("shop.expect.localText", "Hand-picked guides, family-run tables and out-of-the-way detours you'd miss alone."),
-    },
-    {
-      icon: Sparkles,
-      label: t("shop.expect.signature", "Signature moments"),
-      text: t("shop.expect.signatureText", "One unforgettable experience each day — the kind you'll still talk about years later."),
-    },
-    {
-      icon: MoonIcon,
-      label: t("shop.expect.evenings", "Evenings, considered"),
-      text: t("shop.expect.eveningsText", "Where to dine, where to walk, and where to watch the day end well."),
-    },
+  const fallbackExpectations = [
+    { icon: Coffee, label: t("shop.expect.mornings", "Unhurried mornings"), text: t("shop.expect.morningsText", "Slow starts in places worth lingering — markets, coastlines, quiet cafés.") },
+    { icon: Compass, label: t("shop.expect.local", "Local insider access"), text: t("shop.expect.localText", "Hand-picked guides, family-run tables and out-of-the-way detours you'd miss alone.") },
+    { icon: Sparkles, label: t("shop.expect.signature", "Signature moments"), text: t("shop.expect.signatureText", "One unforgettable experience each day — the kind you'll still talk about years later.") },
+    { icon: MoonIcon, label: t("shop.expect.evenings", "Evenings, considered"), text: t("shop.expect.eveningsText", "Where to dine, where to walk, and where to watch the day end well.") },
   ];
+  const highlightIcons = [Sparkles, Compass, Coffee, MoonIcon];
+  const dbHighlights = Array.isArray(data.subpage_highlights) ? data.subpage_highlights : [];
+  const expectations = dbHighlights.length > 0
+    ? dbHighlights.slice(0, 4).map((h, i) => ({
+        icon: highlightIcons[i % highlightIcons.length],
+        label: h.title,
+        text: h.text,
+      }))
+    : fallbackExpectations;
 
   const valueProps = [
     {
