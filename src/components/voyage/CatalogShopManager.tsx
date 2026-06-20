@@ -1271,6 +1271,14 @@ const CatalogShopManager = () => {
       if (savedId) {
         void syncToGoogleDoc(savedId);
       }
+      // Regenerate sub-page content on publish (fire-and-forget).
+      if (savedId && publish === true) {
+        void supabase.functions
+          .invoke("generate-subpage-content", { body: { itinerary_id: savedId } })
+          .then(({ error }) => {
+            if (error) toast.error("Sub-page content refresh failed: " + error.message);
+          });
+      }
       setLastPersistedSignature(catalogDraftSignature(state, sectionPrompt));
       setLastAutoSavedAt(new Date().toISOString());
       setAutoSaveStatus("saved");
