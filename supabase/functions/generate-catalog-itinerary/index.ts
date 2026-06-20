@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
       duration = '',
       language = 'en',
       brief = '',
-      mode = 'full', // 'full' | 'section'
+      mode = 'full', // 'full' | 'section' | 'metadata'
       section_instruction = '',
       existing_content = '',
     } = body || {};
@@ -131,6 +131,82 @@ Deno.serve(async (req) => {
     if (mode === 'full' && !destination && !title) {
       return new Response(JSON.stringify({ error: 'destination or title is required' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // One-shot non-streaming JSON call: returns cover intros + short descriptions
+    // for all three languages in a single Anthropic request.
+    if (mode === 'metadata') {
+      const excerpt = String(existing_content || '').slice(0, 6000);
+      const metaSystem = `You are an editorial copywriter for Fjord & Waves Travel, a premium boutique travel atelier.
+You write in a calm, confident, human voice — never generic, never overly poetic, never AI-clichéd.
+STRICTLY AVOID the words: tapestry, nestled, vibrant, bustling, charming, seamlessly, delve, curated, elevate, timeless, unparalleled, testament, journey of discovery, treasure trove, gem, haven, boasts.
+Never open with "Imagine..." or "Welcome to...".
+Name specific places, landscapes or experiences from the itinerary excerpt to ground the writing.
+You write natively in each requested language — never translate word-for-word from English. Brazilian Portuguese should read like a Brazilian wrote it; Norwegian should read like a Norwegian (Bokmål) wrote it.
+You must output STRICT JSON only — no markdown fences, no preamble, no commentary.`;
+      const metaUser = `Trip metadata:
+— Title: ${title || '(untitled)'}
+— Destination: ${destination || '(unspecified)'}
+— Duration: ${duration || '(unspecified)'}
+— Experience type: ${experience_type || '(unspecified)'}
+— Editor brief: ${brief || '(none)'}
+
+Itinerary excerpt (markdown, may be partial):
+"""
+${excerpt}
+"""
+
+Write the following six pieces of copy and return them as a single JSON object with EXACTLY these keys:
+
+{
+  "cover_intro_en": "3–4 sentence evocative cover-page introduction in English. Sets the emotional tone, names the destination and a couple of grounding specifics from the itinerary. Reads like a luxury travel atelier — calm, confident, sensory but restrained. No headings, no markdown, no quotes.",
+  "cover_intro_pt": "Same as cover_intro_en but written natively in Brazilian Portuguese (pt-BR).",
+  "cover_intro_no": "Same as cover_intro_en but written natively in Norwegian (Bokmål).",
+  "summary_en": "2–3 sentence catalogue teaser in English — suitable for catalogue cards and listings. Tight, inviting, specific. No markdown, no quotes.",
+  "summary_pt": "Same as summary_en but written natively in Brazilian Portuguese (pt-BR).",
+  "summary_no": "Same as summary_en but written natively in Norwegian (Bokmål)."
+}
+
+Return ONLY the JSON object. No code fences, no explanation.`;
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 2048,
+          system: metaSystem,
+          messages: [{ role: 'user', content: metaUser }],
+        }),
+      });
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        return new Response(JSON.stringify({ error: `Anthropic ${res.status}: ${errText}` }), {
+          status: 502,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const data = await res.json();
+      const text: string = data?.content?.[0]?.text || '';
+      const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+      let parsed: any = null;
+      try { parsed = JSON.parse(cleaned); } catch {
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        if (match) { try { parsed = JSON.parse(match[0]); } catch { /* noop */ } }
+      }
+      if (!parsed) {
+        return new Response(JSON.stringify({ error: 'Could not parse metadata JSON', raw: text }), {
+          status: 502,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      return new Response(JSON.stringify(parsed), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
