@@ -1753,150 +1753,94 @@ const CatalogShopManager = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-            <Label className="text-base">Itinerary body</Label>
-            <Button onClick={runGenerate} disabled={generating} className="bg-gold text-ink hover:bg-ink hover:text-voyage-white">
-              {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-              {state.content ? "Regenerate with AI" : "Generate with AI"}
-            </Button>
-          </div>
-
-          <EditorErrorBoundary
-            onError={(err) =>
-              setAuditAction({
-                status: "error",
-                message: "The editor hit a rendering error after the last AI action.",
-                detail: err.message + " — your draft text is preserved. Use 'Reload editor' to continue.",
-              })
-            }
-          >
-            <ItineraryEditor
-              content={state.content}
-              onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
-              placeholder="Write or generate the itinerary…"
-              destination={state.destination}
-              tripDuration={state.duration}
-              budget={budget}
-              coverLabel={budgetCoverLabel}
-              onBudgetSaved={handleBudgetSaved}
-            />
-          </EditorErrorBoundary>
-
-          <div className="mt-3 p-3 border border-parchment-3 rounded bg-parchment/40">
-            <Label className="text-[0.78rem]">Regenerate a specific section with AI</Label>
-            <div className="flex gap-2 mt-1">
-              <Input
-                value={sectionPrompt}
-                onChange={(e) => setSectionPrompt(e.target.value)}
-                placeholder='e.g. "Rewrite the Food & Drink section with more focus on seafood"'
-              />
-              <Button variant="outline" onClick={runRegenerateSection} disabled={regenerating}>
-                {regenerating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
-                Regenerate
-              </Button>
-            </div>
-            <p className="text-[0.7rem] text-voyage-muted mt-1">The new section is appended at the bottom — paste it into place in the editor and delete the old one.</p>
-          </div>
-
-          {/* AUDIT */}
-          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
-            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+          {/* SECTION 2 — BODY CONTENT (Google Docs) */}
+          <div className="mt-2 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
               <div>
                 <div className="font-serif text-lg font-bold flex items-center gap-2">
-                  <ClipboardCheck className="w-4 h-4" /> Audit Itinerary
+                  <FileText className="w-4 h-4" /> Body content
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Senior luxury travel advisor review. Step 1: get the audit report. Step 2: apply improvements.
+                  Body copy lives in Google Docs. Edit there freely. The app pulls fresh content each time you preview the PDF — fonts and colours are always set by the brand stylesheet.
                 </p>
-                {auditAction.status !== "idle" && (
-                  <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
-                    <div className="flex items-center gap-2 font-medium">
-                      {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
-                      {auditAction.message}
-                    </div>
-                    {auditAction.detail && <div className="mt-1 opacity-80">{auditAction.detail}</div>}
-                  </div>
-                )}
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
-                  {auditing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                  {state.auditItems.length ? "Re-audit" : "Run Audit"}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={applyAudit}
-                  disabled={
-                    !state.auditItems.some((i) => i.selected) ||
-                    applyingAudit ||
-                    auditing ||
-                    failedAuditBatch !== null
-                  }
-                  className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
-                >
-                  {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                  Apply Selected ({state.auditItems.filter((i) => i.selected).length})
-                </Button>
-                {failedAuditBatch && (
-                  <Button variant="outline" size="sm" onClick={retryFailedAuditBatch} disabled={applyingAudit || auditing}>
-                    {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                    Retry batch {failedAuditBatch.batchNumber}
-                  </Button>
-                )}
-                {state.previousContent !== null && (
-                  <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
-                    <Undo2 className="w-4 h-4 mr-2" /> Keep Original
-                  </Button>
-                )}
-              </div>
+              <Button
+                onClick={runGenerate}
+                disabled={generating}
+                variant="outline"
+                size="sm"
+                title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
+              </Button>
             </div>
-            {applySummary && (
-              <div className={`mt-3 rounded-md border px-3 py-2 text-[0.8rem] ${applySummary.failedItems.length ? "border-destructive/40 bg-destructive/5" : "border-sage/40 bg-sage/10"}`}>
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div className="font-medium text-ink inline-flex items-center gap-1.5">
-                    {applySummary.failedItems.length
-                      ? <AlertCircle className="w-4 h-4 text-destructive" />
-                      : <CheckCircle2 className="w-4 h-4 text-sage" />}
-                    {applySummary.appliedIds.length} of {applySummary.totalItems} improvements applied{applySummary.failedItems.length ? " — some failed" : " successfully"}
+
+            {gdocInfo.id && gdocInfo.url ? (
+              <div className="rounded border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
+                <div className="text-[0.85rem]">
+                  <div className="flex items-center gap-1.5 font-medium text-ink">
+                    📄 Google Doc linked
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {applySummary.failedItems.length > 0 && (
-                      <Button size="sm" variant="outline" onClick={retryFailedItems} disabled={applyingAudit}>
-                        {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <RefreshCcw className="w-3.5 h-3.5 mr-1.5" />}
-                        Retry {applySummary.failedItems.length} failed
-                      </Button>
-                    )}
-                    <Button size="sm" onClick={viewUpdatedItinerary} className="bg-ink text-voyage-white hover:bg-gold hover:text-ink">
-                      <Eye className="w-3.5 h-3.5 mr-1.5" /> View Updated Itinerary
-                    </Button>
+                  <div className="text-[0.72rem] text-voyage-muted">
+                    {gdocInfo.lastSyncedAt
+                      ? `Last synced ${new Date(gdocInfo.lastSyncedAt).toLocaleString()}`
+                      : "Not yet synced"}
                   </div>
                 </div>
-                {applySummary.failedItems.length > 0 && (
-                  <ul className="mt-2 list-disc pl-5 text-[0.75rem] text-ink-2 space-y-0.5">
-                    {applySummary.failedItems.map((f) => (
-                      <li key={f.id}><span className="font-medium">{f.title}</span></li>
-                    ))}
-                  </ul>
+                <div className="flex flex-wrap items-center gap-2">
+                  <a
+                    href={gdocInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
+                  >
+                    Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <Button
+                    size="sm"
+                    onClick={finaliseAndPreview}
+                    disabled={finalising || !state.id}
+                    className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
+                  >
+                    {finalising ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                    Finalise & Preview PDF
+                  </Button>
+                </div>
+              </div>
+            ) : state.id ? (
+              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+                <div className="mb-2">
+                  No Google Doc linked yet.
+                  {state.content.trim()
+                    ? " This itinerary has draft body content from the previous editor — push it to a new Google Doc to start editing there."
+                    : " Generate AI content above, then save to create the linked Doc."}
+                </div>
+                {state.content.trim() && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => syncToGoogleDoc(state.id!)}
+                    disabled={gdocSyncing}
+                  >
+                    {gdocSyncing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />}
+                    Create Google Doc from existing draft
+                  </Button>
                 )}
               </div>
-            )}
-            {state.auditItems.length ? (
-              <div className="mt-2">
-                <AuditChecklist
-                  items={state.auditItems}
-                  onToggle={toggleAuditItem}
-                  onSelectAll={selectAllAudit}
-                  onDeselectAll={deselectAllAudit}
-                  statuses={itemStatuses}
-                />
-              </div>
             ) : (
-              <p className="text-[0.78rem] text-voyage-muted italic">No audit yet — run it before publishing.</p>
+              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+                Save the itinerary first to create its linked Google Doc.
+              </div>
             )}
-            {state.auditedAt && (
-              <p className="text-[0.7rem] text-voyage-muted mt-2">Last audited: {new Date(state.auditedAt).toLocaleString()}</p>
+
+            {docMissingError && (
+              <div className="mt-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-[0.78rem] text-destructive">
+                {docMissingError}
+              </div>
             )}
           </div>
+
 
           {/* HOTELS */}
           <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
