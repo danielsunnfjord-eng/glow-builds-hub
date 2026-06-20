@@ -147,6 +147,7 @@ interface EditorState {
   auditedAt: string | null;
   previousContent: string | null;
   subpageChecklist: string[];
+  subpageDayOverview: { label: string; description: string }[];
 }
 
 
