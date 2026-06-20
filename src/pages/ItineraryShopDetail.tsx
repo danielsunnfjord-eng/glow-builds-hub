@@ -177,7 +177,13 @@ const ItineraryShopDetail = () => {
     t("shop.includes.practical", "Practical tips, logistics & best times to visit"),
     t("shop.includes.pdf", "Instant premium PDF download"),
   ];
-  const includes = wygItems.length > 0 ? wygItems : defaultIncludes;
+  const checklistFromDb = Array.isArray(data?.subpage_checklist) ? data!.subpage_checklist! : [];
+  const includes = checklistFromDb.length > 0
+    ? checklistFromDb
+    : (wygItems.length > 0 ? wygItems : defaultIncludes);
+
+  const dayOverview = Array.isArray(data?.subpage_day_overview) ? data!.subpage_day_overview! : [];
+  const subpageMapUrl = data?.subpage_map_url || null;
 
   useEffect(() => {
     if (title) document.title = `${title} · Fjord & Waves Travel`;
