@@ -535,6 +535,12 @@ const CatalogShopManager = () => {
     setAutoSaveError("");
     setRestoredNotice(restoredAt ? `Draft restored from ${new Date(restoredAt).toLocaleString()}` : "");
     setCloseConfirmOpen(false);
+    setGdocInfo({
+      id: (r as any).gdoc_id ?? null,
+      url: (r as any).gdoc_url ?? null,
+      lastSyncedAt: (r as any).gdoc_last_synced_at ?? null,
+    });
+    setGdocError(null);
     setEditorOpen(true);
   };
 
