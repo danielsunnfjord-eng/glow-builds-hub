@@ -346,7 +346,7 @@ const ItineraryShopDetail = () => {
 
       <main>
         {/* 1. HERO */}
-        <section className="relative w-full h-[78vh] min-h-[520px] max-h-[820px] overflow-hidden bg-ink">
+        <section className="relative w-full h-[78vh] min-h-[440px] md:min-h-[520px] max-h-[820px] overflow-hidden bg-ink">
           {data.hero_image_url && (
             <img
               src={data.hero_image_url}
@@ -388,10 +388,10 @@ const ItineraryShopDetail = () => {
 
               <a
                 href="#buy"
-                className="inline-flex items-center gap-3 px-7 py-4 rounded-sm bg-gold text-ink text-[0.78rem] font-semibold tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-sm bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
               >
                 {t("shop.getThis", "Get this itinerary")}
-                <span className="h-4 w-px bg-ink/30" />
+                <span className="h-3 md:h-4 w-px bg-ink/30" />
                 {priceLabel}
               </a>
             </div>
@@ -416,19 +416,19 @@ const ItineraryShopDetail = () => {
           aria-label="breadcrumb"
           className="px-16 max-md:px-6 py-5 border-b border-ink/[0.06] bg-parchment"
         >
-          <ol className="flex items-center gap-2 text-[0.72rem] tracking-[0.08em] text-voyage-muted">
+          <ol className="flex items-center gap-2 text-[0.72rem] tracking-[0.08em] text-voyage-muted whitespace-nowrap overflow-x-auto">
             <li>
               <Link to="/" className="hover:text-ink transition-colors">
                 {t("nav.home", "Home")}
               </Link>
             </li>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 shrink-0" />
             <li>
               <Link to="/catalogue" className="hover:text-ink transition-colors">
                 {t("nav.shop", "Catalogue")}
               </Link>
             </li>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 shrink-0" />
             <li className="text-ink truncate max-w-[50vw]">{title}</li>
           </ol>
         </nav>
@@ -441,12 +441,12 @@ const ItineraryShopDetail = () => {
               {/* Sticky sidebar */}
               <aside id="buy" className="lg:sticky lg:top-28 self-start scroll-mt-28 space-y-6">
                 {/* Price + buy */}
-                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-7">
-                  <div className="flex items-baseline justify-between mb-1">
+                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-5 md:p-7">
+                  <div className="flex items-baseline justify-between gap-3 mb-1">
                     <span className="text-[0.68rem] uppercase tracking-[0.16em] text-voyage-muted">
                       {t("shop.buyNow")}
                     </span>
-                    <span className="font-serif text-[2.2rem] font-bold text-ink leading-none">
+                    <span className="font-serif text-[1.7rem] md:text-[2.2rem] font-bold text-ink leading-none">
                       {priceLabel}
                     </span>
                   </div>
