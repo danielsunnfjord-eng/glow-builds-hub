@@ -656,7 +656,7 @@ const CatalogShopManager = () => {
       heroImageCaption: (r as any).hero_image_caption || "",
       isPublished: r.is_published,
       hotels,
-      auditReport: r.audit_report || "",
+      bodyPdfUrl: (r as any).body_pdf_url || "",
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
