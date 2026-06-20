@@ -1722,30 +1722,17 @@ const CatalogShopManager = () => {
                     📄 Google Doc linked
                   </div>
                   <div className="text-[0.72rem] text-voyage-muted">
-                    {gdocInfo.lastSyncedAt
-                      ? `Last synced ${new Date(gdocInfo.lastSyncedAt).toLocaleString()}`
-                      : "Not yet synced"}
+                    Edit the body content in Google Docs, export it as PDF, then upload below.
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <a
-                    href={gdocInfo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
-                  >
-                    Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                  <Button
-                    size="sm"
-                    onClick={finaliseAndPreview}
-                    disabled={finalising || !state.id}
-                    className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
-                  >
-                    {finalising ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-                    Finalise & Preview PDF
-                  </Button>
-                </div>
+                <a
+                  href={gdocInfo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
+                >
+                  Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </div>
             ) : state.id ? (
               <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
@@ -1773,35 +1760,68 @@ const CatalogShopManager = () => {
               </div>
             )}
 
-            {docMissingError && (
-              <div className="mt-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-[0.78rem] text-destructive">
-                {docMissingError}
+            {/* Body PDF upload + Preview PDF. The uploaded PDF is merged
+                between the fixed cover page and the fixed hotels + back pages. */}
+            <div className="mt-4 rounded border border-parchment-3 bg-voyage-white p-3">
+              <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <div>
+                  <div className="font-medium text-ink text-[0.92rem] flex items-center gap-2">
+                    <FileText className="w-4 h-4" /> Body content PDF
+                  </div>
+                  <div className="text-[0.74rem] text-voyage-muted">
+                    Export the finalised body content from Google Docs as PDF and upload it here. It will be inserted between the cover page and the hotels / back page.
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment cursor-pointer">
+                    {bodyPdfUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                    {state.bodyPdfUrl ? "Replace PDF" : "Upload PDF"}
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) void uploadBodyPdf(f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <Button
+                    size="sm"
+                    onClick={() => setPreviewMergedOpen(true)}
+                    disabled={!state.bodyPdfUrl}
+                    className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
+                    title={!state.bodyPdfUrl ? "Upload a body content PDF first" : ""}
+                  >
+                    <Eye className="w-4 h-4 mr-2" /> Preview PDF
+                  </Button>
+                </div>
               </div>
-            )}
-
-            {/* Read-only snapshot of the last content pushed to / pulled from Google Docs.
-                Lets the advisor verify body copy without opening the Doc. */}
-            {state.content.trim() && (
-              <div className="mt-3 rounded border border-parchment-3 bg-parchment/20">
-                <button
-                  type="button"
-                  onClick={() => setBodySnapshotOpen((v) => !v)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-[0.78rem] font-medium text-ink hover:bg-parchment/40 rounded-t"
-                >
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-3.5 h-3.5" />
-                    Last synced body content ({state.content.trim().length.toLocaleString()} chars)
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${bodySnapshotOpen ? "rotate-180" : ""}`} />
-                </button>
-                {bodySnapshotOpen && (
-                  <pre className="max-h-[320px] overflow-y-auto px-3 py-2 text-[0.74rem] whitespace-pre-wrap font-mono text-ink-2 border-t border-parchment-3 bg-voyage-white rounded-b">
-{state.content}
-                  </pre>
-                )}
-              </div>
-            )}
+              {state.bodyPdfUrl ? (
+                <div className="flex items-center justify-between gap-2 text-[0.78rem]">
+                  <a
+                    href={state.bodyPdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink underline truncate"
+                  >
+                    Current PDF — open in new tab
+                  </a>
+                  <button
+                    type="button"
+                    onClick={removeBodyPdf}
+                    className="inline-flex items-center gap-1 text-destructive hover:underline"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="text-[0.78rem] text-voyage-muted italic">No body PDF uploaded yet.</div>
+              )}
+            </div>
           </div>
+
 
 
 
