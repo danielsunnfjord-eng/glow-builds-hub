@@ -622,6 +622,35 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
 
+              {/* Day overview */}
+              {dayOverview.length > 0 && (
+                <div className="mb-14">
+                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                    {t("shop.dayOverview", "Day-by-day overview")}
+                  </h2>
+                  <div className="h-px w-12 bg-gold mb-7" />
+                  <ol className="space-y-4">
+                    {dayOverview.map((d, i) => (
+                      <li
+                        key={i}
+                        className="p-5 rounded-lg border border-ink/[0.06] bg-voyage-white"
+                      >
+                        {d.label && (
+                          <div className="font-serif text-[1.05rem] font-bold text-ink mb-1">
+                            {d.label}
+                          </div>
+                        )}
+                        {d.description && (
+                          <p className="text-[0.9rem] text-ink/75 leading-relaxed">
+                            {d.description}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
               {/* Highlights */}
               <div className="mb-14">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
