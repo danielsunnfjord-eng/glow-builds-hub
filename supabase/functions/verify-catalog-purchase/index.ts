@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: purchase } = await supabase
       .from("catalog_purchases")
-      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total")
+      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total, stripe_environment")
       .eq("download_token", token)
       .maybeSingle();
 
@@ -48,7 +48,9 @@ Deno.serve(async (req) => {
       return json({ status: "paid", itinerary: itin });
     }
 
-    const stripe = createStripeClient("sandbox");
+    const stripeEnv: "sandbox" | "live" =
+      purchase.stripe_environment === "live" ? "live" : "sandbox";
+    const stripe = createStripeClient(stripeEnv);
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.payment_status === "paid") {

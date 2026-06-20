@@ -271,6 +271,7 @@ export type Database = {
           id: string
           itinerary_id: string
           status: string
+          stripe_environment: string
           stripe_session_id: string | null
           updated_at: string
         }
@@ -286,6 +287,7 @@ export type Database = {
           id?: string
           itinerary_id: string
           status?: string
+          stripe_environment?: string
           stripe_session_id?: string | null
           updated_at?: string
         }
@@ -301,6 +303,7 @@ export type Database = {
           id?: string
           itinerary_id?: string
           status?: string
+          stripe_environment?: string
           stripe_session_id?: string | null
           updated_at?: string
         }

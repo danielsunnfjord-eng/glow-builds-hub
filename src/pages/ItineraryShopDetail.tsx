@@ -210,6 +210,7 @@ const ItineraryShopDetail = () => {
     if (!data) return;
     setSubmitting(true);
     try {
+      const { getPaymentsEnvironment } = await import("@/lib/payments-env");
       const { data: res, error } = await supabase.functions.invoke(
         "create-catalog-checkout",
         {
@@ -218,6 +219,7 @@ const ItineraryShopDetail = () => {
             email,
             origin: window.location.origin,
             language: lang,
+            environment: getPaymentsEnvironment(),
           },
         },
       );
