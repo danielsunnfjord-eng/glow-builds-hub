@@ -151,6 +151,7 @@ interface EditorState {
   subpageChecklist: string[];
   subpageDayOverview: { label: string; description: string }[];
   subpageExpectations: { title: string; description: string }[];
+  subpageMapUrl: string;
 }
 
 
@@ -206,6 +207,7 @@ const blankEditor: EditorState = {
   subpageChecklist: [],
   subpageDayOverview: [],
   subpageExpectations: [],
+  subpageMapUrl: "",
 };
 
 
@@ -701,6 +703,7 @@ const CatalogShopManager = () => {
               description: String(e?.description ?? ""),
             }))
         : [],
+      subpageMapUrl: String((r as any).subpage_map_url || ""),
     };
 
     let nextState = baseState;
@@ -1334,6 +1337,7 @@ const CatalogShopManager = () => {
         subpage_expectations: state.subpageExpectations
           .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
           .filter((e) => e.title.length > 0 || e.description.length > 0),
+        subpage_map_url: state.subpageMapUrl.trim() || null,
         estimated_trip_budget: budgetCoverLabel,
       };
 
@@ -1899,6 +1903,17 @@ const CatalogShopManager = () => {
                   + Add card
                 </Button>
               </div>
+            </div>
+            <div className="md:col-span-2">
+              <Label>Route map URL (subpage)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Paste a Google Maps embed URL. Shown on the catalogue subpage as an embedded route map. Leave empty to hide the section.
+              </p>
+              <Input
+                value={state.subpageMapUrl}
+                onChange={(e) => setState({ ...state, subpageMapUrl: e.target.value })}
+                placeholder="https://www.google.com/maps/embed?pb=…"
+              />
             </div>
             <div className="md:col-span-2">
               <Label>Cover image</Label>

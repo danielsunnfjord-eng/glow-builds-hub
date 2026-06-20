@@ -102,6 +102,7 @@ interface CatalogItem {
   subpage_checklist: string[] | null;
   subpage_day_overview: { label: string; description: string }[] | null;
   subpage_expectations: { title: string; description: string }[] | null;
+  subpage_map_url: string | null;
 }
 
 
@@ -662,9 +663,30 @@ const ItineraryShopDetail = () => {
                   </div>
                 </div>
               )}
+              </div>
             </div>
-          </div>
-        </section>
+
+            {/* Route map */}
+            {data.subpage_map_url && (
+              <div className="mb-14">
+                <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                  {t("shop.routeMap", "Route map")}
+                </h2>
+                <div className="h-px w-12 bg-gold mb-7" />
+                <div className="rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white aspect-[16/9]">
+                  <iframe
+                    src={data.subpage_map_url}
+                    title={t("shop.routeMap", "Route map")}
+                    className="w-full h-full"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
+            )}
+          </section>
 
         {/* 4. ABOUT TRAVEL DESIGNER */}
         <section className="bg-voyage-white border-y border-ink/[0.06]">
