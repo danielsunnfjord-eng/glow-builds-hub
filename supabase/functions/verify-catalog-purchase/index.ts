@@ -94,6 +94,27 @@ Deno.serve(async (req) => {
         console.error("send confirmation email failed", mailErr);
       }
 
+      // Internal sale notification to Daniel
+      try {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "catalog-sale-notification",
+            idempotencyKey: `catalog-sale-notify-${purchase.id}`,
+            templateData: {
+              customerName,
+              customerEmail: purchase.customer_email,
+              itineraryTitle: itin?.title_en ?? "(unknown)",
+              itinerarySlug: itin?.slug,
+              amount: purchase.amount_total ? String(purchase.amount_total) : undefined,
+              currency: "EUR",
+              purchasedAt: new Date().toISOString(),
+            },
+          },
+        });
+      } catch (notifyErr) {
+        console.error("send internal sale notification failed", notifyErr);
+      }
+
       return json({ status: "paid", itinerary: itin });
     }
 
