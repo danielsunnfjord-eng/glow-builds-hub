@@ -668,7 +668,11 @@ const CatalogShopManager = () => {
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
+      subpageChecklist: Array.isArray((r as any).subpage_checklist)
+        ? ((r as any).subpage_checklist as any[]).map((s) => String(s ?? "")).filter((s) => s.trim().length > 0)
+        : [],
     };
+
     let nextState = baseState;
     let nextSectionPrompt = "";
     let restoredAt: string | null = null;
