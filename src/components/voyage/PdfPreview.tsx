@@ -356,7 +356,10 @@ const PAGE_CSS = `
 .fjw-back-page img { width: 110px; height: 110px; object-fit: contain; margin-bottom: 30px; }
 .fjw-back-page h2 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 500; line-height: 1.2; white-space: pre-line; margin: 0 0 18px; }
 .fjw-back-page p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: #4C6F75; max-width: 120mm; margin: 0 auto 36px; line-height: 1.6; }
-.fjw-back-rule { width: 60px; height: 1px; background: #4C6F75; margin: 0 auto 30px; }
+.fjw-back-rule { width: 60px; height: 1px; background: #4C6F75; margin: 0 auto 22px; }
+.fjw-advisor-signature { margin-bottom: 26px; }
+.fjw-advisor-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #1c2e38; font-weight: 500; letter-spacing: 0.02em; }
+.fjw-advisor-role { font-family: 'Jost', 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #8fa0a8; margin-top: 4px; }
 .fjw-contact { font-size: 12px; line-height: 2; letter-spacing: 0.05em; }
 .fjw-social { margin-top: 24px; font-size: 10px; color: #4C6F75; letter-spacing: 0.25em; text-transform: uppercase; }
 `;
