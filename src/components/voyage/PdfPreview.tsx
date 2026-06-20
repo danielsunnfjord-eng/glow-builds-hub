@@ -446,14 +446,18 @@ const cleanPageBreaks = (html: string) =>
     .filter(isMeaningfulChunk)
     .join('<div class="fjw-page-break" data-page-break="true"></div>');
 
-const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }: PdfPreviewProps) => {
+const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose, language }: PdfPreviewProps) => {
   const { i18n } = useTranslation();
   const renderRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [pageInfo, setPageInfo] = useState({ current: 1, total: 1 });
   const [isRendering, setIsRendering] = useState(true);
+  const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
+  const [merging, setMerging] = useState(false);
+  const [mergeError, setMergeError] = useState<string | null>(null);
   const lang = (language || i18n.language || "en").slice(0, 2).toLowerCase();
   const L = I18N[lang] || I18N.en;
+  const usePdfMerge = !!bodyPdfUrl;
 
   const formatDateRange = (start?: string | null, end?: string | null) => {
     if (!start && !end) return "";
