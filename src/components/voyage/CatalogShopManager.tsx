@@ -257,6 +257,42 @@ const CatalogShopManager = () => {
   const [gdocChecking, setGdocChecking] = useState(false);
   const [gdocPulling, setGdocPulling] = useState(false);
   const [pullConfirmOpen, setPullConfirmOpen] = useState(false);
+  // Finalise & Preview PDF: pulls the Google Doc as HTML, sanitises it, and
+  // opens the PDF preview. Read-only — Doc content is never persisted to the
+  // app database; it only feeds Paged.js for the preview.
+  const [finalising, setFinalising] = useState(false);
+  const [finalisedHtml, setFinalisedHtml] = useState<string | null>(null);
+  const [docMissingError, setDocMissingError] = useState<string | null>(null);
+
+  const finaliseAndPreview = async () => {
+    if (!state.id) { toast.error("Save the itinerary first."); return; }
+    if (!gdocInfo.id) {
+      toast.error("Create the Google Doc first (use the Save button to push initial content).");
+      return;
+    }
+    setFinalising(true);
+    setDocMissingError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: state.id, action: "export-html" },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const rawHtml: string = (data as any).html ?? "";
+      const clean = sanitizeDocHtml(rawHtml);
+      setFinalisedHtml(clean);
+      if ((data as any).doc_modified_time) {
+        setGdocInfo((prev) => ({ ...prev, lastSyncedAt: (data as any).doc_modified_time }));
+      }
+    } catch (e: any) {
+      const msg = e?.message || "Could not fetch Google Doc content.";
+      setDocMissingError(msg);
+      toast.error(msg);
+    } finally {
+      setFinalising(false);
+    }
+  };
+
 
   const saveSnapshot = async (itineraryId: string, label: string) => {
     const { data: { user } } = await supabase.auth.getUser();
