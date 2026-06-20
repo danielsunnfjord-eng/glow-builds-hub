@@ -1499,6 +1499,16 @@ const CatalogShopManager = () => {
                         Open Google Doc to review ↗
                       </a>
                     )}
+                    {state.id && (
+                      <button
+                        type="button"
+                        onClick={() => setPullConfirmOpen(true)}
+                        disabled={gdocPulling}
+                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100 disabled:opacity-50"
+                      >
+                        {gdocPulling ? "Importing…" : "Pull Doc changes into editor"}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setGdocConflict((c) => (c ? { ...c, acknowledged: true } : c))}
