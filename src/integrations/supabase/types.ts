@@ -51,6 +51,10 @@ export type Database = {
           season: string[] | null
           slug: string
           sort_order: number
+          stripe_product_id_live: string | null
+          stripe_product_id_sandbox: string | null
+          stripe_synced_at: string | null
+          stripe_tax_code: string
           subpage_checklist: Json | null
           subpage_day_overview: Json | null
           subpage_expectations: Json | null
@@ -104,6 +108,10 @@ export type Database = {
           season?: string[] | null
           slug: string
           sort_order?: number
+          stripe_product_id_live?: string | null
+          stripe_product_id_sandbox?: string | null
+          stripe_synced_at?: string | null
+          stripe_tax_code?: string
           subpage_checklist?: Json | null
           subpage_day_overview?: Json | null
           subpage_expectations?: Json | null
@@ -157,6 +165,10 @@ export type Database = {
           season?: string[] | null
           slug?: string
           sort_order?: number
+          stripe_product_id_live?: string | null
+          stripe_product_id_sandbox?: string | null
+          stripe_synced_at?: string | null
+          stripe_tax_code?: string
           subpage_checklist?: Json | null
           subpage_day_overview?: Json | null
           subpage_expectations?: Json | null
