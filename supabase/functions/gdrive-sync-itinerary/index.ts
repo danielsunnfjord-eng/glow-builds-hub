@@ -97,6 +97,16 @@ async function driveGetWebViewLink(fileId: string): Promise<string> {
   return j.webViewLink as string;
 }
 
+async function driveGetMeta(fileId: string): Promise<{ modifiedTime: string | null; webViewLink: string | null; trashed: boolean }> {
+  const r = await fetch(`${GATEWAY}/files/${fileId}?fields=modifiedTime,webViewLink,trashed`, {
+    method: "GET",
+    headers: gwHeaders(),
+  });
+  if (!r.ok) throw new Error(`Drive meta failed: ${r.status} ${await r.text()}`);
+  const j = await r.json();
+  return { modifiedTime: j.modifiedTime ?? null, webViewLink: j.webViewLink ?? null, trashed: !!j.trashed };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
