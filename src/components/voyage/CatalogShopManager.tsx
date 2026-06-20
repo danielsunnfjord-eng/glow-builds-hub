@@ -2159,6 +2159,7 @@ const CatalogShopManager = () => {
             )}
             <PdfPreview
               content={pickedContent}
+              bodyPdfUrl={(previewRow as any).body_pdf_url || null}
               language={previewLang}
               project={{
                 client_name: pickedTitle,
