@@ -1781,7 +1781,6 @@ const CatalogShopManager = () => {
                       }}
                       placeholder="Short description (1–2 sentences)"
                     />
-                    </div>
                   </div>
                 ))}
                 <Button
