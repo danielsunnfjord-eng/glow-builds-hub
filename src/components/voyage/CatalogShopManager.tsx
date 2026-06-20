@@ -151,6 +151,7 @@ interface EditorState {
   subpageChecklist: string[];
   subpageDayOverview: { label: string; description: string }[];
   subpageExpectations: { title: string; description: string }[];
+  subpageMapUrl: string;
 }
 
 
@@ -206,6 +207,7 @@ const blankEditor: EditorState = {
   subpageChecklist: [],
   subpageDayOverview: [],
   subpageExpectations: [],
+  subpageMapUrl: "",
 };
 
 
@@ -701,6 +703,7 @@ const CatalogShopManager = () => {
               description: String(e?.description ?? ""),
             }))
         : [],
+      subpageMapUrl: String((r as any).subpage_map_url || ""),
     };
 
     let nextState = baseState;
