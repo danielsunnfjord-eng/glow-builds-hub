@@ -1927,12 +1927,19 @@ const CatalogShopManager = () => {
           pt: previewRow.summary_pt,
           no: previewRow.summary_no,
         };
+        const coverIntroByLang: Record<Lang, string | null | undefined> = {
+          en: previewRow.cover_intro_en,
+          pt: previewRow.cover_intro_pt,
+          no: previewRow.cover_intro_no,
+        };
         const pickedContent =
           contentByLang[previewLang] || contentByLang.en || contentByLang.pt || contentByLang.no || "";
         const pickedTitle =
           titleByLang[previewLang] || titleByLang.en || titleByLang.pt || titleByLang.no || "";
         const pickedSummary =
           summaryByLang[previewLang] || summaryByLang.en || summaryByLang.pt || summaryByLang.no || "";
+        const pickedCoverIntro =
+          coverIntroByLang[previewLang] || coverIntroByLang.en || coverIntroByLang.pt || coverIntroByLang.no || "";
         const available: Lang[] = (["en", "pt", "no"] as Lang[]).filter((l) => !!contentByLang[l]);
         return (
           <>
