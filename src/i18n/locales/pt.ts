@@ -13,7 +13,7 @@ export default {
     pricing: "Preços",
     planMyTrip: "Planeje Sua Viagem",
     bookCall: "Agendar Videochamada",
-    shop: "Catálogo",
+    shop: "Loja de Roteiros",
   },
   shop: {
     badge: "Catálogo de Roteiros",

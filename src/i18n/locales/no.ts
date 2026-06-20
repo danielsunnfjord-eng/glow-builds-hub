@@ -13,7 +13,7 @@ export default {
     pricing: "Priser",
     planMyTrip: "Planlegg Min Reise",
     bookCall: "Book Videosamtale",
-    shop: "Katalog",
+    shop: "Reisebutikk",
   },
   shop: {
     badge: "Reisekatalog",
