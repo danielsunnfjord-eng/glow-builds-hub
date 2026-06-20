@@ -97,6 +97,16 @@ async function driveGetWebViewLink(fileId: string): Promise<string> {
   return j.webViewLink as string;
 }
 
+async function driveGetMeta(fileId: string): Promise<{ modifiedTime: string | null; webViewLink: string | null; trashed: boolean }> {
+  const r = await fetch(`${GATEWAY}/files/${fileId}?fields=modifiedTime,webViewLink,trashed`, {
+    method: "GET",
+    headers: gwHeaders(),
+  });
+  if (!r.ok) throw new Error(`Drive meta failed: ${r.status} ${await r.text()}`);
+  const j = await r.json();
+  return { modifiedTime: j.modifiedTime ?? null, webViewLink: j.webViewLink ?? null, trashed: !!j.trashed };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -140,7 +150,9 @@ Deno.serve(async (req) => {
       throw new Error("Google Drive connector is not linked to this project.");
     }
 
-    const { itinerary_id } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const itinerary_id = body?.itinerary_id;
+    const action: "sync" | "check" = body?.action === "check" ? "check" : "sync";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -154,10 +166,45 @@ Deno.serve(async (req) => {
 
     const { data: row, error } = await supabase
       .from("catalog_itineraries")
-      .select("id, title_en, destination, duration, summary_en, itinerary_content_en, gdrive_folder_id, gdoc_id, gdoc_url")
+      .select("id, title_en, destination, duration, summary_en, itinerary_content_en, gdrive_folder_id, gdoc_id, gdoc_url, gdoc_last_synced_at")
       .eq("id", itinerary_id)
       .single();
     if (error || !row) throw new Error(`Itinerary not found: ${error?.message ?? "no row"}`);
+
+    // CHECK MODE: report Drive doc's last-modified time vs our last sync. Does not write.
+    if (action === "check") {
+      if (!row.gdoc_id) {
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            exists: false,
+            gdoc_id: null,
+            gdoc_url: row.gdoc_url ?? null,
+            last_synced_at: row.gdoc_last_synced_at ?? null,
+            doc_modified_time: null,
+            conflict: false,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      const meta = await driveGetMeta(row.gdoc_id);
+      const synced = row.gdoc_last_synced_at ? new Date(row.gdoc_last_synced_at).getTime() : 0;
+      const modified = meta.modifiedTime ? new Date(meta.modifiedTime).getTime() : 0;
+      // 30s grace to absorb clock skew and Drive's post-sync touch.
+      const conflict = !!meta.modifiedTime && modified > synced + 30_000 && !meta.trashed;
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          exists: !meta.trashed,
+          gdoc_id: row.gdoc_id,
+          gdoc_url: meta.webViewLink ?? row.gdoc_url ?? null,
+          last_synced_at: row.gdoc_last_synced_at ?? null,
+          doc_modified_time: meta.modifiedTime,
+          conflict,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Load (or initialize) the Drafts root folder.
     let { data: settings } = await supabase

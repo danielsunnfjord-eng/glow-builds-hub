@@ -253,13 +253,45 @@ const CatalogShopManager = () => {
   const [gdocInfo, setGdocInfo] = useState<{ id: string | null; url: string | null; lastSyncedAt: string | null }>({ id: null, url: null, lastSyncedAt: null });
   const [gdocSyncing, setGdocSyncing] = useState(false);
   const [gdocError, setGdocError] = useState<string | null>(null);
+  const [gdocConflict, setGdocConflict] = useState<{ docModifiedTime: string; lastSyncedAt: string | null; url: string | null; acknowledged: boolean } | null>(null);
+  const [gdocChecking, setGdocChecking] = useState(false);
+
+  const checkGoogleDocFreshness = async (itineraryId: string) => {
+    setGdocChecking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: itineraryId, action: "check" },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const d = data as any;
+      if (d?.gdoc_url) {
+        setGdocInfo((prev) => ({ ...prev, url: d.gdoc_url, id: d.gdoc_id ?? prev.id }));
+      }
+      if (d?.conflict && d?.doc_modified_time) {
+        setGdocConflict({
+          docModifiedTime: d.doc_modified_time,
+          lastSyncedAt: d.last_synced_at ?? null,
+          url: d.gdoc_url ?? null,
+          acknowledged: false,
+        });
+      } else {
+        setGdocConflict(null);
+      }
+    } catch (e: any) {
+      // Non-blocking: a failed freshness check should not prevent editing.
+      console.warn("Google Doc freshness check failed", e);
+    } finally {
+      setGdocChecking(false);
+    }
+  };
 
   const syncToGoogleDoc = async (itineraryId: string) => {
     setGdocSyncing(true);
     setGdocError(null);
     try {
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId },
+        body: { itinerary_id: itineraryId, action: "sync" },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -268,12 +300,14 @@ const CatalogShopManager = () => {
         url: (data as any).gdoc_url ?? null,
         lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
       });
+      setGdocConflict(null);
     } catch (e: any) {
       setGdocError(e?.message || "Google Drive sync failed");
     } finally {
       setGdocSyncing(false);
     }
   };
+
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
@@ -476,6 +510,7 @@ const CatalogShopManager = () => {
     setCloseConfirmOpen(false);
     setGdocInfo({ id: null, url: null, lastSyncedAt: null });
     setGdocError(null);
+    setGdocConflict(null);
     setEditorOpen(true);
   };
 
@@ -553,7 +588,12 @@ const CatalogShopManager = () => {
       lastSyncedAt: (r as any).gdoc_last_synced_at ?? null,
     });
     setGdocError(null);
+    setGdocConflict(null);
     setEditorOpen(true);
+    // Fire-and-forget freshness check: warn if the Google Doc has newer edits than our last sync.
+    if ((r as any).gdoc_id) {
+      void checkGoogleDocFreshness(r.id);
+    }
   };
 
   const callCatalogStream = async (body: Record<string, unknown>): Promise<string> => {
@@ -1363,6 +1403,50 @@ const CatalogShopManager = () => {
             </DialogDescription>
             <div className="mt-2 space-y-1 text-[0.75rem]">
               {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+
+              {/* Always-on one-way-sync warning. The app is the write master; saving here overwrites the Google Doc. */}
+              <div className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
+                <div className="font-medium">⚠️ Editing here will overwrite your Google Doc on save.</div>
+                <div className="text-[0.7rem] opacity-90">
+                  The app is the source of truth — it only pushes to Google Docs, never pulls. Close this window before editing the Doc directly, or your Doc edits will be lost on the next save.
+                </div>
+              </div>
+
+              {/* Conflict warning: Doc was edited more recently than our last sync. */}
+              {gdocConflict && !gdocConflict.acknowledged && (
+                <div className="rounded border border-red-400 bg-red-50 px-3 py-2 text-red-900">
+                  <div className="font-medium">
+                    ⚠️ Your Google Doc has changes newer than this editor
+                  </div>
+                  <div className="text-[0.7rem] opacity-90">
+                    Doc last edited {new Date(gdocConflict.docModifiedTime).toLocaleString()}
+                    {gdocConflict.lastSyncedAt
+                      ? ` · last synced ${new Date(gdocConflict.lastSyncedAt).toLocaleString()}`
+                      : " · never synced from this editor"}.
+                    Saving here will overwrite those Doc changes.
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {gdocConflict.url && (
+                      <a
+                        href={gdocConflict.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100"
+                      >
+                        Open Google Doc to review ↗
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setGdocConflict((c) => (c ? { ...c, acknowledged: true } : c))}
+                      className="rounded border border-red-400 bg-red-600 px-2 py-1 text-white hover:bg-red-700"
+                    >
+                      Continue editing here — Doc will be overwritten
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="text-voyage-muted">
                 {autoSaveStatus === "saving" && "Auto-saving draft…"}
                 {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
