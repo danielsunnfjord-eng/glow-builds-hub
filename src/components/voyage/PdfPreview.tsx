@@ -26,7 +26,8 @@ interface HotelRecPreview {
 
 interface PdfPreviewProps {
   content: string;
-  contentHtml?: string; // pre-sanitised HTML from Google Doc; overrides markdown rendering when present
+  contentHtml?: string; // pre-sanitised HTML; overrides markdown rendering when present
+  bodyPdfUrl?: string | null; // when present, the body HTML is skipped and this PDF is merged between cover and hotels/back
   language?: string;
   project: {
     client_name: string;
