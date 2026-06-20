@@ -115,6 +115,14 @@ async function driveExportMarkdown(fileId: string): Promise<string> {
   return await r.text();
 }
 
+// Export a Google Doc to HTML via Drive's export endpoint.
+async function driveExportHtml(fileId: string): Promise<string> {
+  const url = `${GATEWAY}/files/${fileId}/export?mimeType=${encodeURIComponent("text/html")}`;
+  const r = await fetch(url, { method: "GET", headers: gwHeaders() });
+  if (!r.ok) throw new Error(`Drive HTML export failed: ${r.status} ${await r.text()}`);
+  return await r.text();
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
