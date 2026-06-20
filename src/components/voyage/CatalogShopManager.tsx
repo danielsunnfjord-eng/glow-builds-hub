@@ -253,13 +253,45 @@ const CatalogShopManager = () => {
   const [gdocInfo, setGdocInfo] = useState<{ id: string | null; url: string | null; lastSyncedAt: string | null }>({ id: null, url: null, lastSyncedAt: null });
   const [gdocSyncing, setGdocSyncing] = useState(false);
   const [gdocError, setGdocError] = useState<string | null>(null);
+  const [gdocConflict, setGdocConflict] = useState<{ docModifiedTime: string; lastSyncedAt: string | null; url: string | null; acknowledged: boolean } | null>(null);
+  const [gdocChecking, setGdocChecking] = useState(false);
+
+  const checkGoogleDocFreshness = async (itineraryId: string) => {
+    setGdocChecking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: itineraryId, action: "check" },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const d = data as any;
+      if (d?.gdoc_url) {
+        setGdocInfo((prev) => ({ ...prev, url: d.gdoc_url, id: d.gdoc_id ?? prev.id }));
+      }
+      if (d?.conflict && d?.doc_modified_time) {
+        setGdocConflict({
+          docModifiedTime: d.doc_modified_time,
+          lastSyncedAt: d.last_synced_at ?? null,
+          url: d.gdoc_url ?? null,
+          acknowledged: false,
+        });
+      } else {
+        setGdocConflict(null);
+      }
+    } catch (e: any) {
+      // Non-blocking: a failed freshness check should not prevent editing.
+      console.warn("Google Doc freshness check failed", e);
+    } finally {
+      setGdocChecking(false);
+    }
+  };
 
   const syncToGoogleDoc = async (itineraryId: string) => {
     setGdocSyncing(true);
     setGdocError(null);
     try {
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId },
+        body: { itinerary_id: itineraryId, action: "sync" },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -268,12 +300,14 @@ const CatalogShopManager = () => {
         url: (data as any).gdoc_url ?? null,
         lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
       });
+      setGdocConflict(null);
     } catch (e: any) {
       setGdocError(e?.message || "Google Drive sync failed");
     } finally {
       setGdocSyncing(false);
     }
   };
+
 
   const { data: suggestions = [], isLoading: suggestionsLoading } = useQuery({
     queryKey: ["customer-suggestions"],
