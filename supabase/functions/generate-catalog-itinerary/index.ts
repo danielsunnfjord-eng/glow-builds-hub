@@ -138,7 +138,17 @@ Deno.serve(async (req) => {
     // One-shot non-streaming JSON call: returns cover intros + short descriptions
     // for all three languages in a single Anthropic request.
     if (mode === 'metadata') {
-      const excerpt = String(existing_content || '').slice(0, 6000);
+      const excerpt = String(existing_content || '').slice(0, 20000);
+      // Detect number of days from the itinerary content (e.g. "Day 1", "Day 2", ... "Day 7")
+      const dayMatches = excerpt.match(/\bDay\s+(\d+)\b/gi) || [];
+      const detectedDayCount = dayMatches.reduce((max, m) => {
+        const n = parseInt(m.replace(/[^0-9]/g, ''), 10);
+        return Number.isFinite(n) && n > max ? n : max;
+      }, 0);
+      // Fallback: parse duration string like "7 days", "7-day", "7"
+      const durationMatch = String(duration || '').match(/\d+/);
+      const durationDays = durationMatch ? parseInt(durationMatch[0], 10) : 0;
+      const expectedDayCount = Math.max(detectedDayCount, durationDays, 1);
       const metaSystem = `You are an editorial copywriter for Fjord & Waves Travel, a premium boutique travel atelier.
 You write in a calm, confident, human voice — never generic, never overly poetic, never AI-clichéd.
 STRICTLY AVOID the words: tapestry, nestled, vibrant, bustling, charming, seamlessly, delve, curated, elevate, timeless, unparalleled, testament, journey of discovery, treasure trove, gem, haven, boasts.
