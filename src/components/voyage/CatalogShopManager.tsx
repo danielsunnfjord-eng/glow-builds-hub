@@ -138,6 +138,7 @@ interface EditorState {
   heroImageCaption: string;
   isPublished: boolean;
   hotels: HotelRec[];
+  bodyPdfUrl: string;
   auditReport: string;
   auditItems: SelectableAuditItem[];
   auditedAt: string | null;
