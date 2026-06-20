@@ -366,18 +366,24 @@ const PAGE_CSS = `
 `;
 
 const PREVIEW_FRAME_CSS = `
+.fjw-pdf-shell { pointer-events: auto; }
 .fjw-paged-render .pagedjs_pages {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
   width: 100%;
+  /* Paged.js renders pages with their own root flexbox that can otherwise
+     intercept pointer events across the whole modal. Let clicks pass through
+     to the underlying scroll container; individual pages re-enable them. */
+  pointer-events: none;
 }
 .fjw-paged-render .pagedjs_page {
   background: #ffffff;
   box-shadow: 0 8px 40px rgba(19,17,14,0.18);
   margin: 0 auto;
   overflow: hidden;
+  pointer-events: auto;
 }
 .fjw-paged-render .pagedjs_pagebox {
   background: #ffffff;
@@ -406,7 +412,7 @@ const PREVIEW_FRAME_CSS = `
   .fjw-pdf-shell { position: absolute !important; inset: auto !important; top: 0 !important; left: 0 !important; right: 0 !important; padding: 0 !important; margin: 0 !important; background: #fff !important; display: block !important; height: auto !important; overflow: visible !important; }
   .fjw-pdf-window { width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; background: #fff !important; display: block !important; }
   .fjw-print-root { padding: 0 !important; background: #fff !important; overflow: visible !important; height: auto !important; min-height: 0 !important; display: block !important; }
-  .fjw-paged-render .pagedjs_pages { display: block !important; width: 210mm !important; }
+  .fjw-paged-render .pagedjs_pages { display: block !important; width: 210mm !important; pointer-events: auto !important; }
   .fjw-paged-render .pagedjs_page { margin: 0 !important; box-shadow: none !important; page-break-after: always !important; break-after: page !important; }
   .fjw-paged-render .pagedjs_page:last-child { page-break-after: auto !important; break-after: auto !important; }
 }
