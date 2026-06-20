@@ -20,13 +20,12 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  Sparkles, Loader2, Upload, Wand2, Eye, ClipboardCheck, RefreshCcw,
-  Plus, Trash2, Check, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, Undo2, ArrowUp, ArrowDown,
+  Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
+  Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
+  FileText, ExternalLink,
 } from "lucide-react";
-import ItineraryEditor from "./ItineraryEditor";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
-import AuditChecklist from "./AuditChecklist";
 import {
   parseAuditItems,
   serializeAuditItems,
@@ -35,6 +34,7 @@ import {
 import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
+import { sanitizeDocHtml } from "@/lib/sanitizeDocHtml";
 
 type Lang = "en" | "pt" | "no";
 
@@ -257,6 +257,42 @@ const CatalogShopManager = () => {
   const [gdocChecking, setGdocChecking] = useState(false);
   const [gdocPulling, setGdocPulling] = useState(false);
   const [pullConfirmOpen, setPullConfirmOpen] = useState(false);
+  // Finalise & Preview PDF: pulls the Google Doc as HTML, sanitises it, and
+  // opens the PDF preview. Read-only — Doc content is never persisted to the
+  // app database; it only feeds Paged.js for the preview.
+  const [finalising, setFinalising] = useState(false);
+  const [finalisedHtml, setFinalisedHtml] = useState<string | null>(null);
+  const [docMissingError, setDocMissingError] = useState<string | null>(null);
+
+  const finaliseAndPreview = async () => {
+    if (!state.id) { toast.error("Save the itinerary first."); return; }
+    if (!gdocInfo.id) {
+      toast.error("Create the Google Doc first (use the Save button to push initial content).");
+      return;
+    }
+    setFinalising(true);
+    setDocMissingError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
+        body: { itinerary_id: state.id, action: "export-html" },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const rawHtml: string = (data as any).html ?? "";
+      const clean = sanitizeDocHtml(rawHtml);
+      setFinalisedHtml(clean);
+      if ((data as any).doc_modified_time) {
+        setGdocInfo((prev) => ({ ...prev, lastSyncedAt: (data as any).doc_modified_time }));
+      }
+    } catch (e: any) {
+      const msg = e?.message || "Could not fetch Google Doc content.";
+      setDocMissingError(msg);
+      toast.error(msg);
+    } finally {
+      setFinalising(false);
+    }
+  };
+
 
   const saveSnapshot = async (itineraryId: string, label: string) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -1462,63 +1498,10 @@ const CatalogShopManager = () => {
           <DialogHeader>
             <DialogTitle>{state.id ? "Edit itinerary" : "Create new itinerary"}</DialogTitle>
             <DialogDescription>
-              Create, audit and refine catalogue guide content. Draft text is preserved if AI actions fail.
+              Fill in the cover page fields. Body content is edited in Google Docs and rendered into the PDF on Finalise.
             </DialogDescription>
             <div className="mt-2 space-y-1 text-[0.75rem]">
               {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
-
-              {/* Always-on one-way-sync warning. The app is the write master; saving here overwrites the Google Doc. */}
-              <div className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
-                <div className="font-medium">⚠️ Editing here will overwrite your Google Doc on save.</div>
-                <div className="text-[0.7rem] opacity-90">
-                  The app is the source of truth — it only pushes to Google Docs, never pulls. Close this window before editing the Doc directly, or your Doc edits will be lost on the next save.
-                </div>
-              </div>
-
-              {/* Conflict warning: Doc was edited more recently than our last sync. */}
-              {gdocConflict && !gdocConflict.acknowledged && (
-                <div className="rounded border border-red-400 bg-red-50 px-3 py-2 text-red-900">
-                  <div className="font-medium">
-                    ⚠️ Your Google Doc has changes newer than this editor
-                  </div>
-                  <div className="text-[0.7rem] opacity-90">
-                    Doc last edited {new Date(gdocConflict.docModifiedTime).toLocaleString()}
-                    {gdocConflict.lastSyncedAt
-                      ? ` · last synced ${new Date(gdocConflict.lastSyncedAt).toLocaleString()}`
-                      : " · never synced from this editor"}.
-                    Saving here will overwrite those Doc changes.
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {gdocConflict.url && (
-                      <a
-                        href={gdocConflict.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100"
-                      >
-                        Open Google Doc to review ↗
-                      </a>
-                    )}
-                    {state.id && (
-                      <button
-                        type="button"
-                        onClick={() => setPullConfirmOpen(true)}
-                        disabled={gdocPulling}
-                        className="rounded border border-red-400 bg-white px-2 py-1 text-red-800 hover:bg-red-100 disabled:opacity-50"
-                      >
-                        {gdocPulling ? "Importing…" : "Pull Doc changes into editor"}
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setGdocConflict((c) => (c ? { ...c, acknowledged: true } : c))}
-                      className="rounded border border-red-400 bg-red-600 px-2 py-1 text-white hover:bg-red-700"
-                    >
-                      Continue editing here — Doc will be overwritten
-                    </button>
-                  </div>
-                </div>
-              )}
 
               <div className="text-voyage-muted">
                 {autoSaveStatus === "saving" && "Auto-saving draft…"}
@@ -1527,56 +1510,11 @@ const CatalogShopManager = () => {
                 {autoSaveStatus === "idle" && "Auto-save runs every 30 seconds while editing."}
                 {hasUnsavedChanges && autoSaveStatus !== "saving" && " · Unsaved changes"}
               </div>
-              <div className="flex items-center gap-2 text-[0.75rem]">
-                <span
-                  className={
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 " +
-                    (gdocError
-                      ? "border-red-300 bg-red-50 text-red-700"
-                      : gdocSyncing
-                        ? "border-blue-300 bg-blue-50 text-blue-700"
-                        : gdocInfo.id
-                          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                          : "border-neutral-300 bg-neutral-50 text-neutral-600")
-                  }
-                  title={gdocError || ""}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                  {gdocSyncing
-                    ? "Syncing to Google Drive…"
-                    : gdocError
-                      ? "Drive sync failed"
-                      : gdocInfo.lastSyncedAt
-                        ? `Synced to Drive · ${new Date(gdocInfo.lastSyncedAt).toLocaleTimeString()}`
-                        : state.id
-                          ? "Not yet synced"
-                          : "Drive doc will be created on first save"}
-                </span>
-                {gdocInfo.url && (
-                  <a
-                    href={gdocInfo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-fjord underline-offset-2 hover:underline"
-                  >
-                    Open in Google Docs ↗
-                  </a>
-                )}
-                {state.id && (
-                  <button
-                    type="button"
-                    onClick={() => syncToGoogleDoc(state.id!)}
-                    disabled={gdocSyncing}
-                    className="rounded border border-neutral-300 bg-white px-2 py-0.5 text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
-                  >
-                    Sync now
-                  </button>
-                )}
-              </div>
             </div>
           </DialogHeader>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
             <div>
               <Label>Title</Label>
               <Input value={state.title} onChange={(e) => setState({ ...state, title: e.target.value })} />
@@ -1717,150 +1655,94 @@ const CatalogShopManager = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-            <Label className="text-base">Itinerary body</Label>
-            <Button onClick={runGenerate} disabled={generating} className="bg-gold text-ink hover:bg-ink hover:text-voyage-white">
-              {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-              {state.content ? "Regenerate with AI" : "Generate with AI"}
-            </Button>
-          </div>
-
-          <EditorErrorBoundary
-            onError={(err) =>
-              setAuditAction({
-                status: "error",
-                message: "The editor hit a rendering error after the last AI action.",
-                detail: err.message + " — your draft text is preserved. Use 'Reload editor' to continue.",
-              })
-            }
-          >
-            <ItineraryEditor
-              content={state.content}
-              onContentChange={(md) => setState((s) => ({ ...s, content: md }))}
-              placeholder="Write or generate the itinerary…"
-              destination={state.destination}
-              tripDuration={state.duration}
-              budget={budget}
-              coverLabel={budgetCoverLabel}
-              onBudgetSaved={handleBudgetSaved}
-            />
-          </EditorErrorBoundary>
-
-          <div className="mt-3 p-3 border border-parchment-3 rounded bg-parchment/40">
-            <Label className="text-[0.78rem]">Regenerate a specific section with AI</Label>
-            <div className="flex gap-2 mt-1">
-              <Input
-                value={sectionPrompt}
-                onChange={(e) => setSectionPrompt(e.target.value)}
-                placeholder='e.g. "Rewrite the Food & Drink section with more focus on seafood"'
-              />
-              <Button variant="outline" onClick={runRegenerateSection} disabled={regenerating}>
-                {regenerating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
-                Regenerate
-              </Button>
-            </div>
-            <p className="text-[0.7rem] text-voyage-muted mt-1">The new section is appended at the bottom — paste it into place in the editor and delete the old one.</p>
-          </div>
-
-          {/* AUDIT */}
-          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
-            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+          {/* SECTION 2 — BODY CONTENT (Google Docs) */}
+          <div className="mt-2 p-4 border border-parchment-3 rounded bg-voyage-white">
+            <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
               <div>
                 <div className="font-serif text-lg font-bold flex items-center gap-2">
-                  <ClipboardCheck className="w-4 h-4" /> Audit Itinerary
+                  <FileText className="w-4 h-4" /> Body content
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Senior luxury travel advisor review. Step 1: get the audit report. Step 2: apply improvements.
+                  Body copy lives in Google Docs. Edit there freely. The app pulls fresh content each time you preview the PDF — fonts and colours are always set by the brand stylesheet.
                 </p>
-                {auditAction.status !== "idle" && (
-                  <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
-                    <div className="flex items-center gap-2 font-medium">
-                      {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
-                      {auditAction.message}
-                    </div>
-                    {auditAction.detail && <div className="mt-1 opacity-80">{auditAction.detail}</div>}
-                  </div>
-                )}
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" size="sm" onClick={runAudit} disabled={auditing || applyingAudit}>
-                  {auditing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                  {state.auditItems.length ? "Re-audit" : "Run Audit"}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={applyAudit}
-                  disabled={
-                    !state.auditItems.some((i) => i.selected) ||
-                    applyingAudit ||
-                    auditing ||
-                    failedAuditBatch !== null
-                  }
-                  className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
-                >
-                  {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                  Apply Selected ({state.auditItems.filter((i) => i.selected).length})
-                </Button>
-                {failedAuditBatch && (
-                  <Button variant="outline" size="sm" onClick={retryFailedAuditBatch} disabled={applyingAudit || auditing}>
-                    {applyingAudit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCcw className="w-4 h-4 mr-2" />}
-                    Retry batch {failedAuditBatch.batchNumber}
-                  </Button>
-                )}
-                {state.previousContent !== null && (
-                  <Button variant="outline" size="sm" onClick={keepOriginalAudit} disabled={applyingAudit}>
-                    <Undo2 className="w-4 h-4 mr-2" /> Keep Original
-                  </Button>
-                )}
-              </div>
+              <Button
+                onClick={runGenerate}
+                disabled={generating}
+                variant="outline"
+                size="sm"
+                title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
+              </Button>
             </div>
-            {applySummary && (
-              <div className={`mt-3 rounded-md border px-3 py-2 text-[0.8rem] ${applySummary.failedItems.length ? "border-destructive/40 bg-destructive/5" : "border-sage/40 bg-sage/10"}`}>
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div className="font-medium text-ink inline-flex items-center gap-1.5">
-                    {applySummary.failedItems.length
-                      ? <AlertCircle className="w-4 h-4 text-destructive" />
-                      : <CheckCircle2 className="w-4 h-4 text-sage" />}
-                    {applySummary.appliedIds.length} of {applySummary.totalItems} improvements applied{applySummary.failedItems.length ? " — some failed" : " successfully"}
+
+            {gdocInfo.id && gdocInfo.url ? (
+              <div className="rounded border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
+                <div className="text-[0.85rem]">
+                  <div className="flex items-center gap-1.5 font-medium text-ink">
+                    📄 Google Doc linked
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {applySummary.failedItems.length > 0 && (
-                      <Button size="sm" variant="outline" onClick={retryFailedItems} disabled={applyingAudit}>
-                        {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <RefreshCcw className="w-3.5 h-3.5 mr-1.5" />}
-                        Retry {applySummary.failedItems.length} failed
-                      </Button>
-                    )}
-                    <Button size="sm" onClick={viewUpdatedItinerary} className="bg-ink text-voyage-white hover:bg-gold hover:text-ink">
-                      <Eye className="w-3.5 h-3.5 mr-1.5" /> View Updated Itinerary
-                    </Button>
+                  <div className="text-[0.72rem] text-voyage-muted">
+                    {gdocInfo.lastSyncedAt
+                      ? `Last synced ${new Date(gdocInfo.lastSyncedAt).toLocaleString()}`
+                      : "Not yet synced"}
                   </div>
                 </div>
-                {applySummary.failedItems.length > 0 && (
-                  <ul className="mt-2 list-disc pl-5 text-[0.75rem] text-ink-2 space-y-0.5">
-                    {applySummary.failedItems.map((f) => (
-                      <li key={f.id}><span className="font-medium">{f.title}</span></li>
-                    ))}
-                  </ul>
+                <div className="flex flex-wrap items-center gap-2">
+                  <a
+                    href={gdocInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
+                  >
+                    Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <Button
+                    size="sm"
+                    onClick={finaliseAndPreview}
+                    disabled={finalising || !state.id}
+                    className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
+                  >
+                    {finalising ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                    Finalise & Preview PDF
+                  </Button>
+                </div>
+              </div>
+            ) : state.id ? (
+              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+                <div className="mb-2">
+                  No Google Doc linked yet.
+                  {state.content.trim()
+                    ? " This itinerary has draft body content from the previous editor — push it to a new Google Doc to start editing there."
+                    : " Generate AI content above, then save to create the linked Doc."}
+                </div>
+                {state.content.trim() && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => syncToGoogleDoc(state.id!)}
+                    disabled={gdocSyncing}
+                  >
+                    {gdocSyncing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />}
+                    Create Google Doc from existing draft
+                  </Button>
                 )}
               </div>
-            )}
-            {state.auditItems.length ? (
-              <div className="mt-2">
-                <AuditChecklist
-                  items={state.auditItems}
-                  onToggle={toggleAuditItem}
-                  onSelectAll={selectAllAudit}
-                  onDeselectAll={deselectAllAudit}
-                  statuses={itemStatuses}
-                />
-              </div>
             ) : (
-              <p className="text-[0.78rem] text-voyage-muted italic">No audit yet — run it before publishing.</p>
+              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+                Save the itinerary first to create its linked Google Doc.
+              </div>
             )}
-            {state.auditedAt && (
-              <p className="text-[0.7rem] text-voyage-muted mt-2">Last audited: {new Date(state.auditedAt).toLocaleString()}</p>
+
+            {docMissingError && (
+              <div className="mt-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-[0.78rem] text-destructive">
+                {docMissingError}
+              </div>
             )}
           </div>
+
 
           {/* HOTELS */}
           <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
@@ -1870,13 +1752,20 @@ const CatalogShopManager = () => {
                   <HotelIcon className="w-4 h-4" /> Hotel Recommendations
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Add hotels per destination or day. Appear in the published PDF and subpage if visible.
+                  Up to 4 hotels — name, location, description and a thumbnail each. Rendered onto the fixed hotel page in the PDF.
                 </p>
               </div>
-              <Button variant="outline" size="sm" onClick={addHotel}>
-                <Plus className="w-4 h-4 mr-1" /> Add Hotel
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addHotel}
+                disabled={state.hotels.length >= 4}
+                title={state.hotels.length >= 4 ? "Maximum of 4 hotels reached" : ""}
+              >
+                <Plus className="w-4 h-4 mr-1" /> Add Hotel ({state.hotels.length}/4)
               </Button>
             </div>
+
 
             {state.hotels.length === 0 && (
               <p className="text-[0.8rem] text-voyage-muted italic">No hotels yet — at least one is required to publish.</p>
@@ -2068,30 +1957,34 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Import from Google Doc?</AlertDialogTitle>
-            <AlertDialogDescription>
-              ⚠️ This will replace all content in the editor with the current Google Doc
-              version. This cannot be undone. A backup snapshot of your current draft will
-              be saved automatically so you can recover if needed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={gdocPulling || !state.id}
-              onClick={(e) => {
-                e.preventDefault();
-                if (state.id) void pullFromGoogleDoc(state.id);
-              }}
-            >
-              {gdocPulling ? "Importing…" : "Import from Google Doc"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Finalise & Preview: opens the assembled PDF (cover + Google Doc body + hotels + back page). */}
+      {finalisedHtml !== null && state.id && (
+        <PdfPreview
+          content=""
+          contentHtml={finalisedHtml}
+          language={state.language}
+          project={{
+            client_name: state.title,
+            title: state.title,
+            destination: state.destination || null,
+            trip_duration: state.duration || null,
+            hero_image_url: state.heroImageUrl || null,
+            hero_image_credit: state.heroImageCredit || null,
+            hero_image_caption: state.heroImageCaption || null,
+            cover_tagline:
+              (state.language === "no" ? state.coverIntroNo : state.language === "pt" ? state.coverIntroPt : state.coverIntroEn) ||
+              (state.language === "no" ? state.summaryNo : state.language === "pt" ? state.summaryPt : state.summary) ||
+              null,
+            season: state.season,
+            budget_cover_label: budgetCoverLabel,
+          }}
+          hotels={state.hotels}
+          onClose={() => setFinalisedHtml(null)}
+          onExport={() => window.print()}
+        />
+      )}
+
+
 
       {previewRow && (() => {
         const contentByLang: Record<Lang, string | null | undefined> = {

@@ -115,6 +115,14 @@ async function driveExportMarkdown(fileId: string): Promise<string> {
   return await r.text();
 }
 
+// Export a Google Doc to HTML via Drive's export endpoint.
+async function driveExportHtml(fileId: string): Promise<string> {
+  const url = `${GATEWAY}/files/${fileId}/export?mimeType=${encodeURIComponent("text/html")}`;
+  const r = await fetch(url, { method: "GET", headers: gwHeaders() });
+  if (!r.ok) throw new Error(`Drive HTML export failed: ${r.status} ${await r.text()}`);
+  return await r.text();
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -161,8 +169,11 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const itinerary_id = body?.itinerary_id;
     const requested = body?.action;
-    const action: "sync" | "check" | "pull" =
-      requested === "check" ? "check" : requested === "pull" ? "pull" : "sync";
+    const action: "sync" | "check" | "pull" | "export-html" =
+      requested === "check" ? "check"
+        : requested === "pull" ? "pull"
+        : requested === "export-html" ? "export-html"
+        : "sync";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -249,6 +260,36 @@ Deno.serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    // EXPORT-HTML MODE: export the linked Google Doc as raw HTML. The client
+    // sanitises it down to a structural allow-list before feeding it to
+    // Paged.js. Read-only; does not write back.
+    if (action === "export-html") {
+      if (!row.gdoc_id) {
+        return new Response(JSON.stringify({ error: "No Google Doc linked to this itinerary yet." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const meta = await driveGetMeta(row.gdoc_id);
+      if (meta.trashed) {
+        return new Response(JSON.stringify({ error: "Linked Google Doc has been moved to trash." }), {
+          status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const html = await driveExportHtml(row.gdoc_id);
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          gdoc_id: row.gdoc_id,
+          gdoc_url: meta.webViewLink ?? row.gdoc_url ?? null,
+          doc_modified_time: meta.modifiedTime,
+          html,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+
 
     // Load (or initialize) the Drafts root folder.
     let { data: settings } = await supabase

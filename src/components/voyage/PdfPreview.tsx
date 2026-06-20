@@ -24,6 +24,7 @@ interface HotelRecPreview {
 
 interface PdfPreviewProps {
   content: string;
+  contentHtml?: string; // pre-sanitised HTML from Google Doc; overrides markdown rendering when present
   language?: string;
   project: {
     client_name: string;
@@ -355,7 +356,10 @@ const PAGE_CSS = `
 .fjw-back-page img { width: 110px; height: 110px; object-fit: contain; margin-bottom: 30px; }
 .fjw-back-page h2 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 500; line-height: 1.2; white-space: pre-line; margin: 0 0 18px; }
 .fjw-back-page p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: #4C6F75; max-width: 120mm; margin: 0 auto 36px; line-height: 1.6; }
-.fjw-back-rule { width: 60px; height: 1px; background: #4C6F75; margin: 0 auto 30px; }
+.fjw-back-rule { width: 60px; height: 1px; background: #4C6F75; margin: 0 auto 22px; }
+.fjw-advisor-signature { margin-bottom: 26px; }
+.fjw-advisor-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: #1c2e38; font-weight: 500; letter-spacing: 0.02em; }
+.fjw-advisor-role { font-family: 'Jost', 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #8fa0a8; margin-top: 4px; }
 .fjw-contact { font-size: 12px; line-height: 2; letter-spacing: 0.05em; }
 .fjw-social { margin-top: 24px; font-size: 10px; color: #4C6F75; letter-spacing: 0.25em; text-transform: uppercase; }
 `;
@@ -433,7 +437,7 @@ const cleanPageBreaks = (html: string) =>
     .filter(isMeaningfulChunk)
     .join('<div class="fjw-page-break" data-page-break="true"></div>');
 
-const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewProps) => {
+const PdfPreview = ({ content, contentHtml, project, hotels, onClose, language }: PdfPreviewProps) => {
   const { i18n } = useTranslation();
   const renderRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -454,7 +458,7 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
     const dateRange = formatDateRange(project?.start_date, project?.end_date);
     const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
     const destinationLine = [project?.destination || L.itinerary, dateRange].filter(Boolean).join(" · ");
-    const bodyHtml = cleanPageBreaks(markdownToHtml(content));
+    const bodyHtml = cleanPageBreaks(contentHtml && contentHtml.trim() ? contentHtml : markdownToHtml(content));
     const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
 
     const coverHero = project?.hero_image_url
@@ -550,11 +554,18 @@ const PdfPreview = ({ content, project, hotels, onClose, language }: PdfPreviewP
         <h2>${escapeHtml(L.thankYou)}</h2>
         <p>${escapeHtml(L.closingNote)}</p>
         <div class="fjw-back-rule"></div>
-        <div class="fjw-contact"><div>hello@fjordwavestravel.com</div><div>fjordwavestravel.com</div></div>
+        <div class="fjw-advisor-signature">
+          <div class="fjw-advisor-name">Daniel Lira Figueiredo</div>
+          <div class="fjw-advisor-role">Your Travel Advisor · Fjord &amp; Waves Travel</div>
+        </div>
+        <div class="fjw-contact">
+          <div>hello@fjordwavestravel.com</div>
+          <div>fjordwavestravel.com</div>
+        </div>
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, hotels, project, L]);
+  }, [content, contentHtml, hotels, project, L]);
 
   useEffect(() => {
     let cancelled = false;
