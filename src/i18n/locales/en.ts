@@ -14,7 +14,7 @@ export default {
     pricing: "Pricing",
     planMyTrip: "Plan My Trip",
     bookCall: "Book a Video Call",
-    shop: "Catalogue",
+    shop: "Itinerary Shop",
   },
   shop: {
     badge: "Itinerary Catalogue",

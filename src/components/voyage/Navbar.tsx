@@ -36,12 +36,12 @@ const Navbar = () => {
           <button onClick={() => goToSection("how-it-works")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
-          <button onClick={() => goToSection("itineraries")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.trips")}
-          </button>
           <button onClick={() => goToSection("experiences")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
+          <a href="/catalogue" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
+            {t("nav.shop")}
+          </a>
           <LanguageSelector variant="light" />
           <button
             onClick={() => navigate("/start-your-journey")}
@@ -83,12 +83,16 @@ const Navbar = () => {
           <button onClick={() => goToSection("how-it-works")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.howItWorks")}
           </button>
-          <button onClick={() => goToSection("itineraries")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.trips")}
-          </button>
           <button onClick={() => goToSection("experiences")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whatWeArrange")}
           </button>
+          <a
+            href="/catalogue"
+            onClick={() => setOpen(false)}
+            className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
+          >
+            {t("nav.shop")}
+          </a>
           <div className="pt-2">
             <LanguageSelector variant="light" />
           </div>
