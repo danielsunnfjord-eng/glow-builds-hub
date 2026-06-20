@@ -184,7 +184,7 @@ Write the following pieces of copy and return them as a single JSON object with 
 
 Rules for the new arrays:
 - "subpage_checklist": EXACTLY 4 items, each a single short line, specific to this itinerary.
-- "subpage_day_overview": ONE entry per day present in the itinerary excerpt, in order. Use the same day count as the excerpt. The "label" should start with "Day N — " and reflect that day's actual route/theme.
+- "subpage_day_overview": MUST contain EXACTLY ${expectedDayCount} entries — one per day of this ${expectedDayCount}-day itinerary, in order from Day 1 through Day ${expectedDayCount}. Do NOT stop early, do NOT merge days, do NOT skip any day. Every day from 1 to ${expectedDayCount} must appear exactly once. Each "label" must start with "Day N — " (where N is the day number) and reflect that day's actual route/theme from the excerpt. If the excerpt does not fully describe a later day, still produce an entry inferred from the surrounding context and destination — never omit it.
 - "subpage_expectations": EXACTLY 4 cards capturing the distinctive feel of THIS trip (not boilerplate). Titles must be short and evocative.
 
 Return ONLY the JSON object. No code fences, no explanation.`;
