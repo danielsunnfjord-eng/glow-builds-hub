@@ -66,6 +66,9 @@ interface CatalogRow {
   summary_en: string;
   summary_pt: string | null;
   summary_no: string | null;
+  cover_intro_en?: string | null;
+  cover_intro_pt?: string | null;
+  cover_intro_no?: string | null;
   description_en: string;
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
