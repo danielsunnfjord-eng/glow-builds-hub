@@ -671,6 +671,59 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
 
+              {/* Day-by-day preview (compact TOC) */}
+              {dayOverview.length > 0 && (
+                <details open className="mb-14 group">
+                  <summary className="list-none cursor-pointer flex items-end justify-between mb-2">
+                    <div>
+                      <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-2">
+                        {t("shop.dayPreviewBadge", "Day-by-day preview")}
+                      </div>
+                      <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink">
+                        {t("shop.dayPreview", "What's inside, day by day")}
+                      </h2>
+                    </div>
+                    <span className="text-[0.7rem] tracking-[0.14em] uppercase text-voyage-muted group-open:opacity-60">
+                      {t("shop.toggle", "Toggle")}
+                    </span>
+                  </summary>
+                  <div className="h-px w-12 bg-gold mb-6 mt-1" />
+                  <ol className="max-h-[26rem] overflow-y-auto pr-2 divide-y divide-ink/[0.06] border border-ink/[0.06] rounded-lg bg-voyage-white">
+                    {dayOverview.map((d) => (
+                      <li key={d.day_number} className="flex gap-4 items-baseline px-5 py-3.5">
+                        <span className="font-serif text-[1rem] font-bold text-gold w-14 shrink-0">
+                          {t("shop.dayLabel", "Day")} {d.day_number}
+                        </span>
+                        <span className="text-[0.95rem] text-ink/85 leading-snug">{d.title}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              )}
+
+              {/* Route map */}
+              {subpageMapUrl && (
+                <div className="mb-14">
+                  <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
+                    {t("shop.routeMapBadge", "Your route")}
+                  </div>
+                  <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                    {t("shop.routeMap", "Route map")}
+                  </h2>
+                  <div className="h-px w-12 bg-gold mb-6" />
+                  <div className="rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white">
+                    <img
+                      src={subpageMapUrl}
+                      alt={t("shop.routeMapAlt", "Route map for {{title}}", { title })}
+                      loading="lazy"
+                      className="w-full h-auto object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+
+
+
               {/* Gallery — asymmetric masonry */}
               {gallery.length > 0 && (
                 <div className="mb-14">
