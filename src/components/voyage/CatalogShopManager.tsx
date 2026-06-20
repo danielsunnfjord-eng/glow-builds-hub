@@ -819,6 +819,16 @@ const CatalogShopManager = () => {
       subpageDayOverview: dayOverview.length > 0 ? dayOverview : s.subpageDayOverview,
       subpageExpectations: expectations.length > 0 ? expectations : s.subpageExpectations,
     }));
+    if (state.id) {
+      await supabase
+        .from("catalog_itineraries")
+        .update({
+          subpage_checklist: checklist,
+          subpage_day_overview: dayOverview,
+          subpage_expectations: expectations,
+        })
+        .eq("id", state.id);
+    }
   };
 
 
