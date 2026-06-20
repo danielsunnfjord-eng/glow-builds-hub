@@ -227,6 +227,8 @@ const CatalogShopManager = () => {
   const [state, setState] = useState<EditorState>(blankEditor);
   const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
   const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [bodySnapshotOpen, setBodySnapshotOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
