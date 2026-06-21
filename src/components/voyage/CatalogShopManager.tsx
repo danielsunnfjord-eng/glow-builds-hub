@@ -2225,6 +2225,7 @@ const CatalogShopManager = () => {
               )}
             </div>
 
+            <AiWritingAssistantPanel />
 
 
             {gdocInfo.id && gdocInfo.url ? (
