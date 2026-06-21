@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
-  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck,
+  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck, Copy as CopyIcon,
 } from "lucide-react";
 import AuditChecklist from "./AuditChecklist";
 import EditorErrorBoundary from "./EditorErrorBoundary";
