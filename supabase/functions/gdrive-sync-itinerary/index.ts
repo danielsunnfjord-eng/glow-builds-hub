@@ -207,8 +207,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    if (!LOVABLE_API_KEY || !GOOGLE_DRIVE_API_KEY) {
-      throw new Error("Google Drive connector is not linked to this project.");
+    if (!LOVABLE_API_KEY || !GOOGLE_DRIVE_API_KEY || !GOOGLE_DOCS_API_KEY) {
+      throw new Error("Google Drive and Google Docs connectors must both be linked to this project.");
     }
 
     const body = await req.json().catch(() => ({}));
