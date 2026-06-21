@@ -1,15 +1,25 @@
-Diagnosis:
-- The Google Doc clear/write fix is running: recent logs show `docsReplaceBody` started and completed with `batchUpdate write status=200`.
-- The current data flow still lets the editor overwrite the Google Doc: `save()` updates `itinerary_content_en` from `state.content`, then calls `syncToGoogleDoc(savedId)` on every save.
-- Because `state.content` is loaded from the database/draft when the editor opens, saving hotels can push stale body copy back into the Google Doc and replace edits made directly in Google Docs.
-- This violates the intended rule: body copy lives in Google Docs, and normal editor saves must not impact it.
+## Diagnosis
+The Google Docs update function already clears and rewrites the document body. The remaining duplication is happening before the sync: audit-apply is using a sectional rewrite flow that asks the AI to return only changed section bodies. If the AI returns a section body that includes copied headings/days or extra surrounding content, the merge step stores that duplicated content in `itinerary_content_*`, and Google Docs faithfully writes the doubled final text.
 
-Plan:
-1. Modify only `src/components/voyage/CatalogShopManager.tsx`.
-2. Update `save()` so normal editor saves do not write `itinerary_content_*` for existing Google Doc-linked itineraries.
-3. Remove the automatic `syncToGoogleDoc(savedId)` call from normal `save()` so hotel/cover/metadata saves cannot rewrite the Google Doc.
-4. Keep Google Doc creation/sync available only through explicit Google Doc actions and the existing successful audit-apply path.
-5. Preserve non-body fields such as hotels, cover fields, pricing, checklist, PDF URL, and publishing behavior.
+## Plan
+1. **Modify only the audit apply path**
+   - Update `src/lib/auditApply.ts` so section replacements are sanitized before merging.
+   - Strip duplicated heading lines from returned section bodies.
+   - Reject/trim responses that contain multiple day headings or unrelated sections instead of blindly merging them.
 
-Functions to modify:
-- `save()` only, unless implementation requires a tiny helper for detecting whether the itinerary has an existing Google Doc.
+2. **Strengthen the audit rewrite prompt**
+   - Update `supabase/functions/audit-itinerary-claude/index.ts` for `mode: "rewrite_sections"` so the AI is explicitly forbidden from returning the section heading, neighboring day sections, or the full itinerary.
+   - Require returned `body` to be only the replacement body for the exact section ID.
+
+3. **Add safety logging for future diagnosis**
+   - Log when a returned audit section is sanitized or skipped because it looks like a full/neighboring itinerary section.
+   - Keep logs limited to metadata/section IDs, not full itinerary body copy.
+
+4. **Do not change protected areas**
+   - Do not change Google Doc create path.
+   - Do not change the editor UI layout.
+   - Do not change normal save behavior.
+   - Do not change `CatalogShopManager.tsx` unless needed only to call the safer audit helper.
+
+## Expected result
+When you generate body content, run audit, apply suggestions, and create/open the Google Doc, the document will contain the final rewritten itinerary once, with audit changes replacing the original text rather than adding duplicate Day/Morning/Afternoon/Evening sections.

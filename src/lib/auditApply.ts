@@ -108,9 +108,13 @@ export async function applyImprovementSectional(args: {
 
   // Only honor IDs that exist in the original document.
   const validIds = new Set(sections.map((s) => s.id));
+  const sectionById = new Map(sections.map((s) => [s.id, s]));
+
   const safeUpdates = updates
     .map((u) => ({ id: String(u?.id ?? ""), body: String(u?.body ?? "") }))
-    .filter((u) => validIds.has(u.id));
+    .filter((u) => validIds.has(u.id))
+    .map((u) => ({ id: u.id, body: sanitizeReturnedSectionBody(u.body, sectionById.get(u.id)!) }))
+    .filter((u) => u.body !== null) as Array<{ id: string; body: string }>;
 
   if (!safeUpdates.length) {
     return { newContent: args.content, changedHeading: null, changedSectionIds: [] };
@@ -121,6 +125,49 @@ export async function applyImprovementSectional(args: {
   const changedHeading = firstHeadingLine.replace(/^#+\s*/, "").trim() || null;
   return { newContent: merged, changedHeading, changedSectionIds: safeUpdates.map((u) => u.id) };
 }
+
+/**
+ * Sanitize a section body returned by the audit AI:
+ * - Strip the section's own heading if Claude included it back.
+ * - Reject bodies that contain ADDITIONAL headings (other days/sections) —
+ *   merging those would duplicate content like "Day 1, 2, 3" twice in the
+ *   final Google Doc.
+ */
+function sanitizeReturnedSectionBody(rawBody: string, section: MdSection): string | null {
+  let body = (rawBody ?? "").replace(/\r\n/g, "\n");
+
+  // Strip leading copy of the section's own heading line if present.
+  if (section.heading) {
+    const ownHeading = section.heading.trim();
+    const lines = body.split("\n");
+    while (lines.length && lines[0].trim() === "") lines.shift();
+    if (lines.length && lines[0].trim() === ownHeading) {
+      lines.shift();
+      if (lines.length && lines[0].trim() === "") lines.shift();
+    }
+    body = lines.join("\n");
+  }
+
+  // Strip any markdown heading lines that survived — they would create extra
+  // Day/Morning/Afternoon/Evening sections on top of the originals.
+  const headingLineRe = /^\s*#{1,6}\s+.+$/;
+  const filtered = body
+    .split("\n")
+    .filter((ln) => {
+      if (!headingLineRe.test(ln)) return true;
+      // eslint-disable-next-line no-console
+      console.warn("[auditApply] stripped stray heading from returned section", {
+        sectionId: section.id,
+        line: ln.slice(0, 120),
+      });
+      return false;
+    })
+    .join("\n")
+    .trim();
+
+  return filtered;
+}
+
 
 // Legacy streaming reader — kept for any code paths that still stream a full
 // rewrite (e.g. fallback / older flows). New apply flow no longer uses it.

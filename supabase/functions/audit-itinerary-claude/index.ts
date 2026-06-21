@@ -225,7 +225,15 @@ Deno.serve(async (req) => {
 
 Rewrite ONLY the section(s) that need to change to apply this improvement. Leave every other section completely untouched and DO NOT include them in your output. Most improvements affect only one section; some may legitimately affect a few. Never rewrite the whole document.
 
-For each changed section, preserve its heading (do not include the heading line in the output — only the new body markdown) and keep the existing tone, voice, structure, and sub-headings. Keep changes focused and surgical.
+CRITICAL RULES for each returned section "body":
+- Output ONLY the replacement body for that exact section id.
+- DO NOT include the section's own heading line (no leading "#", "##", or "###" line).
+- DO NOT include any other section's heading (no other "Day N", "Morning", "Afternoon", "Evening", or "##"/"###" headings).
+- DO NOT include neighboring days or repeat content from other sections.
+- DO NOT return the full itinerary or a merged document.
+- The body REPLACES the existing body of that section verbatim — anything you include will appear in the final document exactly once.
+
+Preserve the existing tone, voice, and sub-content of the section. Keep changes focused and surgical.
 
 Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
 { "sections": [ { "id": "<section id>", "body": "<new body markdown without the heading line>" } ] }
