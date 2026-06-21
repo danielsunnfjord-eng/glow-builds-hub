@@ -262,11 +262,13 @@ Return ONLY the JSON object. No code fences, no explanation.`;
           `Stop cleanly at the end of a day — the itinerary will be continued in a follow-up call.`,
       );
       userPrompts.push(
-        `Continue the premium editorial itinerary. ` +
-          `Do not repeat the introduction or any days already written. ` +
-          `Start directly with the next \`## Day N — Theme\` heading and complete all remaining days using the same Morning / Afternoon / Evening structure with Dining, Insider tip, Transport, Reservation and Optional alternatives sub-items. ` +
+        `Continue the premium editorial itinerary you started in the previous assistant turn. ` +
+          `The intro and the first batch of \`## Day N — Theme\` sections are already written above — do NOT repeat any of them. ` +
+          `Look at the highest Day number that appears in the previous assistant turn and start your reply directly with the NEXT \`## Day N — Theme\` heading (no preamble, no recap). ` +
+          `Complete all remaining days using the same Morning / Afternoon / Evening structure with Dining, Insider tip, Transport, Reservation and Optional alternatives sub-items. ` +
           `End naturally — no closing remarks.`,
       );
+
     }
 
 
