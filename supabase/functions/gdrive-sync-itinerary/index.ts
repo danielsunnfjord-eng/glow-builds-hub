@@ -581,7 +581,16 @@ Deno.serve(async (req) => {
       gdocId = created.id;
       gdocUrl = created.webViewLink || (await driveGetWebViewLink(gdocId));
     } else {
-      await driveUpdateDocHtml(gdocId, html);
+      // Update path: use the Docs API to clear + rewrite the body. We do NOT
+      // re-use the Drive media PATCH here because it does not reliably replace
+      // an existing Google Doc body and caused duplicated content.
+      await docsReplaceBody(gdocId, {
+        title,
+        destination: row.destination,
+        duration: row.duration,
+        summary: row.summary_en,
+        contentMarkdown: row.itinerary_content_en,
+      });
       if (!gdocUrl) gdocUrl = await driveGetWebViewLink(gdocId);
     }
 
