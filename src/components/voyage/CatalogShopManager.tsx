@@ -1081,6 +1081,27 @@ const CatalogShopManager = () => {
     return { appliedIds, failedItems, stoppedEarly: false };
   };
 
+  const persistAuditedContentAndSync = async (auditedContent: string) => {
+    if (!state.id) return;
+    const contentField =
+      state.language === "no" ? "itinerary_content_no"
+      : state.language === "pt" ? "itinerary_content_pt"
+      : "itinerary_content_en";
+    try {
+      const { error } = await supabase
+        .from("catalog_itineraries")
+        .update({ [contentField]: auditedContent } as any)
+        .eq("id", state.id);
+      if (error) throw error;
+      setLastPersistedSignature(catalogDraftSignature({ ...state, content: auditedContent }, sectionPrompt));
+      setLastAutoSavedAt(new Date().toISOString());
+      setAutoSaveStatus("saved");
+      await syncToGoogleDoc(state.id);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to save audited content to Google Doc.");
+    }
+  };
+
   const applyAudit = async () => {
     const selected = state.auditItems.filter((i) => i.selected);
     if (!selected.length || !state.content.trim()) {
@@ -1097,6 +1118,11 @@ const CatalogShopManager = () => {
         setAuditAction({ status: "idle", message: "" });
         setApplySummary({ appliedIds: result.appliedIds, failedItems: [], totalItems: selected.length });
         toast.success(`${result.appliedIds.length} of ${selected.length} improvements applied.`);
+        // Persist audited editor content to DB and push to Google Doc.
+        setState((s) => {
+          void persistAuditedContentAndSync(s.content);
+          return s;
+        });
       } else {
         setApplySummary({
           appliedIds: result.appliedIds,
@@ -1112,6 +1138,7 @@ const CatalogShopManager = () => {
       setApplyingAudit(false);
     }
   };
+
 
   const retryFailedAuditBatch = async () => {
     if (!failedAuditBatch || !state.content.trim()) return;
@@ -1163,8 +1190,14 @@ const CatalogShopManager = () => {
   const viewUpdatedItinerary = () => {
     setApplySummary(null);
     setAuditAction({ status: "idle", message: "" });
-    scrollEditorIntoView();
+    if (gdocInfo.url) {
+      window.open(gdocInfo.url, "_blank", "noopener,noreferrer");
+    } else {
+      toast.info("Google Doc link not ready yet — give the sync a moment and try again.");
+      scrollEditorIntoView();
+    }
   };
+
 
 
   const handleUploadCover = async (file: File) => {
