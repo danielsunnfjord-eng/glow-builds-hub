@@ -297,7 +297,37 @@ function streamSequentialCalls(opts: {
   const stream = new ReadableStream({
     async start(controller) {
       try {
+        // Text streamed so far across all passes — used to (a) seed the
+        // next pass as an `assistant` turn so Claude can actually see what
+        // was already written and (b) detect already-emitted `## Day N`
+        // headings to suppress duplicates if the model still echoes them.
+        let priorAssistantText = '';
+        const emittedDayNumbers = new Set<number>();
+        const DAY_HEADING_RE = /^\s{0,3}##\s+Day\s+(\d+)\b/i;
+        const ANY_DAY_HEADING_RE = /^\s{0,3}##\s+Day\s+\d+\b/i;
+        const TOP_HEADING_RE = /^\s{0,3}#\s+/;
+
+        // Seed the duplicate-detection set from pass 1 as it streams.
+        const recordDaysFrom = (text: string) => {
+          for (const ln of text.split('\n')) {
+            const m = ln.match(DAY_HEADING_RE);
+            if (m) emittedDayNumbers.add(Number(m[1]));
+          }
+        };
+
         for (let i = 0; i < userPrompts.length; i++) {
+          // Build the messages array: replay prior assistant text so the
+          // next pass actually has context to continue from.
+          const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
+            { role: 'user', content: userPrompts[0] },
+          ];
+          if (i > 0) {
+            messages.push({ role: 'assistant', content: priorAssistantText });
+            for (let j = 1; j <= i; j++) {
+              messages.push({ role: 'user', content: userPrompts[j] });
+            }
+          }
+
           const res = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: {
@@ -310,7 +340,7 @@ function streamSequentialCalls(opts: {
               max_tokens: 8192,
               stream: true,
               system: systemPrompt,
-              messages: [{ role: 'user', content: userPrompts[i] }],
+              messages,
             }),
           });
 
@@ -325,10 +355,61 @@ function streamSequentialCalls(opts: {
 
           // Separate chunks with a blank line so the second call doesn't glue
           // onto the last line of the first call.
-          if (i > 0) controller.enqueue(encoder.encode('\n\n'));
+          if (i > 0) {
+            controller.enqueue(encoder.encode('\n\n'));
+            priorAssistantText += '\n\n';
+          }
 
           const reader = res.body.getReader();
           let buffer = '';
+          // Per-pass line buffer so we can run heading-dedup at line
+          // granularity without breaking the streamed UX. Pass 1 just
+          // records the days it sees; pass 2+ may suppress duplicates.
+          let lineBuf = '';
+          let suppressing = false;
+
+          const handleDelta = (delta: string) => {
+            priorAssistantText += delta;
+            if (i === 0) {
+              recordDaysFrom(delta);
+              controller.enqueue(encoder.encode(delta));
+              return;
+            }
+            // Pass 2+: process line-by-line to dedup `## Day N` sections.
+            lineBuf += delta;
+            let nlIdx = lineBuf.indexOf('\n');
+            let emit = '';
+            while (nlIdx !== -1) {
+              const line = lineBuf.slice(0, nlIdx + 1);
+              lineBuf = lineBuf.slice(nlIdx + 1);
+              const trimmed = line.replace(/\n$/, '');
+              const dayMatch = trimmed.match(DAY_HEADING_RE);
+              if (dayMatch) {
+                const n = Number(dayMatch[1]);
+                if (emittedDayNumbers.has(n)) {
+                  console.warn(`[generate-catalog] pass ${i + 1}: suppressing duplicate ## Day ${n} heading`);
+                  suppressing = true;
+                } else {
+                  emittedDayNumbers.add(n);
+                  suppressing = false;
+                  emit += line;
+                }
+              } else if (suppressing) {
+                // Stop suppressing when we hit a new (non-duplicate) day
+                // heading or any top-level `# ` heading.
+                if (ANY_DAY_HEADING_RE.test(trimmed) || TOP_HEADING_RE.test(trimmed)) {
+                  suppressing = false;
+                  emit += line;
+                }
+                // else: drop the line silently.
+              } else {
+                emit += line;
+              }
+              nlIdx = lineBuf.indexOf('\n');
+            }
+            if (emit) controller.enqueue(encoder.encode(emit));
+          };
+
           while (true) {
             const { value, done } = await reader.read();
             if (done) break;
@@ -343,10 +424,16 @@ function streamSequentialCalls(opts: {
               try {
                 const evt = JSON.parse(payload);
                 if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
-                  controller.enqueue(encoder.encode(evt.delta.text));
+                  handleDelta(evt.delta.text);
                 }
               } catch { /* ignore parse errors */ }
             }
+          }
+
+          // Flush any trailing line buffer for this pass (pass 2+ path).
+          if (i > 0 && lineBuf) {
+            if (!suppressing) controller.enqueue(encoder.encode(lineBuf));
+            lineBuf = '';
           }
         }
       } catch (e) {
@@ -356,6 +443,7 @@ function streamSequentialCalls(opts: {
       }
     },
   });
+
 
   return new Response(stream, {
     headers: {
