@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
-  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck,
+  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck, Copy as CopyIcon,
 } from "lucide-react";
 import AuditChecklist from "./AuditChecklist";
 import EditorErrorBoundary from "./EditorErrorBoundary";
@@ -234,7 +234,110 @@ const hasCatalogDraftContent = (editorState: EditorState, sectionPrompt: string)
     editorState.heroImageUrl.trim() ||
     editorState.hotels.length ||
     sectionPrompt.trim(),
+);
+
+type AiAssistantAction = "improve" | "shorten" | "elaborate" | "humanize";
+
+const AiWritingAssistantPanel = () => {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [busy, setBusy] = useState<AiAssistantAction | null>(null);
+
+  const run = async (action: AiAssistantAction, label: string) => {
+    const text = input.trim();
+    if (!text) {
+      toast.error("Paste some text first");
+      return;
+    }
+    setBusy(action);
+    setOutput("");
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-text-transform", {
+        body: { text, action },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const result = (data?.result as string) || "";
+      setOutput(result);
+      toast.success(`${label} complete`);
+    } catch (e: any) {
+      console.error("AI assistant error:", e);
+      toast.error(e?.message || "AI request failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const copyResult = async () => {
+    if (!output) return;
+    try {
+      await navigator.clipboard.writeText(output);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Copy failed");
+    }
+  };
+
+  const actions: { key: AiAssistantAction; label: string }[] = [
+    { key: "improve", label: "Polish" },
+    { key: "shorten", label: "Shorten" },
+    { key: "elaborate", label: "Elaborate" },
+    { key: "humanize", label: "Humanize" },
+  ];
+
+  return (
+    <div className="rounded border border-parchment-3 bg-voyage-white p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-gold" />
+        <div className="font-medium text-ink text-[0.92rem]">AI Writing Assistant</div>
+        <span className="text-[0.7rem] text-voyage-muted">Standalone — does not affect the itinerary</span>
+      </div>
+      <Textarea
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Paste any text here…"
+        rows={6}
+        className="text-[0.85rem]"
+      />
+      <div className="flex flex-wrap gap-2">
+        {actions.map((a) => (
+          <Button
+            key={a.key}
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => run(a.key, a.label)}
+            disabled={busy !== null || !input.trim()}
+          >
+            {busy === a.key ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
+            {a.label}
+          </Button>
+        ))}
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label className="text-[0.78rem] text-voyage-muted">Result</Label>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={copyResult}
+            disabled={!output}
+          >
+            <CopyIcon className="w-3.5 h-3.5 mr-1.5" /> Copy
+          </Button>
+        </div>
+        <Textarea
+          value={output}
+          onChange={(e) => setOutput(e.target.value)}
+          placeholder="AI result will appear here…"
+          rows={8}
+          className="text-[0.85rem] bg-parchment/30"
+        />
+      </div>
+    </div>
   );
+};
 
 const CatalogShopManager = () => {
   const qc = useQueryClient();
@@ -2122,6 +2225,7 @@ const CatalogShopManager = () => {
               )}
             </div>
 
+            <AiWritingAssistantPanel />
 
 
             {gdocInfo.id && gdocInfo.url ? (
