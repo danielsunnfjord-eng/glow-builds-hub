@@ -14,14 +14,24 @@ const corsHeaders = {
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_drive/drive/v3";
 const UPLOAD_GATEWAY = "https://connector-gateway.lovable.dev/google_drive/upload/drive/v3";
+const DOCS_GATEWAY = "https://connector-gateway.lovable.dev/google_docs/v1";
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
 const GOOGLE_DRIVE_API_KEY = Deno.env.get("GOOGLE_DRIVE_API_KEY") ?? "";
+const GOOGLE_DOCS_API_KEY = Deno.env.get("GOOGLE_DOCS_API_KEY") ?? "";
 
 function gwHeaders(extra: Record<string, string> = {}) {
   return {
     Authorization: `Bearer ${LOVABLE_API_KEY}`,
     "X-Connection-Api-Key": GOOGLE_DRIVE_API_KEY,
+    ...extra,
+  };
+}
+
+function docsHeaders(extra: Record<string, string> = {}) {
+  return {
+    Authorization: `Bearer ${LOVABLE_API_KEY}`,
+    "X-Connection-Api-Key": GOOGLE_DOCS_API_KEY,
     ...extra,
   };
 }
