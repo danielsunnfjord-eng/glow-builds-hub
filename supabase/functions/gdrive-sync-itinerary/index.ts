@@ -86,18 +86,24 @@ async function driveCreateDocFromHtml(
 }
 
 async function docsClearBody(docId: string): Promise<void> {
+  console.log(`[docsClearBody] start docId=${docId}`);
   // Fetch current document structure to find the end of the body.
   const r = await fetch(
     `${DOCS_GATEWAY}/documents/${docId}?fields=body(content(endIndex))`,
     { method: "GET", headers: docsHeaders() },
   );
+  console.log(`[docsClearBody] GET document status=${r.status}`);
   if (!r.ok) throw new Error(`Docs get failed: ${r.status} ${await r.text()}`);
   const doc = await r.json();
   const content: Array<{ endIndex?: number }> = doc?.body?.content ?? [];
   const lastEnd = content.length ? Number(content[content.length - 1]?.endIndex ?? 1) : 1;
   // Google Docs requires a trailing newline; valid delete range is [1, endIndex-1).
   const deleteEnd = Math.max(1, lastEnd - 1);
-  if (deleteEnd <= 1) return; // already empty
+  console.log(`[docsClearBody] lastEnd=${lastEnd} deleteEnd=${deleteEnd} contentElements=${content.length}`);
+  if (deleteEnd <= 1) {
+    console.log(`[docsClearBody] body already empty — skipping delete`);
+    return;
+  }
 
   const batch = await fetch(`${DOCS_GATEWAY}/documents/${docId}:batchUpdate`, {
     method: "POST",
@@ -108,28 +114,218 @@ async function docsClearBody(docId: string): Promise<void> {
       ],
     }),
   });
+  console.log(`[docsClearBody] deleteContentRange status=${batch.status}`);
   if (!batch.ok) {
     throw new Error(`Docs batchUpdate clear failed: ${batch.status} ${await batch.text()}`);
   }
+  console.log(`[docsClearBody] body cleared successfully`);
 }
 
-async function driveUpdateDocHtml(fileId: string, html: string): Promise<void> {
-  // Step 1: clear the existing Doc body via the Google Docs API so the
-  // subsequent HTML upload does not append to leftover content. This is the
-  // fix for duplicated days/sections appearing in the synced Doc.
+// ---------- Markdown → Google Docs batchUpdate requests ----------
+
+type InlineRun = { text: string; bold?: boolean; italic?: boolean };
+
+function parseInline(s: string): InlineRun[] {
+  const runs: InlineRun[] = [];
+  let buf = "";
+  let bold = false;
+  let italic = false;
+  const flush = () => {
+    if (buf) {
+      runs.push({ text: buf, bold: bold || undefined, italic: italic || undefined });
+      buf = "";
+    }
+  };
+  let i = 0;
+  while (i < s.length) {
+    if (s.startsWith("**", i) || s.startsWith("__", i)) {
+      flush();
+      bold = !bold;
+      i += 2;
+      continue;
+    }
+    const ch = s[i];
+    if ((ch === "*" || ch === "_") && s[i + 1] !== ch) {
+      flush();
+      italic = !italic;
+      i += 1;
+      continue;
+    }
+    buf += ch;
+    i += 1;
+  }
+  flush();
+  return runs;
+}
+
+type Block =
+  | { kind: "heading"; level: number; runs: InlineRun[] }
+  | { kind: "paragraph"; runs: InlineRun[] }
+  | { kind: "bullet"; runs: InlineRun[] }
+  | { kind: "numbered"; runs: InlineRun[] };
+
+function parseMarkdownBlocks(md: string): Block[] {
+  const blocks: Block[] = [];
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  let para: string[] = [];
+  const flushPara = () => {
+    if (para.length) {
+      blocks.push({ kind: "paragraph", runs: parseInline(para.join(" ")) });
+      para = [];
+    }
+  };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) {
+      flushPara();
+      continue;
+    }
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) {
+      flushPara();
+      blocks.push({ kind: "heading", level: h[1].length, runs: parseInline(h[2]) });
+      continue;
+    }
+    const b = line.match(/^\s*[-*+]\s+(.*)$/);
+    if (b) {
+      flushPara();
+      blocks.push({ kind: "bullet", runs: parseInline(b[1]) });
+      continue;
+    }
+    const n = line.match(/^\s*\d+\.\s+(.*)$/);
+    if (n) {
+      flushPara();
+      blocks.push({ kind: "numbered", runs: parseInline(n[1]) });
+      continue;
+    }
+    if (/^[-_*]{3,}$/.test(line)) {
+      flushPara();
+      continue;
+    }
+    para.push(line);
+  }
+  flushPara();
+  return blocks;
+}
+
+function buildBatchRequests(opts: {
+  title: string;
+  destination?: string | null;
+  duration?: string | null;
+  summary?: string | null;
+  contentMarkdown?: string | null;
+}): unknown[] {
+  const blocks: Block[] = [];
+  blocks.push({ kind: "heading", level: 1, runs: [{ text: opts.title }] });
+  const metaBits = [opts.destination, opts.duration].filter(Boolean).join(" · ");
+  if (metaBits) blocks.push({ kind: "paragraph", runs: [{ text: metaBits, italic: true }] });
+  if (opts.summary) blocks.push({ kind: "paragraph", runs: [{ text: opts.summary }] });
+  if (opts.contentMarkdown) blocks.push(...parseMarkdownBlocks(opts.contentMarkdown));
+  blocks.push({
+    kind: "paragraph",
+    runs: [{
+      text: "Note: The styled cover page and budget table from the Fjord & Waves editor are not mirrored here. Edit narrative copy freely; styled blocks remain in the app.",
+      italic: true,
+    }],
+  });
+
+  const requests: unknown[] = [];
+  let idx = 1;
+  const paraStyleOps: { start: number; end: number; namedStyleType: string }[] = [];
+  const bulletOps: { start: number; end: number; preset: string }[] = [];
+  const textStyleOps: { start: number; end: number; bold?: boolean; italic?: boolean }[] = [];
+
+  for (const block of blocks) {
+    const paraStart = idx;
+    for (const run of block.runs) {
+      if (!run.text) continue;
+      requests.push({ insertText: { location: { index: idx }, text: run.text } });
+      const runStart = idx;
+      idx += run.text.length;
+      if (run.bold || run.italic) {
+        textStyleOps.push({ start: runStart, end: idx, bold: run.bold, italic: run.italic });
+      }
+    }
+    requests.push({ insertText: { location: { index: idx }, text: "\n" } });
+    idx += 1;
+    const paraEnd = idx;
+    if (block.kind === "heading") {
+      paraStyleOps.push({
+        start: paraStart,
+        end: paraEnd,
+        namedStyleType: `HEADING_${Math.min(6, Math.max(1, block.level))}`,
+      });
+    } else if (block.kind === "bullet") {
+      bulletOps.push({ start: paraStart, end: paraEnd, preset: "BULLET_DISC_CIRCLE_SQUARE" });
+    } else if (block.kind === "numbered") {
+      bulletOps.push({ start: paraStart, end: paraEnd, preset: "NUMBERED_DECIMAL_ALPHA_ROMAN" });
+    }
+  }
+
+  for (const op of paraStyleOps) {
+    requests.push({
+      updateParagraphStyle: {
+        range: { startIndex: op.start, endIndex: op.end },
+        paragraphStyle: { namedStyleType: op.namedStyleType },
+        fields: "namedStyleType",
+      },
+    });
+  }
+  for (const op of bulletOps) {
+    requests.push({
+      createParagraphBullets: {
+        range: { startIndex: op.start, endIndex: op.end },
+        bulletPreset: op.preset,
+      },
+    });
+  }
+  for (const op of textStyleOps) {
+    const ts: Record<string, boolean> = {};
+    const fields: string[] = [];
+    if (op.bold) { ts.bold = true; fields.push("bold"); }
+    if (op.italic) { ts.italic = true; fields.push("italic"); }
+    requests.push({
+      updateTextStyle: {
+        range: { startIndex: op.start, endIndex: op.end },
+        textStyle: ts,
+        fields: fields.join(","),
+      },
+    });
+  }
+  return requests;
+}
+
+async function docsReplaceBody(
+  fileId: string,
+  opts: {
+    title: string;
+    destination?: string | null;
+    duration?: string | null;
+    summary?: string | null;
+    contentMarkdown?: string | null;
+  },
+): Promise<void> {
+  console.log(`[docsReplaceBody] start fileId=${fileId}`);
+  // Step 1: clear the existing body via Docs API deleteContentRange.
   await docsClearBody(fileId);
 
-  // Step 2: write the new HTML content. Drive converts the uploaded HTML
-  // back into the existing Google Doc body.
-  const r = await fetch(
-    `${UPLOAD_GATEWAY}/files/${fileId}?uploadType=media`,
-    {
-      method: "PATCH",
-      headers: gwHeaders({ "Content-Type": "text/html; charset=UTF-8" }),
-      body: html,
-    },
-  );
-  if (!r.ok) throw new Error(`Doc update failed: ${r.status} ${await r.text()}`);
+  // Step 2: build batchUpdate requests from markdown source and insert via
+  // the Docs API. This is the canonical "replace body" path — no Drive media
+  // PATCH, no HTML re-conversion, so the new content cannot be appended on
+  // top of leftover content.
+  const requests = buildBatchRequests(opts);
+  console.log(`[docsReplaceBody] built ${requests.length} batchUpdate requests`);
+
+  const r = await fetch(`${DOCS_GATEWAY}/documents/${fileId}:batchUpdate`, {
+    method: "POST",
+    headers: docsHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ requests }),
+  });
+  console.log(`[docsReplaceBody] batchUpdate write status=${r.status}`);
+  if (!r.ok) {
+    throw new Error(`Docs batchUpdate write failed: ${r.status} ${await r.text()}`);
+  }
+  console.log(`[docsReplaceBody] body replaced successfully`);
 }
 
 async function driveGetWebViewLink(fileId: string): Promise<string> {
@@ -385,7 +581,16 @@ Deno.serve(async (req) => {
       gdocId = created.id;
       gdocUrl = created.webViewLink || (await driveGetWebViewLink(gdocId));
     } else {
-      await driveUpdateDocHtml(gdocId, html);
+      // Update path: use the Docs API to clear + rewrite the body. We do NOT
+      // re-use the Drive media PATCH here because it does not reliably replace
+      // an existing Google Doc body and caused duplicated content.
+      await docsReplaceBody(gdocId, {
+        title,
+        destination: row.destination,
+        duration: row.duration,
+        summary: row.summary_en,
+        contentMarkdown: row.itinerary_content_en,
+      });
       if (!gdocUrl) gdocUrl = await driveGetWebViewLink(gdocId);
     }
 
