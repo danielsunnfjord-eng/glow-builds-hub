@@ -14,14 +14,24 @@ const corsHeaders = {
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_drive/drive/v3";
 const UPLOAD_GATEWAY = "https://connector-gateway.lovable.dev/google_drive/upload/drive/v3";
+const DOCS_GATEWAY = "https://connector-gateway.lovable.dev/google_docs/v1";
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
 const GOOGLE_DRIVE_API_KEY = Deno.env.get("GOOGLE_DRIVE_API_KEY") ?? "";
+const GOOGLE_DOCS_API_KEY = Deno.env.get("GOOGLE_DOCS_API_KEY") ?? "";
 
 function gwHeaders(extra: Record<string, string> = {}) {
   return {
     Authorization: `Bearer ${LOVABLE_API_KEY}`,
     "X-Connection-Api-Key": GOOGLE_DRIVE_API_KEY,
+    ...extra,
+  };
+}
+
+function docsHeaders(extra: Record<string, string> = {}) {
+  return {
+    Authorization: `Bearer ${LOVABLE_API_KEY}`,
+    "X-Connection-Api-Key": GOOGLE_DOCS_API_KEY,
     ...extra,
   };
 }
@@ -75,7 +85,42 @@ async function driveCreateDocFromHtml(
   return await r.json();
 }
 
+async function docsClearBody(docId: string): Promise<void> {
+  // Fetch current document structure to find the end of the body.
+  const r = await fetch(
+    `${DOCS_GATEWAY}/documents/${docId}?fields=body(content(endIndex))`,
+    { method: "GET", headers: docsHeaders() },
+  );
+  if (!r.ok) throw new Error(`Docs get failed: ${r.status} ${await r.text()}`);
+  const doc = await r.json();
+  const content: Array<{ endIndex?: number }> = doc?.body?.content ?? [];
+  const lastEnd = content.length ? Number(content[content.length - 1]?.endIndex ?? 1) : 1;
+  // Google Docs requires a trailing newline; valid delete range is [1, endIndex-1).
+  const deleteEnd = Math.max(1, lastEnd - 1);
+  if (deleteEnd <= 1) return; // already empty
+
+  const batch = await fetch(`${DOCS_GATEWAY}/documents/${docId}:batchUpdate`, {
+    method: "POST",
+    headers: docsHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify({
+      requests: [
+        { deleteContentRange: { range: { startIndex: 1, endIndex: deleteEnd } } },
+      ],
+    }),
+  });
+  if (!batch.ok) {
+    throw new Error(`Docs batchUpdate clear failed: ${batch.status} ${await batch.text()}`);
+  }
+}
+
 async function driveUpdateDocHtml(fileId: string, html: string): Promise<void> {
+  // Step 1: clear the existing Doc body via the Google Docs API so the
+  // subsequent HTML upload does not append to leftover content. This is the
+  // fix for duplicated days/sections appearing in the synced Doc.
+  await docsClearBody(fileId);
+
+  // Step 2: write the new HTML content. Drive converts the uploaded HTML
+  // back into the existing Google Doc body.
   const r = await fetch(
     `${UPLOAD_GATEWAY}/files/${fileId}?uploadType=media`,
     {
@@ -162,8 +207,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    if (!LOVABLE_API_KEY || !GOOGLE_DRIVE_API_KEY) {
-      throw new Error("Google Drive connector is not linked to this project.");
+    if (!LOVABLE_API_KEY || !GOOGLE_DRIVE_API_KEY || !GOOGLE_DOCS_API_KEY) {
+      throw new Error("Google Drive and Google Docs connectors must both be linked to this project.");
     }
 
     const body = await req.json().catch(() => ({}));
