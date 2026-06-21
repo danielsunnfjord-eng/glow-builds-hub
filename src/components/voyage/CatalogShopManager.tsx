@@ -2357,17 +2357,15 @@ const CatalogShopManager = () => {
                   <HotelIcon className="w-4 h-4" /> Hotel Recommendations
                 </div>
                 <p className="text-[0.78rem] text-voyage-muted">
-                  Up to 4 hotels — name, location, description and up to 3 images each. Rendered onto the fixed hotel page in the PDF.
+                  Add as many hotels as you need — name, location, description and up to 3 images each. They flow across as many hotel pages as required in the PDF.
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={addHotel}
-                disabled={state.hotels.length >= 4}
-                title={state.hotels.length >= 4 ? "Maximum of 4 hotels reached" : ""}
               >
-                <Plus className="w-4 h-4 mr-1" /> Add Hotel ({state.hotels.length}/4)
+                <Plus className="w-4 h-4 mr-1" /> Add Hotel ({state.hotels.length})
               </Button>
             </div>
 
