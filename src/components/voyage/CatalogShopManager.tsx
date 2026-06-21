@@ -1976,6 +1976,121 @@ const CatalogShopManager = () => {
               </Button>
             </div>
 
+            {/* Audit Itinerary toolbar + checklist */}
+            <div className="mt-3 mb-3">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={runAudit}
+                  disabled={auditing || applyingAudit || !state.content.trim()}
+                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  title={!state.content.trim() ? "Generate or import body content first" : "Run an AI audit on the current draft"}
+                >
+                  {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                  {auditing ? "Auditing…" : "Audit Itinerary"}
+                </button>
+                {state.auditItems.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={applyAudit}
+                    disabled={applyingAudit || failedAuditBatch !== null || !state.auditItems.some((i) => i.selected)}
+                    className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    {applyingAudit ? "Rewriting…" : `Apply Selected (${state.auditItems.filter((i) => i.selected).length})`}
+                  </button>
+                )}
+                {failedAuditBatch && (
+                  <button
+                    type="button"
+                    onClick={retryFailedAuditBatch}
+                    disabled={applyingAudit}
+                    className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
+                    Retry batch {failedAuditBatch.batchNumber}
+                  </button>
+                )}
+                {state.previousContent !== null && (
+                  <button
+                    type="button"
+                    onClick={keepOriginalAudit}
+                    disabled={applyingAudit}
+                    className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  >
+                    Keep original
+                  </button>
+                )}
+              </div>
+
+              {state.auditItems.length > 0 && (
+                <div className="mt-3">
+                  <AuditChecklist
+                    items={state.auditItems}
+                    onToggle={toggleAuditItem}
+                    onSelectAll={selectAllAudit}
+                    onDeselectAll={deselectAllAudit}
+                    canKeepOriginal={state.previousContent !== null}
+                    onKeepOriginal={keepOriginalAudit}
+                    compact
+                    statuses={itemStatuses}
+                  />
+                </div>
+              )}
+
+              {auditAction.status !== "idle" && (
+                <div className={`mt-3 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                  <div className="flex items-center gap-2 font-medium">
+                    {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                    {auditAction.message}
+                  </div>
+                  {auditAction.detail && <div className="mt-1 opacity-80">{auditAction.detail}</div>}
+                </div>
+              )}
+
+              {applySummary && (
+                <div className={`mt-3 rounded-md border px-3 py-2 text-[0.78rem] ${applySummary.failedItems.length ? "border-destructive/40 bg-destructive/5" : "border-sage/40 bg-sage/10"}`}>
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="font-medium text-ink inline-flex items-center gap-1.5">
+                      {applySummary.failedItems.length
+                        ? <AlertCircle className="w-4 h-4 text-destructive" />
+                        : <CheckCircle2 className="w-4 h-4 text-sage" />}
+                      {applySummary.appliedIds.length} of {applySummary.totalItems} improvements applied{applySummary.failedItems.length ? " — some failed" : " successfully"}
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {applySummary.failedItems.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={retryFailedItems}
+                          disabled={applyingAudit}
+                          className="px-3 py-1.5 rounded-sm border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          {applyingAudit ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCcw className="w-3 h-3" />}
+                          Retry {applySummary.failedItems.length} failed
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={viewUpdatedItinerary}
+                        className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                      >
+                        <Eye className="w-3 h-3" /> View Updated Itinerary
+                      </button>
+                    </div>
+                  </div>
+                  {applySummary.failedItems.length > 0 && (
+                    <ul className="mt-2 list-disc pl-5 text-[0.72rem] text-ink-2 space-y-0.5">
+                      {applySummary.failedItems.map((f) => (
+                        <li key={f.id}><span className="font-medium">{f.title}</span></li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+
+
+
             {gdocInfo.id && gdocInfo.url ? (
               <div className="rounded border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
                 <div className="text-[0.85rem]">
