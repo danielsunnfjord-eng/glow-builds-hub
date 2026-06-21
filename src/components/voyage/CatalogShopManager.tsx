@@ -1451,7 +1451,6 @@ const CatalogShopManager = () => {
         cover_intro_en: state.coverIntroEn || null,
         cover_intro_pt: state.coverIntroPt || null,
         cover_intro_no: state.coverIntroNo || null,
-        [contentField]: state.content,
         destination: state.destination || null,
         duration: state.duration || null,
         experience_type: state.experienceType.length ? state.experienceType : null,
@@ -1478,6 +1477,19 @@ const CatalogShopManager = () => {
         estimated_trip_budget: budgetCoverLabel,
       };
 
+      // IMPORTANT: Body copy lives in Google Docs. Normal editor saves must
+      // NEVER write itinerary_content_* or push to the Google Doc — doing so
+      // would overwrite edits made directly in Google Docs with stale editor
+      // state. Body content is only written by:
+      //   - the audit-apply flow (persistAuditedContentAndSync), and
+      //   - the explicit "Create Google Doc from existing draft" / pull flows.
+      // For brand-new itineraries with no Google Doc yet, we still seed the
+      // first body copy from the editor so the initial Google Doc can be
+      // created from it.
+      const hasGoogleDoc = !!gdocInfo.id;
+      if (!hasGoogleDoc) {
+        payload[contentField] = state.content;
+      }
 
       let savedId = state.id;
       if (state.id) {
@@ -1489,10 +1501,9 @@ const CatalogShopManager = () => {
         savedId = data.id;
         setState((s) => ({ ...s, id: data.id }));
       }
-      // Mirror to Google Drive (fire-and-forget; status pill shows result).
-      if (savedId) {
-        void syncToGoogleDoc(savedId);
-      }
+      // Do NOT auto-sync to Google Doc here. Sync only happens via the
+      // explicit "Create Google Doc" button or the audit-apply flow.
+
       setLastPersistedSignature(catalogDraftSignature(state, sectionPrompt));
       setLastAutoSavedAt(new Date().toISOString());
       setAutoSaveStatus("saved");
