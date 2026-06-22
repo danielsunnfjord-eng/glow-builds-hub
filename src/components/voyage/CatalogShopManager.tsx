@@ -1550,6 +1550,55 @@ const CatalogShopManager = () => {
     qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
   };
 
+  const syncToStripe = async (r: CatalogRow) => {
+    if (!r.is_published) {
+      toast.error("Publish the itinerary before syncing to Stripe.");
+      return;
+    }
+    setSyncingStripeId(r.id);
+    try {
+      const [sandboxRes, liveRes] = await Promise.allSettled([
+        supabase.functions.invoke("sync-catalog-stripe-products", {
+          body: { itinerary_id: r.id, environment: "sandbox" },
+        }),
+        supabase.functions.invoke("sync-catalog-stripe-products", {
+          body: { itinerary_id: r.id, environment: "live" },
+        }),
+      ]);
+
+      const summarize = (
+        res: PromiseSettledResult<{ data: any; error: any }>,
+        env: string,
+      ): { ok: boolean; msg: string } => {
+        if (res.status === "rejected") {
+          return { ok: false, msg: `${env}: ${String(res.reason?.message ?? res.reason)}` };
+        }
+        const { data, error } = res.value;
+        if (error) return { ok: false, msg: `${env}: ${error.message}` };
+        const action = data?.results?.[0]?.action ?? "synced";
+        return { ok: true, msg: `${env}: ${action}` };
+      };
+
+      const sandbox = summarize(sandboxRes, "sandbox");
+      const live = summarize(liveRes, "live");
+
+      if (sandbox.ok && live.ok) {
+        toast.success(`Stripe synced — ${sandbox.msg}, ${live.msg}`);
+      } else if (sandbox.ok) {
+        toast.success(`Stripe sandbox synced (${sandbox.msg}). Live skipped: ${live.msg}`);
+      } else if (live.ok) {
+        toast.success(`Stripe live synced (${live.msg}). Sandbox failed: ${sandbox.msg}`);
+      } else {
+        toast.error(`Stripe sync failed — ${sandbox.msg}; ${live.msg}`);
+      }
+      qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
+    } catch (e: any) {
+      toast.error(`Stripe sync failed: ${e?.message ?? e}`);
+    } finally {
+      setSyncingStripeId(null);
+    }
+  };
+
   const remove = async (r: CatalogRow) => {
     if (!confirm(`Delete "${r.title_en}"? This cannot be undone.`)) return;
     const { error } = await supabase.from("catalog_itineraries").delete().eq("id", r.id);
