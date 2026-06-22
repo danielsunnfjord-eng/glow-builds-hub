@@ -1788,6 +1788,16 @@ const CatalogShopManager = () => {
                   <Button size="sm" variant={r.is_published ? "outline" : "default"} onClick={() => togglePublish(r)}>
                     {r.is_published ? "Unpublish" : "Publish"}
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => syncToStripe(r)}
+                    disabled={!r.is_published || syncingStripeId === r.id}
+                    title={!r.is_published ? "Publish the itinerary before syncing to Stripe." : "Push product name, description, image, and tax code to Stripe (sandbox + live)."}
+                  >
+                    {syncingStripeId === r.id ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+                    Sync to Stripe
+                  </Button>
                   <Button size="sm" variant="ghost" onClick={() => remove(r)} className="text-destructive hover:text-destructive">Delete</Button>
                 </div>
               </div>
