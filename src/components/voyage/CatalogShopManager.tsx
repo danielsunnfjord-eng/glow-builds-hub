@@ -88,6 +88,9 @@ interface CatalogRow {
   subpage_checklist?: string[] | null;
   subpage_day_overview?: { label: string; description: string }[] | null;
   subpage_expectations?: { title: string; description: string }[] | null;
+  stripe_product_id_sandbox?: string | null;
+  stripe_product_id_live?: string | null;
+  stripe_synced_at?: string | null;
 }
 
 
