@@ -1752,6 +1752,21 @@ const CatalogShopManager = () => {
                         <ClipboardCheck className="w-3 h-3" /> Audited
                       </span>
                     )}
+                    {(r.stripe_product_id_sandbox || r.stripe_product_id_live) ? (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-ocean/10 text-ocean px-2 py-0.5 rounded"
+                        title={r.stripe_synced_at ? `Last synced ${new Date(r.stripe_synced_at).toLocaleString()}` : "Synced to Stripe"}
+                      >
+                        Stripe ✓
+                      </span>
+                    ) : (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded"
+                        title="Not yet synced to Stripe. Stripe will auto-create the product on first checkout if not synced manually."
+                      >
+                        Stripe ○
+                      </span>
+                    )}
                   </div>
                   <div className="text-[0.75rem] text-voyage-muted mt-0.5 truncate">
                     {[r.destination, r.duration].filter(Boolean).join(" · ") || "No metadata"} ·{" "}
