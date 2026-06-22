@@ -47,7 +47,13 @@
   </url>
   <url>
     <loc>https://fjordwavestravel.com/itineraries-shop/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/itineraries-shop/norway-for-two-the-5-most-romantic-places-in-summer</loc>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
