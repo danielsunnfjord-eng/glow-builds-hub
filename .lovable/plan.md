@@ -1,24 +1,55 @@
-## Goal
-Allow unlimited hotel recommendations in the itinerary editor; extra hotels flow automatically onto additional hotel pages in both the preview PDF (Paged.js) and the generated catalog PDF (jsPDF).
+## Add a "Sync to Stripe" button in the catalogue admin
 
-## Changes
+Give yourself an explicit moment to push an itinerary to Stripe when it's truly ready for sale, instead of relying on the lazy auto-create that fires on the first checkout.
 
-### 1. `src/components/voyage/CatalogShopManager.tsx` (editor UI)
-- Remove the `disabled={state.hotels.length >= 4}` guard on the "Add Hotel" button.
-- Remove the `title` tooltip about the 4-hotel max.
-- Change the button label from `Add Hotel ({state.hotels.length}/4)` to `Add Hotel ({state.hotels.length})`.
-- Update the helper copy from *"Up to 4 hotels — …"* to *"Add as many hotels as you need — name, location, description and up to 3 images each. They flow across as many hotel pages as required in the PDF."*
+### What the button does
 
-### 2. No backend changes needed
-- `src/components/voyage/PdfPreview.tsx` already uses `page-break-inside: avoid` on `.fjw-hotel-card` and only forces a page break on the section itself, so Paged.js will paginate extra cards automatically.
-- `supabase/functions/generate-catalog-pdf/index.ts` already calls `pdf.addPage()` inside the hotels loop when `hy > H - 280`, so extra hotels overflow onto new pages.
-- DB column `hotels jsonb` has no length constraint.
+For the current itinerary, call the existing `sync-catalog-stripe-products` edge function (already deployed, already idempotent) for **both** environments (sandbox + live) so previews and production stay in sync. The function will:
 
-## Verification
-- Add 6–8 hotels in the editor and confirm the "Add Hotel" button stays enabled.
-- Open the in-app PDF preview and confirm hotels paginate cleanly (no cards split across pages, new hotel pages appear as needed).
-- Generate the catalog PDF via the edge function and confirm the same.
+- Create the Stripe Product if none exists for that environment, or
+- Update the existing Product's name, description, hero image, and tax code, or
+- Recreate it if Stripe returns an error on update.
 
-## Notes / Trade-offs
-- Card size stays the same; with many hotels the document just gets longer. No shrinking.
-- Section heading "Hotel Recommendations" only appears on the first hotel page (existing behaviour), subsequent hotel pages continue without a repeated header.
+It then writes `stripe_product_id_sandbox` / `stripe_product_id_live` and `stripe_synced_at` back to `catalog_itineraries`. Price is **not** synced — it stays dynamic on the DB row and is sent at checkout via `price_data` (already the case today).
+
+### Where the button lives
+
+In `src/components/voyage/CatalogShopManager.tsx`, in the itinerary editor header next to the existing publish / Google Doc sync controls.
+
+Behavior:
+- Label: `Sync to Stripe`
+- Disabled when the itinerary is unsaved or `is_published === false`, with a tooltip: *"Publish the itinerary before syncing to Stripe."*
+- Spinner while running; toast on success showing `created` / `updated` / `recreated` per environment.
+- Below the button, show a small status line:
+  - `Last synced: <relative time>` from `stripe_synced_at`
+  - Or `Not yet synced` (in which case Stripe will lazily create on first checkout — explained in tooltip).
+
+### Catalogue list view
+
+In the same file's catalogue table, add a tiny badge per row:
+- ✅ `Synced` when `stripe_product_id_sandbox` (or `_live`) is set
+- ⚪ `Not synced` otherwise
+
+So you can see at a glance which itineraries are live in Stripe.
+
+### Backend
+
+No new edge functions, no schema changes. `sync-catalog-stripe-products` already accepts `{ itinerary_id, environment }` and handles single-itinerary sync.
+
+Two invocations from the client (parallel):
+```ts
+supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "sandbox" } })
+supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "live" } })
+```
+
+Toast aggregates both results. If live fails (e.g. live key not yet claimed), show a soft warning rather than an error — sandbox success is still useful.
+
+### Safety net stays
+
+The lazy create-on-first-checkout path in `create-catalog-checkout/index.ts` stays untouched, so a forgotten sync never blocks a sale.
+
+### Verification
+
+1. Add a new test itinerary, publish it, click **Sync to Stripe** → toast says "created" for sandbox, row badge flips to ✅, `stripe_synced_at` updates.
+2. Edit the title/hero image, click again → toast says "updated", `stripe_product_id_sandbox` unchanged.
+3. Confirm an unpublished itinerary disables the button.

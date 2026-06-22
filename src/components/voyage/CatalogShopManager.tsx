@@ -88,6 +88,9 @@ interface CatalogRow {
   subpage_checklist?: string[] | null;
   subpage_day_overview?: { label: string; description: string }[] | null;
   subpage_expectations?: { title: string; description: string }[] | null;
+  stripe_product_id_sandbox?: string | null;
+  stripe_product_id_live?: string | null;
+  stripe_synced_at?: string | null;
 }
 
 
@@ -360,6 +363,7 @@ const CatalogShopManager = () => {
   const [previewLang, setPreviewLang] = useState<Lang>("en");
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
+  const [syncingStripeId, setSyncingStripeId] = useState<string | null>(null);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
   const [failedAuditBatch, setFailedAuditBatch] = useState<FailedAuditBatch | null>(null);
   const [itemStatuses, setItemStatuses] = useState<Record<string, ApplyItemStatus>>({});
@@ -564,7 +568,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -1546,6 +1550,55 @@ const CatalogShopManager = () => {
     qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
   };
 
+  const syncToStripe = async (r: CatalogRow) => {
+    if (!r.is_published) {
+      toast.error("Publish the itinerary before syncing to Stripe.");
+      return;
+    }
+    setSyncingStripeId(r.id);
+    try {
+      const [sandboxRes, liveRes] = await Promise.allSettled([
+        supabase.functions.invoke("sync-catalog-stripe-products", {
+          body: { itinerary_id: r.id, environment: "sandbox" },
+        }),
+        supabase.functions.invoke("sync-catalog-stripe-products", {
+          body: { itinerary_id: r.id, environment: "live" },
+        }),
+      ]);
+
+      const summarize = (
+        res: PromiseSettledResult<{ data: any; error: any }>,
+        env: string,
+      ): { ok: boolean; msg: string } => {
+        if (res.status === "rejected") {
+          return { ok: false, msg: `${env}: ${String(res.reason?.message ?? res.reason)}` };
+        }
+        const { data, error } = res.value;
+        if (error) return { ok: false, msg: `${env}: ${error.message}` };
+        const action = data?.results?.[0]?.action ?? "synced";
+        return { ok: true, msg: `${env}: ${action}` };
+      };
+
+      const sandbox = summarize(sandboxRes, "sandbox");
+      const live = summarize(liveRes, "live");
+
+      if (sandbox.ok && live.ok) {
+        toast.success(`Stripe synced — ${sandbox.msg}, ${live.msg}`);
+      } else if (sandbox.ok) {
+        toast.success(`Stripe sandbox synced (${sandbox.msg}). Live skipped: ${live.msg}`);
+      } else if (live.ok) {
+        toast.success(`Stripe live synced (${live.msg}). Sandbox failed: ${sandbox.msg}`);
+      } else {
+        toast.error(`Stripe sync failed — ${sandbox.msg}; ${live.msg}`);
+      }
+      qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
+    } catch (e: any) {
+      toast.error(`Stripe sync failed: ${e?.message ?? e}`);
+    } finally {
+      setSyncingStripeId(null);
+    }
+  };
+
   const remove = async (r: CatalogRow) => {
     if (!confirm(`Delete "${r.title_en}"? This cannot be undone.`)) return;
     const { error } = await supabase.from("catalog_itineraries").delete().eq("id", r.id);
@@ -1699,6 +1752,21 @@ const CatalogShopManager = () => {
                         <ClipboardCheck className="w-3 h-3" /> Audited
                       </span>
                     )}
+                    {(r.stripe_product_id_sandbox || r.stripe_product_id_live) ? (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-ocean/10 text-ocean px-2 py-0.5 rounded"
+                        title={r.stripe_synced_at ? `Last synced ${new Date(r.stripe_synced_at).toLocaleString()}` : "Synced to Stripe"}
+                      >
+                        Stripe ✓
+                      </span>
+                    ) : (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded"
+                        title="Not yet synced to Stripe. Stripe will auto-create the product on first checkout if not synced manually."
+                      >
+                        Stripe ○
+                      </span>
+                    )}
                   </div>
                   <div className="text-[0.75rem] text-voyage-muted mt-0.5 truncate">
                     {[r.destination, r.duration].filter(Boolean).join(" · ") || "No metadata"} ·{" "}
@@ -1719,6 +1787,16 @@ const CatalogShopManager = () => {
                   <Button size="sm" variant="ghost" onClick={() => openEdit(r)}>Edit</Button>
                   <Button size="sm" variant={r.is_published ? "outline" : "default"} onClick={() => togglePublish(r)}>
                     {r.is_published ? "Unpublish" : "Publish"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => syncToStripe(r)}
+                    disabled={!r.is_published || syncingStripeId === r.id}
+                    title={!r.is_published ? "Publish the itinerary before syncing to Stripe." : "Push product name, description, image, and tax code to Stripe (sandbox + live)."}
+                  >
+                    {syncingStripeId === r.id ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+                    Sync to Stripe
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => remove(r)} className="text-destructive hover:text-destructive">Delete</Button>
                 </div>
