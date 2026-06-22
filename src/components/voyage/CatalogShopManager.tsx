@@ -363,6 +363,7 @@ const CatalogShopManager = () => {
   const [previewLang, setPreviewLang] = useState<Lang>("en");
   const [auditing, setAuditing] = useState(false);
   const [applyingAudit, setApplyingAudit] = useState(false);
+  const [syncingStripeId, setSyncingStripeId] = useState<string | null>(null);
   const [auditAction, setAuditAction] = useState<AuditActionState>({ status: "idle", message: "" });
   const [failedAuditBatch, setFailedAuditBatch] = useState<FailedAuditBatch | null>(null);
   const [itemStatuses, setItemStatuses] = useState<Record<string, ApplyItemStatus>>({});
