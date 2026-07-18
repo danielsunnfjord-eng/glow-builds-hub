@@ -108,16 +108,14 @@ const PAGE_CSS = `
   line-height: 1.75;
 }
 
-/* ========== COVER PAGE ==========
-   Fixed-height layout. Every section has an explicit height in mm so
-   Paged.js can never split the cover across two pages, and no child
-   can push another off the bottom. Heights sum to 297mm (A4). */
+/* ========== COVER PAGE ========== */
 .fjw-cover-page {
   page: cover;
-  height: 297mm;
+  min-height: 297mm;
+  height: auto;
   width: 210mm;
-  max-height: 297mm;
-  overflow: hidden;
+  max-height: none;
+  overflow: visible;
   background: #f5f1ea;
   margin: 0;
   padding: 0;
@@ -183,13 +181,14 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* Body wrapper — fills the remaining 158mm with fixed-height children */
+/* Body wrapper — can grow when the cover paragraph wraps longer */
 .fjw-cover-body {
-  height: 158mm;
+  min-height: 158mm;
+  height: auto;
   display: block;
   text-align: center;
   padding: 0 22mm;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
@@ -217,19 +216,20 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* 6. Short description — 24% (~71mm). Clipped, never overflows. */
+/* 6. Short description — wraps fully and pushes the metadata down naturally. */
 .fjw-cover-description {
-  height: 60mm;
-  margin: 8px auto 0;
+  height: auto;
+  min-height: 0;
+  margin: 8px auto 12mm;
   padding: 0 0 4mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
   font-size: clamp(13px, 1.4vw, 17px); line-height: 1.7;
   color: #2e4450; max-width: 145mm;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
+  overflow: visible;
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
 }
 
 /* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */

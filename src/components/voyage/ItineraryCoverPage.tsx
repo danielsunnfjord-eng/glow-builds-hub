@@ -52,7 +52,7 @@ export default function ItineraryCoverPage({
           margin: 0 auto;
           background: #f8f5f0;
           font-family: 'Jost', sans-serif;
-          overflow: hidden;
+          overflow: visible;
         }
 
         /* ── 1. Logo block ── */
@@ -120,6 +120,7 @@ export default function ItineraryCoverPage({
           align-items: center;
           padding: 40px 56px 52px;
           background: #f8f5f0;
+          overflow: visible;
         }
 
         /* ── 4. Eyebrow ── */
