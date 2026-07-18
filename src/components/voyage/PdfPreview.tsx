@@ -183,11 +183,12 @@ const PAGE_CSS = `
 
 /* Body wrapper — can grow when the cover paragraph wraps longer */
 .fjw-cover-body {
-  min-height: 158mm;
   height: auto;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  padding: 0 22mm;
+  padding: 8mm 22mm 12mm;
   overflow: visible;
   position: relative;
 }
