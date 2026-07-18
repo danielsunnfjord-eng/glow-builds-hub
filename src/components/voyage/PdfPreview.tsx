@@ -217,29 +217,30 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* 6. Short description — 24% (~71mm). Clipped, never overflows. */
+/* 6. Short description — expanded to fit longer intros without clipping. */
 .fjw-cover-description {
-  height: 60mm;
+  height: 70mm;
   margin: 8px auto 0;
   padding: 0 0 4mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
-  font-size: clamp(13px, 1.4vw, 17px); line-height: 1.7;
+  font-size: clamp(12px, 1.3vw, 16px); line-height: 1.6;
   color: #2e4450; max-width: 145mm;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 9;
   -webkit-box-orient: vertical;
 }
 
-/* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */
+/* 7. Metadata strip — pinned to bottom of body */
 .fjw-cover-meta {
-  height: 45mm;
+  height: 35mm;
   display: flex; justify-content: center; align-items: center;
   margin: 0 auto; width: 100%; max-width: 170mm;
-  padding: 6mm 0;
+  padding: 4mm 0;
   overflow: hidden;
 }
+
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
