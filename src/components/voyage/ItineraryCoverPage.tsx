@@ -193,7 +193,10 @@ export default function ItineraryCoverPage({
           color: #2e4450;
           text-align: center;
           max-width: 500px;
-          margin-bottom: 44px;
+          margin-bottom: 56px;
+          height: auto;
+          min-height: 0;
+          overflow: visible;
         }
 
         /* ── 7. Metadata strip ── */
