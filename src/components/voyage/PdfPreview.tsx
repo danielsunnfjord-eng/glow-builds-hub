@@ -153,11 +153,11 @@ const PAGE_CSS = `
   max-height: 24mm; width: auto; display: block;
 }
 
-/* 2. Hero image — reduced to make room for description */
+/* 2. Hero image — 32% */
 .fjw-cover-hero {
   position: relative;
   width: 100%;
-  height: 82mm;
+  height: 95mm;
   overflow: hidden;
   background: #1c2e38;
 }
@@ -183,9 +183,9 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* Body wrapper — fills the remaining 171mm with fixed-height children */
+/* Body wrapper — fills the remaining 158mm with fixed-height children */
 .fjw-cover-body {
-  height: 171mm;
+  height: 158mm;
   display: block;
   text-align: center;
   padding: 0 22mm;
@@ -193,7 +193,7 @@ const PAGE_CSS = `
   position: relative;
 }
 
-/* 4. Eyebrow / tagline */
+/* 4. Eyebrow / tagline — 4% (~12mm) */
 .fjw-cover-eyebrow {
   height: 12mm;
   margin: 0;
@@ -204,9 +204,9 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* 5. Title */
+/* 5. Title — 12% (~36mm) */
 .fjw-cover-title {
-  height: 32mm;
+  height: 36mm;
   margin: 0 auto 8px;
   padding: 0;
   display: flex; align-items: center; justify-content: center;
@@ -217,30 +217,29 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* 6. Short description — enlarged so longer taglines fit */
+/* 6. Short description — 24% (~71mm). Clipped, never overflows. */
 .fjw-cover-description {
-  height: 88mm;
+  height: 60mm;
   margin: 8px auto 0;
   padding: 0 0 4mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
-  font-size: clamp(12px, 1.25vw, 15px); line-height: 1.55;
+  font-size: clamp(13px, 1.4vw, 17px); line-height: 1.7;
   color: #2e4450; max-width: 145mm;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 10;
+  -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
 }
 
-/* 7. Metadata strip pinned near bottom of body */
+/* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */
 .fjw-cover-meta {
-  height: 39mm;
+  height: 45mm;
   display: flex; justify-content: center; align-items: center;
   margin: 0 auto; width: 100%; max-width: 170mm;
-  padding: 4mm 0;
+  padding: 6mm 0;
   overflow: hidden;
 }
-
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
