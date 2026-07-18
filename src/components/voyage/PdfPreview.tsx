@@ -108,14 +108,16 @@ const PAGE_CSS = `
   line-height: 1.75;
 }
 
-/* ========== COVER PAGE ========== */
+/* ========== COVER PAGE ==========
+   Fixed-height layout. Every section has an explicit height in mm so
+   Paged.js can never split the cover across two pages, and no child
+   can push another off the bottom. Heights sum to 297mm (A4). */
 .fjw-cover-page {
   page: cover;
-  min-height: 297mm;
-  height: auto;
+  height: 297mm;
   width: 210mm;
-  max-height: none;
-  overflow: visible;
+  max-height: 297mm;
+  overflow: hidden;
   background: #f5f1ea;
   margin: 0;
   padding: 0;
@@ -181,15 +183,13 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* Body wrapper — can grow when the cover paragraph wraps longer */
+/* Body wrapper — fills the remaining 158mm with fixed-height children */
 .fjw-cover-body {
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 158mm;
+  display: block;
   text-align: center;
-  padding: 8mm 22mm 12mm;
-  overflow: visible;
+  padding: 0 22mm;
+  overflow: hidden;
   position: relative;
 }
 
@@ -217,29 +217,28 @@ const PAGE_CSS = `
   overflow: hidden;
 }
 
-/* 6. Short description — wraps fully and pushes the metadata down naturally. */
+/* 6. Short description — 24% (~71mm). Clipped, never overflows. */
 .fjw-cover-description {
-  height: auto;
-  min-height: 0;
-  margin: 8px auto 12mm;
+  height: 60mm;
+  margin: 8px auto 0;
   padding: 0 0 4mm;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic; font-weight: 400;
   font-size: clamp(13px, 1.4vw, 17px); line-height: 1.7;
   color: #2e4450; max-width: 145mm;
-  overflow: visible;
-  display: block;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
 }
 
-/* 7. Metadata strip — flows right below the description */
+/* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */
 .fjw-cover-meta {
-  height: auto;
-  display: flex; justify-content: center; align-items: stretch;
-  margin: 4mm auto 0; width: 100%; max-width: 170mm;
+  height: 45mm;
+  display: flex; justify-content: center; align-items: center;
+  margin: 0 auto; width: 100%; max-width: 170mm;
   padding: 6mm 0;
-  overflow: visible;
+  overflow: hidden;
 }
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
