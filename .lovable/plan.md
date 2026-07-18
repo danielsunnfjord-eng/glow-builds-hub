@@ -1,55 +1,48 @@
-## Add a "Sync to Stripe" button in the catalogue admin
+## Fix: cover page truncates long descriptions
 
-Give yourself an explicit moment to push an itinerary to Stripe when it's truly ready for sale, instead of relying on the lazy auto-create that fires on the first checkout.
+### Cause
+The cover page in `src/components/voyage/PdfPreview.tsx` locks every section to a fixed height so it always fits on one A4 page. The description block is:
 
-### What the button does
+- `height: 60mm`
+- `-webkit-line-clamp: 6`
+- `font-size: clamp(13px, 1.4vw, 17px)`, `line-height: 1.7`
 
-For the current itinerary, call the existing `sync-catalog-stripe-products` edge function (already deployed, already idempotent) for **both** environments (sandbox + live) so previews and production stay in sync. The function will:
+The Zona Sul tagline is ~8–9 lines at that size, so line 7 onward gets clipped (which is what the screenshot shows). The rest of the page (title, meta, footer bar) is fine — only the description is being cut.
 
-- Create the Stripe Product if none exists for that environment, or
-- Update the existing Product's name, description, hero image, and tax code, or
-- Recreate it if Stripe returns an error on update.
+### Fix (single file: `src/components/voyage/PdfPreview.tsx`)
 
-It then writes `stripe_product_id_sandbox` / `stripe_product_id_live` and `stripe_synced_at` back to `catalog_itineraries`. Price is **not** synced — it stays dynamic on the DB row and is sent at checkout via `price_data` (already the case today).
+Rebalance the A4 budget to give the description more room, and raise its clamp. Total must still equal 297mm so the cover stays a single page.
 
-### Where the button lives
+New budget:
 
-In `src/components/voyage/CatalogShopManager.tsx`, in the itinerary editor header next to the existing publish / Google Doc sync controls.
-
-Behavior:
-- Label: `Sync to Stripe`
-- Disabled when the itinerary is unsaved or `is_published === false`, with a tooltip: *"Publish the itinerary before syncing to Stripe."*
-- Spinner while running; toast on success showing `created` / `updated` / `recreated` per environment.
-- Below the button, show a small status line:
-  - `Last synced: <relative time>` from `stripe_synced_at`
-  - Or `Not yet synced` (in which case Stripe will lazily create on first checkout — explained in tooltip).
-
-### Catalogue list view
-
-In the same file's catalogue table, add a tiny badge per row:
-- ✅ `Synced` when `stripe_product_id_sandbox` (or `_live`) is set
-- ⚪ `Not synced` otherwise
-
-So you can see at a glance which itineraries are live in Stripe.
-
-### Backend
-
-No new edge functions, no schema changes. `sync-catalog-stripe-products` already accepts `{ itinerary_id, environment }` and handles single-itinerary sync.
-
-Two invocations from the client (parallel):
-```ts
-supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "sandbox" } })
-supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "live" } })
+```text
+logo         30mm   (unchanged)
+hero         82mm   (was 95)
+photo credit  9mm   (unchanged)
+body        171mm   (was 158)
+  eyebrow    12mm
+  title      32mm   (was 36)
+  desc       88mm   (was 60)
+  meta       39mm   (was 45)
+footer bar    5mm   (unchanged)
+------------------
+total       297mm
 ```
 
-Toast aggregates both results. If live fails (e.g. live key not yet claimed), show a soft warning rather than an error — sandbox success is still useful.
+Description CSS changes:
 
-### Safety net stays
+- `height: 88mm`
+- `-webkit-line-clamp: 10` (up from 6)
+- `font-size: clamp(12px, 1.25vw, 15px)`, `line-height: 1.55` (tighter, so more of the same tagline fits)
 
-The lazy create-on-first-checkout path in `create-catalog-checkout/index.ts` stays untouched, so a forgotten sync never blocks a sale.
+Title height drops to 32mm and font stays at 30px — Zona Sul's title already fits on one line, and shorter titles won't be affected.
+
+Hero drops to 82mm — still the dominant visual, just a touch less tall.
+
+No changes to the edge function PDF (`supabase/functions/generate-catalog-pdf/index.ts`) — its description block already sizes to remaining space and isn't what's shown in the screenshot.
+
+### Files touched
+- `src/components/voyage/PdfPreview.tsx` — CSS only, no logic changes.
 
 ### Verification
-
-1. Add a new test itinerary, publish it, click **Sync to Stripe** → toast says "created" for sandbox, row badge flips to ✅, `stripe_synced_at` updates.
-2. Edit the title/hero image, click again → toast says "updated", `stripe_product_id_sandbox` unchanged.
-3. Confirm an unpublished itinerary disables the button.
+Open the Zona Sul itinerary in the catalogue editor → PDF preview. The full description should now be visible without a trailing fade/clip, and the meta row + teal footer bar stay pinned at the bottom of the page.
