@@ -233,13 +233,13 @@ const PAGE_CSS = `
   -webkit-box-orient: initial;
 }
 
-/* 7. Metadata strip — 15% (~45mm) pinned to bottom of body */
+/* 7. Metadata strip — flows right below the description */
 .fjw-cover-meta {
-  height: 45mm;
-  display: flex; justify-content: center; align-items: center;
-  margin: 0 auto; width: 100%; max-width: 170mm;
+  height: auto;
+  display: flex; justify-content: center; align-items: stretch;
+  margin: 4mm auto 0; width: 100%; max-width: 170mm;
   padding: 6mm 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .fjw-cover-meta-col {
   flex: 1; display: flex; flex-direction: column;
