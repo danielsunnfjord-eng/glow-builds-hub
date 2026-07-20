@@ -57,8 +57,16 @@ const REJECT_EXACT = new Set(
     "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
     "today", "tomorrow", "yesterday", "tonight",
     "day", "days", "week", "weeks", "weekend",
+    // Bare common nouns — these are venue *types*, not verifiable places.
+    // A candidate reduced to one of these has no proper noun left.
+    "beach", "park", "museum", "restaurant", "cafe", "café", "hotel", "church",
+    "cathedral", "palace", "castle", "tower", "gallery", "market", "island",
+    "viewpoint", "fjord", "glacier", "peak", "mountain", "valley", "lake",
+    "waterfall", "falls", "bakery", "bistro", "bar", "harbour", "harbor",
+    "square", "plaza", "trail", "chapel", "fortress", "garden", "gardens",
   ].map((s) => s.toLowerCase()),
 );
+
 
 const ADJECTIVES = new Set(
   [
@@ -81,17 +89,18 @@ const ADJECTIVES = new Set(
 // Leading tokens we strip off multi-word candidates.
 const LEADING_NOISE = new Set(
   [
-    "book", "buy", "skip", "swap", "download", "stop", "head", "walk", "take", "catch",
-    "order", "grab", "visit", "see", "check", "note", "try", "start", "end", "begin",
-    "finish", "continue", "return", "go", "come", "stay", "leave", "depart", "arrive",
-    "board", "climb", "descend", "cross", "follow", "pass", "reach", "find", "choose",
-    "pick", "select", "reserve", "confirm", "cancel", "pay", "tip", "ask", "request",
-    "enjoy", "savour", "savor", "sample", "taste", "sip", "drink", "eat", "dine", "sleep",
-    "rest", "relax", "explore", "discover", "wander", "stroll", "hike", "bike", "cycle",
-    "drive", "ride", "fly", "sail", "swim", "dive", "surf", "fish", "shop", "browse",
-    "photograph", "learn", "listen", "watch", "observe", "meet", "greet", "celebrate",
-    "toast", "raise", "tour", "expect", "plan", "prepare", "pack", "dress", "wear",
-    "bring", "carry", "use", "install", "open", "close", "turn", "press", "tap", "swipe",
+    "book", "buy", "purchase", "skip", "swap", "download", "stop", "head", "walk", "take",
+    "catch", "enter", "exit", "order", "grab", "visit", "see", "check", "note", "try",
+    "start", "end", "begin", "finish", "continue", "return", "go", "come", "stay", "leave",
+    "depart", "arrive", "board", "climb", "descend", "cross", "follow", "pass", "reach",
+    "find", "choose", "pick", "select", "reserve", "confirm", "cancel", "pay", "tip", "ask",
+    "request", "enjoy", "savour", "savor", "sample", "taste", "sip", "drink", "eat", "dine",
+    "sleep", "rest", "relax", "explore", "discover", "wander", "stroll", "hike", "bike",
+    "cycle", "drive", "ride", "fly", "sail", "swim", "dive", "surf", "fish", "shop",
+    "browse", "photograph", "learn", "listen", "watch", "observe", "meet", "greet",
+    "celebrate", "toast", "raise", "tour", "expect", "plan", "prepare", "pack", "dress",
+    "wear", "bring", "carry", "use", "install", "open", "close", "turn", "press", "tap",
+    "swipe",
     "if", "when", "while", "since", "after", "before", "during", "instead",
     "alternatively", "optionally", "perhaps", "maybe", "sometimes", "usually", "often",
     "always", "never", "insider", "peak", "from", "around", "between", "among", "across",
@@ -102,8 +111,16 @@ const LEADING_NOISE = new Set(
     "nine", "ten", "recommend", "recommended", "recommends", "recommendation",
     "recommendations", "booking", "bookings", "reservations", "reservation", "transport",
     "transportation", "dining", "food", "drinks", "cuisine", "local",
+    // Prepositions / connectors that leak when a sentence begins with them.
+    "in", "at", "on", "up", "back",
   ].map((s) => s.toLowerCase()),
 );
+
+// Street prefixes — a candidate starting with these is a street, not a
+// verifiable venue. Reject outright; streets aren't useful Google Maps
+// destinations for concierge verification.
+const STREET_PREFIX_RE = /^(?:Rua|Avenida|Av\.?|Praça|Praca|Largo|Alameda|Estrada|Travessa|Rue|Boulevard|Bd\.?|Via|Viale|Corso|Calle|Carrer|Passeig|Straße|Strasse|Str\.?|Gate|Gata|Gaten|Vei|Veien)\s+/i;
+
 
 // Descriptor-only phrases we drop entirely (Michelin-starred, Renzo Piano-designed).
 const DESCRIPTOR_ONLY_RE = /^(?:.+-starred|.+-designed|.+-inspired|.+-owned|.+-run|.+-based|.+-style)$/i;
@@ -117,19 +134,28 @@ const CONNECTOR_RE = /^(?:of|the|and|de|da|do|dos|das|på|i|for|og|av|du|des|le|
 // Category resolution
 // ---------------------------------------------------------------------------
 
+// NAME_RULES: if the name itself declares what it is, we categorise it here
+// and never consult nearby context. This is the priority-order invariant —
+// see the extractor comment below `let category = ...`.
+//
+// Rules cover English + the destination-market languages our personas serve
+// (Portuguese, Spanish, Italian, French, Nordic) so local-language venues
+// like "Museu do Amanhã" or "Jardim Botânico" self-identify instead of
+// falling through to context-based guessing.
 const NAME_RULES: Array<{ re: RegExp; label: string }> = [
   { re: /\bOpera House\b/i, label: "Landmark" },
   { re: /\bPeace (?:Center|Centre)\b/i, label: "Museum" },
-  { re: /\b(?:Museum|Museet|Kunsthall|Gallery|Galleri)\b/i, label: "Museum" },
-  { re: /\b(?:Park|Parken|Gardens?|Skulpturpark)\b/i, label: "Park" },
-  { re: /\b(?:Beach|Stranda|Island|Viewpoint|Utsikt|Fjord|Fjorden|Foss|Falls?|Glacier|Peak|Mountain|Fjell|Valley|Dalen|Lake|Waterfall)\b/i, label: "Landmark" },
-  { re: /\b(?:Church|Cathedral|Kirke|Stavkirke|Stave Church|Domkirke|Chapel|Kapell)\b/i, label: "Landmark" },
-  { re: /\b(?:Palace|Slott|Slottet|Fortress|Festning|Tower|Castle)\b/i, label: "Landmark" },
-  { re: /\b(?:Hotel|Hotell|Lodge|Inn|Resort|Hostel|Guesthouse|Rorbu|Rorbuer)\b/i, label: "Hotel" },
-  { re: /\b(?:Restaurant|Restauranten|Bistro|Brasserie|Osteria|Trattoria|Bakery|Bakeri|Bakeriet)\b/i, label: "Restaurant" },
-  { re: /\b(?:Cafe|Café|Kafé|Kaffebar|Coffee Roasters?|Roastery|Tea House)\b/i, label: "Café" },
-  { re: /\b(?:Tours?|Adventures?|Expeditions?|Safari|Safaris)\b/i, label: "Tour" },
+  { re: /\b(?:Museum|Museet|Museu|Museo|Musée|Kunsthall|Gallery|Galleri|Galeria|Galerie|Pinacoteca)\b/i, label: "Museum" },
+  { re: /\b(?:Park|Parken|Parque|Parc|Parco|Gardens?|Jardim|Jardins|Jardín|Jardines|Giardini|Skulpturpark)\b/i, label: "Park" },
+  { re: /\b(?:Beach|Praia|Playa|Plage|Spiaggia|Stranda|Island|Ilha|Isla|Île|Isola|Viewpoint|Mirante|Mirador|Belvedere|Utsikt|Fjord|Fjorden|Foss|Falls?|Cachoeira|Cataratas?|Glacier|Peak|Pico|Cima|Mountain|Montanha|Monte|Montaña|Fjell|Valley|Vale|Valle|Dalen|Lake|Lago|Lac|Waterfall)\b/i, label: "Landmark" },
+  { re: /\b(?:Church|Cathedral|Kirke|Stavkirke|Stave Church|Domkirke|Chapel|Kapell|Igreja|Catedral|Capela|Iglesia|Chiesa|Duomo|Basilica|Basílica|Église|Cathédrale)\b/i, label: "Landmark" },
+  { re: /\b(?:Palace|Palácio|Palacio|Palazzo|Palais|Slott|Slottet|Fortress|Fortaleza|Fortezza|Festning|Tower|Torre|Tour|Castle|Castelo|Castillo|Castello|Château)\b/i, label: "Landmark" },
+  { re: /\b(?:Hotel|Hotell|Hôtel|Pousada|Pousadas|Lodge|Inn|Resort|Hostel|Hostal|Guesthouse|Rorbu|Rorbuer)\b/i, label: "Hotel" },
+  { re: /\b(?:Restaurant|Restaurante|Ristorante|Restauranten|Bistro|Bistrô|Brasserie|Osteria|Trattoria|Cantina|Churrascaria|Botequim|Boteco|Bakery|Bakeri|Bakeriet|Padaria|Panadería|Panetteria|Boulangerie)\b/i, label: "Restaurant" },
+  { re: /\b(?:Cafe|Café|Cafeteria|Caffè|Kafé|Kaffebar|Coffee Roasters?|Roastery|Tea House|Casa de Chá|Salão de Chá)\b/i, label: "Café" },
+  { re: /\b(?:Tours?|Adventures?|Expeditions?|Safari|Safaris|Passeio|Passeios|Excursión|Escursione)\b/i, label: "Tour" },
 ];
+
 
 // Allow-list of well-known named entities that don't self-identify. Extend
 // per destination as needed. Values are the category to assign.
@@ -328,14 +354,23 @@ export function extractVerificationRows(
     if (HAS_MONEY_RE.test(name) || HAS_TIME_RE.test(name)) return;
     if (/^day\s+\d+/i.test(name)) return;
     if (DESCRIPTOR_ONLY_RE.test(name)) return;
+    // Streets aren't verifiable venues — reject "Rua …", "Avenida …", etc.
+    if (STREET_PREFIX_RE.test(name)) return;
 
     // Single-word sentence-initial capitalisations are almost never names.
     if (words.length === 1 && isSentenceStart(cleaned, index) && !isAllowlisted(name)) return;
 
+    // Priority invariant: allow-list wins, then self-declaring NAME_RULES,
+    // then and only then nearby-context. Nearby-context must NEVER override a
+    // name that already classified itself — the earlier Tjuvholmen Sentralen
+    // (Bar) miscategorisation and the current "Zazá Bistrô" / "Museu de Arte
+    // Moderna" mislabels-as-Park both stem from context winning over the
+    // name's own signal. Do not reorder these three lines.
     let category = isAllowlisted(name) || ruleCategory(name);
     if (!category && words.length === 1) return; // single-word must self-identify
     if (!category) category = nearbyContextCategory(cleaned, name, index);
     if (!category) return;
+
 
     const contextWide = cleaned
       .slice(Math.max(0, index - 260), Math.min(cleaned.length, index + 260))
@@ -377,8 +412,47 @@ export function extractVerificationRows(
     }
   }
 
+  // Collapse known bilingual duplicates. Keep the local-language name as
+  // primary (it's what Google Maps resolves in-country) and fold the English
+  // equivalent into the Notes column so translators/proofreaders still see
+  // both. If only one side was extracted, leave it as-is.
+  collapseBilingualDuplicates(rows);
+
   return Array.from(rows.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
+
+// [local-language canonical, English equivalent]. Case-insensitive, matched
+// against the extracted name string. Extend as new destination markets are
+// added — never invert the pair; local always wins.
+const BILINGUAL_PAIRS: Array<[string, string]> = [
+  ["Museu do Amanhã", "Museum of Tomorrow"],
+  ["Jardim Botânico", "Botanical Garden"],
+  ["Parque das Aves", "Bird Park"],
+  ["Pão de Açúcar", "Sugarloaf Mountain"],
+  ["Cristo Redentor", "Christ the Redeemer"],
+  ["Cataratas do Iguaçu", "Iguazu Falls"],
+  ["Parque Nacional do Iguaçu", "Iguazu National Park"],
+  ["Museu de Arte Moderna", "Museum of Modern Art"],
+  ["Praia de Copacabana", "Copacabana Beach"],
+  ["Praia de Ipanema", "Ipanema Beach"],
+];
+
+function collapseBilingualDuplicates(rows: Map<string, VerificationRow>): void {
+  for (const [local, english] of BILINGUAL_PAIRS) {
+    const localKey = local.toLowerCase();
+    const enKey = english.toLowerCase();
+    const localRow = rows.get(localKey);
+    const enRow = rows.get(enKey);
+    if (localRow && enRow) {
+      const extra = `also “${english}”`;
+      localRow.notes = localRow.notes
+        ? `${localRow.notes}; ${extra}`
+        : extra;
+      rows.delete(enKey);
+    }
+  }
+}
+
 
 // ---------------------------------------------------------------------------
 // UI (layout, columns, CSV export unchanged)
