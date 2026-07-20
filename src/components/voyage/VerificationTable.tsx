@@ -156,6 +156,7 @@ const ALLOW = new Map<string, string>(
     nationaltheatret: "Transport",
     // Well-known specific venues
     "lekter'n": "Restaurant", "bølgen & moi": "Restaurant", dok: "Restaurant",
+    "tjuvholmen sentralen": "Bar", "sentralen": "Bar",
     smalhans: "Restaurant", kontrast: "Restaurant", brutus: "Restaurant",
     vaaghals: "Restaurant", hitchhiker: "Restaurant",
     territoriet: "Bar", "kuba bar": "Bar",
