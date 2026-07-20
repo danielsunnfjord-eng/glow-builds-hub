@@ -573,10 +573,38 @@ Deno.serve(async (req) => {
     let gdocUrl = row.gdoc_url as string | null;
     let folderId = row.gdrive_folder_id as string | null;
 
+    // Pre-flight: if the linked Doc or folder was deleted/trashed manually in
+    // Drive, clear the stale ids so the create-path below recreates them
+    // seamlessly. This makes "Regenerate with AI" self-healing.
+    const probeExists = async (fileId: string): Promise<boolean> => {
+      try {
+        const meta = await driveGetMeta(fileId);
+        return !meta.trashed;
+      } catch (err) {
+        console.log(`[probeExists] ${fileId} not accessible: ${(err as Error).message}`);
+        return false;
+      }
+    };
+    if (gdocId && !(await probeExists(gdocId))) {
+      console.log(`[sync] linked gdoc ${gdocId} missing/trashed — will recreate`);
+      gdocId = null;
+      gdocUrl = null;
+    }
+    if (folderId && !(await probeExists(folderId))) {
+      console.log(`[sync] linked folder ${folderId} missing/trashed — will recreate`);
+      folderId = null;
+      // Doc lived inside that folder; force recreate as well.
+      gdocId = null;
+      gdocUrl = null;
+    }
+
     if (!gdocId) {
-      // First sync: create a per-itinerary folder under Drafts, then create the Doc.
-      const folderName = `${title} — ${itinerary_id.slice(0, 8)}`;
-      folderId = await driveCreateFolder(folderName, settings.drafts_folder_id!);
+      // First sync (or recovery after manual deletion): create a per-itinerary
+      // folder under Drafts if needed, then create the Doc.
+      if (!folderId) {
+        const folderName = `${title} — ${itinerary_id.slice(0, 8)}`;
+        folderId = await driveCreateFolder(folderName, settings.drafts_folder_id!);
+      }
       const created = await driveCreateDocFromHtml(title, html, folderId);
       gdocId = created.id;
       gdocUrl = created.webViewLink || (await driveGetWebViewLink(gdocId));
