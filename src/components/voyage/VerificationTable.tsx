@@ -194,8 +194,19 @@ const ALLOW = new Map<string, string>(
     vigeland: "Park", monolith: "Landmark", akershus: "Landmark", salt: "Landmark",
     damstredet: "Neighbourhood", telthusbakken: "Neighbourhood",
     akerselva: "Landmark", oslofjord: "Landmark", ekeberg: "Park",
+    // Rio de Janeiro — single-word beach/neighbourhood names that appear
+    // in prose without a type noun ("Copacabana promenade", "in Ipanema").
+    // Without an allow-list entry the single-word rule drops them.
+    copacabana: "Landmark", ipanema: "Landmark", leblon: "Neighbourhood",
+    "botafogo": "Neighbourhood", "flamengo": "Neighbourhood", "urca": "Neighbourhood",
+    "leme": "Landmark", "arpoador": "Landmark", "lapa": "Neighbourhood",
+    "corcovado": "Landmark", "tijuca": "Park",
+    // Brazil — other frequently single-worded named places
+    "pelourinho": "Neighbourhood", "salvador": "Neighbourhood", "paraty": "Neighbourhood",
+    "búzios": "Neighbourhood", "buzios": "Neighbourhood", "trancoso": "Neighbourhood",
   }),
 );
+
 
 const CTX_ANCHORS: Array<{ re: RegExp; label: string }> = [
   { re: /\b(?:restaurant|bistro|brasserie|kitchen|eatery|osteria|trattoria|seafood spot|dining room|steakhouse)\b/i, label: "Restaurant" },
