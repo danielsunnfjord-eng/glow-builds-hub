@@ -1640,6 +1640,7 @@ const CatalogShopManager = () => {
 
   return (
     <div>
+      <TravelerPersonasPanel />
       <div className="flex gap-1 border-b border-parchment-3 mb-6">
         <button
           onClick={() => setTab("itineraries")}
