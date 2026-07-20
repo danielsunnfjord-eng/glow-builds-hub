@@ -817,6 +817,8 @@ const CatalogShopManager = () => {
             }))
         : [],
       subpageMapUrl: String((r as any).subpage_map_url || ""),
+      clientOrigin: "",
+      destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
     };
 
     let nextState = baseState;
