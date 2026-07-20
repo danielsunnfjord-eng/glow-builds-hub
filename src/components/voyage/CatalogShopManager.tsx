@@ -29,6 +29,7 @@ import VerificationTable from "./VerificationTable";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import BudgetEstimator from "./editor/BudgetEstimator";
+import TravelerPersonasPanel, { PERSONA_ORIGINS, PERSONA_DESTINATIONS } from "@/components/admin/TravelerPersonasPanel";
 import {
   parseAuditItems,
   serializeAuditItems,
