@@ -25,6 +25,7 @@ import {
   FileText, ExternalLink, Coins, ChevronDown, ShieldCheck, Copy as CopyIcon,
 } from "lucide-react";
 import AuditChecklist from "./AuditChecklist";
+import VerificationTable from "./VerificationTable";
 import EditorErrorBoundary from "./EditorErrorBoundary";
 import PdfPreview from "./PdfPreview";
 import BudgetEstimator from "./editor/BudgetEstimator";
@@ -2334,6 +2335,8 @@ const CatalogShopManager = () => {
             </div>
 
             <AiWritingAssistantPanel />
+
+            <VerificationTable content={state.content} destination={state.destination} />
 
 
             {gdocInfo.id && gdocInfo.url ? (
