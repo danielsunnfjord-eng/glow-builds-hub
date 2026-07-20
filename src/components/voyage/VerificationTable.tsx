@@ -202,7 +202,11 @@ const CANDIDATE = new RegExp(
 // ---------------------------------------------------------------------------
 
 function stripStructural(md: string): string {
-  return md
+  // NFC-normalise so accented characters (é, ø, å…) that arrive as
+  // decomposed code points (e + combining acute) are treated as single
+  // letters by the Unicode-aware candidate regex.
+  const normalised = typeof md.normalize === "function" ? md.normalize("NFC") : md;
+  return normalised
     .replace(/^\s{0,3}#{1,6}[^\n]*$/gm, "")
     .replace(/^\s{0,3}[-*_]{3,}\s*$/gm, "")
     .replace(/\*+/g, "");
