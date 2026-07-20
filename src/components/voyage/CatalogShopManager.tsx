@@ -974,6 +974,8 @@ const CatalogShopManager = () => {
         duration: state.duration,
         language: state.language,
         brief: state.brief,
+        client_origin: state.clientOrigin || undefined,
+        destination_market: state.destinationMarket || undefined,
         mode: "full",
       });
       if (!text) throw new Error("No content returned");
