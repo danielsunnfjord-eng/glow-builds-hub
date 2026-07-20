@@ -215,6 +215,8 @@ const blankEditor: EditorState = {
   subpageDayOverview: [],
   subpageExpectations: [],
   subpageMapUrl: "",
+  clientOrigin: "",
+  destinationMarket: "",
 };
 
 
