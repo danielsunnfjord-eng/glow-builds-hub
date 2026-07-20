@@ -972,6 +972,25 @@ const CatalogShopManager = () => {
       if (!text) throw new Error("No content returned");
       setState((s) => ({ ...s, content: text }));
       toast.success("Itinerary generated. Writing cover intro & short descriptions…");
+      // Push regenerated body into DB + Google Doc. The sync function is
+      // self-healing: if the Doc or folder was deleted manually in Drive it
+      // recreates them and updates gdoc_id/gdrive_folder_id automatically.
+      if (state.id) {
+        const contentField =
+          state.language === "pt" ? "itinerary_content_pt"
+          : state.language === "no" ? "itinerary_content_no"
+          : "itinerary_content_en";
+        try {
+          await supabase
+            .from("catalog_itineraries")
+            .update({ [contentField]: text } as any)
+            .eq("id", state.id);
+          await syncToGoogleDoc(state.id);
+          toast.success(gdocInfo.id ? "Google Doc updated." : "Google Doc created and content pushed.");
+        } catch (syncErr: any) {
+          toast.error(syncErr?.message || "Could not sync to Google Doc");
+        }
+      }
       runAutoMetadata(text)
         .then(() => toast.success("Cover intro & short descriptions filled in for EN · PT · NO"))
         .catch((err) => toast.error(err?.message || "Could not generate cover intro / summaries"));
