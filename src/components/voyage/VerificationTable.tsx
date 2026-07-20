@@ -192,8 +192,12 @@ const CAP = String.raw`[\p{Lu}][\p{L}\p{N}'ʼ''\-]{1,}`;
 const ACR = String.raw`[\p{Lu}]{2,5}`;
 const CONN = String.raw`(?:of|the|and|de|da|do|dos|das|på|i|for|og|av|du|des|le|la|les|von|van|zu|&)`;
 const TOK = `(?:${CAP}|${ACR})`;
+// JS \b is ASCII-only even under /u, so "Café" would truncate to "Caf".
+// Use Unicode-aware lookbehind/lookahead against \p{L}\p{N} instead.
+const NLB = String.raw`(?<![\p{L}\p{N}])`;
+const NLA = String.raw`(?![\p{L}\p{N}])`;
 const CANDIDATE = new RegExp(
-  `\\b${TOK}(?:\\s+(?:${CONN})\\s+${TOK}|\\s+${TOK}){0,5}\\b`,
+  `${NLB}${TOK}(?:\\s+(?:${CONN})\\s+${TOK}|\\s+${TOK}){0,5}${NLA}`,
   "gu",
 );
 
