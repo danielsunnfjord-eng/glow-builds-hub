@@ -218,7 +218,12 @@ Deno.serve(async (req) => {
       mode = 'full', // 'full' | 'section' | 'metadata'
       section_instruction = '',
       existing_content = '',
+      client_origin = '',
+      destination_market = '',
     } = body || {};
+
+    const originToken = normalizePersonaToken(client_origin, PERSONA_ORIGINS);
+    const destToken = normalizePersonaToken(destination_market, PERSONA_DESTINATIONS);
 
     if (mode === 'full' && !destination && !title) {
       return new Response(JSON.stringify({ error: 'destination or title is required' }), {
