@@ -449,7 +449,33 @@ Deno.serve(async (req) => {
           { headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-      const meta = await driveGetMeta(row.gdoc_id);
+      let meta: Awaited<ReturnType<typeof driveGetMeta>> | null = null;
+      try {
+        meta = await driveGetMeta(row.gdoc_id);
+      } catch (err) {
+        const msg = (err as Error).message ?? "";
+        if (msg.includes("404")) {
+          // Doc was deleted manually in Drive — clear stale ids so the next
+          // sync recreates them, and report as non-existent.
+          await supabase
+            .from("catalog_itineraries")
+            .update({ gdoc_id: null, gdoc_url: null, gdrive_folder_id: null, gdoc_last_synced_at: null })
+            .eq("id", itinerary_id);
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              exists: false,
+              gdoc_id: null,
+              gdoc_url: null,
+              last_synced_at: null,
+              doc_modified_time: null,
+              conflict: false,
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+        throw err;
+      }
       const synced = row.gdoc_last_synced_at ? new Date(row.gdoc_last_synced_at).getTime() : 0;
       const modified = meta.modifiedTime ? new Date(meta.modifiedTime).getTime() : 0;
       // 30s grace to absorb clock skew and Drive's post-sync touch.
