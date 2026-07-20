@@ -156,6 +156,7 @@ const ALLOW = new Map<string, string>(
     nationaltheatret: "Transport",
     // Well-known specific venues
     "lekter'n": "Restaurant", "bølgen & moi": "Restaurant", dok: "Restaurant",
+    "tjuvholmen sentralen": "Bar", "sentralen": "Bar",
     smalhans: "Restaurant", kontrast: "Restaurant", brutus: "Restaurant",
     vaaghals: "Restaurant", hitchhiker: "Restaurant",
     territoriet: "Bar", "kuba bar": "Bar",
@@ -191,8 +192,12 @@ const CAP = String.raw`[\p{Lu}][\p{L}\p{N}'ʼ''\-]{1,}`;
 const ACR = String.raw`[\p{Lu}]{2,5}`;
 const CONN = String.raw`(?:of|the|and|de|da|do|dos|das|på|i|for|og|av|du|des|le|la|les|von|van|zu|&)`;
 const TOK = `(?:${CAP}|${ACR})`;
+// JS \b is ASCII-only even under /u, so "Café" would truncate to "Caf".
+// Use Unicode-aware lookbehind/lookahead against \p{L}\p{N} instead.
+const NLB = String.raw`(?<![\p{L}\p{N}])`;
+const NLA = String.raw`(?![\p{L}\p{N}])`;
 const CANDIDATE = new RegExp(
-  `\\b${TOK}(?:\\s+(?:${CONN})\\s+${TOK}|\\s+${TOK}){0,5}\\b`,
+  `${NLB}${TOK}(?:\\s+(?:${CONN})\\s+${TOK}|\\s+${TOK}){0,5}${NLA}`,
   "gu",
 );
 
@@ -201,7 +206,11 @@ const CANDIDATE = new RegExp(
 // ---------------------------------------------------------------------------
 
 function stripStructural(md: string): string {
-  return md
+  // NFC-normalise so accented characters (é, ø, å…) that arrive as
+  // decomposed code points (e + combining acute) are treated as single
+  // letters by the Unicode-aware candidate regex.
+  const normalised = typeof md.normalize === "function" ? md.normalize("NFC") : md;
+  return normalised
     .replace(/^\s{0,3}#{1,6}[^\n]*$/gm, "")
     .replace(/^\s{0,3}[-*_]{3,}\s*$/gm, "")
     .replace(/\*+/g, "");
