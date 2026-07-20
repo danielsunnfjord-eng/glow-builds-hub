@@ -2336,6 +2336,8 @@ const CatalogShopManager = () => {
 
             <AiWritingAssistantPanel />
 
+            <VerificationTable content={state.content} destination={state.destination} />
+
 
             {gdocInfo.id && gdocInfo.url ? (
               <div className="rounded border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
