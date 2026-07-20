@@ -1984,6 +1984,38 @@ const CatalogShopManager = () => {
               <Label>Short brief / notes for AI</Label>
               <Textarea rows={2} value={state.brief} onChange={(e) => setState({ ...state, brief: e.target.value })} placeholder="Any specific angle, audience, must-include experiences…" />
             </div>
+            <div>
+              <Label>Client origin (persona)</Label>
+              <Select
+                value={state.clientOrigin || "__none"}
+                onValueChange={(v) => setState({ ...state, clientOrigin: v === "__none" ? "" : v })}
+              >
+                <SelectTrigger><SelectValue placeholder="Auto / none" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">Auto / none</SelectItem>
+                  {PERSONA_ORIGINS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[0.68rem] text-voyage-muted mt-1">Where the traveler is coming from. Injected into AI framing.</p>
+            </div>
+            <div>
+              <Label>Destination market (persona)</Label>
+              <Select
+                value={state.destinationMarket || "__none"}
+                onValueChange={(v) => setState({ ...state, destinationMarket: v === "__none" ? "" : v })}
+              >
+                <SelectTrigger><SelectValue placeholder="Auto / none" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">Auto / none</SelectItem>
+                  {PERSONA_DESTINATIONS.map((d) => (
+                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[0.68rem] text-voyage-muted mt-1">Falls back to Global → destination if no exact match.</p>
+            </div>
             <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <Label>Short description (EN)</Label>
