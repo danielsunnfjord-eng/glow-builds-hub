@@ -1,5 +1,97 @@
 // Generate a thematic catalogue guide via Claude (Anthropic API)
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from 'npm:@supabase/supabase-js@2';
+
+// Canonical persona origin/destination tokens (lowercase). UI sends the same
+// tokens; the traveler_personas table stores rows in the same casing.
+const PERSONA_ORIGINS = new Set(['brazil', 'usa', 'norway', 'europe', 'global']);
+const PERSONA_DESTINATIONS = new Set([
+  'brazil', 'portugal', 'france', 'italy', 'spain', 'germany',
+  'uk', 'norway', 'sweden', 'denmark', 'greece', 'usa',
+]);
+
+function normalizePersonaToken(v: unknown, allowed: Set<string>): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.trim().toLowerCase();
+  return allowed.has(t) ? t : null;
+}
+
+// Two-tier persona lookup: exact (origin, destination) → (global, destination).
+// Returns null with no injection when neither tier matches, and never throws
+// into the caller — a persona miss must not break generation.
+async function fetchTravelerPersona(
+  origin: string | null,
+  destination: string | null,
+): Promise<{ origin: string; destination: string; notes: string } | null> {
+  if (!destination) return null;
+  const supabaseUrl = Deno.env.get('SUPABASE_URL');
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!supabaseUrl || !serviceKey) return null;
+  const client = createClient(supabaseUrl, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  try {
+    if (origin) {
+      const { data } = await client
+        .from('traveler_personas')
+        .select('origin,destination,notes')
+        .eq('origin', origin)
+        .eq('destination', destination)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (data) return data as any;
+    }
+    if (origin !== 'global') {
+      const { data } = await client
+        .from('traveler_personas')
+        .select('origin,destination,notes')
+        .eq('origin', 'global')
+        .eq('destination', destination)
+        .eq('is_active', true)
+        .maybeSingle();
+      if (data) return data as any;
+    }
+  } catch (e) {
+    console.error('fetchTravelerPersona failed', e);
+  }
+  return null;
+}
+
+const ORIGIN_LABEL: Record<string, string> = {
+  brazil: 'Brazil',
+  usa: 'USA',
+  norway: 'Norway',
+  europe: 'Europe',
+  global: 'Global',
+};
+const DEST_LABEL: Record<string, string> = {
+  brazil: 'Brazil', portugal: 'Portugal', france: 'France', italy: 'Italy',
+  spain: 'Spain', germany: 'Germany', uk: 'UK', norway: 'Norway',
+  sweden: 'Sweden', denmark: 'Denmark', greece: 'Greece', usa: 'USA',
+};
+
+function buildPersonaBlock(
+  clientOrigin: string | null,
+  persona: { origin: string; destination: string; notes: string } | null,
+): string {
+  if (!persona) return '';
+  const originLabel = ORIGIN_LABEL[clientOrigin || persona.origin] || (clientOrigin || persona.origin);
+  const destLabel = DEST_LABEL[persona.destination] || persona.destination;
+  const matchNote =
+    clientOrigin && clientOrigin !== persona.origin
+      ? ` (no exact row for ${originLabel} → ${destLabel}; using generic ${ORIGIN_LABEL[persona.origin] || persona.origin} framing)`
+      : '';
+  return `TRAVELER CONTEXT
+Origin: ${originLabel}${matchNote}
+Destination market: ${destLabel}
+
+Framing guidance for this traveler:
+${persona.notes}
+
+Weave the framing above into the editorial voice naturally — currency references, flight/logistics reality, cultural cues, and safety/vaccine notes should feel like a concierge speaking to this specific traveler, never as a bulleted checklist and never quoting this block verbatim.
+
+`;
+}
 
 const BASE_SYSTEM_PROMPT = `You are the AI assistant inside Fjord & Waves Travel Itinerary Engine. You work as a premium boutique travel designer and editorial travel writer.
 
@@ -126,7 +218,12 @@ Deno.serve(async (req) => {
       mode = 'full', // 'full' | 'section' | 'metadata'
       section_instruction = '',
       existing_content = '',
+      client_origin = '',
+      destination_market = '',
     } = body || {};
+
+    const originToken = normalizePersonaToken(client_origin, PERSONA_ORIGINS);
+    const destToken = normalizePersonaToken(destination_market, PERSONA_DESTINATIONS);
 
     if (mode === 'full' && !destination && !title) {
       return new Response(JSON.stringify({ error: 'destination or title is required' }), {
@@ -231,13 +328,21 @@ Return ONLY the JSON object. No code fences, no explanation.`;
 
     const langName = LANG_NAMES[language] || 'English';
 
-    const systemPrompt = buildSystemPrompt({
+    const persona = await fetchTravelerPersona(originToken, destToken);
+    const personaBlock = buildPersonaBlock(originToken, persona);
+    console.log('[persona]', {
+      requested: { origin: originToken, destination: destToken },
+      matched: persona ? { origin: persona.origin, destination: persona.destination } : null,
+    });
+
+    const baseSystem = buildSystemPrompt({
       language: langName,
       destination,
       experience_type,
       duration,
       notes: brief,
     });
+    const systemPrompt = personaBlock ? personaBlock + baseSystem : baseSystem;
 
     // Build the sequence of user prompts (one per Anthropic call).
     const userPrompts: string[] = [];
