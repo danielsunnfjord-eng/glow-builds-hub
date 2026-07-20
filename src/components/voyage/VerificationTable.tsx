@@ -153,7 +153,10 @@ const NAME_RULES: Array<{ re: RegExp; label: string }> = [
   { re: /\b(?:Hotel|Hotell|Hôtel|Pousada|Pousadas|Lodge|Inn|Resort|Hostel|Hostal|Guesthouse|Rorbu|Rorbuer)\b/i, label: "Hotel" },
   { re: /\b(?:Restaurant|Restaurante|Ristorante|Restauranten|Bistro|Bistrô|Brasserie|Osteria|Trattoria|Cantina|Churrascaria|Botequim|Boteco|Bakery|Bakeri|Bakeriet|Padaria|Panadería|Panetteria|Boulangerie)\b/i, label: "Restaurant" },
   { re: /\b(?:Cafe|Café|Cafeteria|Caffè|Kafé|Kaffebar|Coffee Roasters?|Roastery|Tea House|Casa de Chá|Salão de Chá)\b/i, label: "Café" },
+  { re: /\b(?:Airport|Aeroporto|Aeropuerto|Aéroport|Terminal|Rodoviária|Estação|Station|Bahnhof|Gare)\b/i, label: "Transport" },
+  { re: /\b(?:Farol|Lighthouse|Phare|Faro)\b/i, label: "Landmark" },
   { re: /\b(?:Tours?|Adventures?|Expeditions?|Safari|Safaris|Passeio|Passeios|Excursión|Escursione)\b/i, label: "Tour" },
+
 ];
 
 
