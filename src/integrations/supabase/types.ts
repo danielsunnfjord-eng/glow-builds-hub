@@ -855,6 +855,36 @@ export type Database = {
         }
         Relationships: []
       }
+      traveler_personas: {
+        Row: {
+          created_at: string
+          destination: string
+          id: string
+          is_active: boolean
+          notes: string
+          origin: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          id?: string
+          is_active?: boolean
+          notes: string
+          origin: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          id?: string
+          is_active?: boolean
+          notes?: string
+          origin?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trip_requests: {
         Row: {
           accommodation_type: string | null
