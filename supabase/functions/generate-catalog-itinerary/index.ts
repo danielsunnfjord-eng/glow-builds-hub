@@ -328,13 +328,21 @@ Return ONLY the JSON object. No code fences, no explanation.`;
 
     const langName = LANG_NAMES[language] || 'English';
 
-    const systemPrompt = buildSystemPrompt({
+    const persona = await fetchTravelerPersona(originToken, destToken);
+    const personaBlock = buildPersonaBlock(originToken, persona);
+    console.log('[persona]', {
+      requested: { origin: originToken, destination: destToken },
+      matched: persona ? { origin: persona.origin, destination: persona.destination } : null,
+    });
+
+    const baseSystem = buildSystemPrompt({
       language: langName,
       destination,
       experience_type,
       duration,
       notes: brief,
     });
+    const systemPrompt = personaBlock ? personaBlock + baseSystem : baseSystem;
 
     // Build the sequence of user prompts (one per Anthropic call).
     const userPrompts: string[] = [];
