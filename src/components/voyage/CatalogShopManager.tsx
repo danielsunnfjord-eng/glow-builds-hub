@@ -157,6 +157,8 @@ interface EditorState {
   subpageDayOverview: { label: string; description: string }[];
   subpageExpectations: { title: string; description: string }[];
   subpageMapUrl: string;
+  clientOrigin: string;
+  destinationMarket: string;
 }
 
 
