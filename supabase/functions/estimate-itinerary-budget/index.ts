@@ -36,12 +36,22 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Guard against oversize payloads (Claude context is 200k tokens ≈ 600k chars).
+    // Cap at ~150k chars to leave headroom for system prompt + response.
+    const MAX_CHARS = 150_000;
+    let trimmed = content;
+    if (trimmed.length > MAX_CHARS) {
+      const head = trimmed.slice(0, Math.floor(MAX_CHARS * 0.7));
+      const tail = trimmed.slice(-Math.floor(MAX_CHARS * 0.3));
+      trimmed = `${head}\n\n[...content truncated for length...]\n\n${tail}`;
+    }
+
     const userMsg = [
       destination ? `Destination/Region: ${destination}` : '',
       trip_duration ? `Trip duration: ${trip_duration}` : '',
       '',
       'Itinerary content:',
-      content,
+      trimmed,
     ].filter(Boolean).join('\n');
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
