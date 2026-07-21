@@ -415,6 +415,9 @@ Deno.serve(async (req) => {
         : requested === "pull" ? "pull"
         : requested === "export-html" ? "export-html"
         : "sync";
+    const reqLang = body?.language;
+    const language: "en" | "pt" | "no" =
+      reqLang === "pt" || reqLang === "no" ? reqLang : "en";
     if (!itinerary_id || typeof itinerary_id !== "string") {
       return new Response(JSON.stringify({ error: "itinerary_id is required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -428,10 +431,37 @@ Deno.serve(async (req) => {
 
     const { data: row, error } = await supabase
       .from("catalog_itineraries")
-      .select("id, title_en, destination, duration, summary_en, itinerary_content_en, gdrive_folder_id, gdoc_id, gdoc_url, gdoc_last_synced_at")
+      .select("id, title_en, title_pt, title_no, destination, duration, summary_en, summary_pt, summary_no, itinerary_content_en, itinerary_content_pt, itinerary_content_no, gdrive_folder_id, gdoc_id, gdoc_url, gdoc_last_synced_at")
       .eq("id", itinerary_id)
       .single();
     if (error || !row) throw new Error(`Itinerary not found: ${error?.message ?? "no row"}`);
+
+    // Resolve language-aware fields with fallbacks so PT/NO itineraries never
+    // produce an empty Google Doc body when only their translated column is set.
+    const resolvedTitle: string =
+      (row as any)[`title_${language}`] || row.title_en || row.title_pt || row.title_no || "Untitled itinerary";
+    const resolvedSummary: string | null =
+      (row as any)[`summary_${language}`] || row.summary_en || row.summary_pt || row.summary_no || null;
+    const primaryContent = (row as any)[`itinerary_content_${language}`] as string | null;
+    let resolvedContent: string | null = primaryContent || null;
+    let contentSourceLang: "en" | "pt" | "no" = language;
+    if (!resolvedContent) {
+      const candidates: Array<["en" | "pt" | "no", string | null]> = [
+        ["en", row.itinerary_content_en],
+        ["pt", row.itinerary_content_pt],
+        ["no", row.itinerary_content_no],
+      ];
+      for (const [lang, val] of candidates) {
+        if (val) {
+          resolvedContent = val;
+          contentSourceLang = lang;
+          break;
+        }
+      }
+    }
+    console.log(
+      `[sync] requested language=${language} content source=${contentSourceLang} fallback=${contentSourceLang !== language} hasContent=${!!resolvedContent}`,
+    );
 
     // CHECK MODE: report Drive doc's last-modified time vs our last sync. Does not write.
     if (action === "check") {
