@@ -616,13 +616,13 @@ Deno.serve(async (req) => {
       settings.root_folder_id = rootId;
     }
 
-    const title = row.title_en || "Untitled itinerary";
+    const title = resolvedTitle;
     const html = buildDocHtml({
       title,
       destination: row.destination,
       duration: row.duration,
-      summary: row.summary_en,
-      contentMarkdown: row.itinerary_content_en,
+      summary: resolvedSummary,
+      contentMarkdown: resolvedContent,
     });
 
     let gdocId = row.gdoc_id as string | null;
