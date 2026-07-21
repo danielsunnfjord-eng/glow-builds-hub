@@ -111,7 +111,9 @@ const slugify = (s: string) =>
 
 const EXPERIENCE_TYPES = [
   "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
-  "Beach", "Romantic", "Family", "Wellness", "Luxury",
+  "Beach", "Romantic", "Family", "Wellness", "Luxury", "Wildlife", "Road Trip",
+  "Photography", "Nightlife", "Festivals & Events", "Hiking", "Scenic Railways",
+  "Cruises", "History", "Shopping", "Surfing", "Local Experiences", "Winter Activities",
 ];
 
 const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
