@@ -2396,15 +2396,30 @@ const CatalogShopManager = () => {
                   <div className="text-[0.72rem] text-voyage-muted">
                     Edit the body content in Google Docs, export it as PDF, then upload below.
                   </div>
+                  <div className="text-[0.7rem] text-voyage-muted mt-1">
+                    Resync overwrites the Doc body with the current editor/database content. Use it if the Doc is out of sync or was recreated.
+                  </div>
                 </div>
-                <a
-                  href={gdocInfo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
-                >
-                  Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => state.id && syncToGoogleDoc(state.id, { notify: true })}
+                    disabled={gdocSyncing || !state.id}
+                    title="Push the current editor/database content to the linked Google Doc"
+                  >
+                    {gdocSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <RefreshCcw className="w-3.5 h-3.5 mr-1.5" />}
+                    {gdocSyncing ? "Resyncing…" : "Resync now"}
+                  </Button>
+                  <a
+                    href={gdocInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
+                  >
+                    Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             ) : state.id ? (
               <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
