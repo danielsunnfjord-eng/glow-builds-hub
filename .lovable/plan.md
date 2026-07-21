@@ -1,55 +1,24 @@
-## Add a "Sync to Stripe" button in the catalogue admin
+# Fix: Google Doc sync only mirrors English content
 
-Give yourself an explicit moment to push an itinerary to Stripe when it's truly ready for sale, instead of relying on the lazy auto-create that fires on the first checkout.
+## Problem
 
-### What the button does
+`gdrive-sync-itinerary` hardcodes `title_en`, `summary_en`, and `itinerary_content_en`. Itineraries generated in Portuguese or Norwegian write their body to `itinerary_content_pt` / `itinerary_content_no`, so the synced Google Doc has an empty body (title + meta line + footer note only) — which matches the screenshot for the Lisboa (PT) itinerary.
 
-For the current itinerary, call the existing `sync-catalog-stripe-products` edge function (already deployed, already idempotent) for **both** environments (sandbox + live) so previews and production stay in sync. The function will:
+## Change
 
-- Create the Stripe Product if none exists for that environment, or
-- Update the existing Product's name, description, hero image, and tax code, or
-- Recreate it if Stripe returns an error on update.
+Only touch `supabase/functions/gdrive-sync-itinerary/index.ts`.
 
-It then writes `stripe_product_id_sandbox` / `stripe_product_id_live` and `stripe_synced_at` back to `catalog_itineraries`. Price is **not** synced — it stays dynamic on the DB row and is sent at checkout via `price_data` (already the case today).
+1. Accept an optional `language: "en" | "pt" | "no"` field on the request body (defaults to `"en"` to preserve current behavior for older callers).
+2. Extend the `SELECT` to include `title_pt, title_no, summary_pt, summary_no, itinerary_content_pt, itinerary_content_no`.
+3. Add a resolver that, for the requested language, picks:
+   - `title` = `title_{lang}` → fallback to `title_en` → `"Untitled itinerary"`
+   - `summary` = `summary_{lang}` → fallback to `summary_en`
+   - `contentMarkdown` = `itinerary_content_{lang}` → fallback to first non-empty of the other two languages (so a doc is never silently empty when content exists in another column)
+4. Use the resolved values in both the create path (`buildDocHtml` / `driveCreateDocFromHtml`) and the update path (`docsReplaceBody`). Apply the same resolution to the `sync` and (for consistency) any content-emitting branches. `check`, `pull`, and `export-html` don't need changes.
+5. Log the resolved language and whether a fallback was used, to make future debugging obvious in edge function logs.
 
-### Where the button lives
+Caller side (`CatalogShopManager.tsx`) already knows `state.language`; I'll leave the client alone in this task since sync will still default to EN and existing English itineraries keep working. A follow-up can pass `language: state.language` from the four `invoke("gdrive-sync-itinerary", …)` call sites so PT/NO itineraries route to the right column without falling back — say the word and I'll include it.
 
-In `src/components/voyage/CatalogShopManager.tsx`, in the itinerary editor header next to the existing publish / Google Doc sync controls.
+## Verification
 
-Behavior:
-- Label: `Sync to Stripe`
-- Disabled when the itinerary is unsaved or `is_published === false`, with a tooltip: *"Publish the itinerary before syncing to Stripe."*
-- Spinner while running; toast on success showing `created` / `updated` / `recreated` per environment.
-- Below the button, show a small status line:
-  - `Last synced: <relative time>` from `stripe_synced_at`
-  - Or `Not yet synced` (in which case Stripe will lazily create on first checkout — explained in tooltip).
-
-### Catalogue list view
-
-In the same file's catalogue table, add a tiny badge per row:
-- ✅ `Synced` when `stripe_product_id_sandbox` (or `_live`) is set
-- ⚪ `Not synced` otherwise
-
-So you can see at a glance which itineraries are live in Stripe.
-
-### Backend
-
-No new edge functions, no schema changes. `sync-catalog-stripe-products` already accepts `{ itinerary_id, environment }` and handles single-itinerary sync.
-
-Two invocations from the client (parallel):
-```ts
-supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "sandbox" } })
-supabase.functions.invoke("sync-catalog-stripe-products", { body: { itinerary_id, environment: "live" } })
-```
-
-Toast aggregates both results. If live fails (e.g. live key not yet claimed), show a soft warning rather than an error — sandbox success is still useful.
-
-### Safety net stays
-
-The lazy create-on-first-checkout path in `create-catalog-checkout/index.ts` stays untouched, so a forgotten sync never blocks a sale.
-
-### Verification
-
-1. Add a new test itinerary, publish it, click **Sync to Stripe** → toast says "created" for sandbox, row badge flips to ✅, `stripe_synced_at` updates.
-2. Edit the title/hero image, click again → toast says "updated", `stripe_product_id_sandbox` unchanged.
-3. Confirm an unpublished itinerary disables the button.
+After deploy, re-run "Save" / "Sync to Google Drive" on the Lisboa itinerary. The linked Google Doc should now contain the full Portuguese body under the title and meta line, followed by the footer note.
