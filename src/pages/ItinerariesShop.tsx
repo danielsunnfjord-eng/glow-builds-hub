@@ -38,7 +38,12 @@ const pickLang = <T extends string | null>(
   no: T,
 ): T => ((lang === "pt" && pt) || (lang === "no" && no) || en) as T;
 
-const EXPERIENCE_OPTIONS = ["Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation"];
+const EXPERIENCE_OPTIONS = [
+  "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
+  "Beach", "Romantic", "Family", "Wellness", "Luxury", "Wildlife", "Road Trip",
+  "Photography", "Nightlife", "Festivals & Events", "Hiking", "Scenic Railways",
+  "Cruises", "History", "Shopping", "Surfing", "Local Experiences", "Winter Activities",
+];
 const SEASON_OPTIONS = ["Spring", "Summer", "Autumn", "Winter"];
 
 const parseDurationDays = (s: string | null): number | null => {
