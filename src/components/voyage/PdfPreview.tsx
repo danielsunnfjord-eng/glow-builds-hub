@@ -375,6 +375,8 @@ const PAGE_CSS = `
 
 const PREVIEW_FRAME_CSS = `
 .fjw-pdf-shell { pointer-events: auto; }
+.pdf-preview-content a,
+.pdf-preview-content a:visited { color: #1a56db; text-decoration: underline; }
 .fjw-paged-render .pagedjs_pages {
   display: flex;
   flex-direction: column;
