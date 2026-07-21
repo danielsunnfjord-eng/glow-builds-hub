@@ -1,51 +1,114 @@
 ## Goal
 
-Add a manual **Resync to Google Doc** button in the itinerary editor's Google Doc panel so the admin can force-push the current database body content to the linked Google Doc at any time — without regenerating the itinerary and without going through the audit-apply flow.
+Reverse the current sync direction on demand. Today: DB → Google Doc (one-way, "Resync now"). Add a **Pull from Google Doc** action so you can:
 
-This also solves the immediate Lisboa case: after clicking it, the missing Portuguese body will be pushed to a freshly-created Google Doc (since `gdoc_id` is currently null, the existing self-healing sync path will create the folder + doc on first press).
+1. Edit freely inside the linked Google Doc (rewrite text, restructure days, fix typos).
+2. Click **Pull from Google Doc** in the itinerary maker.
+3. The Doc's text becomes the itinerary's body content in the DB.
+4. The existing PDF preview renders it using the built-in brand styling (Cormorant/Montserrat, gold H2, italic captions, gold-underlined H1, etc.) — you never have to style anything in Docs.
+
+Cover page, back page, hotels stay out of scope (still added downstream as today).
+
+## User-visible behaviour
+
+In the editor's Google Doc panel (right next to **Open in Google Docs** / **Resync now**), add a third button: **Pull from Google Doc**.
+
+- Enabled only when a Doc is linked (`gdocInfo.id`).
+- On click:
+  1. Confirm modal: *"This will replace the editor's body content with the current Google Doc. Existing formatting in the editor will be lost. Continue?"*
+  2. Calls the sync edge function in a new `action: "pull"` mode.
+  3. Function fetches the Doc as HTML via the Google Docs connector, sanitises it, converts to the editor's markdown format, and writes it to `itinerary_content_{lang}` for the current language.
+  4. Editor reloads with the new content. Toast: *"Pulled from Google Doc."*
+  5. PDF preview automatically re-renders with brand styling — nothing new needed there.
+- On failure: existing `gdocError` state + toast surfaces the reason.
+
+Small helper text under the button:
+> "Overwrites the editor with the current Google Doc content. Formatting is normalised — the PDF preview reapplies brand styling."
+
+The existing **Resync now** button (DB → Doc) stays. You pick per action which direction to sync; no lockout, no automatic behaviour. This keeps your current workflow intact and only adds an escape hatch when you've done heavy edits in Docs.
+
+## Formatting normalisation contract
+
+The Doc → editor conversion is **structure-preserving, style-discarding**, matching what `src/lib/sanitizeDocHtml.ts` already does:
+
+- **Kept**: H1/H2/H3, paragraphs, bold, italic, underline, bullet lists, numbered lists, links, blockquotes, line breaks.
+- **Dropped**: fonts, colors, sizes, alignment, spacing, tables (rare in itineraries), Google's wrapper divs/spans, inline styles, classes.
+- **Images**: **kept as image references** in the markdown when the Doc has inline images with resolvable URLs; otherwise skipped silently. (Google Docs export gives image URLs via the connector — no re-hosting is done in this step; if a URL later 404s, the PDF preview handles missing images the same way it does today.)
+
+This means the exported markdown looks like the AI-generated markdown the editor already understands, and the PDF preview's existing stylesheet takes over on render. No visual regressions to the PDF pipeline.
 
 ## Scope
 
-Only one file changes: `src/components/voyage/CatalogShopManager.tsx`.
+**Modified files:**
 
-No backend changes. No changes to the `gdrive-sync-itinerary` edge function — it already supports the plain `action: "sync"` path that `syncToGoogleDoc()` uses, and it already resolves the correct language column via the recent fix.
+- `supabase/functions/gdrive-sync-itinerary/index.ts` — add a new `action: "pull"` branch that:
+  - Reads `gdoc_id` for the itinerary.
+  - Calls `GET https://connector-gateway.lovable.dev/google_docs/v1/documents/{id}?...` to fetch the Doc as structured JSON (already the connector's format).
+  - Walks the doc body → builds sanitised HTML using the same allow-list as `sanitizeDocHtml.ts` (paragraph/heading style → tag mapping; textRun styles → strong/em/u; lists → ul/ol/li; inlineObjectElement → `<img>` with the `contentUri`).
+  - Converts that HTML → markdown using the editor's existing `htmlToMarkdown` helper (`src/components/voyage/editor/markdownHelpers.ts`). Because that helper lives in the client bundle, the edge function returns the sanitised HTML and the client does the HTML→markdown step before saving. (Simpler and reuses the same helper the editor already trusts.)
+  - Language-aware: writes to `itinerary_content_{lang}` for the language passed in the request body, matching the existing `sync` branch.
+  - Returns `{ html, language, doc_title }`.
+- `src/components/voyage/CatalogShopManager.tsx` — add:
+  - `pullFromGoogleDoc(itineraryId)` helper mirroring `syncToGoogleDoc`.
+  - Confirm modal + button in the Google Doc panel.
+  - After edge function returns HTML: run it through `htmlToMarkdown`, update the editor state, persist to DB via the existing save path.
+  - New loading state `gdocPulling` so the two buttons show independent spinners.
 
-## UI changes (in `CatalogShopManager.tsx`)
+**No changes to:**
 
-In the Google Doc panel around lines 2386–2429:
-
-1. **When a Doc is linked** (the `gdocInfo.id && gdocInfo.url` branch):
-   - Keep the existing "Open in Google Docs" link.
-   - Add a new **"Resync now"** button next to it.
-   - Button calls the existing `syncToGoogleDoc(state.id!)` helper.
-   - Disabled while `gdocSyncing` is true; shows a spinner and "Resyncing…" label during the call.
-   - On success: toast "Google Doc resynced with latest editor content." (The helper already updates `gdocInfo` from the response.)
-   - On failure: rely on existing `gdocError` state + toast inside the helper.
-
-2. **When no Doc is linked yet but `state.id` exists**:
-   - Keep the existing "Create Google Doc from existing draft" button unchanged. (Same helper — the edge function handles the "no gdoc yet" path by creating folder + doc.)
-
-3. Small helper text under the Resync button:
-   > "Overwrites the Google Doc body with the current editor/database content. Use this if the Doc is out of sync or was recreated."
-
-No other UI, no other flows, no changes to the auto-sync behaviour of Save / Generate / Audit-Apply.
-
-## Behaviour guarantees
-
-- Does **not** call `generate-catalog-itinerary` — no AI regeneration.
-- Does **not** touch the audit-apply flow — no `applyImprovementSectional` call.
-- Only invokes `gdrive-sync-itinerary` with `{ action: "sync" }`, which:
-  - Reads `itinerary_content_{lang}` from the database (with the recent language fallback).
-  - Clears the linked Doc body and rewrites it, OR creates a new folder+doc if `gdoc_id` is null / stale (self-healing path already implemented).
+- `PdfPreview.tsx` — it already reads from the same `itinerary_content_{lang}` field.
+- `sanitizeDocHtml.ts` — reused as the allow-list reference; the edge function reproduces the same rules server-side because the DOMParser it uses is browser-only.
+- `ItineraryShopDetail.tsx`, public pages, audit flow, generation flow.
+- DB schema.
 
 ## Technical details
 
-- Reuses the existing `syncToGoogleDoc(itineraryId: string)` at line 524 — no duplication.
-- Reuses existing state: `gdocSyncing`, `gdocError`, `gdocInfo`.
-- Language sent: the sync function reads `body.language`; the current call site does not pass one, so it defaults to English resolution with fallback. The recent fix makes this safe for the Lisboa PT case. Optionally, pass `language: state.language` in `syncToGoogleDoc` so PT / NO itineraries always resolve their own column first. (One-line change inside the helper's `invoke` body.)
+### Edge function `action: "pull"` outline
+
+```text
+1. Auth + parse body: { itinerary_id, language, action: "pull" }
+2. SELECT gdoc_id, language columns for itinerary
+3. If !gdoc_id → 400 "No Google Doc linked. Use Resync first."
+4. GET /google_docs/v1/documents/{gdoc_id}
+5. Walk `body.content`:
+   - paragraph.namedStyleType HEADING_1..3 → <h1..h3>
+   - paragraph → <p>
+   - textRun with bold/italic/underline → wrap children
+   - list items (paragraph.bullet.listId) → group into <ul>/<ol> based on listProperties glyph type
+   - inlineObjectElement → look up inlineObjects[objectId].inlineObjectProperties.embeddedObject.imageProperties.contentUri → <img src=…>
+6. Drop everything else (tables, drawings, footnotes) silently — log to telemetry response.
+7. Return { html, language: resolvedLang, doc_title, dropped_element_types: [...] }
+```
+
+### Client-side integration
+
+```text
+1. Confirm dialog.
+2. supabase.functions.invoke("gdrive-sync-itinerary", { body: { action: "pull", itinerary_id, language } })
+3. const md = htmlToMarkdown(data.html)
+4. setState((s) => ({ ...s, [`itinerary_content_${language}`]: md }))
+5. Await save-to-DB (reuse existing save path so nothing diverges).
+6. Toast success + list of dropped element types if any (transparency).
+```
+
+### Failure modes handled
+
+- Doc deleted / 404 → surface: "Google Doc not found. Use Resync now to recreate it, or restore the Doc in Drive."
+- Empty Doc → refuse with: "Google Doc is empty. Pull cancelled."
+- Non-2xx from gateway → surface status + body per existing pattern.
 
 ## Out of scope
 
-- No new edge function, no schema change.
-- No changes to `PdfPreview`, `ItineraryShopDetail`, or public pages.
-- No changes to the audit or verification-table logic.
+- Automatic bidirectional sync / conflict resolution.
+- Change tracking or diffs between Doc and DB.
+- Migrating images added in Docs into the app's image bank (URLs are referenced as-is).
+- Editing cover, back page, or hotel recommendations from the Doc — those stay a downstream step in your existing workflow.
+- Any changes to the PDF preview visual design.
+
+## Test plan (post-implementation)
+
+1. Take the Lisboa itinerary, make a small text edit in the Google Doc (change a heading + a paragraph, bold a phrase).
+2. Click **Pull from Google Doc** in PT language.
+3. Confirm the editor updates, the change appears, formatting reduces to structure-only.
+4. Open PDF preview → confirm it renders with normal brand styling (gold H2, Cormorant headings, no Docs styling leaking in).
+5. Edge cases: pull with no linked Doc (button hidden), pull an empty Doc (error toast), pull after deleting the Doc in Drive (helpful error).
