@@ -457,7 +457,7 @@ const CatalogShopManager = () => {
 
       // 2. Fetch markdown from the Google Doc.
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId, action: "pull" },
+        body: { itinerary_id: itineraryId, action: "pull", language: state.language },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
