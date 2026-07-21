@@ -2777,6 +2777,31 @@ const CatalogShopManager = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Pull content from Google Doc?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This replaces the editor's body content ({state.language.toUpperCase()}) with the current Google Doc.
+              Any formatting done in Docs is normalised — the PDF preview reapplies the brand styling.
+              A safety snapshot of the current editor is saved first so you can roll back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (state.id) pullFromGoogleDoc(state.id);
+              }}
+              disabled={gdocPulling || !state.id}
+            >
+              {gdocPulling ? "Pulling…" : "Pull from Google Doc"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Preview PDF: opens the assembled PDF (cover + uploaded body PDF + hotels + back page). */}
       {previewMergedOpen && state.bodyPdfUrl && (
         <PdfPreview
