@@ -672,8 +672,8 @@ Deno.serve(async (req) => {
         title,
         destination: row.destination,
         duration: row.duration,
-        summary: row.summary_en,
-        contentMarkdown: row.itinerary_content_en,
+        summary: resolvedSummary,
+        contentMarkdown: resolvedContent,
       });
       if (!gdocUrl) gdocUrl = await driveGetWebViewLink(gdocId);
     }
