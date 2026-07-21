@@ -521,12 +521,12 @@ const CatalogShopManager = () => {
     }
   };
 
-  const syncToGoogleDoc = async (itineraryId: string) => {
+  const syncToGoogleDoc = async (itineraryId: string, opts?: { notify?: boolean }) => {
     setGdocSyncing(true);
     setGdocError(null);
     try {
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId, action: "sync" },
+        body: { itinerary_id: itineraryId, action: "sync", language: state.language },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -536,8 +536,12 @@ const CatalogShopManager = () => {
         lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
       });
       setGdocConflict(null);
+      if (opts?.notify) {
+        toast.success("Google Doc resynced with latest editor content.");
+      }
     } catch (e: any) {
       setGdocError(e?.message || "Google Drive sync failed");
+      if (opts?.notify) toast.error(e?.message || "Google Drive sync failed");
     } finally {
       setGdocSyncing(false);
     }
