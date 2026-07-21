@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import {
   Sparkles, Loader2, Upload, Eye, ClipboardCheck, RefreshCcw,
   Plus, Trash2, X as XIcon, CheckCircle2, AlertCircle, Hotel as HotelIcon, ArrowUp, ArrowDown,
-  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck, Copy as CopyIcon,
+  FileText, ExternalLink, Coins, ChevronDown, ShieldCheck, Copy as CopyIcon, ArrowDownToLine,
 } from "lucide-react";
 import AuditChecklist from "./AuditChecklist";
 import VerificationTable from "./VerificationTable";
@@ -457,7 +457,7 @@ const CatalogShopManager = () => {
 
       // 2. Fetch markdown from the Google Doc.
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId, action: "pull" },
+        body: { itinerary_id: itineraryId, action: "pull", language: state.language },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
@@ -2394,18 +2394,28 @@ const CatalogShopManager = () => {
                     📄 Google Doc linked
                   </div>
                   <div className="text-[0.72rem] text-voyage-muted">
-                    Edit the body content in Google Docs, export it as PDF, then upload below.
+                    Edit the body content in Google Docs, then pull it back here — the PDF preview will reapply the brand styling automatically.
                   </div>
                   <div className="text-[0.7rem] text-voyage-muted mt-1">
-                    Resync overwrites the Doc body with the current editor/database content. Use it if the Doc is out of sync or was recreated.
+                    <strong>Resync</strong> pushes the editor → Doc. <strong>Pull</strong> imports the Doc → editor (formatting is normalised; brand styling is reapplied by the PDF preview).
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPullConfirmOpen(true)}
+                    disabled={gdocPulling || gdocSyncing || !state.id}
+                    title="Import the current Google Doc content into the editor. Brand styling is reapplied by the PDF preview."
+                  >
+                    {gdocPulling ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <ArrowDownToLine className="w-3.5 h-3.5 mr-1.5" />}
+                    {gdocPulling ? "Pulling…" : "Pull from Google Doc"}
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => state.id && syncToGoogleDoc(state.id, { notify: true })}
-                    disabled={gdocSyncing || !state.id}
+                    disabled={gdocSyncing || gdocPulling || !state.id}
                     title="Push the current editor/database content to the linked Google Doc"
                   >
                     {gdocSyncing ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <RefreshCcw className="w-3.5 h-3.5 mr-1.5" />}
@@ -2763,6 +2773,31 @@ const CatalogShopManager = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Editing</AlertDialogCancel>
             <AlertDialogAction onClick={closeEditorAnyway}>Close Anyway</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={pullConfirmOpen} onOpenChange={(o) => !gdocPulling && setPullConfirmOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Pull content from Google Doc?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This replaces the editor's body content ({state.language.toUpperCase()}) with the current Google Doc.
+              Any formatting done in Docs is normalised — the PDF preview reapplies the brand styling.
+              A safety snapshot of the current editor is saved first so you can roll back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={gdocPulling}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (state.id) pullFromGoogleDoc(state.id);
+              }}
+              disabled={gdocPulling || !state.id}
+            >
+              {gdocPulling ? "Pulling…" : "Pull from Google Doc"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
