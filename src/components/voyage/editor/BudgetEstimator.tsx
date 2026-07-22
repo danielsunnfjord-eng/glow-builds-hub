@@ -329,9 +329,29 @@ const BudgetEstimator = ({
     if (!budget) return;
     const lbl = coverLabel.trim() || autoCoverLabel(budget);
     onSaved?.(budget, lbl);
-    toast.success("Budget saved");
+
+    // Also insert/replace the budget table in the editor so it appears in the
+    // PDF preview immediately — no separate "Insert into editor" click needed.
+    if (editor) {
+      const html = buildTableHtml();
+      const title = budgetT(langCode).title;
+      const titleH2 = `<h2>${title}</h2>`;
+      const currentHtml = editor.getHTML() || "";
+      // Match an existing budget block: optional preceding H2, the marked table,
+      // and an optional trailing budget-note paragraph. Replace atomically.
+      const budgetBlockRegex =
+        /(<h2[^>]*>[^<]*<\/h2>\s*)?<table[^>]*data-fjw-budget="1"[^>]*>[\s\S]*?<\/table>(\s*<p[^>]*class="fjw-budget-note"[^>]*>[\s\S]*?<\/p>)?/i;
+      const nextHtml = budgetBlockRegex.test(currentHtml)
+        ? currentHtml.replace(budgetBlockRegex, `${titleH2}${html}`)
+        : `${currentHtml}${titleH2}${html}`;
+      editor.commands.setContent(nextHtml, false);
+      toast.success("Budget saved & added to preview");
+    } else {
+      toast.success("Budget saved");
+    }
     onOpenChange(false);
   };
+
 
   const entries = useMemo(() => budget ? Object.entries(budget.per_day || {}) : [], [budget]);
 
