@@ -41,6 +41,70 @@ function titleCase(s: string): string {
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+const BUDGET_I18N: Record<string, {
+  title: string;
+  category: string;
+  perDay: string;
+  note: string;
+  totalPerDay: string;
+  categories: Record<string, string>;
+}> = {
+  en: {
+    title: "Estimated Budget",
+    category: "Category",
+    perDay: "Per day",
+    note: "Note",
+    totalPerDay: "Total estimated per day",
+    categories: {
+      accommodation: "Accommodation",
+      transport: "Transport",
+      activities: "Activities",
+      food_beverage: "Food & Beverage",
+      entrance_fees: "Entrance Fees",
+      miscellaneous: "Miscellaneous",
+    },
+  },
+  pt: {
+    title: "Orçamento Estimado",
+    category: "Categoria",
+    perDay: "Por dia",
+    note: "Observação",
+    totalPerDay: "Total estimado por dia",
+    categories: {
+      accommodation: "Hospedagem",
+      transport: "Transporte",
+      activities: "Atividades",
+      food_beverage: "Alimentação",
+      entrance_fees: "Ingressos",
+      miscellaneous: "Diversos",
+    },
+  },
+  no: {
+    title: "Estimert budsjett",
+    category: "Kategori",
+    perDay: "Per dag",
+    note: "Merknad",
+    totalPerDay: "Totalt estimert per dag",
+    categories: {
+      accommodation: "Overnatting",
+      transport: "Transport",
+      activities: "Aktiviteter",
+      food_beverage: "Mat og drikke",
+      entrance_fees: "Inngangsbilletter",
+      miscellaneous: "Diverse",
+    },
+  },
+};
+
+function budgetT(langCode: string) {
+  return BUDGET_I18N[langCode] || BUDGET_I18N.en;
+}
+
+function categoryLabel(langCode: string, key: string): string {
+  return budgetT(langCode).categories[key] || titleCase(key);
+}
+
+
 function recomputeTotals(b: BudgetData): BudgetData {
   const entries = Object.values(b.per_day || {});
   const low = entries.reduce((s, l) => s + (Number(l?.low) || 0), 0);
@@ -184,6 +248,7 @@ const BudgetEstimator = ({
     const ROW_BORDER = "1px solid #eeeeee";
     const HDR_FONT = "font-family:'Jost','Montserrat',sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;color:#1a1a1a;";
     const NO_BREAK = "page-break-inside:avoid;break-inside:avoid;";
+    const t = budgetT(langCode);
 
     const entries = Object.entries(budget.per_day);
     const rows = entries.map(([k, l], i) => {
@@ -191,7 +256,7 @@ const BudgetEstimator = ({
       const hi = convert(l.high || 0, baseCcy, displayCcy);
       const bg = i % 2 === 0 ? "#ffffff" : "#fafafa";
       return `<tr style="background:${bg};${NO_BREAK}">
-  <td style="padding:12px 14px;border-bottom:${ROW_BORDER};border-left:3px solid ${TEAL};font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:${TEAL};">${titleCase(k)}</td>
+  <td style="padding:12px 14px;border-bottom:${ROW_BORDER};border-left:3px solid ${TEAL};font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:${TEAL};">${categoryLabel(langCode, k)}</td>
   <td style="padding:12px 14px;border-bottom:${ROW_BORDER};text-align:center;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:#1a1a1a;">${fmt(lo, displayCcy)} – ${fmt(hi, displayCcy)}</td>
   <td style="padding:12px 14px;border-bottom:${ROW_BORDER};font-family:'Montserrat',sans-serif;font-size:12px;font-weight:400;color:#555555;">${(l.note || "").replace(/</g, "&lt;")}</td>
 </tr>`;
@@ -199,7 +264,7 @@ const BudgetEstimator = ({
 
     const tpdLo = convert(budget.total_per_day?.low || 0, baseCcy, displayCcy);
     const tpdHi = convert(budget.total_per_day?.high || 0, baseCcy, displayCcy);
-    const totalLabel = `Total estimated per day: ${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}`;
+    const totalLabel = `${t.totalPerDay}: ${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}`;
 
     return `<table class="fjw-budget-table" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
   <colgroup>
@@ -209,9 +274,9 @@ const BudgetEstimator = ({
   </colgroup>
   <thead>
     <tr style="background:#f5f5f5;${NO_BREAK}">
-      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">Category</th>
-      <th style="padding:12px 14px;text-align:center;${HDR_FONT}">Per day (${displayCcy})</th>
-      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">Note</th>
+      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">${t.category}</th>
+      <th style="padding:12px 14px;text-align:center;${HDR_FONT}">${t.perDay} (${displayCcy})</th>
+      <th style="padding:12px 14px;text-align:left;${HDR_FONT}">${t.note}</th>
     </tr>
   </thead>
   <tbody>${rows}
@@ -230,7 +295,7 @@ const BudgetEstimator = ({
       (editor.chain().focus() as any)
         .setTextSelection(endPos)
         .createParagraphNear()
-        .insertContent(`<h2>Estimated Budget</h2>${html}`)
+        .insertContent(`<h2>${budgetT(langCode).title}</h2>${html}`)
         .run();
       const lbl = coverLabel.trim() || autoCoverLabel(budget);
       onSaved?.(budget, lbl);
@@ -241,7 +306,7 @@ const BudgetEstimator = ({
     // Google Docs workflow — copy the table HTML to clipboard for paste-in.
     const lbl = coverLabel.trim() || autoCoverLabel(budget);
     onSaved?.(budget, lbl);
-    const fullHtml = `<h2>Estimated Budget</h2>${html}`;
+    const fullHtml = `<h2>${budgetT(langCode).title}</h2>${html}`;
     if (navigator.clipboard && (navigator.clipboard as any).write && (window as any).ClipboardItem) {
       const item = new (window as any).ClipboardItem({
         "text/html": new Blob([fullHtml], { type: "text/html" }),
