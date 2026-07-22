@@ -807,7 +807,7 @@ const ItineraryShopDetail = () => {
                       </div>
                       <div className="p-6">
                         <div className="text-[0.65rem] tracking-[0.18em] uppercase text-gold mb-2">
-                          {[r.destination, r.duration].filter(Boolean).join(" · ")}
+                          {[r.destination, formatDuration(r.duration, t)].filter(Boolean).join(" · ")}
                         </div>
                         <h3 className="font-serif text-[1.15rem] font-bold text-ink mb-4 group-hover:text-gold transition-colors leading-snug">
                           {rTitle}
