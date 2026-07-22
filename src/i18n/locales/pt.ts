@@ -584,6 +584,8 @@ export default {
       medium: "Média · 5–9 dias",
       long: "Longa · 10+ dias",
     },
+    daysWord: "dias",
+    standaloneGuide: "Guia inspiracional independente",
     season: {
       spring: "Primavera",
       summer: "Verão",
