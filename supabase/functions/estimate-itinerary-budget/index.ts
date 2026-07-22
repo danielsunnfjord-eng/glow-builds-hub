@@ -2,9 +2,38 @@
 // Returns a strict JSON object — see SYSTEM prompt below.
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const SYSTEM = `You are a travel cost expert. Based on the itinerary content provided, generate a realistic estimated budget breakdown per person. Analyse the accommodation type, transport methods, activities, experiences, and dining recommendations mentioned. Use real current price ranges for the specific destination and region — not generic global averages. Return ONLY a valid JSON object with no extra text, in this exact format:
+const LANG_NAME: Record<string, string> = {
+  en: "English",
+  pt: "Portuguese (Brazilian Portuguese, pt-BR)",
+  no: "Norwegian (Bokmål)",
+};
+
+const DEFAULT_CURRENCY: Record<string, string> = {
+  en: "USD",
+  pt: "BRL",
+  no: "NOK",
+};
+
+const COVER_HINT: Record<string, string> = {
+  en: 'e.g. "From $1,230 per person"',
+  pt: 'e.g. "A partir de R$1.230 por pessoa"',
+  no: 'e.g. "Fra kr 12 300 per person"',
+};
+
+function buildSystem(langCode: string, currency: string): string {
+  const langName = LANG_NAME[langCode] || "English";
+  const cover = COVER_HINT[langCode] || COVER_HINT.en;
+  return `You are a travel cost expert. Based on the itinerary content provided, generate a realistic estimated budget breakdown per person. Analyse the accommodation type, transport methods, activities, experiences, and dining recommendations mentioned. Use real current price ranges for the specific destination and region — not generic global averages.
+
+LANGUAGE: Write ALL free-text fields ("note" for each category, the top-level "notes", and "cover_label") entirely in ${langName}. Do not mix languages. Numeric values stay numeric.
+
+CURRENCY: Return prices in ${currency}. Set "currency": "${currency}". Convert local/reference prices into ${currency} using reasonable current exchange rates. Do NOT return values in EUR unless ${currency} is EUR.
+
+COVER LABEL: Localize the phrasing naturally for ${langName} (${cover}).
+
+Return ONLY a valid JSON object with no extra text, in this exact format:
 {
-"currency": "EUR",
+"currency": "${currency}",
 "per_day": {
 "accommodation": {"low": 0, "high": 0, "note": ""},
 "transport": {"low": 0, "high": 0, "note": ""},
@@ -17,8 +46,9 @@ const SYSTEM = `You are a travel cost expert. Based on the itinerary content pro
 "total_per_person": {"low": 0, "high": 0},
 "duration_days": 0,
 "notes": "",
-"cover_label": "From €XXX per person"
+"cover_label": ""
 }`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -29,12 +59,15 @@ Deno.serve(async (req) => {
         status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    const { content, destination, trip_duration } = await req.json();
+    const { content, destination, trip_duration, language, currency } = await req.json();
     if (!content || typeof content !== 'string' || content.trim().length < 20) {
       return new Response(JSON.stringify({ error: 'Missing or empty itinerary content' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const langCode = (typeof language === 'string' && ['en', 'pt', 'no'].includes(language)) ? language : 'en';
+    const ccy = (typeof currency === 'string' && currency.trim()) ? currency.trim().toUpperCase() : DEFAULT_CURRENCY[langCode];
 
     // Guard against oversize payloads (Claude context is 200k tokens ≈ 600k chars).
     // Cap at ~150k chars to leave headroom for system prompt + response.
@@ -49,6 +82,8 @@ Deno.serve(async (req) => {
     const userMsg = [
       destination ? `Destination/Region: ${destination}` : '',
       trip_duration ? `Trip duration: ${trip_duration}` : '',
+      `Output language: ${LANG_NAME[langCode]}`,
+      `Output currency: ${ccy}`,
       '',
       'Itinerary content:',
       trimmed,
@@ -64,7 +99,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 2000,
-        system: SYSTEM,
+        system: buildSystem(langCode, ccy),
         messages: [{ role: 'user', content: userMsg }],
       }),
     });

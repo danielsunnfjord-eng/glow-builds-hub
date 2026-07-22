@@ -65,7 +65,21 @@ interface BudgetEstimatorProps {
   tripDuration?: string | null;
   initialBudget?: BudgetData | null;
   initialCoverLabel?: string | null;
+  /** Itinerary language: "en" | "pt" | "no". Controls default currency and the
+   * language used by the AI for notes and cover label. */
+  language?: string;
   onSaved?: (budget: BudgetData | null, coverLabel: string | null) => void;
+}
+
+const LANG_DEFAULT_CCY: Record<string, string> = { en: "USD", pt: "BRL", no: "NOK" };
+
+function localizedCoverLabel(langCode: string, low: number, ccy: string): string {
+  const amount = fmt(low, ccy);
+  switch (langCode) {
+    case "pt": return `A partir de ${amount} por pessoa`;
+    case "no": return `Fra ${amount} per person`;
+    default:   return `From ${amount} per person`;
+  }
 }
 
 const BudgetEstimator = ({
