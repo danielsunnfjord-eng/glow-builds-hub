@@ -67,6 +67,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Thank you for trusting us\nwith your journey.",
     closingNote: "We are here every step of the way — before, during, and long after you return home.",
     dateLocale: "en-GB",
+    coverEyebrow: "A pre-designed and inspirational itinerary",
+    duration: "Duration",
+    region: "Region",
+    season: "Season",
+    estimatedBudget: "Estimated Budget",
+    advisorRole: "Your Travel Advisor · Fjord & Waves Travel",
   },
   pt: {
     preparedFor: "Preparado exclusivamente para",
@@ -80,6 +86,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Obrigado por confiar a nós\na sua jornada.",
     closingNote: "Estamos com você em cada etapa — antes, durante e muito depois do seu retorno.",
     dateLocale: "pt-BR",
+    coverEyebrow: "Um roteiro pré-desenhado e inspirador",
+    duration: "Duração",
+    region: "Região",
+    season: "Estação",
+    estimatedBudget: "Orçamento Estimado",
+    advisorRole: "Seu Consultor de Viagem · Fjord & Waves Travel",
   },
   no: {
     preparedFor: "Utarbeidet eksklusivt for",
@@ -93,6 +105,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Takk for at du betror oss\nreisen din.",
     closingNote: "Vi er med deg hele veien — før, under og lenge etter at du kommer hjem.",
     dateLocale: "nb-NO",
+    coverEyebrow: "En forhåndsdesignet og inspirerende reiserute",
+    duration: "Varighet",
+    region: "Region",
+    season: "Sesong",
+    estimatedBudget: "Estimert budsjett",
+    advisorRole: "Din reiserådgiver · Fjord & Waves Travel",
   },
 };
 
@@ -463,9 +481,56 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
   const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
   const [merging, setMerging] = useState(false);
   const [mergeError, setMergeError] = useState<string | null>(null);
+  const [translatedHotels, setTranslatedHotels] = useState<HotelRecPreview[] | null>(null);
+  const [translatingHotels, setTranslatingHotels] = useState(false);
   const lang = (language || i18n.language || "en").slice(0, 2).toLowerCase();
   const L = I18N[lang] || I18N.en;
   const usePdfMerge = !!bodyPdfUrl;
+
+  // Auto-translate hotel content to the itinerary's language.
+  // Fires whenever `lang` or the hotels payload changes; caches the result in
+  // `translatedHotels` so subsequent re-renders reuse it. On error, falls back
+  // to the original hotels silently.
+  const hotelsKey = useMemo(() => {
+    try {
+      return JSON.stringify(
+        (hotels || []).map((h) => ({
+          n: h?.name || "",
+          l: h?.location || "",
+          d: h?.description || "",
+          p: Array.isArray(h?.perks) ? h.perks : [],
+          c: Array.isArray(h?.photos)
+            ? h.photos.map((ph: any) => (typeof ph === "string" ? "" : ph?.caption || ""))
+            : [],
+        })),
+      );
+    } catch { return ""; }
+  }, [hotels]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setTranslatedHotels(null);
+    const list = (hotels || []).filter((h) => h && (h.name || "").trim());
+    if (!list.length || !["en", "pt", "no"].includes(lang)) return;
+    const hasText = list.some((h) =>
+      (h.location || "").trim() || (h.description || "").trim() ||
+      (Array.isArray(h.perks) && h.perks.some((p) => (p || "").trim())) ||
+      (Array.isArray(h.photos) && h.photos.some((p) => typeof p !== "string" && (p?.caption || "").trim())),
+    );
+    if (!hasText) return;
+    setTranslatingHotels(true);
+    supabase.functions
+      .invoke("translate-hotels", { body: { language: lang, hotels: list } })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.hotels) return;
+        setTranslatedHotels(data.hotels as HotelRecPreview[]);
+      })
+      .catch(() => { /* silent fallback */ })
+      .finally(() => { if (!cancelled) setTranslatingHotels(false); });
+    return () => { cancelled = true; };
+  }, [lang, hotelsKey]);
+
 
   const formatDateRange = (start?: string | null, end?: string | null) => {
     if (!start && !end) return "";
@@ -480,7 +545,8 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
     const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
     const destinationLine = [project?.destination || L.itinerary, dateRange].filter(Boolean).join(" · ");
     const bodyHtml = cleanPageBreaks(contentHtml && contentHtml.trim() ? contentHtml : markdownToHtml(content));
-    const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
+    const effectiveHotels = translatedHotels || hotels || [];
+    const visibleHotels = effectiveHotels.filter((h) => h && h.visible !== false && (h.name || "").trim());
 
     const coverHero = project?.hero_image_url
       ? `<img src="${escapeHtml(project.hero_image_url)}" alt="${escapeHtml(project?.destination || "")}" crossorigin="anonymous" />`
@@ -540,24 +606,24 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
 
         <!-- 4–7. Text content -->
         <div class="fjw-cover-body">
-          <p class="fjw-cover-eyebrow">A pre-designed and inspirational itinerary</p>
+          <p class="fjw-cover-eyebrow">${escapeHtml(L.coverEyebrow)}</p>
           <h1 class="fjw-cover-title">${escapeHtml(coverTitle)}</h1>
           ${shortTagline ? `<p class="fjw-cover-description">${escapeHtml(shortTagline)}</p>` : ""}
           <div class="fjw-cover-meta">
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Duration</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.duration)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project?.trip_duration || "—")}</div>
             </div>
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Region</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.region)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project?.destination || "—")}</div>
             </div>
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Season</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.season)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
             </div>
             ${project?.estimated_trip_budget ? `<div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Estimated Budget</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.estimatedBudget)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project.estimated_trip_budget)}</div>
             </div>` : ""}
           </div>
@@ -577,7 +643,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         <div class="fjw-back-rule"></div>
         <div class="fjw-advisor-signature">
           <div class="fjw-advisor-name">Daniel Lira Figueiredo</div>
-          <div class="fjw-advisor-role">Your Travel Advisor · Fjord &amp; Waves Travel</div>
+          <div class="fjw-advisor-role">${escapeHtml(L.advisorRole)}</div>
         </div>
         <div class="fjw-contact">
           <div>hello@fjordwavestravel.com</div>
@@ -586,7 +652,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, contentHtml, hotels, project, L, usePdfMerge]);
+  }, [content, contentHtml, hotels, translatedHotels, project, L, usePdfMerge]);
 
   useEffect(() => {
     let cancelled = false;
