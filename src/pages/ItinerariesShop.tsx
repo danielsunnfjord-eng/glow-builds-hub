@@ -52,6 +52,18 @@ const parseDurationDays = (s: string | null): number | null => {
   return m ? parseInt(m[1], 10) : null;
 };
 
+const formatDuration = (
+  s: string | null,
+  t: (k: string, d?: string) => string,
+): string | null => {
+  if (!s) return null;
+  const n = parseDurationDays(s);
+  if (n !== null) return `${n} ${t("catalogue.daysWord", "days")}`;
+  if (/not a route|standalone/i.test(s)) return t("catalogue.standaloneGuide", s);
+  return s;
+};
+
+
 const ItinerariesShop = () => {
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
