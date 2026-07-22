@@ -54,7 +54,8 @@ const parseDurationDays = (s: string | null): number | null => {
 
 const formatDuration = (
   s: string | null,
-  t: (k: string, d?: string) => string,
+  t: (k: string, d?: string) => string | unknown,
+
 ): string | null => {
   if (!s) return null;
   const n = parseDurationDays(s);
