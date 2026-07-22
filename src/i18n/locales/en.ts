@@ -597,6 +597,8 @@ export default {
       medium: "Medium · 5–9 days",
       long: "Long · 10+ days",
     },
+    daysWord: "days",
+    standaloneGuide: "Standalone inspirational guide",
     season: {
       spring: "Spring",
       summer: "Summer",
