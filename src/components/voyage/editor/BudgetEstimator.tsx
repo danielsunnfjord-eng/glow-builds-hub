@@ -266,7 +266,7 @@ const BudgetEstimator = ({
     const tpdHi = convert(budget.total_per_day?.high || 0, baseCcy, displayCcy);
     const totalLabel = `${t.totalPerDay}: ${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}`;
 
-    return `<table class="fjw-budget-table" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
+    return `<table class="fjw-budget-table" data-fjw-budget="1" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
   <colgroup>
     <col style="width:18%;" />
     <col style="width:20%;" />
@@ -329,9 +329,29 @@ const BudgetEstimator = ({
     if (!budget) return;
     const lbl = coverLabel.trim() || autoCoverLabel(budget);
     onSaved?.(budget, lbl);
-    toast.success("Budget saved");
+
+    // Also insert/replace the budget table in the editor so it appears in the
+    // PDF preview immediately — no separate "Insert into editor" click needed.
+    if (editor) {
+      const html = buildTableHtml();
+      const title = budgetT(langCode).title;
+      const titleH2 = `<h2>${title}</h2>`;
+      const currentHtml = editor.getHTML() || "";
+      // Match an existing budget block: optional preceding H2, the marked table,
+      // and an optional trailing budget-note paragraph. Replace atomically.
+      const budgetBlockRegex =
+        /(<h2[^>]*>[^<]*<\/h2>\s*)?<table[^>]*data-fjw-budget="1"[^>]*>[\s\S]*?<\/table>(\s*<p[^>]*class="fjw-budget-note"[^>]*>[\s\S]*?<\/p>)?/i;
+      const nextHtml = budgetBlockRegex.test(currentHtml)
+        ? currentHtml.replace(budgetBlockRegex, `${titleH2}${html}`)
+        : `${currentHtml}${titleH2}${html}`;
+      editor.commands.setContent(nextHtml, { emitUpdate: true });
+      toast.success("Budget saved & added to preview");
+    } else {
+      toast.success("Budget saved");
+    }
     onOpenChange(false);
   };
+
 
   const entries = useMemo(() => budget ? Object.entries(budget.per_day || {}) : [], [budget]);
 

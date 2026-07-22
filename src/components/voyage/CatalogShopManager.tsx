@@ -455,31 +455,44 @@ const CatalogShopManager = () => {
       const snapshotLabel = `Before Google Doc import — ${new Date().toLocaleString()}`;
       await saveSnapshot(itineraryId, snapshotLabel);
 
-      // 2. Fetch markdown from the Google Doc.
+      // 2. Fetch HTML from the Google Doc (preserves <a href> links which the
+      //    markdown export sometimes drops).
       const { data, error } = await supabase.functions.invoke("gdrive-sync-itinerary", {
-        body: { itinerary_id: itineraryId, action: "pull", language: state.language },
+        body: { itinerary_id: itineraryId, action: "export-html", language: state.language },
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      const md: string = (data as any).markdown ?? "";
+      const rawHtml: string = (data as any).html ?? "";
 
-      // 3. Replace editor content. Other fields (title, hotels, cover, etc.)
+      // 3. Sanitize the exported HTML: strip Google's inline styles, wrapper
+      //    <span>/<div>, boilerplate, and image tags (Google image URLs require
+      //    auth and 403 in the customer PDF — images stay app-managed).
+      const sanitizedHtml = sanitizeDocHtml(rawHtml);
+      const linkCount = (sanitizedHtml.match(/<a\s+href=/gi) || []).length;
+      const imagesSkipped = (rawHtml.match(/<img\b/gi) || []).length;
+
+      // 4. Convert to markdown so it round-trips with the rest of the editor
+      //    content pipeline (preview, resync, PDF).
+      const { htmlToMarkdown } = await import("./editor/markdownHelpers");
+      const md = htmlToMarkdown(sanitizedHtml);
+
+      // 5. Replace editor content. Other fields (title, hotels, cover, etc.)
       //    remain app-managed; the Google Doc only mirrors narrative copy.
       setState((s) => ({ ...s, content: md, previousContent: s.content }));
 
-      // 4. Persist a draft immediately so the import survives reloads.
+      // 6. Persist a draft immediately so the import survives reloads.
       await persistCatalogDraft(true);
 
-      // 5. Update sync metadata and clear the conflict banner.
+      // 7. Update sync metadata and clear the conflict banner.
       setGdocInfo((prev) => ({
         ...prev,
         id: (data as any).gdoc_id ?? prev.id,
         url: (data as any).gdoc_url ?? prev.url,
-        lastSyncedAt: (data as any).synced_at ?? new Date().toISOString(),
+        lastSyncedAt: (data as any).doc_modified_time ?? new Date().toISOString(),
       }));
       setGdocConflict(null);
       toast.success("Google Doc changes imported successfully", {
-        description: `A backup snapshot "${snapshotLabel}" was saved first.`,
+        description: `${linkCount} link${linkCount === 1 ? "" : "s"} preserved · ${imagesSkipped} image${imagesSkipped === 1 ? "" : "s"} skipped · backup snapshot "${snapshotLabel}" saved.`,
       });
     } catch (e: any) {
       setGdocError(e?.message || "Google Doc import failed");
@@ -489,6 +502,7 @@ const CatalogShopManager = () => {
       setPullConfirmOpen(false);
     }
   };
+
 
 
   const checkGoogleDocFreshness = async (itineraryId: string) => {
