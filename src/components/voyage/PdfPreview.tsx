@@ -573,7 +573,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
       : "";
 
     const SEASON_I18N: Record<string, Record<string, string>> = {
-      en: { spring: "Spring", summer: "Summer, autumn: "Autumn", fall: "Autumn", winter: "Winter" },
+      en: { spring: "Spring", summer: "Summer", autumn: "Autumn", fall: "Autumn", winter: "Winter" },
       pt: { spring: "Primavera", summer: "Verão", autumn: "Outono", fall: "Outono", winter: "Inverno" },
       no: { spring: "Vår", summer: "Sommer", autumn: "Høst", fall: "Høst", winter: "Vinter" },
     };
