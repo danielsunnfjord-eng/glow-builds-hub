@@ -41,6 +41,70 @@ function titleCase(s: string): string {
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+const BUDGET_I18N: Record<string, {
+  title: string;
+  category: string;
+  perDay: string;
+  note: string;
+  totalPerDay: string;
+  categories: Record<string, string>;
+}> = {
+  en: {
+    title: "Estimated Budget",
+    category: "Category",
+    perDay: "Per day",
+    note: "Note",
+    totalPerDay: "Total estimated per day",
+    categories: {
+      accommodation: "Accommodation",
+      transport: "Transport",
+      activities: "Activities",
+      food_beverage: "Food & Beverage",
+      entrance_fees: "Entrance Fees",
+      miscellaneous: "Miscellaneous",
+    },
+  },
+  pt: {
+    title: "Orçamento Estimado",
+    category: "Categoria",
+    perDay: "Por dia",
+    note: "Observação",
+    totalPerDay: "Total estimado por dia",
+    categories: {
+      accommodation: "Hospedagem",
+      transport: "Transporte",
+      activities: "Atividades",
+      food_beverage: "Alimentação",
+      entrance_fees: "Ingressos",
+      miscellaneous: "Diversos",
+    },
+  },
+  no: {
+    title: "Estimert budsjett",
+    category: "Kategori",
+    perDay: "Per dag",
+    note: "Merknad",
+    totalPerDay: "Totalt estimert per dag",
+    categories: {
+      accommodation: "Overnatting",
+      transport: "Transport",
+      activities: "Aktiviteter",
+      food_beverage: "Mat og drikke",
+      entrance_fees: "Inngangsbilletter",
+      miscellaneous: "Diverse",
+    },
+  },
+};
+
+function budgetT(langCode: string) {
+  return BUDGET_I18N[langCode] || BUDGET_I18N.en;
+}
+
+function categoryLabel(langCode: string, key: string): string {
+  return budgetT(langCode).categories[key] || titleCase(key);
+}
+
+
 function recomputeTotals(b: BudgetData): BudgetData {
   const entries = Object.values(b.per_day || {});
   const low = entries.reduce((s, l) => s + (Number(l?.low) || 0), 0);
