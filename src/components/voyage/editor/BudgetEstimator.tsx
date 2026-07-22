@@ -344,7 +344,7 @@ const BudgetEstimator = ({
       const nextHtml = budgetBlockRegex.test(currentHtml)
         ? currentHtml.replace(budgetBlockRegex, `${titleH2}${html}`)
         : `${currentHtml}${titleH2}${html}`;
-      editor.commands.setContent(nextHtml, false);
+      editor.commands.setContent(nextHtml, { emitUpdate: true });
       toast.success("Budget saved & added to preview");
     } else {
       toast.success("Budget saved");
