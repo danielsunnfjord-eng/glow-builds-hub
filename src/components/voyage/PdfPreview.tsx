@@ -67,6 +67,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Thank you for trusting us\nwith your journey.",
     closingNote: "We are here every step of the way — before, during, and long after you return home.",
     dateLocale: "en-GB",
+    coverEyebrow: "A pre-designed and inspirational itinerary",
+    duration: "Duration",
+    region: "Region",
+    season: "Season",
+    estimatedBudget: "Estimated Budget",
+    advisorRole: "Your Travel Advisor · Fjord & Waves Travel",
   },
   pt: {
     preparedFor: "Preparado exclusivamente para",
@@ -80,6 +86,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Obrigado por confiar a nós\na sua jornada.",
     closingNote: "Estamos com você em cada etapa — antes, durante e muito depois do seu retorno.",
     dateLocale: "pt-BR",
+    coverEyebrow: "Um roteiro pré-desenhado e inspirador",
+    duration: "Duração",
+    region: "Região",
+    season: "Estação",
+    estimatedBudget: "Orçamento Estimado",
+    advisorRole: "Seu Consultor de Viagem · Fjord & Waves Travel",
   },
   no: {
     preparedFor: "Utarbeidet eksklusivt for",
@@ -93,6 +105,12 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Takk for at du betror oss\nreisen din.",
     closingNote: "Vi er med deg hele veien — før, under og lenge etter at du kommer hjem.",
     dateLocale: "nb-NO",
+    coverEyebrow: "En forhåndsdesignet og inspirerende reiserute",
+    duration: "Varighet",
+    region: "Region",
+    season: "Sesong",
+    estimatedBudget: "Estimert budsjett",
+    advisorRole: "Din reiserådgiver · Fjord & Waves Travel",
   },
 };
 
