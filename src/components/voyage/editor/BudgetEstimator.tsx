@@ -266,7 +266,7 @@ const BudgetEstimator = ({
     const tpdHi = convert(budget.total_per_day?.high || 0, baseCcy, displayCcy);
     const totalLabel = `${t.totalPerDay}: ${fmt(tpdLo, displayCcy)} – ${fmt(tpdHi, displayCcy)}`;
 
-    return `<table class="fjw-budget-table" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
+    return `<table class="fjw-budget-table" data-fjw-budget="1" style="width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;border:none;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);${NO_BREAK}">
   <colgroup>
     <col style="width:18%;" />
     <col style="width:20%;" />
