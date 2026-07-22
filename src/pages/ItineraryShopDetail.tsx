@@ -35,6 +35,20 @@ const OVERVIEW_LABELS = /^(trip\s*overview|vis[ãa]o\s*geral.*|reiseoversikt.*|o
 const PRACTICAL_LABELS = /^(practical\s*tips|dicas\s*pr[áa]ticas|praktiske\s*tips|praktisk)$/i;
 const DAY_HEADING = /^(?:day|dia|dag)\s*(\d+)\s*[—\-:]?\s*(.*)$/i;
 
+const parseDurationDays = (s: string | null | undefined): number | null => {
+  if (!s) return null;
+  const m = s.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatDuration = (s: string | null | undefined, t: any): string | null => {
+  if (!s) return null;
+  const n = parseDurationDays(s);
+  if (n !== null) return `${n} ${t("catalogue.daysWord", "days")}`;
+  if (/not a route|standalone/i.test(s)) return t("catalogue.standaloneGuide", s);
+  return s;
+};
+
 function parseDayByDay(md: string) {
   const result = {
     intro: "" as string,
@@ -376,7 +390,7 @@ const ItineraryShopDetail = () => {
                 )}
                 {data.duration && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-voyage-white/10 backdrop-blur-md border border-voyage-white/20 text-voyage-white text-[0.72rem] tracking-[0.1em] uppercase">
-                    <Clock className="w-3 h-3" /> {data.duration}
+                    <Clock className="w-3 h-3" /> {formatDuration(data.duration, t)}
                   </span>
                 )}
                 {data.group_size_label && (
@@ -607,7 +621,7 @@ const ItineraryShopDetail = () => {
                       {t("shop.duration")}
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.duration || "—"}
+                      {formatDuration(data.duration, t) || "—"}
                     </span>
                   </div>
                   <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
@@ -793,7 +807,7 @@ const ItineraryShopDetail = () => {
                       </div>
                       <div className="p-6">
                         <div className="text-[0.65rem] tracking-[0.18em] uppercase text-gold mb-2">
-                          {[r.destination, r.duration].filter(Boolean).join(" · ")}
+                          {[r.destination, formatDuration(r.duration, t)].filter(Boolean).join(" · ")}
                         </div>
                         <h3 className="font-serif text-[1.15rem] font-bold text-ink mb-4 group-hover:text-gold transition-colors leading-snug">
                           {rTitle}
