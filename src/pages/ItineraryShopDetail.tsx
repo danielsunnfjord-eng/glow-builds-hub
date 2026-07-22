@@ -390,7 +390,7 @@ const ItineraryShopDetail = () => {
                 )}
                 {data.duration && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-voyage-white/10 backdrop-blur-md border border-voyage-white/20 text-voyage-white text-[0.72rem] tracking-[0.1em] uppercase">
-                    <Clock className="w-3 h-3" /> {data.duration}
+                    <Clock className="w-3 h-3" /> {formatDuration(data.duration, t)}
                   </span>
                 )}
                 {data.group_size_label && (
