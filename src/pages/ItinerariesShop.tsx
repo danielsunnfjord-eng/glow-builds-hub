@@ -64,6 +64,7 @@ const formatDuration = (
 };
 
 
+
 const ItinerariesShop = () => {
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
