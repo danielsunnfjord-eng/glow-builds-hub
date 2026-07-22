@@ -545,7 +545,8 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
     const tagline = project?.cover_tagline?.trim() || L.defaultTagline;
     const destinationLine = [project?.destination || L.itinerary, dateRange].filter(Boolean).join(" · ");
     const bodyHtml = cleanPageBreaks(contentHtml && contentHtml.trim() ? contentHtml : markdownToHtml(content));
-    const visibleHotels = (hotels || []).filter((h) => h && h.visible !== false && (h.name || "").trim());
+    const effectiveHotels = translatedHotels || hotels || [];
+    const visibleHotels = effectiveHotels.filter((h) => h && h.visible !== false && (h.name || "").trim());
 
     const coverHero = project?.hero_image_url
       ? `<img src="${escapeHtml(project.hero_image_url)}" alt="${escapeHtml(project?.destination || "")}" crossorigin="anonymous" />`
@@ -651,7 +652,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         <div class="fjw-social">Instagram · @fjordwavestravel<br />Facebook · Fjord &amp; Waves Travel</div>
       </section>
     </div>`;
-  }, [content, contentHtml, hotels, project, L, usePdfMerge]);
+  }, [content, contentHtml, hotels, translatedHotels, project, L, usePdfMerge]);
 
   useEffect(() => {
     let cancelled = false;
