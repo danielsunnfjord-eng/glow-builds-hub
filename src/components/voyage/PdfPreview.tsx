@@ -622,7 +622,13 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
           <div class="fjw-cover-meta">
             <div class="fjw-cover-meta-col">
               <div class="fjw-cover-meta-label">${escapeHtml(L.duration)}</div>
-              <div class="fjw-cover-meta-value">${escapeHtml(project?.trip_duration || "—")}</div>
+              <div class="fjw-cover-meta-value">${escapeHtml((() => {
+                const raw = project?.trip_duration || "";
+                const n = parseInt(String(raw).match(/\d+/)?.[0] || "", 10);
+                if (!n) return raw || "—";
+                const word = lang === "pt" ? (n === 1 ? "dia" : "dias") : lang === "no" ? (n === 1 ? "dag" : "dager") : (n === 1 ? "day" : "days");
+                return `${n} ${word}`;
+              })())}</div>
             </div>
             <div class="fjw-cover-meta-col">
               <div class="fjw-cover-meta-label">${escapeHtml(L.region)}</div>
