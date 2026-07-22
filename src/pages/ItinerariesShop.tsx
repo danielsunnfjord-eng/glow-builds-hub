@@ -52,11 +52,8 @@ const parseDurationDays = (s: string | null): number | null => {
   return m ? parseInt(m[1], 10) : null;
 };
 
-const formatDuration = (
-  s: string | null,
-  t: (k: string, d?: string) => string | unknown,
-
-): string | null => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatDuration = (s: string | null, t: any): string | null => {
   if (!s) return null;
   const n = parseDurationDays(s);
   if (n !== null) return `${n} ${t("catalogue.daysWord", "days")}`;
