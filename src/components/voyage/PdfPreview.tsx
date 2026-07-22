@@ -86,7 +86,7 @@ const I18N: Record<string, Record<string, string>> = {
     thankYou: "Obrigado por confiar a nós\na sua jornada.",
     closingNote: "Estamos com você em cada etapa — antes, durante e muito depois do seu retorno.",
     dateLocale: "pt-BR",
-    coverEyebrow: "Um roteiro pré-desenhado e inspirador",
+    coverEyebrow: "Um roteiro pré-definido e inspirador",
     duration: "Duração",
     region: "Região",
     season: "Estação",
