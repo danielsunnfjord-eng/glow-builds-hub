@@ -572,9 +572,19 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         </section>`
       : "";
 
-    const seasonFromProject = Array.isArray(project?.season)
-      ? project!.season.join(" · ")
-      : (project?.season || "");
+    const SEASON_I18N: Record<string, Record<string, string>> = {
+      en: { spring: "Spring", summer: "Summer, autumn: "Autumn", fall: "Autumn", winter: "Winter" },
+      pt: { spring: "Primavera", summer: "Verão", autumn: "Outono", fall: "Outono", winter: "Inverno" },
+      no: { spring: "Vår", summer: "Sommer", autumn: "Høst", fall: "Høst", winter: "Vinter" },
+    };
+    const translateSeason = (s: string) => {
+      const key = s.trim().toLowerCase();
+      return SEASON_I18N[lang]?.[key] || s;
+    };
+    const seasonArr = Array.isArray(project?.season)
+      ? project!.season
+      : (project?.season ? [project.season] : []);
+    const seasonFromProject = seasonArr.map(translateSeason).join(" · ");
     const seasonLabel = seasonFromProject || dateRange || (project?.start_date ? new Date(project.start_date).toLocaleDateString(L.dateLocale, { month: "long", year: "numeric" }) : "");
 
     // Use the explicit title from the edit form first, then the first H1 in
