@@ -467,7 +467,9 @@ const CatalogShopManager = () => {
       // 3. Sanitize the exported HTML: strip Google's inline styles, wrapper
       //    <span>/<div>, boilerplate, and image tags (Google image URLs require
       //    auth and 403 in the customer PDF — images stay app-managed).
-      const { sanitizedHtml, linkCount, imagesSkipped } = sanitizeGoogleDocHtml(rawHtml);
+      const sanitizedHtml = sanitizeDocHtml(rawHtml);
+      const linkCount = (sanitizedHtml.match(/<a\s+href=/gi) || []).length;
+      const imagesSkipped = (rawHtml.match(/<img\b/gi) || []).length;
 
       // 4. Convert to markdown so it round-trips with the rest of the editor
       //    content pipeline (preview, resync, PDF).
