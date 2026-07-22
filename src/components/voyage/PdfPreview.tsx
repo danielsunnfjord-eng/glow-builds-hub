@@ -481,9 +481,56 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
   const [mergedPdfUrl, setMergedPdfUrl] = useState<string | null>(null);
   const [merging, setMerging] = useState(false);
   const [mergeError, setMergeError] = useState<string | null>(null);
+  const [translatedHotels, setTranslatedHotels] = useState<HotelRecPreview[] | null>(null);
+  const [translatingHotels, setTranslatingHotels] = useState(false);
   const lang = (language || i18n.language || "en").slice(0, 2).toLowerCase();
   const L = I18N[lang] || I18N.en;
   const usePdfMerge = !!bodyPdfUrl;
+
+  // Auto-translate hotel content to the itinerary's language.
+  // Fires whenever `lang` or the hotels payload changes; caches the result in
+  // `translatedHotels` so subsequent re-renders reuse it. On error, falls back
+  // to the original hotels silently.
+  const hotelsKey = useMemo(() => {
+    try {
+      return JSON.stringify(
+        (hotels || []).map((h) => ({
+          n: h?.name || "",
+          l: h?.location || "",
+          d: h?.description || "",
+          p: Array.isArray(h?.perks) ? h.perks : [],
+          c: Array.isArray(h?.photos)
+            ? h.photos.map((ph: any) => (typeof ph === "string" ? "" : ph?.caption || ""))
+            : [],
+        })),
+      );
+    } catch { return ""; }
+  }, [hotels]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setTranslatedHotels(null);
+    const list = (hotels || []).filter((h) => h && (h.name || "").trim());
+    if (!list.length || !["en", "pt", "no"].includes(lang)) return;
+    const hasText = list.some((h) =>
+      (h.location || "").trim() || (h.description || "").trim() ||
+      (Array.isArray(h.perks) && h.perks.some((p) => (p || "").trim())) ||
+      (Array.isArray(h.photos) && h.photos.some((p) => typeof p !== "string" && (p?.caption || "").trim())),
+    );
+    if (!hasText) return;
+    setTranslatingHotels(true);
+    supabase.functions
+      .invoke("translate-hotels", { body: { language: lang, hotels: list } })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.hotels) return;
+        setTranslatedHotels(data.hotels as HotelRecPreview[]);
+      })
+      .catch(() => { /* silent fallback */ })
+      .finally(() => { if (!cancelled) setTranslatingHotels(false); });
+    return () => { cancelled = true; };
+  }, [lang, hotelsKey]);
+
 
   const formatDateRange = (start?: string | null, end?: string | null) => {
     if (!start && !end) return "";
