@@ -621,7 +621,7 @@ const ItineraryShopDetail = () => {
                       {t("shop.duration")}
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.duration || "—"}
+                      {formatDuration(data.duration, t) || "—"}
                     </span>
                   </div>
                   <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
