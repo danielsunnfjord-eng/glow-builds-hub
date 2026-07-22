@@ -297,10 +297,10 @@ const ItinerariesShop = () => {
             const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no) || trip.title_en;
             const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no) || trip.summary_en;
             return (
-              <ScrollReveal key={trip.id}>
+              <ScrollReveal key={trip.id} className="h-full">
                 <Link
                   to={`/catalogue/${trip.slug}`}
-                  className="group flex flex-col w-full rounded-lg overflow-hidden border border-ink/[0.08] bg-voyage-white shadow-sm hover:shadow-xl transition-all duration-300 text-left"
+                  className="group flex flex-col h-full w-full rounded-lg overflow-hidden border border-ink/[0.08] bg-voyage-white shadow-sm hover:shadow-xl transition-all duration-300 text-left"
                 >
                   <div className="relative aspect-[4/5] overflow-hidden bg-parchment-2">
                     {trip.hero_image_url && (
@@ -313,7 +313,7 @@ const ItinerariesShop = () => {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="font-serif text-[1.35rem] font-bold leading-tight text-voyage-white">
+                      <h3 className="font-serif text-[1.35rem] font-bold leading-tight text-voyage-white line-clamp-2">
                         {title}
                       </h3>
                     </div>
@@ -329,7 +329,9 @@ const ItinerariesShop = () => {
                         <>
                           <span className="text-voyage-muted/40 text-[0.62rem]">·</span>
                           <span className="text-[0.62rem] font-medium tracking-[0.12em] uppercase text-voyage-muted">
-                            {trip.experience_type.join(" · ")}
+                            {trip.experience_type
+                              .map((x) => t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x))
+                              .join(" · ")}
                           </span>
                         </>
                       )}
@@ -341,9 +343,9 @@ const ItinerariesShop = () => {
                     )}
                     <div className="flex items-baseline justify-between border-t border-parchment-3 pt-4 mt-auto">
                       <div className="flex flex-col">
-                        {trip.duration && (
+                        {formatDuration(trip.duration, t) && (
                           <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted mb-0.5">
-                            {trip.duration}
+                            {formatDuration(trip.duration, t)}
                           </span>
                         )}
                         <span className="font-serif text-[1.25rem] font-bold text-ink">
@@ -358,6 +360,7 @@ const ItinerariesShop = () => {
                   </div>
                 </Link>
               </ScrollReveal>
+
             );
           })}
         </div>
