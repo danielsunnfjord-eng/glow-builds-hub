@@ -558,24 +558,24 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
 
         <!-- 4–7. Text content -->
         <div class="fjw-cover-body">
-          <p class="fjw-cover-eyebrow">A pre-designed and inspirational itinerary</p>
+          <p class="fjw-cover-eyebrow">${escapeHtml(L.coverEyebrow)}</p>
           <h1 class="fjw-cover-title">${escapeHtml(coverTitle)}</h1>
           ${shortTagline ? `<p class="fjw-cover-description">${escapeHtml(shortTagline)}</p>` : ""}
           <div class="fjw-cover-meta">
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Duration</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.duration)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project?.trip_duration || "—")}</div>
             </div>
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Region</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.region)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project?.destination || "—")}</div>
             </div>
             <div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Season</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.season)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(seasonLabel || "—")}</div>
             </div>
             ${project?.estimated_trip_budget ? `<div class="fjw-cover-meta-col">
-              <div class="fjw-cover-meta-label">Estimated Budget</div>
+              <div class="fjw-cover-meta-label">${escapeHtml(L.estimatedBudget)}</div>
               <div class="fjw-cover-meta-value">${escapeHtml(project.estimated_trip_budget)}</div>
             </div>` : ""}
           </div>
@@ -595,7 +595,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         <div class="fjw-back-rule"></div>
         <div class="fjw-advisor-signature">
           <div class="fjw-advisor-name">Daniel Lira Figueiredo</div>
-          <div class="fjw-advisor-role">Your Travel Advisor · Fjord &amp; Waves Travel</div>
+          <div class="fjw-advisor-role">${escapeHtml(L.advisorRole)}</div>
         </div>
         <div class="fjw-contact">
           <div>hello@fjordwavestravel.com</div>
