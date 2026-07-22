@@ -2713,6 +2713,7 @@ const CatalogShopManager = () => {
             tripDuration={state.duration}
             initialBudget={budget}
             initialCoverLabel={budgetCoverLabel}
+            language={state.language}
             onSaved={handleBudgetSaved}
           />
 

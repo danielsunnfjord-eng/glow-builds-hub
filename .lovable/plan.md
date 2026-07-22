@@ -1,41 +1,28 @@
-# Pull from Google Doc + styled links in PDF
+## Goal
+Budget Estimator must return notes, category labels, and cover label in the itinerary's language (EN / pt-BR / NO), with matching default currency (USD / BRL / NOK).
 
-Two changes, scoped tightly.
+## Changes
 
-## 1. Pull from Google Doc (body content only)
+### 1. `supabase/functions/estimate-itinerary-budget/index.ts`
+- Accept `language` and `currency` in the request body.
+- Map language → language name for prompt (`en` → English, `pt` → Portuguese (Brazil), `no` → Norwegian).
+- Map language → default currency when `currency` not provided (`en` → USD, `pt` → BRL, `no` → NOK; fallback EUR).
+- Extend the SYSTEM prompt to instruct Claude to:
+  - Return `currency` = chosen currency and price prices in that currency (not EUR).
+  - Write all `note` fields, the top-level `notes` string, and `cover_label` fully in the target language.
+  - Localize `cover_label` phrasing (e.g. "A partir de R$X por pessoa" / "Fra kr X per person" / "From $X per person").
+- Keep the JSON shape identical.
 
-**Edge function** `supabase/functions/gdrive-sync-itinerary/index.ts`
-- Add `action: "pull"` branch (alongside existing push/sync).
-- Accepts `{ itineraryId, language }`.
-- Loads the itinerary row, resolves the linked `google_doc_id` (self-heal 404 as today).
-- Calls Google Drive export endpoint for the Doc with `mimeType=text/markdown`.
-- Writes result into `itinerary_content_{lang}` (EN/PT/NO) for that itinerary.
-- Returns `{ ok: true, chars }`.
-- No touching of cover, back page, hotels, price, or metadata.
+### 2. `src/components/voyage/editor/BudgetEstimator.tsx`
+- Add a `language?: string` prop.
+- Pass `{ language, currency: mapped }` to `supabase.functions.invoke("estimate-itinerary-budget", ...)`.
+- Default `displayCcy` from language when no `initialBudget` (pt→BRL, no→NOK, en→USD).
+- Localize the auto `cover_label` fallback (`autoCoverLabel`) per language.
+- Leave UI chrome (dialog labels, buttons) unchanged — this is admin-facing.
 
-**Editor** `src/components/voyage/CatalogShopManager.tsx`
-- The Pull button + AlertDialog are already wired. Confirm the helper invokes the function with `action: "pull"` and the current `language`, then reloads the editor content from the DB and toasts success.
+### 3. `src/components/voyage/CatalogShopManager.tsx`
+- Pass the current editor `language` prop to `<BudgetEstimator language={language} />`.
 
-Markdown export already gives `[text](url)` for hyperlinks, and `markdownToHtml` already renders those as real `<a href target="_blank">` tags — so links round-trip.
-
-## 2. Blue + underlined links in the PDF preview
-
-**File** `src/components/voyage/PdfPreview.tsx` (only)
-- Add a scoped CSS rule inside the PDF body wrapper:
-  ```css
-  .fjw-pdf-body a { color: #1a56db; text-decoration: underline; }
-  ```
-- Applied to the body-content container only, so cover/back page are unaffected.
-- Result: any `<a>` produced by `markdownToHtml` renders blue + underlined in preview and in the exported PDF.
-
-## Out of scope
-
-- Master template anchor system (separate track).
-- Cover / back page / hotels / metadata rewriting on Pull.
-- Any other files.
-
-## Files touched
-
-- `supabase/functions/gdrive-sync-itinerary/index.ts`
-- `src/components/voyage/CatalogShopManager.tsx` (only if the pull helper still needs the `action: "pull"` wiring)
-- `src/components/voyage/PdfPreview.tsx`
+## Notes for the user
+- Existing saved budgets are not retranslated — regenerate to refresh notes in the new language.
+- Only these three files are touched.
