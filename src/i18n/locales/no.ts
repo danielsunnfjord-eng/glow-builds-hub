@@ -582,6 +582,8 @@ export default {
       medium: "Middels · 5–9 dager",
       long: "Lang · 10+ dager",
     },
+    daysWord: "dager",
+    standaloneGuide: "Frittstående inspirasjonsguide",
     season: {
       spring: "Vår",
       summer: "Sommer",
