@@ -35,6 +35,20 @@ const OVERVIEW_LABELS = /^(trip\s*overview|vis[ãa]o\s*geral.*|reiseoversikt.*|o
 const PRACTICAL_LABELS = /^(practical\s*tips|dicas\s*pr[áa]ticas|praktiske\s*tips|praktisk)$/i;
 const DAY_HEADING = /^(?:day|dia|dag)\s*(\d+)\s*[—\-:]?\s*(.*)$/i;
 
+const parseDurationDays = (s: string | null | undefined): number | null => {
+  if (!s) return null;
+  const m = s.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatDuration = (s: string | null | undefined, t: any): string | null => {
+  if (!s) return null;
+  const n = parseDurationDays(s);
+  if (n !== null) return `${n} ${t("catalogue.daysWord", "days")}`;
+  if (/not a route|standalone/i.test(s)) return t("catalogue.standaloneGuide", s);
+  return s;
+};
+
 function parseDayByDay(md: string) {
   const result = {
     intro: "" as string,
