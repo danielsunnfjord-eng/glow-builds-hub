@@ -84,21 +84,24 @@ function localizedCoverLabel(langCode: string, low: number, ccy: string): string
 
 const BudgetEstimator = ({
   open, onOpenChange, editor, sourceContent, destination, tripDuration,
-  initialBudget, initialCoverLabel, onSaved,
+  initialBudget, initialCoverLabel, language, onSaved,
 }: BudgetEstimatorProps) => {
+  const langCode = (language && ["en", "pt", "no"].includes(language)) ? language : "en";
+  const defaultCcy = LANG_DEFAULT_CCY[langCode] || "EUR";
+
   const [budget, setBudget] = useState<BudgetData | null>(initialBudget || null);
   const [coverLabel, setCoverLabel] = useState<string>(initialCoverLabel || initialBudget?.cover_label || "");
-  const [displayCcy, setDisplayCcy] = useState<string>(initialBudget?.currency || "EUR");
+  const [displayCcy, setDisplayCcy] = useState<string>(initialBudget?.currency || defaultCcy);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setBudget(initialBudget || null);
     setCoverLabel(initialCoverLabel || initialBudget?.cover_label || "");
-    setDisplayCcy(initialBudget?.currency || "EUR");
-  }, [open, initialBudget, initialCoverLabel]);
+    setDisplayCcy(initialBudget?.currency || defaultCcy);
+  }, [open, initialBudget, initialCoverLabel, defaultCcy]);
 
-  const baseCcy = budget?.currency || "EUR";
+  const baseCcy = budget?.currency || defaultCcy;
 
   const generate = async () => {
     setLoading(true);
@@ -111,13 +114,19 @@ const BudgetEstimator = ({
         return;
       }
       const { data, error } = await supabase.functions.invoke("estimate-itinerary-budget", {
-        body: { content, destination, trip_duration: tripDuration },
+        body: {
+          content,
+          destination,
+          trip_duration: tripDuration,
+          language: langCode,
+          currency: defaultCcy,
+        },
       });
       if (error) throw error;
       if (!data?.budget) throw new Error(data?.error || "No budget returned");
       const next = recomputeTotals(data.budget as BudgetData);
       setBudget(next);
-      setDisplayCcy(next.currency || "EUR");
+      setDisplayCcy(next.currency || defaultCcy);
       const lbl = next.cover_label?.trim() || autoCoverLabel(next);
       setCoverLabel(lbl);
       toast.success("Budget estimate ready");
@@ -130,8 +139,9 @@ const BudgetEstimator = ({
 
   const autoCoverLabel = (b: BudgetData): string => {
     const low = b.total_per_person?.low || 0;
-    return `From ${fmt(low, b.currency || "EUR")} per person`;
+    return localizedCoverLabel(langCode, low, b.currency || defaultCcy);
   };
+
 
   const updateLine = (key: string, field: keyof BudgetLine, value: string) => {
     if (!budget) return;
