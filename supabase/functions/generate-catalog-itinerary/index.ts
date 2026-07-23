@@ -246,12 +246,16 @@ Deno.serve(async (req) => {
       const durationMatch = String(duration || '').match(/\d+/);
       const durationDays = durationMatch ? parseInt(durationMatch[0], 10) : 0;
       const expectedDayCount = Math.max(detectedDayCount, durationDays, 1);
+      const metaLangName = LANG_NAMES[language] || 'English';
+      // "Day" word used in day_overview labels — must match the target language.
+      const dayWord = language === 'pt' ? 'Dia' : language === 'no' ? 'Dag' : 'Day';
       const metaSystem = `You are an editorial copywriter for Fjord & Waves Travel, a premium boutique travel atelier.
 You write in a calm, confident, human voice — never generic, never overly poetic, never AI-clichéd.
 STRICTLY AVOID the words: tapestry, nestled, vibrant, bustling, charming, seamlessly, delve, curated, elevate, timeless, unparalleled, testament, journey of discovery, treasure trove, gem, haven, boasts.
 Never open with "Imagine..." or "Welcome to...".
 Name specific places, landscapes or experiences from the itinerary excerpt to ground the writing.
 You write natively in each requested language — never translate word-for-word from English. Brazilian Portuguese should read like a Brazilian wrote it; Norwegian should read like a Norwegian (Bokmål) wrote it.
+The itinerary's primary language for the subpage fields (subpage_checklist, subpage_day_overview, subpage_expectations) is: ${metaLangName}. Write ALL strings in those three fields natively in ${metaLangName}, never in English (unless the primary language is English).
 You must output STRICT JSON only — no markdown fences, no preamble, no commentary.`;
       const metaUser = `Trip metadata:
 — Title: ${title || '(untitled)'}
