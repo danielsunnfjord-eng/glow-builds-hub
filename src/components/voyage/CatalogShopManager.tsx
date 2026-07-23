@@ -1532,6 +1532,7 @@ const CatalogShopManager = () => {
           .filter((e) => e.title.length > 0 || e.description.length > 0),
         subpage_map_url: state.subpageMapUrl.trim() || null,
         estimated_trip_budget: budgetCoverLabel,
+        primary_language: state.language,
       };
 
       // IMPORTANT: Body copy lives in Google Docs. Normal editor saves must
