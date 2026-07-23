@@ -571,9 +571,9 @@ export default {
   },
   catalogue: {
     eyebrow: "Itinerary Catalogue",
-    title: "Curated Journeys",
-    subtitle: "Pre-designed itineraries to spark inspiration — a starting point for planning your own journey.",
-    description: "Pre-designed itineraries, crafted for inspiration. Each one offers a starting point for planning your own trip — a sense of pace, route, and rhythm to build from. Please note that details on the ground may shift over time, so treat these itineraries as a foundation rather than a fixed plan, and always check current conditions before booking.",
+    title: "Pre-designed itineraries to spark inspiration — a starting point for planning your own journey",
+    subtitle: "",
+    description: "Each one offers a starting point for planning your own trip — a sense of pace, route, and rhythm to build from. Please note that details on the ground may shift over time, so treat these itineraries as a foundation rather than a fixed plan, and always check current conditions before booking.",
     cardLanguage: "Language",
     cardCreated: "Created",
     language: { en: "English", pt: "Portuguese", no: "Norwegian" },

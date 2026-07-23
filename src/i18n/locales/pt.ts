@@ -558,9 +558,9 @@ export default {
   },
   catalogue: {
     eyebrow: "Catálogo de Roteiros",
-    title: "Jornadas Selecionadas",
-    subtitle: "Roteiros pré-definidos para inspirar — um ponto de partida para planejar sua própria viagem.",
-    description: "Roteiros pré-definidos, criados para inspirar. Cada um oferece um ponto de partida para planejar sua própria viagem — um sentido de ritmo, rota e cadência a partir do qual construir. Observe que detalhes no destino podem mudar com o tempo, então trate estes roteiros como uma base, não como um plano fixo, e sempre verifique as condições atuais antes de reservar.",
+    title: "Roteiros pré-definidos para inspirar — um ponto de partida para planejar sua própria viagem",
+    subtitle: "",
+    description: "Cada um oferece um ponto de partida para planejar sua própria viagem — um sentido de ritmo, rota e cadência a partir do qual construir. Observe que detalhes no destino podem mudar com o tempo, então trate estes roteiros como uma base, não como um plano fixo, e sempre verifique as condições atuais antes de reservar.",
     cardLanguage: "Idioma",
     cardCreated: "Criado em",
     language: { en: "Inglês", pt: "Português", no: "Norueguês" },
