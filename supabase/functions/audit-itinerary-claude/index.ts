@@ -4,18 +4,35 @@
 //   - mode: "rewrite" → chunked streaming text/plain response with the rewritten itinerary
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+const LANG_NAMES: Record<string, string> = {
+  en: 'English',
+  pt: 'Brazilian Portuguese (pt-BR)',
+  no: 'Norwegian (Bokmål)',
+};
+
+const langLine = (lang: string) => {
+  const name = LANG_NAMES[lang] || 'English';
+  return `Write ALL of your output natively in ${name}. This includes every suggestion title, every "why" explanation, and every rewritten body. Never mix languages, never fall back to English (unless the target language is English). Write as a native speaker would — do not translate word-for-word.`;
+};
+
+const AUDIT_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+
+${langLine(lang)}
 
 Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
 { "items": [ { "title": "Short actionable suggestion (max ~12 words, ideally referencing the specific day)", "why": "One sentence explaining why this improvement matters." } ] }
 
 Provide between 4 and 10 distinct items. Each item must be a single specific, actionable improvement. Do not rewrite the itinerary.`;
 
-const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
+const IMPROVE_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
+
+${langLine(lang)}
 
 Output ONLY the complete improved itinerary in markdown. Do not include an audit section, preamble, or commentary. Never stop mid-sentence — if space is tight, shorten descriptions slightly but always finish every day through the last day.`;
 
-const CATALOGUE_IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+const CATALOGUE_IMPROVE_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+
+${langLine(lang)}
 
 This is a catalogue guide, NOT a custom day-by-day itinerary. Preserve a thematic structure with markdown ## section headers such as Where to Stay, Getting Around, Must-See Highlights, Hidden Gems & Local Favourites, Food & Drink, Experiences & Activities, and Practical Tips. Adapt section titles to the destination and experience type.
 
@@ -85,8 +102,9 @@ function streamRewrite(opts: {
   totalDays: number;
   structure?: string;
   singleBatch?: boolean;
+  language?: string;
 }): Response {
-  const { apiKey, content, audit, totalDays, structure, singleBatch } = opts;
+  const { apiKey, content, audit, totalDays, structure, singleBatch, language = 'en' } = opts;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -138,7 +156,7 @@ function streamRewrite(opts: {
               model: 'claude-sonnet-4-5',
               max_tokens: 8192,
               stream: true,
-              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM : IMPROVE_SYSTEM,
+              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM(language) : IMPROVE_SYSTEM(language),
               messages: [{ role: 'user', content: userPrompts[i] }],
             }),
           });
@@ -204,7 +222,8 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false, sections, improvement } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false, sections, improvement, language = 'en' } = body || {};
+    const langName = LANG_NAMES[language] || 'English';
 
     // Sectional rewrite: receives a list of labeled sections + ONE improvement,
     // returns only the sections that were changed. Output is capped so the call
@@ -223,6 +242,8 @@ Deno.serve(async (req) => {
 
       const SECTIONAL_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. You receive a travel document split into labeled sections plus ONE specific improvement to apply.
 
+${langLine(language)}
+
 Rewrite ONLY the section(s) that need to change to apply this improvement. Leave every other section completely untouched and DO NOT include them in your output. Most improvements affect only one section; some may legitimately affect a few. Never rewrite the whole document.
 
 CRITICAL RULES for each returned section "body":
@@ -232,6 +253,7 @@ CRITICAL RULES for each returned section "body":
 - DO NOT include neighboring days or repeat content from other sections.
 - DO NOT return the full itinerary or a merged document.
 - The body REPLACES the existing body of that section verbatim — anything you include will appear in the final document exactly once.
+- The rewritten body MUST be written natively in ${langName} to match the rest of the document.
 
 Preserve the existing tone, voice, and sub-content of the section. Keep changes focused and surgical.
 
@@ -275,13 +297,13 @@ If no section needs to change to apply this improvement, output: { "sections": [
 
     if (mode === 'rewrite') {
       const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
-      return streamRewrite({ apiKey, content, audit, totalDays, structure, singleBatch: Boolean(single_batch) });
+      return streamRewrite({ apiKey, content, audit, totalDays, structure, singleBatch: Boolean(single_batch), language });
     }
 
     // Default: audit-only (short, fast). Returns JSON items.
     const auditText = await callClaude(
       apiKey,
-      AUDIT_SYSTEM,
+      AUDIT_SYSTEM(language),
       `Here is the itinerary to audit:\n\n${content}`,
       2000,
     );

@@ -933,6 +933,7 @@ const CatalogShopManager = () => {
         experience_type: state.experienceType.join(", "),
         duration: state.duration,
         brief: state.brief,
+        language: state.language,
         existing_content: itineraryText,
       }),
     });
@@ -1105,7 +1106,7 @@ const CatalogShopManager = () => {
         method: "POST",
         headers: await getFunctionHeaders(),
         signal: controller.signal,
-        body: JSON.stringify({ content: currentContent, mode: "audit" }),
+        body: JSON.stringify({ content: currentContent, mode: "audit", language: state.language }),
       });
       if (!res.ok) throw new Error(await readFunctionError(res));
       const data = await res.json().catch(() => null);
@@ -1199,6 +1200,7 @@ const CatalogShopManager = () => {
           signal: controller.signal,
           content: workingContent,
           improvement: item,
+          extras: { language: state.language },
         });
         const previousContent = workingContent;
         workingContent = result.newContent;
