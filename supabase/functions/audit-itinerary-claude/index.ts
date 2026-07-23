@@ -222,7 +222,8 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false, sections, improvement } = body || {};
+    const { content, mode = 'audit', audit = '', start_date, end_date, trip_duration, structure = '', single_batch = false, sections, improvement, language = 'en' } = body || {};
+    const langName = LANG_NAMES[language] || 'English';
 
     // Sectional rewrite: receives a list of labeled sections + ONE improvement,
     // returns only the sections that were changed. Output is capped so the call
