@@ -49,6 +49,8 @@ export default {
     downloadHint: "Este link é válido por 7 dias. Salve o PDF no seu dispositivo.",
     paymentFailed: "Não conseguimos confirmar seu pagamento. Entre em contato se foi cobrado.",
     notFound: "Roteiro não encontrado.",
+    selfGuidedHeading: "Bom saber",
+    selfGuidedNote: "Este roteiro é um plano autoguiado — voos, hospedagem e reservas de atividades não estão incluídos. Precisa de ajuda para organizar tudo? Oferecemos assistência opcional com reservas, ajustes personalizados e suporte durante a viagem por uma pequena taxa adicional.",
     filters: {
       search: "Buscar roteiros…",
       destination: "Destino",

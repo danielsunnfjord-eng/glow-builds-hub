@@ -49,6 +49,8 @@ export default {
     downloadHint: "Lenken er gyldig i 7 dager. Lagre PDF-en på enheten din.",
     paymentFailed: "Vi kunne ikke bekrefte betalingen. Kontakt oss hvis du ble belastet.",
     notFound: "Reiseruten ble ikke funnet.",
+    selfGuidedHeading: "Godt å vite",
+    selfGuidedNote: "Denne reiseruten er en selvguidet plan — flyreiser, overnatting og aktivitetsbestillinger er ikke inkludert. Trenger du hjelp med å sette det hele sammen? Vi tilbyr valgfri bookinghjelp, tilpasninger og reisestøtte mot et lite tilleggsgebyr.",
     filters: {
       search: "Søk reiseruter…",
       destination: "Destinasjon",
