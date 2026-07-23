@@ -297,13 +297,13 @@ If no section needs to change to apply this improvement, output: { "sections": [
 
     if (mode === 'rewrite') {
       const totalDays = computeTotalDays(content, start_date, end_date, trip_duration);
-      return streamRewrite({ apiKey, content, audit, totalDays, structure, singleBatch: Boolean(single_batch) });
+      return streamRewrite({ apiKey, content, audit, totalDays, structure, singleBatch: Boolean(single_batch), language });
     }
 
     // Default: audit-only (short, fast). Returns JSON items.
     const auditText = await callClaude(
       apiKey,
-      AUDIT_SYSTEM,
+      AUDIT_SYSTEM(language),
       `Here is the itinerary to audit:\n\n${content}`,
       2000,
     );
