@@ -28,6 +28,7 @@ interface CatalogItem {
   sort_order: number;
   experience_type: string[] | null;
   season: string[] | null;
+  created_at: string;
 }
 
 
