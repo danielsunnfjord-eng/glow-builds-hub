@@ -340,10 +340,40 @@ const ItinerariesShop = () => {
                       )}
                     </div>
                     {summary && (
-                      <p className="text-[0.85rem] text-voyage-muted line-clamp-3 mb-5 leading-relaxed">
+                      <p className="text-[0.85rem] text-voyage-muted line-clamp-3 mb-4 leading-relaxed">
                         {summary}
                       </p>
                     )}
+                    {(() => {
+                      const langs: string[] = [];
+                      if (trip.title_en && trip.summary_en) langs.push("EN");
+                      if (trip.title_pt && trip.summary_pt) langs.push("PT");
+                      if (trip.title_no && trip.summary_no) langs.push("NO");
+                      const created = new Date(trip.created_at).toLocaleDateString(
+                        lang === "pt" ? "pt-BR" : lang === "no" ? "nb-NO" : "en-GB",
+                        { day: "2-digit", month: "short", year: "numeric" },
+                      );
+                      return (
+                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-4 text-[0.62rem] tracking-[0.12em] uppercase text-voyage-muted">
+                          {langs.length > 0 && (
+                            <span className="inline-flex items-center gap-1.5">
+                              <span className="font-semibold text-ink/70">{t("catalogue.cardLanguages")}:</span>
+                              <span className="flex gap-1">
+                                {langs.map((l) => (
+                                  <span key={l} className="px-1.5 py-0.5 rounded-sm border border-ink/15 text-ink/80 font-semibold">
+                                    {l}
+                                  </span>
+                                ))}
+                              </span>
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="font-semibold text-ink/70">{t("catalogue.cardCreated")}:</span>
+                            <span>{created}</span>
+                          </span>
+                        </div>
+                      );
+                    })()}
                     <div className="flex items-baseline justify-between border-t border-parchment-3 pt-4 mt-auto">
                       <div className="flex flex-col">
                         {formatDuration(trip.duration, t) && (
