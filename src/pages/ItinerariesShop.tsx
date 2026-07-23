@@ -201,9 +201,11 @@ const ItinerariesShop = () => {
           <h1 className="font-serif text-[clamp(2rem,6vw,5rem)] font-bold leading-[1.05] tracking-tight mb-4 md:mb-6 max-w-3xl">
             {t("catalogue.title")}
           </h1>
-          <p className="text-[0.95rem] md:text-[1.1rem] text-voyage-white/85 max-w-xl leading-relaxed font-light">
-            {t("catalogue.subtitle")}
-          </p>
+          {t("catalogue.subtitle") && (
+            <p className="text-[0.95rem] md:text-[1.1rem] text-voyage-white/85 max-w-xl leading-relaxed font-light">
+              {t("catalogue.subtitle")}
+            </p>
+          )}
           <p className="mt-4 md:mt-5 text-[0.85rem] md:text-[0.95rem] text-voyage-white/70 max-w-2xl leading-relaxed font-light">
             {t("catalogue.description")}
           </p>
