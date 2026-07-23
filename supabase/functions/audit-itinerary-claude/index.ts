@@ -102,8 +102,9 @@ function streamRewrite(opts: {
   totalDays: number;
   structure?: string;
   singleBatch?: boolean;
+  language?: string;
 }): Response {
-  const { apiKey, content, audit, totalDays, structure, singleBatch } = opts;
+  const { apiKey, content, audit, totalDays, structure, singleBatch, language = 'en' } = opts;
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
