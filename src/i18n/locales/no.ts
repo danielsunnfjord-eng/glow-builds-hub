@@ -557,7 +557,10 @@ export default {
   catalogue: {
     eyebrow: "Reisekatalog",
     title: "Kuraterte Reiser",
-    subtitle: "Håndlagde reiseruter laget for å inspirere. Hver enkelt en inngang til en dypere reiseopplevelse.",
+    subtitle: "Ferdigdesignede reiseruter for å tenne inspirasjon — et utgangspunkt for å planlegge din egen reise.",
+    description: "Ferdigdesignede reiseruter, laget for å inspirere. Hver enkelt gir et utgangspunkt for å planlegge din egen tur — en følelse av tempo, rute og rytme å bygge videre på. Merk at detaljer på reisen kan endre seg over tid, så behandle disse reiserutene som et fundament snarere enn en fastlagt plan, og sjekk alltid gjeldende forhold før du booker.",
+    cardLanguages: "Språk",
+    cardCreated: "Opprettet",
     viewItinerary: "Se Reiserute",
     empty: "Nye reiseruter kommer snart. I mellomtiden kan jeg designe en bare for deg.",
     noMatches: "Ingen reiseruter samsvarer med filtrene ennå.",
