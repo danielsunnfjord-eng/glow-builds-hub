@@ -48,6 +48,7 @@ export type Database = {
           pdf_drive_file_id: string | null
           pdf_path: string | null
           price_eur: number
+          primary_language: string
           season: string[] | null
           slug: string
           sort_order: number
@@ -105,6 +106,7 @@ export type Database = {
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_eur?: number
+          primary_language?: string
           season?: string[] | null
           slug: string
           sort_order?: number
@@ -162,6 +164,7 @@ export type Database = {
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_eur?: number
+          primary_language?: string
           season?: string[] | null
           slug?: string
           sort_order?: number

@@ -778,7 +778,11 @@ const CatalogShopManager = () => {
   };
 
   const openEdit = async (r: CatalogRow) => {
-    const lang: Lang = r.itinerary_content_no ? "no" : r.itinerary_content_pt ? "pt" : "en";
+    const primaryLang = (r as any).primary_language as Lang | undefined;
+    const lang: Lang =
+      primaryLang === "pt" || primaryLang === "no" || primaryLang === "en"
+        ? primaryLang
+        : (r.itinerary_content_no ? "no" : r.itinerary_content_pt ? "pt" : "en");
     const content =
       (lang === "no" ? r.itinerary_content_no : lang === "pt" ? r.itinerary_content_pt : r.itinerary_content_en) || "";
     const hotels = Array.isArray(r.hotels)
@@ -1528,6 +1532,7 @@ const CatalogShopManager = () => {
           .filter((e) => e.title.length > 0 || e.description.length > 0),
         subpage_map_url: state.subpageMapUrl.trim() || null,
         estimated_trip_budget: budgetCoverLabel,
+        primary_language: state.language,
       };
 
       // IMPORTANT: Body copy lives in Google Docs. Normal editor saves must
