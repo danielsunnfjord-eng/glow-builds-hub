@@ -4,18 +4,35 @@
 //   - mode: "rewrite" → chunked streaming text/plain response with the rewritten itinerary
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const AUDIT_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+const LANG_NAMES: Record<string, string> = {
+  en: 'English',
+  pt: 'Brazilian Portuguese (pt-BR)',
+  no: 'Norwegian (Bokmål)',
+};
+
+const langLine = (lang: string) => {
+  const name = LANG_NAMES[lang] || 'English';
+  return `Write ALL of your output natively in ${name}. This includes every suggestion title, every "why" explanation, and every rewritten body. Never mix languages, never fall back to English (unless the target language is English). Write as a native speaker would — do not translate word-for-word.`;
+};
+
+const AUDIT_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Audit the following itinerary and identify concrete improvements covering: unrealistic logistics, excessive travel times, repetitive experiences, tourist traps, poor pacing, missing reservation advice, weak personalization, generic recommendations, lack of local authenticity, missed hidden gems, weather vulnerabilities, overcrowded days, and moments lacking emotional depth.
+
+${langLine(lang)}
 
 Output ONLY valid JSON in this exact shape — no prose, no markdown, no code fences:
 { "items": [ { "title": "Short actionable suggestion (max ~12 words, ideally referencing the specific day)", "why": "One sentence explaining why this improvement matters." } ] }
 
 Provide between 4 and 10 distinct items. Each item must be a single specific, actionable improvement. Do not rewrite the itinerary.`;
 
-const IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
+const IMPROVE_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided itinerary applying ALL improvements from the audit notes. Use the same Morning / Afternoon / Evening format, no clock times, with a Dining tip and an Insider tip per day. Write in an elegant, warm, sophisticated tone worthy of a premium travel atelier.
+
+${langLine(lang)}
 
 Output ONLY the complete improved itinerary in markdown. Do not include an audit section, preamble, or commentary. Never stop mid-sentence — if space is tight, shorten descriptions slightly but always finish every day through the last day.`;
 
-const CATALOGUE_IMPROVE_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+const CATALOGUE_IMPROVE_SYSTEM = (lang: string) => `You are a senior luxury travel advisor with 20 years of experience. Rewrite the provided catalogue travel guide applying ALL improvements from the audit notes.
+
+${langLine(lang)}
 
 This is a catalogue guide, NOT a custom day-by-day itinerary. Preserve a thematic structure with markdown ## section headers such as Where to Stay, Getting Around, Must-See Highlights, Hidden Gems & Local Favourites, Food & Drink, Experiences & Activities, and Practical Tips. Adapt section titles to the destination and experience type.
 
