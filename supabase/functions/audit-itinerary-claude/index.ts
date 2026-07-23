@@ -242,6 +242,8 @@ Deno.serve(async (req) => {
 
       const SECTIONAL_SYSTEM = `You are a senior luxury travel advisor with 20 years of experience. You receive a travel document split into labeled sections plus ONE specific improvement to apply.
 
+${langLine(language)}
+
 Rewrite ONLY the section(s) that need to change to apply this improvement. Leave every other section completely untouched and DO NOT include them in your output. Most improvements affect only one section; some may legitimately affect a few. Never rewrite the whole document.
 
 CRITICAL RULES for each returned section "body":
@@ -251,6 +253,7 @@ CRITICAL RULES for each returned section "body":
 - DO NOT include neighboring days or repeat content from other sections.
 - DO NOT return the full itinerary or a merged document.
 - The body REPLACES the existing body of that section verbatim — anything you include will appear in the final document exactly once.
+- The rewritten body MUST be written natively in ${langName} to match the rest of the document.
 
 Preserve the existing tone, voice, and sub-content of the section. Keep changes focused and surgical.
 
