@@ -572,7 +572,10 @@ export default {
   catalogue: {
     eyebrow: "Itinerary Catalogue",
     title: "Curated Journeys",
-    subtitle: "Handcrafted itineraries designed to inspire. Each one a doorway into a deeper travel experience.",
+    subtitle: "Pre-designed itineraries to spark inspiration — a starting point for planning your own journey.",
+    description: "Pre-designed itineraries, crafted for inspiration. Each one offers a starting point for planning your own trip — a sense of pace, route, and rhythm to build from. Please note that details on the ground may shift over time, so treat these itineraries as a foundation rather than a fixed plan, and always check current conditions before booking.",
+    cardLanguages: "Languages",
+    cardCreated: "Created",
     viewItinerary: "View Itinerary",
     empty: "New itineraries coming soon. In the meantime, let me design one just for you.",
     noMatches: "No itineraries match your filters yet.",
