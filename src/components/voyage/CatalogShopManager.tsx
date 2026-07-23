@@ -933,6 +933,7 @@ const CatalogShopManager = () => {
         experience_type: state.experienceType.join(", "),
         duration: state.duration,
         brief: state.brief,
+        language: state.language,
         existing_content: itineraryText,
       }),
     });
