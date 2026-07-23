@@ -29,6 +29,7 @@ interface CatalogItem {
   experience_type: string[] | null;
   season: string[] | null;
   created_at: string;
+  primary_language: string | null;
 }
 
 
