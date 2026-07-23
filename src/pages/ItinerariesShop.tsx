@@ -79,7 +79,7 @@ const ItinerariesShop = () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order, experience_type, season, created_at",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order, experience_type, season, created_at, primary_language",
         )
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
