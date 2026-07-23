@@ -156,7 +156,7 @@ function streamRewrite(opts: {
               model: 'claude-sonnet-4-5',
               max_tokens: 8192,
               stream: true,
-              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM : IMPROVE_SYSTEM,
+              system: isCatalogueGuide ? CATALOGUE_IMPROVE_SYSTEM(language) : IMPROVE_SYSTEM(language),
               messages: [{ role: 'user', content: userPrompts[i] }],
             }),
           });
