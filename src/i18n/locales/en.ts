@@ -50,6 +50,8 @@ export default {
     downloadHint: "This link is valid for 7 days. Save the PDF to your device.",
     paymentFailed: "We couldn't confirm your payment. Please contact us if you were charged.",
     notFound: "Itinerary not found.",
+    selfGuidedHeading: "Good to know",
+    selfGuidedNote: "This itinerary is a self-guided plan — flights, accommodation, and activity bookings are not included. Need help putting it all together? We offer optional booking assistance, custom edits, and trip support for a small additional fee.",
     filters: {
       search: "Search itineraries…",
       destination: "Destination",

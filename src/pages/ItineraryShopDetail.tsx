@@ -556,6 +556,23 @@ const ItineraryShopDetail = () => {
                 </div>
               )}
 
+              {/* SELF-GUIDED NOTE */}
+              <div className="mb-14 rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 flex gap-4 items-start shadow-sm">
+                <div className="shrink-0 w-9 h-9 rounded-full bg-gold/25 flex items-center justify-center mt-0.5">
+                  <Info className="w-4 h-4 text-ink" aria-hidden="true" />
+                </div>
+                <div>
+                  <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-ink mb-2">
+                    {t("shop.selfGuidedHeading", "Good to know")}
+                  </div>
+                  <p className="text-[0.95rem] text-ink/85 leading-relaxed">
+                    {t(
+                      "shop.selfGuidedNote",
+                      "This itinerary is a self-guided plan — flights, accommodation, and activity bookings are not included. Need help putting it all together? We offer optional booking assistance, custom edits, and trip support for a small additional fee.",
+                    )}
+                  </p>
+                </div>
+              </div>
 
 
               {/* What to expect */}
@@ -705,25 +722,6 @@ const ItineraryShopDetail = () => {
             )}
           </section>
 
-        {/* SELF-GUIDED NOTE */}
-        <section className="px-16 max-md:px-6 pt-4 pb-2 max-w-4xl mx-auto w-full">
-          <div className="rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 flex gap-4 items-start shadow-sm">
-            <div className="shrink-0 w-9 h-9 rounded-full bg-gold/25 flex items-center justify-center mt-0.5">
-              <Info className="w-4 h-4 text-ink" aria-hidden="true" />
-            </div>
-            <div>
-              <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-ink mb-2">
-                {t("shop.selfGuidedHeading", "Good to know")}
-              </div>
-              <p className="text-[0.95rem] text-ink/85 leading-relaxed">
-                {t(
-                  "shop.selfGuidedNote",
-                  "This itinerary is a self-guided plan — flights, accommodation, and activity bookings are not included. Need help putting it all together? We offer optional booking assistance, custom edits, and trip support for a small additional fee.",
-                )}
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* 4. ABOUT TRAVEL DESIGNER */}
         <section className="bg-voyage-white border-y border-ink/[0.06]">
