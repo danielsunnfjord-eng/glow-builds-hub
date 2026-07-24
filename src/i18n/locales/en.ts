@@ -56,7 +56,7 @@ export default {
     intro: "The journey",
     whatToExpect: "What to expect",
     dayOverview: "Day-by-day overview",
-    bestSeason: "Best season",
+    bestSeason: "Season",
     gallery: "Glimpses",
     routeMap: "Route map",
     tailorIntro: "Prefer a tailor-made trip?",
