@@ -700,7 +700,8 @@ const CatalogShopManager = () => {
             what_you_get_en: "",
             is_published: false,
             price_eur: Number(draftState.priceEur) || 0,
-          })
+            primary_language: draftState.language,
+          } as any)
           .select("id")
           .single();
         if (error) throw error;
