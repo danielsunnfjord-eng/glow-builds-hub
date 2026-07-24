@@ -55,7 +55,7 @@ export default {
     intro: "Reisen",
     whatToExpect: "Hva du kan forvente",
     dayOverview: "Dag-for-dag oversikt",
-    bestSeason: "Beste sesong",
+    bestSeason: "Sesong",
     gallery: "Glimt",
     routeMap: "Rutekart",
     tailorIntro: "Foretrekker du en skreddersydd reise?",

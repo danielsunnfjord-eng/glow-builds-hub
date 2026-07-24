@@ -658,19 +658,23 @@ const ItineraryShopDetail = () => {
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
                       {data.season && data.season.length > 0
-                        ? data.season
-                            .map((s) => {
+                        ? (() => {
+                            const map: Record<string, string> = {
+                              spring: "shop.season.spring",
+                              summer: "shop.season.summer",
+                              autumn: "shop.season.autumn",
+                              fall: "shop.season.autumn",
+                              winter: "shop.season.winter",
+                            };
+                            const labels = data.season.map((s) => {
                               const key = String(s).toLowerCase();
-                              const map: Record<string, string> = {
-                                spring: "shop.season.spring",
-                                summer: "shop.season.summer",
-                                autumn: "shop.season.autumn",
-                                fall: "shop.season.autumn",
-                                winter: "shop.season.winter",
-                              };
                               return map[key] ? t(map[key]) : s;
-                            })
-                            .join(", ")
+                            });
+                            const andWord = lang === "pt" ? " e " : lang === "no" ? " og " : " and ";
+                            if (labels.length === 1) return labels[0];
+                            if (labels.length === 2) return labels.join(andWord);
+                            return labels.slice(0, -1).join(", ") + andWord + labels[labels.length - 1];
+                          })()
                         : "—"}
                     </span>
                   </div>
