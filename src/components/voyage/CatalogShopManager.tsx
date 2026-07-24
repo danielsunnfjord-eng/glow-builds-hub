@@ -707,6 +707,13 @@ const CatalogShopManager = () => {
         if (error) throw error;
         itineraryId = data.id;
         setState((s) => ({ ...s, id: data.id, title }));
+      } else {
+        // Keep primary_language in sync if the user changes the dropdown
+        // before hitting Save — auto-save shouldn't leave a stale 'en'.
+        await supabase
+          .from("catalog_itineraries")
+          .update({ primary_language: draftState.language } as any)
+          .eq("id", itineraryId);
       }
       const signature = catalogDraftSignature({ ...draftState, id: itineraryId }, draftSectionPrompt);
       const { error } = await supabase
