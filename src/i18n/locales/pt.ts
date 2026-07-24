@@ -56,6 +56,7 @@ export default {
     whatToExpect: "O que esperar",
     dayOverview: "Visão geral dia a dia",
     bestSeason: "Estação",
+    season: { spring: "Primavera", summer: "Verão", autumn: "Outono", winter: "Inverno" },
     gallery: "Vislumbres",
     routeMap: "Mapa da rota",
     tailorIntro: "Prefere uma viagem sob medida?",

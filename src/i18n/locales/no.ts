@@ -56,6 +56,7 @@ export default {
     whatToExpect: "Hva du kan forvente",
     dayOverview: "Dag-for-dag oversikt",
     bestSeason: "Sesong",
+    season: { spring: "Vår", summer: "Sommer", autumn: "Høst", winter: "Vinter" },
     gallery: "Glimt",
     routeMap: "Rutekart",
     tailorIntro: "Foretrekker du en skreddersydd reise?",
