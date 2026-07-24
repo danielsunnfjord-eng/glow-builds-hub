@@ -657,7 +657,21 @@ const ItineraryShopDetail = () => {
                       {t("shop.bestSeason", "Best season")}
                     </span>
                     <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.season && data.season.length > 0 ? data.season[0] : "—"}
+                      {data.season && data.season.length > 0
+                        ? data.season
+                            .map((s) => {
+                              const key = String(s).toLowerCase();
+                              const map: Record<string, string> = {
+                                spring: "shop.season.spring",
+                                summer: "shop.season.summer",
+                                autumn: "shop.season.autumn",
+                                fall: "shop.season.autumn",
+                                winter: "shop.season.winter",
+                              };
+                              return map[key] ? t(map[key]) : s;
+                            })
+                            .join(", ")
+                        : "—"}
                     </span>
                   </div>
                   <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
