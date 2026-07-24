@@ -1,33 +1,34 @@
-## Why both EN and PT show up today
+## Change
 
-The catalogue card marks a language as "available" when both `title_xx` and `summary_xx` are populated. For the Lisboa itinerary, the admin filled the English slots with the Portuguese text (both `title_en` and `summary_en` contain PT copy), so the heuristic flags EN and PT.
+Two small edits, both frontend/i18n only.
 
-There is no `primary_language` column on `catalog_itineraries` today. The editor's language selector (`state.language`) is client-only and never persisted.
+### 1. Rename the label "Best season" → "Season"
 
-## Fix
+Update the `shop.bestSeason` string in the three locale files:
 
-1. **Database** — add a `primary_language` column to `catalog_itineraries` (`text`, values `en` / `pt` / `no`, default `en`, not null). Backfill:
-   - Lisboa row → `pt`
-   - All other existing rows → `en`
-   No RLS/grant changes (column follows table).
+- `src/i18n/locales/pt.ts`: `"Melhor época"` → `"Estação"`
+- `src/i18n/locales/en.ts`: `"Best season"` → `"Season"`
+- `src/i18n/locales/no.ts`: matching `"Sesong"`
 
-2. **Editor (`CatalogShopManager.tsx`)** — persist the chosen `state.language` into `primary_language` on save/create so it stays in sync with what the admin picks.
+(Key stays `bestSeason` so no other code needs to change.)
 
-3. **Catalogue cards (`ItinerariesShop.tsx`)**
-   - Add `primary_language` to the SELECT and interface.
-   - Replace the availability heuristic with a single badge showing the primary language (label from i18n: EN → "English / Inglês / Engelsk", PT → "Portuguese / Português / Portugisisk", NO → "Norwegian / Norueguês / Norsk"). Fallback to `en` if null.
-   - Keep the "Created" date as-is.
+### 2. Join multiple seasons with a localized "and" instead of a comma
 
-4. **i18n** — add `catalogue.language.en/pt/no` labels in `en.ts`, `pt.ts`, `no.ts`, and rename the card key to `catalogue.cardLanguage` (singular).
+In `src/pages/ItineraryShopDetail.tsx` (around line 673), replace the hardcoded `.join(", ")` with a language-aware joiner:
 
-## Files touched
+- pt → `" e "`
+- en → `" and "`
+- no → `" og "`
 
-- New migration: `catalog_itineraries.primary_language`
-- `src/integrations/supabase/types.ts` (regenerated automatically)
-- `src/components/voyage/CatalogShopManager.tsx`
-- `src/pages/ItinerariesShop.tsx`
-- `src/i18n/locales/{en,pt,no}.ts`
+Using two items → `"Primavera e Verão"`. Three+ items → `"A, B e C"` (Oxford-less, standard PT/EN style).
 
 ## Result
 
-The Lisboa card shows a single language badge: **Português** (or the localized name of Portuguese depending on the site language). Every future itinerary shows whichever language the admin selected in the editor.
+For the Paris itinerary (seasons: Spring + Summer) with site language PT, the box will read:
+
+```
+ESTAÇÃO
+Primavera e Verão
+```
+
+No changes to database, edge functions, or the itinerary editor.

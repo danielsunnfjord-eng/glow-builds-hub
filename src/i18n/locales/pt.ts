@@ -55,7 +55,7 @@ export default {
     intro: "A jornada",
     whatToExpect: "O que esperar",
     dayOverview: "Visão geral dia a dia",
-    bestSeason: "Melhor época",
+    bestSeason: "Estação",
     gallery: "Vislumbres",
     routeMap: "Mapa da rota",
     tailorIntro: "Prefere uma viagem sob medida?",
