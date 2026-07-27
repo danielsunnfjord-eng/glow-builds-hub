@@ -49,14 +49,33 @@ export function formatAmount(amount: number, cur: DisplayCurrency): string {
   }
 }
 
-/** Convenience: pick currency and format the row in one call. */
+/** Convenience: pick currency and format the row in one call.
+ *  Falls back to EUR when the language-specific price is missing, zero, or invalid.
+ */
 export function formatPrice(
   row: PriceRow | null | undefined,
   lang: string,
   enPref: EnCurrencyPref,
 ): string {
+  if (!row) return formatAmount(0, "EUR");
   const cur = currencyForLang(lang, enPref);
-  return formatAmount(amountFor(row, cur), cur);
+  const map: Record<DisplayCurrency, number | null | undefined> = {
+    USD: row.price_usd,
+    EUR: row.price_eur,
+    BRL: row.price_brl,
+    NOK: row.price_nok,
+  };
+  const rawSpecific = Number(map[cur] ?? 0);
+  const specific = Number.isFinite(rawSpecific) ? rawSpecific : 0;
+
+  if (specific > 0) {
+    return formatAmount(specific, cur);
+  }
+
+  // Fallback: show EUR price rather than a zero/wrong-currency value.
+  const rawEur = Number(row.price_eur ?? 0);
+  const eur = Number.isFinite(rawEur) ? rawEur : 0;
+  return formatAmount(eur, "EUR");
 }
 
 const readStored = (): EnCurrencyPref => {
