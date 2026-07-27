@@ -676,7 +676,7 @@ const AdminDashboard = () => {
                   return [
                     { label: t("admin.purchasesTotal"), val: total },
                     { label: t("admin.purchasesPaid"), val: paid },
-                    { label: t("admin.purchasesRevenue"), val: Object.entries(revenueByCur).map(([c, a]) => `${c} ${a.toFixed(2)}`).join(" · ") || "—" },
+                    { label: t("admin.purchasesRevenue"), val: Object.entries(revenueByCur).map(([c, a]) => `${c} ${Number(a).toFixed(2)}`).join(" · ") || "—" },
                     { label: t("admin.purchasesCurrency"), val: Object.keys(revenueByCur).join(" · ") || "—" },
                   ].map((s) => (
                     <div key={s.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
