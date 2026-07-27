@@ -654,9 +654,99 @@ const AdminDashboard = () => {
                 </div>
               )}
             </div>
+          ) : activeTab === "purchases" ? (
+            <div>
+              <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
+                <div>
+                  <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.purchasesTitle")}</h1>
+                  <p className="text-[0.85rem] text-voyage-muted">{t("admin.purchasesDesc")}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4 mb-8">
+                {(() => {
+                  const total = catalogPurchases.length;
+                  const paid = catalogPurchases.filter((p: any) => p.status === "paid").length;
+                  const revenueByCur = catalogPurchases
+                    .filter((p: any) => p.status === "paid")
+                    .reduce((acc: Record<string, number>, p: any) => {
+                      acc[p.currency] = (acc[p.currency] || 0) + (Number(p.amount_total) || 0);
+                      return acc;
+                    }, {} as Record<string, number>);
+                  return [
+                    { label: t("admin.purchasesTotal"), val: total },
+                    { label: t("admin.purchasesPaid"), val: paid },
+                    { label: t("admin.purchasesRevenue"), val: Object.entries(revenueByCur).map(([c, a]) => `${c} ${a.toFixed(2)}`).join(" · ") || "—" },
+                    { label: t("admin.purchasesCurrency"), val: Object.keys(revenueByCur).join(" · ") || "—" },
+                  ].map((s) => (
+                    <div key={s.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
+                      <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{s.label}</div>
+                      <div className="font-serif text-xl font-bold text-ink">{s.val}</div>
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {purchasesLoading ? (
+                <p className="text-voyage-muted text-sm">{t("admin.loading")}</p>
+              ) : catalogPurchases.length === 0 ? (
+                <div className="bg-voyage-white border border-parchment-3 rounded-lg p-12 text-center">
+                  <p className="text-voyage-muted text-sm">{t("admin.noPurchases")}</p>
+                </div>
+              ) : (
+                <div className="bg-voyage-white border border-parchment-3 rounded-lg overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        {[
+                          t("admin.purchaseDate"),
+                          t("admin.purchaseCustomer"),
+                          t("admin.purchaseItinerary"),
+                          t("admin.purchaseAmount"),
+                          t("admin.purchaseStatus"),
+                          t("admin.purchaseActions"),
+                        ].map((h) => (
+                          <th key={h} className="px-4 py-3 text-left text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted bg-parchment border-b border-parchment-3">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {catalogPurchases.map((p: any) => {
+                        const it = p.catalog_itineraries || {};
+                        const title = it.title_pt || it.title_en || it.title_no || "—";
+                        const date = p.created_at ? new Date(p.created_at).toLocaleDateString() : "—";
+                        const statusColor = p.status === "paid" ? "bg-sage/10 text-sage border-sage/30" : p.status === "refunded" ? "bg-ink/[0.06] text-ink border-parchment-3" : "bg-gold/10 text-gold border-gold/30";
+                        return (
+                          <tr key={p.id} className="border-b border-parchment-3 last:border-b-0">
+                            <td className="px-4 py-3 text-sm text-ink">{date}</td>
+                            <td className="px-4 py-3 text-sm text-ink">
+                              <div className="font-medium">{p.customer_name || p.customer_email}</div>
+                              <div className="text-[0.75rem] text-voyage-muted">{p.customer_email}</div>
+                            </td>
+                            <td className="px-4 py-3 text-sm text-ink">
+                              <a href={`/shop/${it.slug}`} className="underline hover:text-gold" target="_blank" rel="noreferrer">{title}</a>
+                              {it.destination && <div className="text-[0.75rem] text-voyage-muted">{it.destination}</div>}
+                            </td>
+                            <td className="px-4 py-3 text-sm font-semibold text-ink">{p.amount_total} {p.currency}</td>
+                            <td className="px-4 py-3 text-sm">
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full border text-[0.65rem] font-semibold tracking-[0.06em] uppercase ${statusColor}`}>
+                                {p.status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           ) : (
-          <>
-          <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
+            <>
+              <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
             <div>
               <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.clientProjects")}</h1>
               <p className="text-[0.85rem] text-voyage-muted">{t("admin.clientProjectsDesc")}</p>
