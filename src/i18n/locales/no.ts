@@ -285,6 +285,7 @@ export default {
     logout: "Logg ut",
     projects: "📋 Prosjekter",
     assistant: "🤖 Rådgiver-assistent",
+    purchases: "🛒 Kjøp",
     assistantTitle: "Rådgiver-assistent",
     assistantDesc: "AI-drevet reiseprogrambygger — opprett, finjuster og eksporter personlige reiseplaner.",
     clientProjects: "Kundeprosjekter",

@@ -287,6 +287,7 @@ export default {
     logout: "Sair",
     projects: "📋 Projetos",
     assistant: "🤖 Assistente Advisor",
+    purchases: "🛒 Compras",
     assistantTitle: "Assistente Advisor",
     assistantDesc: "Construtor de roteiros com IA — crie, refine e exporte planos de viagem personalizados.",
     clientProjects: "Projetos de Clientes",

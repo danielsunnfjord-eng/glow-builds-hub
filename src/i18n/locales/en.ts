@@ -297,6 +297,7 @@ export default {
     logout: "Logout",
     projects: "📋 Projects",
     assistant: "🤖 Advisor Assistant",
+    purchases: "🛒 Purchases",
     assistantTitle: "Advisor Assistant",
     assistantDesc: "AI-powered itinerary builder — create, refine and export personalised travel plans.",
     clientProjects: "Client Projects",
