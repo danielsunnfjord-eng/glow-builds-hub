@@ -726,12 +726,9 @@ const ItineraryShopDetail = () => {
                     </span>
                   </div>
                   <div className="flex flex-col items-center text-center p-5 rounded-lg border border-ink/[0.06] bg-voyage-white">
-                    <Wallet className="w-5 h-5 text-gold mb-2" />
-                    <span className="text-[0.65rem] uppercase tracking-[0.14em] text-voyage-muted mb-1">
-                      {t("shop.estimatedBudget")}
-                    </span>
-                    <span className="text-[0.85rem] font-semibold text-ink">
-                      {data.estimated_trip_budget || "—"}
+                    <Wallet className="w-5 h-5 text-gold mb-3" />
+                    <span className="text-[0.85rem] font-medium text-ink leading-relaxed">
+                      {t("shop.budgetEstimateBox")}
                     </span>
                   </div>
                 </div>
