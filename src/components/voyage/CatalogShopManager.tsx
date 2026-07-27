@@ -600,7 +600,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -1853,6 +1853,21 @@ const CatalogShopManager = () => {
                         title="Not yet synced to Stripe. Stripe will auto-create the product on first checkout if not synced manually."
                       >
                         Stripe ○
+                      </span>
+                    )}
+                    {(r as any).pdf_path ? (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-gold/15 text-gold px-2 py-0.5 rounded"
+                        title="PDF attached to store — customers can download after purchase."
+                      >
+                        PDF ✓
+                      </span>
+                    ) : (
+                      <span
+                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded"
+                        title="No PDF attached. Open PDF Preview and click 'Attach to Store'."
+                      >
+                        PDF ○
                       </span>
                     )}
                   </div>
