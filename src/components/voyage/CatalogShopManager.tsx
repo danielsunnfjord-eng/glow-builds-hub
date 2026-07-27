@@ -706,9 +706,9 @@ const CatalogShopManager = () => {
             what_you_get_en: "",
             is_published: false,
             price_eur: Number(draftState.priceEur) || 0,
-            price_usd: Number(draftState.priceUsd) || Number(draftState.priceEur) || 0,
-            price_brl: Number(draftState.priceBrl) || Number(draftState.priceEur) || 0,
-            price_nok: Number(draftState.priceNok) || Number(draftState.priceEur) || 0,
+            price_usd: Number(draftState.priceUsd) || 0,
+            price_brl: Number(draftState.priceBrl) || 0,
+            price_nok: Number(draftState.priceNok) || 0,
             primary_language: draftState.language,
           } as any)
           .select("id")
@@ -1492,7 +1492,15 @@ const CatalogShopManager = () => {
       label: "At least one hotel recommendation has been added",
       ok: s.hotels.some((h) => h.name.trim()),
     },
-    { key: "price", label: "Price has been set", ok: Number(s.priceEur) > 0 },
+    {
+      key: "price",
+      label: "Prices set for EUR, USD, BRL and NOK (distinct real values)",
+      ok:
+        Number(s.priceEur) > 0 &&
+        Number(s.priceUsd) > 0 && Number(s.priceUsd) !== Number(s.priceEur) &&
+        Number(s.priceBrl) > 0 && Number(s.priceBrl) !== Number(s.priceEur) &&
+        Number(s.priceNok) > 0 && Number(s.priceNok) !== Number(s.priceEur),
+    },
     {
       key: "summaries",
       label: "Short description filled in for EN / PT / NO",
@@ -1535,9 +1543,9 @@ const CatalogShopManager = () => {
         experience_type: state.experienceType.length ? state.experienceType : null,
         season: state.season.length ? state.season : null,
         price_eur: Number(state.priceEur) || 0,
-        price_usd: Number(state.priceUsd) || Number(state.priceEur) || 0,
-        price_brl: Number(state.priceBrl) || Number(state.priceEur) || 0,
-        price_nok: Number(state.priceNok) || Number(state.priceEur) || 0,
+        price_usd: Number(state.priceUsd) || 0,
+        price_brl: Number(state.priceBrl) || 0,
+        price_nok: Number(state.priceNok) || 0,
 
         hero_image_url: state.heroImageUrl || null,
         hero_image_credit: state.heroImageCredit || null,
@@ -2033,14 +2041,23 @@ const CatalogShopManager = () => {
             <div>
               <Label>Price (USD)</Label>
               <Input type="number" min="0" step="1" value={state.priceUsd} onChange={(e) => setState({ ...state, priceUsd: e.target.value })} />
+              {(Number(state.priceUsd) === 0 || (Number(state.priceEur) > 0 && Number(state.priceUsd) === Number(state.priceEur))) && (
+                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real USD price</p>
+              )}
             </div>
             <div>
               <Label>Price (BRL)</Label>
               <Input type="number" min="0" step="1" value={state.priceBrl} onChange={(e) => setState({ ...state, priceBrl: e.target.value })} />
+              {(Number(state.priceBrl) === 0 || (Number(state.priceEur) > 0 && Number(state.priceBrl) === Number(state.priceEur))) && (
+                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real BRL price</p>
+              )}
             </div>
             <div>
               <Label>Price (NOK)</Label>
               <Input type="number" min="0" step="1" value={state.priceNok} onChange={(e) => setState({ ...state, priceNok: e.target.value })} />
+              {(Number(state.priceNok) === 0 || (Number(state.priceEur) > 0 && Number(state.priceNok) === Number(state.priceEur))) && (
+                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real NOK price</p>
+              )}
             </div>
             <div className="md:col-span-2">
               <Label>Short brief / notes for AI</Label>
