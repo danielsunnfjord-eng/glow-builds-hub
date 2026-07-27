@@ -146,6 +146,9 @@ interface EditorState {
   coverIntroNo: string;
   content: string;
   priceEur: string;
+  priceUsd: string;
+  priceBrl: string;
+  priceNok: string;
   heroImageUrl: string;
   heroImageCredit: string;
   heroImageCaption: string;
