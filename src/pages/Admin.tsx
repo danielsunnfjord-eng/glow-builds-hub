@@ -181,7 +181,18 @@ const AdminDashboard = () => {
   });
 
 
-  const updateRequestStatus = useMutation({
+  const { data: catalogPurchases = [], isLoading: purchasesLoading } = useQuery({
+    queryKey: ["catalog_purchases"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catalog_purchases")
+        .select("id, customer_email, customer_name, amount_total, currency, status, download_token, download_expires_at, created_at, itinerary_id, catalog_itineraries(title_en, title_pt, title_no, slug, destination, duration)")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data as any[]) || [];
+    },
+  });
+
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
       if (error) throw error;
