@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X, MessageCircle } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.webp";
+import { WHATSAPP_URL } from "@/lib/whatsapp";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
@@ -58,9 +59,7 @@ const Navbar = () => {
             {t("nav.bookCall")}
           </a>
           <a
-            href="https://wa.me/+4799191574"
-            target="_blank"
-            rel="noopener noreferrer"
+            href={WHATSAPP_URL}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-gold transition-colors no-underline"
           >
             <MessageCircle className="w-4 h-4" />
@@ -118,9 +117,7 @@ const Navbar = () => {
             {t("nav.bookCall")}
           </a>
           <a
-            href="https://wa.me/+4799191574"
-            target="_blank"
-            rel="noopener noreferrer"
+            href={WHATSAPP_URL}
             onClick={() => setOpen(false)}
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:border-gold transition-colors no-underline"
           >
