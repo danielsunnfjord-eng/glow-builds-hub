@@ -490,12 +490,36 @@ const ItinerariesShop = () => {
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
                     {t("catalogue.suggestion.experienceLabel")}
                   </label>
-                  <select value={sg.experience} onChange={(e) => setSg({ ...sg, experience: e.target.value })} className={inputCls}>
-                    <option value="">{t("catalogue.suggestion.experiencePlaceholder")}</option>
-                    {EXPERIENCE_OPTIONS.map((x) => (
-                      <option key={x} value={x}>{t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}</option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {EXPERIENCE_OPTIONS.map((x) => {
+                      const active = sg.experience.includes(x);
+                      return (
+                        <label
+                          key={x}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-sm border cursor-pointer transition-colors ${
+                            active
+                              ? "border-gold bg-gold/10"
+                              : "border-ink/15 bg-voyage-white hover:border-ink/30"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={() => toggleExperience(x)}
+                            className="w-4 h-4 accent-gold shrink-0"
+                          />
+                          <span className="text-[0.9rem] text-ink leading-snug">
+                            {t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {sg.experience.length === 0 && (
+                    <p className="mt-2 text-[0.7rem] text-voyage-muted">
+                      {t("catalogue.suggestion.experiencePlaceholder")}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
