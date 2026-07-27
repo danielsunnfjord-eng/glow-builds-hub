@@ -53,7 +53,7 @@ export default {
     selfGuidedHeading: "Bom saber",
     selfGuidedNote: "Este roteiro é um plano autoguiado — voos, hospedagem e reservas de atividades não estão incluídos. Precisa de ajuda para organizar tudo? Oferecemos assistência opcional com reservas, ajustes personalizados e suporte durante a viagem por uma pequena taxa adicional.",
     includedTitle: "Incluído, sem custo extra",
-    includedIntro: "Depois que você compra este roteiro, ajudamos a reservar tudo que já está recomendado nele — de graça.",
+    includedIntro: "Depois que você compra este roteiro, ajudamos com reservas e agendamentos — de graça.",
     includedItem1: "Ajuda para reservar hotéis",
     includedItem2: "Suporte com reservas de atividades e experiências",
     includedItem3: "Reserva de transfers",
