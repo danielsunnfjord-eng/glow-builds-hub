@@ -68,6 +68,12 @@ Deno.serve(async (req) => {
       .update({ download_count: purchase.download_count + 1 })
       .eq("id", purchase.id);
 
+    if (isGet) {
+      return new Response(null, {
+        status: 302,
+        headers: { ...corsHeaders, Location: signed.signedUrl },
+      });
+    }
     return json({ url: signed.signedUrl });
   } catch (e) {
     console.error(e);
