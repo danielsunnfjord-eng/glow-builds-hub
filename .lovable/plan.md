@@ -1,26 +1,44 @@
-## Problem
-The WhatsApp buttons currently use `https://wa.me/+4799191574` with `target="_blank"`. In some browsers this triggers a redirect through `api.whatsapp.com`, which can be blocked by popup blockers or ad blockers, producing the "api.whatsapp.com er blokkert" message.
 
-## Root cause
-- `wa.me` with a `+` prefix is non-standard and can cause the redirect to fail.
-- `target="_blank"` makes the browser treat the click as a popup, increasing the chance of it being blocked.
+## Goal
 
-## Plan
-1. **Normalize the WhatsApp URL format**  
-   Replace all `https://wa.me/+4799191574` links with `https://wa.me/4799191574` (no plus sign, full international number). This is the format WhatsApp documents and is less likely to redirect through a blocked `api.whatsapp.com` path.
+Add the three sections shown in the mockups to the homepage while keeping "What does your travel advisor do?", "What I can arrange", and "What clients say" fully intact.
 
-2. **Remove `target="_blank"` from WhatsApp links**  
-   WhatsApp `wa.me` links already open the right client (web on desktop, app on mobile). Opening in the same tab avoids popup-blocker interference and the "blocked" message.
+## What the mockups show
 
-3. **Centralize the URL in a helper (optional but recommended)**  
-   Create a small `WHATSAPP_URL` constant or `getWhatsAppUrl(phone, text)` helper so all Navbar and subpage buttons use the same, verified URL and we don't drift back into the `+` version.
+1. **Dual-path block** (image-71): Two side-by-side cards — "Ready-made itineraries" (description + "See itineraries" button → `/catalogue`, no price shown) and "Fully bespoke trip" (description + "Request a quote" button → `/start-your-journey`). Slim Daniel credentials strip below (avatar + IATA / Fora / 50+ trips badges).
 
-4. **Affected files**  
-   - `src/components/voyage/Navbar.tsx` (desktop nav + mobile menu)  
-   - `src/pages/ItineraryShopDetail.tsx` (sidebar WhatsApp CTA)
+2. **"How it works" + featured itineraries** (image-72): Keep the existing 3-step "How it works" block. Add a new "Start planning today" row showing 3 featured itineraries pulled from `catalog_itineraries` (published only, newest first) with a "See all →" link to `/catalogue`.
 
-5. **Verification**  
-   - Type-check the project after edits.  
-   - Smoke-test the link in the preview: desktop should open `web.whatsapp.com`, mobile should open the WhatsApp app or an app-prompt page.
+3. **WhatsApp CTA banner** (image-73): Dark ink banner "Where shall we go first?" with two buttons — green "Chat on WhatsApp" (uses `WHATSAPP_URL`) and gold "See itineraries" (→ `/catalogue`).
 
-No other changes are needed.
+## Placement on `src/pages/Index.tsx`
+
+```text
+Navbar
+CuratedSection (existing — hero + how-it-works + advisor role + perks + services)
+NEW: <DualPathCards/>            ← inserted here
+NEW: <FeaturedItineraries/>      ← inserted here
+MeetDaniel  (existing — "What does your travel advisor do?")
+Reviews     (existing — "What clients say")
+NEW: <WhatsAppBanner/>
+PlanMyTrip  (existing)
+Footer
+```
+
+`CuratedSection.tsx`, `MeetDaniel.tsx`, and `Reviews.tsx` stay untouched.
+
+## Files to create
+
+- `src/components/voyage/DualPathCards.tsx` — two-card block + credentials strip. No prices.
+- `src/components/voyage/FeaturedItineraries.tsx` — fetches top 3 published itineraries via the supabase client, reuses card styling from `ItinerariesShop.tsx` and `formatPrice` / `usePreferredCurrency` from `src/lib/pricing.tsx` for each card's own price.
+- `src/components/voyage/WhatsAppBanner.tsx` — dark banner with WhatsApp + catalogue CTAs, using existing `WHATSAPP_URL` from `src/lib/whatsapp.ts` (no `target="_blank"`).
+
+## Files to modify
+
+- `src/pages/Index.tsx` — render the three new components in the order above; lazy-load `FeaturedItineraries` and `WhatsAppBanner` under the existing `Suspense`.
+- `src/i18n/locales/en.ts`, `pt.ts`, `no.ts` — add a new `home` namespace with all copy from the mockups (dual-path titles/descriptions/CTAs, credentials strip labels, featured section heading + "See all", WhatsApp banner text). Translated in EN / PT / NO.
+
+## Not touched
+
+- No schema, edge-function, pricing-logic, or checkout changes.
+- No starting-price display on the ready-made card.
