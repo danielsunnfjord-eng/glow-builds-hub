@@ -372,7 +372,6 @@ export default {
     purchaseCustomer: "Kunde",
     purchaseItinerary: "Reiserute",
     purchaseAmount: "Beløp",
-    purchaseStatus: "Status",
     purchaseActions: "Handlinger",
     download: "Last ned",
     tplWelcome: "Velkommen — Første Reiseprogram",
