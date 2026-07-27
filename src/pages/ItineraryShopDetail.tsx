@@ -532,6 +532,19 @@ const ItineraryShopDetail = () => {
                     {t("shop.tailorCta", "Contact us")}
                   </button>
                 </div>
+
+                {/* WhatsApp CTA */}
+                <div className="bg-parchment border border-ink/[0.08] rounded-lg p-6 text-center">
+                  <MessageCircle className="w-5 h-5 text-gold mx-auto mb-2.5" />
+                  <a
+                    href="https://wa.me/+4799191574"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
+                  >
+                    {t("curated.ctaWhatsapp")}
+                  </a>
+                </div>
               </aside>
             </div>
 
