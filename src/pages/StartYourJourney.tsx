@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
@@ -11,12 +12,13 @@ const scrollToForm = () => {
 
 const StartYourJourney = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title="Start Your Journey | Fjord & Waves Travel"
-        description="Share your travel plans and receive a personalized travel proposal from Fjord & Waves Travel."
+        title={t("startJourney.seoTitle")}
+        description={t("startJourney.seoDesc")}
         path="/start-your-journey"
       />
       <Navbar />
@@ -34,21 +36,20 @@ const StartYourJourney = () => {
           <div className="relative z-10 max-w-3xl px-6 text-center pt-24 pb-16">
             <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-6">
               <div className="w-[30px] h-px bg-gold" />
-              Bespoke Travel Design
+              {t("startJourney.eyebrow")}
               <div className="w-[30px] h-px bg-gold" />
             </div>
             <h1 className="font-serif text-[clamp(2.6rem,6vw,5rem)] font-bold leading-[0.98] text-voyage-white mb-6 tracking-tight">
-              Start Your <em className="italic font-normal text-gold-2">Journey</em>
+              {t("startJourney.titleStart")} <em className="italic font-normal text-gold-2">{t("startJourney.titleAccent")}</em>
             </h1>
             <p className="text-base md:text-lg font-light text-voyage-white/75 max-w-xl mx-auto leading-relaxed mb-10">
-              Tell us about your dream trip and we'll create a personalized travel proposal tailored
-              to your interests, travel style, and budget.
+              {t("startJourney.subtitle")}
             </p>
             <button
               onClick={scrollToForm}
               className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
             >
-              Begin Planning
+              {t("startJourney.cta")}
             </button>
           </div>
         </section>
@@ -59,14 +60,14 @@ const StartYourJourney = () => {
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
                 <div className="w-[30px] h-px bg-gold" />
-                Step 1
+                {t("startJourney.step")}
                 <div className="w-[30px] h-px bg-gold" />
               </div>
               <h2 className="font-serif text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight text-foreground mb-3">
-                Travel Planning Questionnaire
+                {t("startJourney.formTitle")}
               </h2>
               <p className="text-[0.92rem] text-muted-foreground leading-relaxed">
-                A few details help us craft a proposal that feels made for you.
+                {t("startJourney.formSubtitle")}
               </p>
             </div>
             <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm">
@@ -81,3 +82,4 @@ const StartYourJourney = () => {
 };
 
 export default StartYourJourney;
+

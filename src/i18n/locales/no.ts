@@ -724,4 +724,17 @@ export default {
       instantPdf: "PDF med en gang",
     },
   },
+  startJourney: {
+    seoTitle: "Start reisen din | Fjord & Waves Travel",
+    seoDesc: "Del reiseplanene dine og få et personlig reiseforslag fra Fjord & Waves Travel.",
+    eyebrow: "Skreddersydd reisedesign",
+    titleStart: "Start din",
+    titleAccent: "Reise",
+    subtitle: "Fortell oss om drømmereisen din, så lager vi et personlig reiseforslag tilpasset dine interesser, reisestil og budsjett.",
+    cta: "Begynn planleggingen",
+    step: "Steg 1",
+    formTitle: "Spørreskjema for reiseplanlegging",
+    formSubtitle: "Noen få detaljer hjelper oss å lage et forslag som føles laget for deg.",
+  },
 };
+
