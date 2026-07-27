@@ -33,7 +33,6 @@ const Index = () => {
       />
       <Navbar />
       <main>
-        <CuratedSection />
         <Suspense fallback={null}>
           <DualPathCards />
           <FeaturedItineraries />
