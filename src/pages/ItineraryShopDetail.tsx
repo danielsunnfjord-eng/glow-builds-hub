@@ -12,7 +12,6 @@ import {
   FileDown,
   Compass,
   Sparkles,
-  Heart,
   Coffee,
   Moon as MoonIcon,
   MessageCircle,
