@@ -53,7 +53,7 @@ export default {
     selfGuidedHeading: "Godt å vite",
     selfGuidedNote: "Denne reiseruten er en selvguidet plan — flyreiser, overnatting og aktivitetsbestillinger er ikke inkludert. Trenger du hjelp med å sette det hele sammen? Vi tilbyr valgfri bookinghjelp, tilpasninger og reisestøtte mot et lite tilleggsgebyr.",
     includedTitle: "Inkludert, uten ekstra kostnad",
-    includedIntro: "Når du har kjøpt dette reiseopplegget, hjelper vi deg å booke det som allerede er anbefalt i det — gratis.",
+    includedIntro: "Når du har kjøpt dette reiseopplegget, hjelper vi deg med bestillinger og reservasjoner — gratis.",
     includedItem1: "Hjelp med å booke hotell",
     includedItem2: "Støtte med booking av aktiviteter og opplevelser",
     includedItem3: "Booking av transfer",
