@@ -208,6 +208,7 @@ const AdminDashboard = () => {
       toast({ title: t("admin.deletePurchaseError", "Could not delete purchase"), description: err.message, variant: "destructive" });
     },
   });
+  const updateRequestStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
       if (error) throw error;
