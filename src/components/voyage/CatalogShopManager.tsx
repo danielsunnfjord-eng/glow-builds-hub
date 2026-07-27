@@ -1535,6 +1535,9 @@ const CatalogShopManager = () => {
         experience_type: state.experienceType.length ? state.experienceType : null,
         season: state.season.length ? state.season : null,
         price_eur: Number(state.priceEur) || 0,
+        price_usd: Number(state.priceUsd) || Number(state.priceEur) || 0,
+        price_brl: Number(state.priceBrl) || Number(state.priceEur) || 0,
+        price_nok: Number(state.priceNok) || Number(state.priceEur) || 0,
 
         hero_image_url: state.heroImageUrl || null,
         hero_image_credit: state.heroImageCredit || null,
