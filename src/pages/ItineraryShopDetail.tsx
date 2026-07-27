@@ -28,8 +28,6 @@ import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 import {
   CurrencyToggle,
-  amountFor,
-  currencyForLang,
   formatPrice,
   usePreferredCurrency,
 } from "@/lib/pricing";
@@ -356,7 +354,6 @@ const ItineraryShopDetail = () => {
     },
   };
 
-  const displayCurrency = currencyForLang(lang, enPref);
   const priceLabel = formatPrice(data, lang, enPref);
   const showCurrencyToggle = lang === "en";
 
