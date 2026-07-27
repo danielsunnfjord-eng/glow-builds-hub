@@ -148,9 +148,18 @@ const ItinerariesShop = () => {
   };
 
   // Suggestion form
-  const [sg, setSg] = useState({ destination: "", experience: "", details: "", email: "" });
+  const [sg, setSg] = useState({ destination: "", experience: [] as string[], details: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const toggleExperience = (value: string) => {
+    setSg((prev) => ({
+      ...prev,
+      experience: prev.experience.includes(value)
+        ? prev.experience.filter((x) => x !== value)
+        : [...prev.experience, value],
+    }));
+  };
 
   const submitSuggestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,13 +175,13 @@ const ItinerariesShop = () => {
     try {
       const { error } = await supabase.from("customer_suggestions" as any).insert({
         destination: sg.destination.trim().slice(0, 200),
-        experience_type: sg.experience.trim().slice(0, 100) || null,
+        experience_type: sg.experience.length ? sg.experience.join(", ") : null,
         details: sg.details.trim().slice(0, 2000) || null,
         email: sg.email.trim().slice(0, 255),
       } as any);
       if (error) throw error;
       setSubmitted(true);
-      setSg({ destination: "", experience: "", details: "", email: "" });
+      setSg({ destination: "", experience: [], details: "", email: "" });
     } catch (err: any) {
       toast.error(err?.message || "Submission failed");
     } finally {
