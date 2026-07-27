@@ -1,5 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   Clock, ShieldCheck, Sparkles,
   Hotel, Map, Phone,
@@ -163,6 +164,12 @@ const CuratedSection = () => {
             <p className="text-[0.88rem] text-voyage-white/50 leading-relaxed">
               {t("curated.noPackagesDesc")}
             </p>
+            <Link
+              to="/catalogue"
+              className="inline-block mt-4 text-[0.78rem] font-semibold tracking-[0.1em] uppercase text-gold hover:text-gold-2 transition-colors"
+            >
+              {t("nav.shop")} →
+            </Link>
           </div>
         </ScrollReveal>
 
