@@ -9,6 +9,7 @@ import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Seo from "@/components/Seo";
 import LanguageSelector from "@/components/voyage/LanguageSelector";
+import { CurrencyToggle, formatPrice, usePreferredCurrency } from "@/lib/pricing";
 import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
 
@@ -25,6 +26,9 @@ interface CatalogItem {
   duration: string | null;
   hero_image_url: string | null;
   price_eur: number;
+  price_usd: number | null;
+  price_brl: number | null;
+  price_nok: number | null;
   sort_order: number;
   experience_type: string[] | null;
   season: string[] | null;
@@ -68,6 +72,8 @@ const formatDuration = (s: string | null, t: any): string | null => {
 const ItinerariesShop = () => {
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
+  const { enPref } = usePreferredCurrency();
+  const showCurrencyToggle = lang === "en";
 
   useEffect(() => {
     document.title = `${t("catalogue.title")} · Fjord & Waves Travel`;
@@ -79,7 +85,7 @@ const ItinerariesShop = () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, sort_order, experience_type, season, created_at, primary_language",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, primary_language",
         )
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
@@ -215,6 +221,11 @@ const ItinerariesShop = () => {
       {/* FILTER BAR */}
       <section className="border-b border-ink/10 bg-voyage-white sticky top-0 z-30 shadow-sm">
         <div className="max-w-[1200px] mx-auto px-4 md:px-16 py-3 md:py-5">
+          {showCurrencyToggle && (
+            <div className="flex justify-end mb-2">
+              <CurrencyToggle variant="light" />
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3">
             <div className="col-span-2 md:col-span-3">
               <div className="relative">
@@ -377,7 +388,7 @@ const ItinerariesShop = () => {
                           </span>
                         )}
                         <span className="font-serif text-[1.25rem] font-bold text-ink">
-                          €{Number(trip.price_eur).toFixed(0)}
+                          {formatPrice(trip, lang, enPref)}
                         </span>
                       </div>
                       <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-sm border border-ink/30 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-ink group-hover:bg-ink group-hover:text-voyage-white transition-colors">

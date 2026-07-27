@@ -26,6 +26,11 @@ import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
+import {
+  CurrencyToggle,
+  formatPrice,
+  usePreferredCurrency,
+} from "@/lib/pricing";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
@@ -109,6 +114,9 @@ interface CatalogItem {
   hero_image_caption: string | null;
   gallery_images: string[];
   price_eur: number;
+  price_usd: number | null;
+  price_brl: number | null;
+  price_nok: number | null;
   is_published: boolean;
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
@@ -136,6 +144,7 @@ const ItineraryShopDetail = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { enPref } = usePreferredCurrency();
 
   const { data, isLoading } = useQuery({
     queryKey: ["catalog-itinerary", slug],
@@ -156,13 +165,13 @@ const ItineraryShopDetail = () => {
     queryFn: async () => {
       const { data: res, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok")
         .eq("is_published", true)
         .neq("slug", slug!)
         .order("sort_order", { ascending: true })
         .limit(3);
       if (error) throw error;
-      return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur">>;
+      return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur" | "price_usd" | "price_brl" | "price_nok">>;
     },
     enabled: !!slug,
   });
@@ -345,7 +354,8 @@ const ItineraryShopDetail = () => {
     },
   };
 
-  const priceLabel = `€${Number(data.price_eur).toFixed(0)}`;
+  const priceLabel = formatPrice(data, lang, enPref);
+  const showCurrencyToggle = lang === "en";
 
   return (
     <div className="min-h-screen bg-parchment">
@@ -465,9 +475,12 @@ const ItineraryShopDetail = () => {
                       {priceLabel}
                     </span>
                   </div>
-                  <p className="text-[0.72rem] text-voyage-muted mb-5">
-                    {t("shop.instantDownload")}
-                  </p>
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <p className="text-[0.72rem] text-voyage-muted">
+                      {t("shop.instantDownload")}
+                    </p>
+                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
+                  </div>
 
                   {canceled && (
                     <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-[0.78rem]">
@@ -864,7 +877,7 @@ const ItineraryShopDetail = () => {
                         </h3>
                         <div className="flex items-center justify-between border-t border-parchment-3 pt-4">
                           <span className="font-serif text-[1.3rem] font-bold text-ink">
-                            €{Number(r.price_eur).toFixed(0)}
+                            {formatPrice(r, lang, enPref)}
                           </span>
                           <span className="text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-ink group-hover:text-gold transition-colors">
                             {t("shop.viewItinerary", "View")} →
