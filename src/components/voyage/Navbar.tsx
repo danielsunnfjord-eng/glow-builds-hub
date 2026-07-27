@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.webp";
 
@@ -57,6 +57,15 @@ const Navbar = () => {
           >
             {t("nav.bookCall")}
           </a>
+          <a
+            href="https://wa.me/+4799191574"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-gold transition-colors no-underline"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {t("curated.ctaWhatsapp")}
+          </a>
         </div>
         <div className="md:hidden flex items-center gap-2">
           <LanguageSelector variant="light" />
@@ -107,6 +116,16 @@ const Navbar = () => {
             className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:bg-gold hover:text-ink transition-colors no-underline"
           >
             {t("nav.bookCall")}
+          </a>
+          <a
+            href="https://wa.me/+4799191574"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setOpen(false)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:border-gold transition-colors no-underline"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {t("curated.ctaWhatsapp")}
           </a>
         </div>
       )}
