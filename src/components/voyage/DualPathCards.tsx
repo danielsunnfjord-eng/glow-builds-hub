@@ -66,35 +66,6 @@ const DualPathCards = () => {
           </ScrollReveal>
         </div>
 
-        {/* Credentials strip */}
-        <ScrollReveal>
-          <div className="mt-8 bg-ink rounded-lg px-6 md:px-8 py-6 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
-            <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="w-14 h-14 shrink-0 rounded-full bg-[#7a9080] flex items-center justify-center font-serif text-xl text-voyage-white font-bold">
-                D
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-voyage-white text-[0.95rem] leading-tight">
-                  {t("home.dual.credName")}
-                </p>
-                <p className="text-[0.8rem] text-voyage-white/60 mt-1 leading-snug">
-                  {t("home.dual.credBio")}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2 md:gap-3">
-              <span className="px-3 py-1.5 text-[0.62rem] font-semibold tracking-[0.14em] uppercase text-voyage-white/85 border border-voyage-white/25 rounded-full">
-                {t("home.dual.credBadge1")}
-              </span>
-              <span className="px-3 py-1.5 text-[0.62rem] font-semibold tracking-[0.14em] uppercase text-voyage-white/85 border border-voyage-white/25 rounded-full">
-                {t("home.dual.credBadge2")}
-              </span>
-              <span className="px-3 py-1.5 text-[0.62rem] font-semibold tracking-[0.14em] uppercase text-voyage-white/85 border border-voyage-white/25 rounded-full">
-                {t("home.dual.credBadge3")}
-              </span>
-            </div>
-          </div>
-        </ScrollReveal>
       </div>
     </section>
   );

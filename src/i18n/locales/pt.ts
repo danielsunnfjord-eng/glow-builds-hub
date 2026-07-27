@@ -710,11 +710,6 @@ export default {
       bespokeTitle: "Viagem planejada do zero",
       bespokeDesc: "Você me conta o que sonha, eu monto tudo — voos, hospedagem, passeios e experiências, com acesso a tarifas e vantagens exclusivas.",
       bespokeCta: "Pedir orçamento",
-      credName: "Daniel — travel designer, Fjord & Waves Travel",
-      credBio: "Brasileiro, morando na Noruega desde 2010 · trilíngue · planeja viagens desde 2010",
-      credBadge1: "IATA Accredited",
-      credBadge2: "Fora Travel Member",
-      credBadge3: "+50 viagens planejadas",
     },
     featured: {
       eyebrow: "Roteiros prontos",
