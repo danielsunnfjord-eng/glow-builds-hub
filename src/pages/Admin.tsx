@@ -712,12 +712,11 @@ const AdminDashboard = () => {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
-                        {[
+                      {[
                           t("admin.purchaseDate"),
                           t("admin.purchaseCustomer"),
                           t("admin.purchaseItinerary"),
                           t("admin.purchaseAmount"),
-                          t("admin.purchaseStatus"),
                           t("admin.purchaseActions"),
                         ].map((h) => (
                           <th key={h} className="px-4 py-3 text-left text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted bg-parchment border-b border-parchment-3">{h}</th>
@@ -729,7 +728,6 @@ const AdminDashboard = () => {
                         const it = p.catalog_itineraries || {};
                         const title = it.title_pt || it.title_en || it.title_no || "—";
                         const date = p.created_at ? new Date(p.created_at).toLocaleDateString() : "—";
-                        const statusColor = p.status === "paid" ? "bg-sage/10 text-sage border-sage/30" : p.status === "refunded" ? "bg-ink/[0.06] text-ink border-parchment-3" : "bg-gold/10 text-gold border-gold/30";
                         return (
                           <tr key={p.id} className="border-b border-parchment-3 last:border-b-0">
                             <td className="px-4 py-3 text-sm text-ink">{date}</td>
@@ -743,12 +741,15 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-4 py-3 text-sm font-semibold text-ink">{p.amount_total} {p.currency}</td>
                             <td className="px-4 py-3 text-sm">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full border text-[0.65rem] font-semibold tracking-[0.06em] uppercase ${statusColor}`}>
-                                {p.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-sm">
-                              <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
+                              <div className="flex items-center gap-2">
+                                <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
+                                <button
+                                  onClick={() => { if (confirm(t("admin.deletePurchaseConfirm"))) deletePurchase.mutate(p.id); }}
+                                  className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all"
+                                >
+                                  {t("admin.delete")}
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
