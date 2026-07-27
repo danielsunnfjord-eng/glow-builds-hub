@@ -146,6 +146,9 @@ interface EditorState {
   coverIntroNo: string;
   content: string;
   priceEur: string;
+  priceUsd: string;
+  priceBrl: string;
+  priceNok: string;
   heroImageUrl: string;
   heroImageCredit: string;
   heroImageCaption: string;
@@ -204,6 +207,9 @@ const blankEditor: EditorState = {
   coverIntroNo: "",
   content: "",
   priceEur: "0",
+  priceUsd: "0",
+  priceBrl: "0",
+  priceNok: "0",
   heroImageUrl: "",
   heroImageCredit: "",
   heroImageCaption: "",
@@ -594,7 +600,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -700,6 +706,9 @@ const CatalogShopManager = () => {
             what_you_get_en: "",
             is_published: false,
             price_eur: Number(draftState.priceEur) || 0,
+            price_usd: Number(draftState.priceUsd) || Number(draftState.priceEur) || 0,
+            price_brl: Number(draftState.priceBrl) || Number(draftState.priceEur) || 0,
+            price_nok: Number(draftState.priceNok) || Number(draftState.priceEur) || 0,
             primary_language: draftState.language,
           } as any)
           .select("id")
@@ -822,6 +831,9 @@ const CatalogShopManager = () => {
       coverIntroNo: (r as any).cover_intro_no || "",
       content,
       priceEur: String(r.price_eur ?? 0),
+      priceUsd: String((r as any).price_usd ?? 0),
+      priceBrl: String((r as any).price_brl ?? 0),
+      priceNok: String((r as any).price_nok ?? 0),
       heroImageUrl: r.hero_image_url || "",
       heroImageCredit: (r as any).hero_image_credit || "",
       heroImageCaption: (r as any).hero_image_caption || "",
@@ -1523,6 +1535,9 @@ const CatalogShopManager = () => {
         experience_type: state.experienceType.length ? state.experienceType : null,
         season: state.season.length ? state.season : null,
         price_eur: Number(state.priceEur) || 0,
+        price_usd: Number(state.priceUsd) || Number(state.priceEur) || 0,
+        price_brl: Number(state.priceBrl) || Number(state.priceEur) || 0,
+        price_nok: Number(state.priceNok) || Number(state.priceEur) || 0,
 
         hero_image_url: state.heroImageUrl || null,
         hero_image_credit: state.heroImageCredit || null,
@@ -2014,6 +2029,18 @@ const CatalogShopManager = () => {
             <div>
               <Label>Price (EUR)</Label>
               <Input type="number" min="0" step="1" value={state.priceEur} onChange={(e) => setState({ ...state, priceEur: e.target.value })} />
+            </div>
+            <div>
+              <Label>Price (USD)</Label>
+              <Input type="number" min="0" step="1" value={state.priceUsd} onChange={(e) => setState({ ...state, priceUsd: e.target.value })} />
+            </div>
+            <div>
+              <Label>Price (BRL)</Label>
+              <Input type="number" min="0" step="1" value={state.priceBrl} onChange={(e) => setState({ ...state, priceBrl: e.target.value })} />
+            </div>
+            <div>
+              <Label>Price (NOK)</Label>
+              <Input type="number" min="0" step="1" value={state.priceNok} onChange={(e) => setState({ ...state, priceNok: e.target.value })} />
             </div>
             <div className="md:col-span-2">
               <Label>Short brief / notes for AI</Label>
