@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Menu, X, MessageCircle } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.webp";
+import { WHATSAPP_URL } from "@/lib/whatsapp";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
