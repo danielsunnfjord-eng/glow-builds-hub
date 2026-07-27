@@ -726,4 +726,17 @@ export default {
       instantPdf: "PDF instantâneo",
     },
   },
+  startJourney: {
+    seoTitle: "Comece sua jornada | Fjord & Waves Travel",
+    seoDesc: "Conte sobre seus planos de viagem e receba uma proposta personalizada da Fjord & Waves Travel.",
+    eyebrow: "Design de viagem sob medida",
+    titleStart: "Comece sua",
+    titleAccent: "Jornada",
+    subtitle: "Conte sobre a viagem dos seus sonhos e criaremos uma proposta personalizada, feita para os seus interesses, seu estilo e seu orçamento.",
+    cta: "Começar a planejar",
+    step: "Passo 1",
+    formTitle: "Questionário de planejamento de viagem",
+    formSubtitle: "Alguns detalhes nos ajudam a montar uma proposta com a sua cara.",
+  },
 };
+

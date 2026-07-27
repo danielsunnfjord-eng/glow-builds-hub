@@ -739,4 +739,17 @@ export default {
       instantPdf: "Instant PDF",
     },
   },
+  startJourney: {
+    seoTitle: "Start Your Journey | Fjord & Waves Travel",
+    seoDesc: "Share your travel plans and receive a personalized travel proposal from Fjord & Waves Travel.",
+    eyebrow: "Bespoke Travel Design",
+    titleStart: "Start Your",
+    titleAccent: "Journey",
+    subtitle: "Tell us about your dream trip and we'll create a personalized travel proposal tailored to your interests, travel style, and budget.",
+    cta: "Begin Planning",
+    step: "Step 1",
+    formTitle: "Travel Planning Questionnaire",
+    formSubtitle: "A few details help us craft a proposal that feels made for you.",
+  },
 };
+
