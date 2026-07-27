@@ -688,7 +688,7 @@ export default {
       destinationLabel: "Destinasjon eller region du er interessert i",
       destinationPlaceholder: "f.eks. Lofoten, Patagonia, Kyoto…",
       experienceLabel: "Type opplevelse",
-      experiencePlaceholder: "Velg en opplevelse…",
+      experiencePlaceholder: "Velg en eller flere…",
       detailsLabel: "Andre detaljer (valgfritt)",
       detailsPlaceholder: "Reisestil, tid på året, hvem som reiser med deg…",
       emailLabel: "E-postadresse",

@@ -690,7 +690,7 @@ export default {
       destinationLabel: "Destino ou região de interesse",
       destinationPlaceholder: "ex.: Lofoten, Patagônia, Kyoto…",
       experienceLabel: "Tipo de experiência",
-      experiencePlaceholder: "Escolha uma experiência…",
+      experiencePlaceholder: "Escolha uma ou mais…",
       detailsLabel: "Detalhes adicionais (opcional)",
       detailsPlaceholder: "Estilo de viagem, época do ano, quem vai com você…",
       emailLabel: "E-mail",

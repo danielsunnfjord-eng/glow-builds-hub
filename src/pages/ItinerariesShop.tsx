@@ -148,9 +148,18 @@ const ItinerariesShop = () => {
   };
 
   // Suggestion form
-  const [sg, setSg] = useState({ destination: "", experience: "", details: "", email: "" });
+  const [sg, setSg] = useState({ destination: "", experience: [] as string[], details: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const toggleExperience = (value: string) => {
+    setSg((prev) => ({
+      ...prev,
+      experience: prev.experience.includes(value)
+        ? prev.experience.filter((x) => x !== value)
+        : [...prev.experience, value],
+    }));
+  };
 
   const submitSuggestion = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,13 +175,13 @@ const ItinerariesShop = () => {
     try {
       const { error } = await supabase.from("customer_suggestions" as any).insert({
         destination: sg.destination.trim().slice(0, 200),
-        experience_type: sg.experience.trim().slice(0, 100) || null,
+        experience_type: sg.experience.length ? sg.experience.join(", ") : null,
         details: sg.details.trim().slice(0, 2000) || null,
         email: sg.email.trim().slice(0, 255),
       } as any);
       if (error) throw error;
       setSubmitted(true);
-      setSg({ destination: "", experience: "", details: "", email: "" });
+      setSg({ destination: "", experience: [], details: "", email: "" });
     } catch (err: any) {
       toast.error(err?.message || "Submission failed");
     } finally {
@@ -481,12 +490,36 @@ const ItinerariesShop = () => {
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
                     {t("catalogue.suggestion.experienceLabel")}
                   </label>
-                  <select value={sg.experience} onChange={(e) => setSg({ ...sg, experience: e.target.value })} className={inputCls}>
-                    <option value="">{t("catalogue.suggestion.experiencePlaceholder")}</option>
-                    {EXPERIENCE_OPTIONS.map((x) => (
-                      <option key={x} value={x}>{t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}</option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {EXPERIENCE_OPTIONS.map((x) => {
+                      const active = sg.experience.includes(x);
+                      return (
+                        <label
+                          key={x}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-sm border cursor-pointer transition-colors ${
+                            active
+                              ? "border-gold bg-gold/10"
+                              : "border-ink/15 bg-voyage-white hover:border-ink/30"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            onChange={() => toggleExperience(x)}
+                            className="w-4 h-4 accent-gold shrink-0"
+                          />
+                          <span className="text-[0.9rem] text-ink leading-snug">
+                            {t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {sg.experience.length === 0 && (
+                    <p className="mt-2 text-[0.7rem] text-voyage-muted">
+                      {t("catalogue.suggestion.experiencePlaceholder")}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
