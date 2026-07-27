@@ -28,6 +28,7 @@ export default {
     whatYouGet: "O que você recebe",
     aboutItinerary: "Sobre este roteiro",
     estimatedBudget: "Orçamento estimado da viagem",
+    budgetEstimateBox: "Orçamento estimado — faixas de custo realistas para planejar sua viagem com tranquilidade",
     duration: "Duração",
     destination: "Destino",
     groupSize: "Ideal para",
