@@ -1,0 +1,1 @@
+CREATE POLICY "Staff can delete purchases" ON public.catalog_purchases FOR DELETE TO authenticated USING (public.is_staff(auth.uid()));
