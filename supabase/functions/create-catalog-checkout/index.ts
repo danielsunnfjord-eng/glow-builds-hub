@@ -149,8 +149,8 @@ Deno.serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "eur",
-            unit_amount: Math.round(Number(itin.price_eur) * 100),
+            currency,
+            unit_amount: Math.round(amount * 100),
             product: productId,
           },
           quantity: 1,
