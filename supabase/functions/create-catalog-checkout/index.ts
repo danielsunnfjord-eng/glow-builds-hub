@@ -15,8 +15,18 @@ interface Body {
   email: string;
   origin: string;
   language?: string;
+  currency?: string;
   environment?: "sandbox" | "live";
 }
+
+const ALLOWED_CURRENCIES = ["usd", "eur", "brl", "nok"] as const;
+type CurrencyCode = (typeof ALLOWED_CURRENCIES)[number];
+const PRICE_COLUMN: Record<CurrencyCode, "price_usd" | "price_eur" | "price_brl" | "price_nok"> = {
+  usd: "price_usd",
+  eur: "price_eur",
+  brl: "price_brl",
+  nok: "price_nok",
+};
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
