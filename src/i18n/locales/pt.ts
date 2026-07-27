@@ -77,8 +77,6 @@ export default {
     season: { spring: "Primavera", summer: "Verão", autumn: "Outono", winter: "Inverno" },
     gallery: "Vislumbres",
     routeMap: "Mapa da rota",
-    tailorIntro: "Prefere uma viagem sob medida? A partir de €500.",
-    tailorCta: "A partir de €500",
     designerBadge: "Feito para você",
     designerTitle: "Criado para você pela Fjord & Waves Travel",
     designerBio: "Sou Daniel — designer de viagens entre a Noruega e o Brasil, com anos de experiência criando jornadas para quem busca profundidade em vez de listas. Cada roteiro deste catálogo começou como um plano privado, refinado e compartilhado para que você viaje com o mesmo cuidado.",
