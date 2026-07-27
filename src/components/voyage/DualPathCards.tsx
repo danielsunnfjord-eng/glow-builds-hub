@@ -6,7 +6,7 @@ const DualPathCards = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="bg-parchment py-24 px-6 md:px-16">
+    <section className="bg-parchment pt-40 pb-24 px-6 md:px-16">
       <div className="max-w-[1200px] mx-auto">
         <ScrollReveal>
           <div className="text-center max-w-2xl mx-auto mb-14">
