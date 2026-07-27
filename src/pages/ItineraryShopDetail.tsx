@@ -26,6 +26,13 @@ import Footer from "@/components/voyage/Footer";
 import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
+import {
+  CurrencyToggle,
+  amountFor,
+  currencyForLang,
+  formatPrice,
+  usePreferredCurrency,
+} from "@/lib/pricing";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
