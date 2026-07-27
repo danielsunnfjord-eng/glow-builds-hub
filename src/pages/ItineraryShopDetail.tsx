@@ -597,7 +597,7 @@ const ItineraryShopDetail = () => {
                     {t("shop.customizeIntro", "Want this itinerary tailored to your dates, budget, and preferences?")}
                   </p>
                   <ul className="space-y-2.5 mb-4">
-                    {[1, 2, 3, 4, 5].map((n) => (
+                    {[1, 2, 3, 4].map((n) => (
                       <li key={n} className="flex items-start gap-3 text-[0.9rem] text-ink/80">
                         <span className="w-2 h-2 rounded-full bg-ink/70 mt-1.5 shrink-0" aria-hidden="true" />
                         <span>{t(`shop.customizeItem${n}`, `Customize item ${n}`)}</span>
