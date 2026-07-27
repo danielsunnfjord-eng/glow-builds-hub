@@ -571,6 +571,8 @@ export default {
     deleteConfirm: "Excluir esta solicitação?",
     requestFrom: "Solicitação de",
     received: "Recebido",
+    customerBadge: "Cliente",
+    previousPurchases: "Compras anteriores",
   },
   aiEdit: {
     rewrite: "Reescrever",
