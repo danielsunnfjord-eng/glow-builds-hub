@@ -478,9 +478,12 @@ const ItineraryShopDetail = () => {
                       {priceLabel}
                     </span>
                   </div>
-                  <p className="text-[0.72rem] text-voyage-muted mb-5">
-                    {t("shop.instantDownload")}
-                  </p>
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <p className="text-[0.72rem] text-voyage-muted">
+                      {t("shop.instantDownload")}
+                    </p>
+                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
+                  </div>
 
                   {canceled && (
                     <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-[0.78rem]">
@@ -877,7 +880,7 @@ const ItineraryShopDetail = () => {
                         </h3>
                         <div className="flex items-center justify-between border-t border-parchment-3 pt-4">
                           <span className="font-serif text-[1.3rem] font-bold text-ink">
-                            €{Number(r.price_eur).toFixed(0)}
+                            {formatPrice(r, lang, enPref)}
                           </span>
                           <span className="text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-ink group-hover:text-gold transition-colors">
                             {t("shop.viewItinerary", "View")} →
