@@ -15,8 +15,18 @@ interface Body {
   email: string;
   origin: string;
   language?: string;
+  currency?: string;
   environment?: "sandbox" | "live";
 }
+
+const ALLOWED_CURRENCIES = ["usd", "eur", "brl", "nok"] as const;
+type CurrencyCode = (typeof ALLOWED_CURRENCIES)[number];
+const PRICE_COLUMN: Record<CurrencyCode, "price_usd" | "price_eur" | "price_brl" | "price_nok"> = {
+  usd: "price_usd",
+  eur: "price_eur",
+  brl: "price_brl",
+  nok: "price_nok",
+};
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -40,7 +50,8 @@ Deno.serve(async (req) => {
     const { data: itin, error: itinErr } = await supabase
       .from("catalog_itineraries")
       .select(
-        `id, slug, title_en, title_pt, title_no, summary_en, price_eur,
+        `id, slug, title_en, title_pt, title_no, summary_en,
+         price_eur, price_usd, price_brl, price_nok,
          hero_image_url, is_published, stripe_tax_code,
          stripe_product_id_sandbox, stripe_product_id_live`,
       )
@@ -60,13 +71,33 @@ Deno.serve(async (req) => {
     const stripeEnv: "sandbox" | "live" =
       body.environment === "live" ? "live" : "sandbox";
 
+    // Resolve currency + amount server-side. Never trust a client-sent amount.
+    const requested = (body.currency ?? "eur").toLowerCase();
+    let currency: CurrencyCode = ALLOWED_CURRENCIES.includes(requested as CurrencyCode)
+      ? (requested as CurrencyCode)
+      : "eur";
+    if (currency !== (requested as CurrencyCode)) {
+      console.warn(`Invalid currency '${requested}', falling back to EUR`);
+    }
+    let amount = Number(itin[PRICE_COLUMN[currency]] ?? 0);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      console.warn(
+        `Missing/invalid price for currency '${currency}' on itinerary ${itin.id}; falling back to EUR`,
+      );
+      currency = "eur";
+      amount = Number(itin.price_eur ?? 0);
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return json({ error: "Itinerary has no valid price" }, 500);
+    }
+
     const { data: purchase, error: purchaseErr } = await supabase
       .from("catalog_purchases")
       .insert({
         itinerary_id: itin.id,
         customer_email: body.email,
-        amount_total: itin.price_eur,
-        currency: "EUR",
+        amount_total: amount,
+        currency: currency.toUpperCase(),
         status: "pending",
         stripe_environment: stripeEnv,
       })
@@ -118,8 +149,8 @@ Deno.serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "eur",
-            unit_amount: Math.round(Number(itin.price_eur) * 100),
+            currency,
+            unit_amount: Math.round(amount * 100),
             product: productId,
           },
           quantity: 1,
