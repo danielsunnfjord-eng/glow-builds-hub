@@ -611,6 +611,17 @@ const ItineraryShopDetail = () => {
                   <p className="text-[0.95rem] text-ink/85 leading-relaxed mb-4">
                     {t("shop.customizeIntro", "Want this itinerary tailored to your dates, budget, and preferences?")}
                   </p>
+                  <ul className="space-y-2.5 mb-4">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <li key={n} className="flex items-start gap-3 text-[0.9rem] text-ink/80">
+                        <span className="w-2 h-2 rounded-full bg-ink/70 mt-1.5 shrink-0" aria-hidden="true" />
+                        <span>{t(`shop.customizeItem${n}`, `Customize item ${n}`)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-[0.85rem] text-ink/70 leading-relaxed mb-4">
+                    {t("shop.customizePriceNote", "Final price depends on the level of change — you approve before paying.")}
+                  </p>
                   <button
                     onClick={() => navigate("/plan-my-trip")}
                     className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
