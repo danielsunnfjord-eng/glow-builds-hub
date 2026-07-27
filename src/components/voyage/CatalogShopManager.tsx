@@ -706,9 +706,9 @@ const CatalogShopManager = () => {
             what_you_get_en: "",
             is_published: false,
             price_eur: Number(draftState.priceEur) || 0,
-            price_usd: Number(draftState.priceUsd) || Number(draftState.priceEur) || 0,
-            price_brl: Number(draftState.priceBrl) || Number(draftState.priceEur) || 0,
-            price_nok: Number(draftState.priceNok) || Number(draftState.priceEur) || 0,
+            price_usd: Number(draftState.priceUsd) || 0,
+            price_brl: Number(draftState.priceBrl) || 0,
+            price_nok: Number(draftState.priceNok) || 0,
             primary_language: draftState.language,
           } as any)
           .select("id")
