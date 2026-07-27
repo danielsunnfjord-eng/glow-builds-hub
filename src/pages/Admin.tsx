@@ -194,7 +194,20 @@ const AdminDashboard = () => {
     },
   });
 
-  const updateRequestStatus = useMutation({
+  const deletePurchase = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("catalog_purchases" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["catalog_purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["purchases_by_email"] });
+      toast({ title: t("admin.deletePurchaseSuccess", "Purchase deleted") });
+    },
+    onError: (err: any) => {
+      toast({ title: t("admin.deletePurchaseError", "Could not delete purchase"), description: err.message, variant: "destructive" });
+    },
+  });
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
       if (error) throw error;
