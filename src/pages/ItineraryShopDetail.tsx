@@ -243,6 +243,7 @@ const ItineraryShopDetail = () => {
             email,
             origin: window.location.origin,
             language: lang,
+            currency: currencyForLang(lang, enPref).toLowerCase(),
             environment: getPaymentsEnvironment(),
           },
         },
