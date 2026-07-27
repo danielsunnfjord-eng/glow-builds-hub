@@ -612,9 +612,6 @@ const ItineraryShopDetail = () => {
                   <p className="text-[0.95rem] text-ink/85 leading-relaxed mb-4">
                     {t("shop.customizeIntro", "Want this itinerary tailored to your dates, budget, and preferences?")}
                   </p>
-                  <p className="text-[0.9rem] text-ink/70 mb-5">
-                    {t("shop.customizeFrom", "From tailor-made planning")}
-                  </p>
                   <button
                     onClick={() => navigate("/plan-my-trip")}
                     className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
