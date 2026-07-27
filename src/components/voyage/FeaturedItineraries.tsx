@@ -36,14 +36,18 @@ const FeaturedItineraries = () => {
   const { enPref } = usePreferredCurrency();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["featured-itineraries"],
+    queryKey: ["featured-itineraries", lang],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, created_at",
+          "id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, created_at, primary_language",
         )
-        .eq("is_published", true)
+        .eq("is_published", true);
+      if (lang === "pt") query = query.eq("primary_language", "pt");
+      else if (lang === "en") query = query.eq("primary_language", "en");
+      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
+      const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false })
         .limit(3);
@@ -51,6 +55,7 @@ const FeaturedItineraries = () => {
       return data as FeaturedItem[];
     },
   });
+
 
   if (!isLoading && (!data || data.length === 0)) return null;
 
