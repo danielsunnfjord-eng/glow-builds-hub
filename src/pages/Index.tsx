@@ -8,7 +8,7 @@ import Seo from "@/components/Seo";
 const MeetDaniel = lazy(() => import("@/components/voyage/MeetDaniel"));
 const DualPathCards = lazy(() => import("@/components/voyage/DualPathCards"));
 const FeaturedItineraries = lazy(() => import("@/components/voyage/FeaturedItineraries"));
-const WhatsAppBanner = lazy(() => import("@/components/voyage/WhatsAppBanner"));
+
 
 const Reviews = lazy(() => import("@/components/voyage/Reviews"));
 const PlanMyTrip = lazy(() => import("@/components/voyage/PlanMyTrip"));
@@ -38,7 +38,7 @@ const Index = () => {
           <FeaturedItineraries />
           <MeetDaniel />
           <Reviews />
-          <WhatsAppBanner />
+          <Reviews />
           <PlanMyTrip />
         </Suspense>
       </main>

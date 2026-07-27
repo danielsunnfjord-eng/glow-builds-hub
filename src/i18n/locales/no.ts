@@ -715,11 +715,5 @@ export default {
       seeAll: "Se alle",
       instantPdf: "PDF med en gang",
     },
-    waBanner: {
-      title: "Hvor skal vi først?",
-      subtitle: "Velg et ferdig reiseopplegg nå, eller send meg en melding på WhatsApp for å lage noe skreddersydd.",
-      whatsapp: "Chat på WhatsApp",
-      shop: "Se reiseoppleggene",
-    },
   },
 };
