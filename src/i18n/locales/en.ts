@@ -744,7 +744,7 @@ export default {
       readyTitle: "Ready-made itineraries",
       readyDesc: "Complete PDFs with day-by-day plans, local tips and estimated budgets. Free booking help included.",
       readyCta: "See itineraries",
-      bespokeEyebrow: "Made to measure",
+      bespokeEyebrow: "tailor-made",
       bespokeTitle: "Fully bespoke trip",
       bespokeDesc: "Tell me what you dream of and I plan everything — flights, stays, tours and experiences — with access to exclusive rates and perks.",
       bespokeCta: "Request a quote",
