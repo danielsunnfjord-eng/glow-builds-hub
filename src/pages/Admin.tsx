@@ -187,12 +187,27 @@ const AdminDashboard = () => {
       const { data, error } = await supabase
         .from("catalog_purchases")
         .select("id, customer_email, customer_name, amount_total, currency, status, download_token, download_expires_at, created_at, itinerary_id, catalog_itineraries(title_en, title_pt, title_no, slug, destination, duration)")
+        .eq("status", "paid")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data as any[]) || [];
     },
   });
 
+  const deletePurchase = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("catalog_purchases" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["catalog_purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["purchases_by_email"] });
+      toast({ title: t("admin.deletePurchaseSuccess", "Purchase deleted") });
+    },
+    onError: (err: any) => {
+      toast({ title: t("admin.deletePurchaseError", "Could not delete purchase"), description: err.message, variant: "destructive" });
+    },
+  });
   const updateRequestStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
@@ -666,18 +681,17 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4 mb-8">
                 {(() => {
                   const total = catalogPurchases.length;
-                  const paid = catalogPurchases.filter((p: any) => p.status === "paid").length;
-                  const revenueByCur = catalogPurchases
-                    .filter((p: any) => p.status === "paid")
-                    .reduce((acc: Record<string, number>, p: any) => {
-                      acc[p.currency] = (acc[p.currency] || 0) + (Number(p.amount_total) || 0);
-                      return acc;
-                    }, {} as Record<string, number>);
+                  const revenueByCur = catalogPurchases.reduce((acc: Record<string, number>, p: any) => {
+                    acc[p.currency] = (acc[p.currency] || 0) + (Number(p.amount_total) || 0);
+                    return acc;
+                  }, {} as Record<string, number>);
+                  const uniqueCustomers = new Set(catalogPurchases.map((p: any) => p.customer_email?.toLowerCase()).filter(Boolean)).size;
+                  const uniqueItineraries = new Set(catalogPurchases.map((p: any) => p.itinerary_id).filter(Boolean)).size;
                   return [
                     { label: t("admin.purchasesTotal"), val: total },
-                    { label: t("admin.purchasesPaid"), val: paid },
                     { label: t("admin.purchasesRevenue"), val: Object.entries(revenueByCur).map(([c, a]) => `${c} ${Number(a).toFixed(2)}`).join(" · ") || "—" },
-                    { label: t("admin.purchasesCurrency"), val: Object.keys(revenueByCur).join(" · ") || "—" },
+                    { label: t("admin.purchasesCustomers"), val: uniqueCustomers },
+                    { label: t("admin.purchasesItineraries"), val: uniqueItineraries },
                   ].map((s) => (
                     <div key={s.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
                       <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{s.label}</div>
@@ -698,12 +712,11 @@ const AdminDashboard = () => {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
-                        {[
+                      {[
                           t("admin.purchaseDate"),
                           t("admin.purchaseCustomer"),
                           t("admin.purchaseItinerary"),
                           t("admin.purchaseAmount"),
-                          t("admin.purchaseStatus"),
                           t("admin.purchaseActions"),
                         ].map((h) => (
                           <th key={h} className="px-4 py-3 text-left text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted bg-parchment border-b border-parchment-3">{h}</th>
@@ -715,7 +728,6 @@ const AdminDashboard = () => {
                         const it = p.catalog_itineraries || {};
                         const title = it.title_pt || it.title_en || it.title_no || "—";
                         const date = p.created_at ? new Date(p.created_at).toLocaleDateString() : "—";
-                        const statusColor = p.status === "paid" ? "bg-sage/10 text-sage border-sage/30" : p.status === "refunded" ? "bg-ink/[0.06] text-ink border-parchment-3" : "bg-gold/10 text-gold border-gold/30";
                         return (
                           <tr key={p.id} className="border-b border-parchment-3 last:border-b-0">
                             <td className="px-4 py-3 text-sm text-ink">{date}</td>
@@ -729,12 +741,15 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-4 py-3 text-sm font-semibold text-ink">{p.amount_total} {p.currency}</td>
                             <td className="px-4 py-3 text-sm">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full border text-[0.65rem] font-semibold tracking-[0.06em] uppercase ${statusColor}`}>
-                                {p.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-sm">
-                              <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
+                              <div className="flex items-center gap-2">
+                                <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
+                                <button
+                                  onClick={() => { if (confirm(t("admin.deletePurchaseConfirm"))) deletePurchase.mutate(p.id); }}
+                                  className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all"
+                                >
+                                  {t("admin.delete")}
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
