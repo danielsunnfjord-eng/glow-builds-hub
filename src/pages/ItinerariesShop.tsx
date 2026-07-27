@@ -494,36 +494,79 @@ const ItinerariesShop = () => {
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
                     {t("catalogue.suggestion.experienceLabel")}
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {EXPERIENCE_OPTIONS.map((x) => {
-                      const active = sg.experience.includes(x);
-                      return (
-                        <label
-                          key={x}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-sm border cursor-pointer transition-colors ${
-                            active
-                              ? "border-gold bg-gold/10"
-                              : "border-ink/15 bg-voyage-white hover:border-ink/30"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={active}
-                            onChange={() => toggleExperience(x)}
-                            className="w-4 h-4 accent-gold shrink-0"
-                          />
-                          <span className="text-[0.9rem] text-ink leading-snug">
-                            {t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                  {sg.experience.length === 0 && (
-                    <p className="mt-2 text-[0.7rem] text-voyage-muted">
-                      {t("catalogue.suggestion.experiencePlaceholder")}
-                    </p>
-                  )}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          inputCls,
+                          "flex items-center justify-between min-h-[48px] text-left gap-2",
+                        )}
+                      >
+                        <span className="flex flex-wrap gap-1.5">
+                          {sg.experience.length === 0 ? (
+                            <span className="text-voyage-muted/70">
+                              {t("catalogue.suggestion.experiencePlaceholder")}
+                            </span>
+                          ) : (
+                            sg.experience.map((x) => (
+                              <span
+                                key={x}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm bg-gold/15 text-[0.75rem] text-ink"
+                              >
+                                {t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}
+                                <span
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleExperience(x);
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                      e.stopPropagation();
+                                      toggleExperience(x);
+                                    }
+                                  }}
+                                  className="cursor-pointer hover:text-destructive"
+                                  aria-label={`Remove ${x}`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </span>
+                              </span>
+                            ))
+                          )}
+                        </span>
+                        <ChevronDown className="w-4 h-4 text-voyage-muted shrink-0" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-[var(--radix-popover-trigger-width)] p-0"
+                      align="start"
+                    >
+                      <div className="max-h-[260px] overflow-y-auto p-2">
+                        {EXPERIENCE_OPTIONS.map((x) => {
+                          const active = sg.experience.includes(x);
+                          return (
+                            <label
+                              key={x}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-sm cursor-pointer transition-colors ${
+                                active ? "bg-gold/10" : "hover:bg-ink/5"
+                              }`}
+                            >
+                              <Checkbox
+                                checked={active}
+                                onCheckedChange={() => toggleExperience(x)}
+                              />
+                              <span className="text-[0.9rem] text-ink leading-snug">
+                                {t(`catalogue.experience.${x.replace(/\s/g, "").toLowerCase()}`, x)}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div>
                   <label className="block text-[0.7rem] font-semibold tracking-[0.16em] uppercase text-voyage-muted mb-2">
