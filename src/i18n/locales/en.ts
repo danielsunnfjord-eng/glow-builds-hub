@@ -29,6 +29,7 @@ export default {
     whatYouGet: "What you get",
     aboutItinerary: "About this itinerary",
     estimatedBudget: "Estimated trip budget",
+    budgetEstimateBox: "Budget estimate — realistic cost ranges to plan your trip with peace of mind",
     duration: "Duration",
     destination: "Destination",
     groupSize: "Ideal for",

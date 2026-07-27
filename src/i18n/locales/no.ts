@@ -28,6 +28,7 @@ export default {
     whatYouGet: "Hva du får",
     aboutItinerary: "Om denne reiseruten",
     estimatedBudget: "Estimert reisebudsjett",
+    budgetEstimateBox: "Budsjettestimat — realistiske kostnadsområder for å planlegge reisen din med ro",
     duration: "Varighet",
     destination: "Destinasjon",
     groupSize: "Ideell for",
