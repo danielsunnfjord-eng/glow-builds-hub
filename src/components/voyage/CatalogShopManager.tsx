@@ -2030,6 +2030,18 @@ const CatalogShopManager = () => {
               <Label>Price (EUR)</Label>
               <Input type="number" min="0" step="1" value={state.priceEur} onChange={(e) => setState({ ...state, priceEur: e.target.value })} />
             </div>
+            <div>
+              <Label>Price (USD)</Label>
+              <Input type="number" min="0" step="1" value={state.priceUsd} onChange={(e) => setState({ ...state, priceUsd: e.target.value })} />
+            </div>
+            <div>
+              <Label>Price (BRL)</Label>
+              <Input type="number" min="0" step="1" value={state.priceBrl} onChange={(e) => setState({ ...state, priceBrl: e.target.value })} />
+            </div>
+            <div>
+              <Label>Price (NOK)</Label>
+              <Input type="number" min="0" step="1" value={state.priceNok} onChange={(e) => setState({ ...state, priceNok: e.target.value })} />
+            </div>
             <div className="md:col-span-2">
               <Label>Short brief / notes for AI</Label>
               <Textarea rows={2} value={state.brief} onChange={(e) => setState({ ...state, brief: e.target.value })} placeholder="Any specific angle, audience, must-include experiences…" />
