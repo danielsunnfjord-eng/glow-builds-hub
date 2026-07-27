@@ -619,7 +619,7 @@ const ItineraryShopDetail = () => {
                     onClick={() => navigate("/plan-my-trip")}
                     className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
                   >
-                    {t("shop.tailorCta", "Contact us")}
+                    {t("shop.customizeContact", "Get in touch for a free quote")}
                   </button>
                 </div>
               </div>
