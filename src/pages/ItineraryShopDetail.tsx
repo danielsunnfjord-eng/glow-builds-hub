@@ -17,7 +17,7 @@ import {
   Moon as MoonIcon,
   MessageCircle,
   Award,
-  Info,
+  Check,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -584,21 +584,43 @@ const ItineraryShopDetail = () => {
                 </div>
               )}
 
-              {/* SELF-GUIDED NOTE */}
-              <div className="mb-14 rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 flex gap-4 items-start shadow-sm">
-                <div className="shrink-0 w-9 h-9 rounded-full bg-gold/25 flex items-center justify-center mt-0.5">
-                  <Info className="w-4 h-4 text-ink" aria-hidden="true" />
-                </div>
-                <div>
-                  <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-ink mb-2">
-                    {t("shop.selfGuidedHeading", "Good to know")}
+              {/* INCLUDED + CUSTOMIZE dual callouts */}
+              <div className="mb-14 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Included box */}
+                <div className="rounded-lg border border-emerald-700/20 bg-emerald-700/10 p-6 max-md:p-5 shadow-sm">
+                  <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-emerald-900 mb-3">
+                    {t("shop.includedTitle", "Included")}
                   </div>
-                  <p className="text-[0.95rem] text-ink/85 leading-relaxed">
-                    {t(
-                      "shop.selfGuidedNote",
-                      "This itinerary is a self-guided plan — flights, accommodation, and activity bookings are not included. Need help putting it all together? We offer optional booking assistance, custom edits, and trip support for a small additional fee.",
-                    )}
+                  <p className="text-[0.95rem] text-emerald-950/85 leading-relaxed mb-4">
+                    {t("shop.includedIntro", "What you receive with this itinerary.")}
                   </p>
+                  <ul className="space-y-2.5">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <li key={n} className="flex items-start gap-3 text-[0.9rem] text-emerald-950/80">
+                        <Check className="w-4 h-4 text-emerald-800 mt-0.5 shrink-0" aria-hidden="true" />
+                        <span>{t(`shop.includedItem${n}`, `Included item ${n}`)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Customize box */}
+                <div className="rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 shadow-sm">
+                  <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-ink mb-3">
+                    {t("shop.customizeTitle", "Customize this trip")}
+                  </div>
+                  <p className="text-[0.95rem] text-ink/85 leading-relaxed mb-4">
+                    {t("shop.customizeIntro", "Want this itinerary tailored to your dates, budget, and preferences?")}
+                  </p>
+                  <p className="text-[0.9rem] text-ink/70 mb-5">
+                    {t("shop.customizeFrom", "From tailor-made planning")}
+                  </p>
+                  <button
+                    onClick={() => navigate("/plan-my-trip")}
+                    className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
+                  >
+                    {t("shop.tailorCta", "Contact us")}
+                  </button>
                 </div>
               </div>
 
