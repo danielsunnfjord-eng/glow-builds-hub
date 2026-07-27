@@ -544,13 +544,21 @@ const AdminDashboard = () => {
                       reviewed: "bg-sage/10 text-sage border-sage/30",
                       converted: "bg-ink/[0.06] text-ink border-parchment-3",
                     };
+                    const emailKey = (req.client_email || "").trim().toLowerCase();
+                    const clientPurchases = emailKey ? (purchasesByEmail.get(emailKey) || []) : [];
                     return (
                       <div key={req.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5 hover:shadow-sm transition-shadow">
                         <div className="flex justify-between items-start mb-3 max-md:flex-col max-md:gap-2">
                           <div>
-                            <div className="flex items-center gap-2 mb-1">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
                               <h3 className="font-serif text-lg font-bold text-ink">{req.client_name}</h3>
                               <Badge label={t(`requests.${req.status}`)} style={statusColors[req.status] || statusColors.new} />
+                              {clientPurchases.length > 0 && (
+                                <Badge
+                                  label={`✓ ${t("requests.customerBadge")} · ${clientPurchases.length}`}
+                                  style="bg-sage/10 text-sage border-sage/30"
+                                />
+                              )}
                             </div>
                             <p className="text-[0.78rem] text-voyage-muted">{req.client_email} {req.phone && `· ${req.phone}`}</p>
                           </div>
@@ -558,6 +566,35 @@ const AdminDashboard = () => {
                             {t("requests.received")}: {new Date(req.created_at).toLocaleDateString()}
                           </div>
                         </div>
+                        {clientPurchases.length > 0 && (
+                          <div className="mb-4 bg-sage/5 border border-sage/20 rounded-sm p-3">
+                            <div className="text-[0.7rem] uppercase tracking-wider text-sage font-semibold mb-2">
+                              {t("requests.previousPurchases")}
+                            </div>
+                            <ul className="flex flex-col gap-1.5">
+                              {clientPurchases.map((p: any) => (
+                                <li key={p.id} className="text-[0.8rem] text-ink flex items-center gap-2 flex-wrap">
+                                  {p.catalog_itineraries?.slug ? (
+                                    <a
+                                      href={`/catalogue/${p.catalog_itineraries.slug}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="font-medium underline hover:text-gold"
+                                    >
+                                      {p.catalog_itineraries?.title_en || "Itinerary"}
+                                    </a>
+                                  ) : (
+                                    <span className="font-medium">{p.catalog_itineraries?.title_en || "Itinerary"}</span>
+                                  )}
+                                  <span className="text-voyage-muted text-[0.72rem]">
+                                    · {new Date(p.created_at).toLocaleDateString()} · {Number(p.amount_total).toFixed(2)} {p.currency?.toUpperCase()}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
                         <div className="grid grid-cols-4 max-md:grid-cols-2 gap-3 mb-4 text-[0.82rem]">
                           {req.departure && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.departure")}</span><span className="text-ink">{req.departure}</span></div>}
                           {req.destination && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.destination")}</span><span className="text-ink">{req.destination}</span></div>}
