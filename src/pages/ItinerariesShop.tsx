@@ -221,6 +221,11 @@ const ItinerariesShop = () => {
       {/* FILTER BAR */}
       <section className="border-b border-ink/10 bg-voyage-white sticky top-0 z-30 shadow-sm">
         <div className="max-w-[1200px] mx-auto px-4 md:px-16 py-3 md:py-5">
+          {showCurrencyToggle && (
+            <div className="flex justify-end mb-2">
+              <CurrencyToggle variant="light" />
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-12 gap-2 md:gap-3">
             <div className="col-span-2 md:col-span-3">
               <div className="relative">
