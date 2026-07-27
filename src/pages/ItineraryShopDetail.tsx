@@ -17,7 +17,6 @@ import {
   Moon as MoonIcon,
   MessageCircle,
   Award,
-  Info,
   Check,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
