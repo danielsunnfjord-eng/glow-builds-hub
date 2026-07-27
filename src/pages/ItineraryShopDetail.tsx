@@ -116,6 +116,9 @@ interface CatalogItem {
   hero_image_caption: string | null;
   gallery_images: string[];
   price_eur: number;
+  price_usd: number | null;
+  price_brl: number | null;
+  price_nok: number | null;
   is_published: boolean;
   itinerary_content_en: string | null;
   itinerary_content_pt: string | null;
@@ -143,6 +146,7 @@ const ItineraryShopDetail = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { enPref } = usePreferredCurrency();
 
   const { data, isLoading } = useQuery({
     queryKey: ["catalog-itinerary", slug],
@@ -163,13 +167,13 @@ const ItineraryShopDetail = () => {
     queryFn: async () => {
       const { data: res, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok")
         .eq("is_published", true)
         .neq("slug", slug!)
         .order("sort_order", { ascending: true })
         .limit(3);
       if (error) throw error;
-      return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur">>;
+      return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur" | "price_usd" | "price_brl" | "price_nok">>;
     },
     enabled: !!slug,
   });
@@ -352,7 +356,9 @@ const ItineraryShopDetail = () => {
     },
   };
 
-  const priceLabel = `€${Number(data.price_eur).toFixed(0)}`;
+  const displayCurrency = currencyForLang(lang, enPref);
+  const priceLabel = formatPrice(data, lang, enPref);
+  const showCurrencyToggle = lang === "en";
 
   return (
     <div className="min-h-screen bg-parchment">
