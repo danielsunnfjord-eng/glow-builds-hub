@@ -54,7 +54,7 @@ export default {
     selfGuidedHeading: "Good to know",
     selfGuidedNote: "This itinerary is a self-guided plan — flights, accommodation, and activity bookings are not included. Need help putting it all together? We offer optional booking assistance, custom edits, and trip support for a small additional fee.",
     includedTitle: "Included, no extra cost",
-    includedIntro: "Once you buy this itinerary, we help you book what's already recommended in it — free.",
+    includedIntro: "Once you buy this itinerary, we help you with bookings and reservations — free.",
     includedItem1: "Help booking hotels",
     includedItem2: "Support booking activities and experiences",
     includedItem3: "Transfer bookings",
