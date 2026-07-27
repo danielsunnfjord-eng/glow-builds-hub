@@ -1,31 +1,34 @@
+# Add Purchases overview to Admin
+
+## Current state
+- The Admin dashboard has tabs: Projects, Requests, Assistant, Routes, Creator.
+- The Catalogue module shows the itinerary editor/manager (`CatalogShopManager`), not customers.
+- `catalog_purchases` is only queried to match against trip-request emails in the Requests tab.
+- There is no place to see every customer who bought a pre-designed itinerary.
+
 ## Goal
-Show admin, on each trip request in the dashboard, whether the client has already purchased an itinerary from the shop — matched automatically by email.
+Add a dedicated **Purchases** tab in the Admin that lists all `catalog_purchases` records, including customer and itinerary details.
 
-## How the match works
-- On the Requests tab, for every visible `trip_requests` row, look up paid rows in `catalog_purchases` where `customer_email = trip_requests.client_email` (case-insensitive).
-- Group results per email so one query covers the whole list.
-- A request is a "customer" if it has ≥1 `paid` purchase for that email.
+## Changes
 
-## UI changes (Admin.tsx, Requests tab only)
-On each request card, next to the status badge:
-- If purchases found: a green "Customer" badge showing the count (e.g. "Customer · 2 purchases").
-- Expand the card with a small "Previous purchases" block listing each: itinerary title, purchase date, amount + currency, status. Titles link to the itinerary shop detail page.
-- If no match: no extra badge (keeps the card clean).
+### 1. `src/pages/Admin.tsx`
+- Add `"purchases"` to `activeTab` union.
+- Add a new tab button next to Requests/Projects.
+- Fetch `catalog_purchases` joined with `catalog_itineraries` (title, slug) and order by `created_at` descending.
+- Render a table with columns:
+  - Customer (name + email)
+  - Itinerary (title + link to `/catalogue/:slug`)
+  - Amount (with correct currency symbol)
+  - Status (paid / pending)
+  - Purchase date
+  - Download token / Actions (copy/resend link)
+- Add a stats row for total purchases, paid count, and revenue by currency.
 
-No changes to the public site, the trip request form, or the purchases table.
+### 2. Localization
+- Add new keys under `admin.purchases*` in `src/i18n/locales/en.ts`, `pt.ts`, and `no.ts`.
 
-## Technical details
-- New react-query query `["request-purchases", emails]` in `src/pages/Admin.tsx`:
-  - Collect unique lowercase emails from `tripRequests`.
-  - `supabase.from('catalog_purchases').select('id, customer_email, itinerary_id, amount_total, currency, status, created_at, catalog_itineraries(title_en, slug)').in('customer_email', emails).eq('status','paid')`.
-  - Build `Map<emailLower, Purchase[]>`.
-- Render badge + list from that map inside the existing `tripRequests.map(...)` block.
-- Add localized strings `requests.customerBadge`, `requests.previousPurchases`, `requests.noPurchases` to `en.ts`, `pt.ts`, `no.ts`.
+### 3. No backend changes needed
+- `catalog_purchases` is already accessible via existing RLS policies for authenticated admin/staff users.
 
-## RLS / permissions
-`catalog_purchases` already allows staff/admin SELECT (used by existing sales dashboards), so no policy changes are needed. If the query returns empty for a known match, we'll re-verify the policy at implementation time.
-
-## Out of scope
-- No schema changes, no foreign key between the tables.
-- No changes to the client-facing form or emails.
-- Email normalization is limited to lowercasing; no alias handling (`+tag`, etc.).
+## Outcome
+Admins can open the **Purchases** tab and see a complete, filterable list of everyone who bought a pre-designed itinerary, with direct links to the itinerary subpages and quick revenue totals.
