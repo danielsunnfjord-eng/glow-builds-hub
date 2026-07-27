@@ -723,11 +723,6 @@ export default {
       bespokeTitle: "Fully bespoke trip",
       bespokeDesc: "Tell me what you dream of and I plan everything — flights, stays, tours and experiences — with access to exclusive rates and perks.",
       bespokeCta: "Request a quote",
-      credName: "Daniel — travel designer, Fjord & Waves Travel",
-      credBio: "Brazilian, based in Norway since 2010 · trilingual · planning trips since 2010",
-      credBadge1: "IATA Accredited",
-      credBadge2: "Fora Travel Member",
-      credBadge3: "+50 trips planned",
     },
     featured: {
       eyebrow: "Ready-made itineraries",

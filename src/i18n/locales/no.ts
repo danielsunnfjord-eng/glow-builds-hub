@@ -708,11 +708,6 @@ export default {
       bespokeTitle: "Helt skreddersydd reise",
       bespokeDesc: "Fortell meg om drømmereisen din, så planlegger jeg alt — fly, overnatting, turer og opplevelser — med tilgang til eksklusive priser og fordeler.",
       bespokeCta: "Be om pristilbud",
-      credName: "Daniel — travel designer, Fjord & Waves Travel",
-      credBio: "Brasilianer, bosatt i Norge siden 2010 · trespråklig · planlegger reiser siden 2010",
-      credBadge1: "IATA Accredited",
-      credBadge2: "Fora Travel Member",
-      credBadge3: "+50 reiser planlagt",
     },
     featured: {
       eyebrow: "Ferdige reiseopplegg",
