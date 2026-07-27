@@ -149,6 +149,38 @@ const AdminDashboard = () => {
     },
   });
 
+  const requestEmails = Array.from(
+    new Set(
+      (tripRequests as any[])
+        .map((r) => (r.client_email || "").trim().toLowerCase())
+        .filter(Boolean)
+    )
+  );
+
+  const { data: purchasesByEmail = new Map<string, any[]>() } = useQuery({
+    queryKey: ["request-purchases", requestEmails],
+    enabled: requestEmails.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("catalog_purchases")
+        .select("id, customer_email, itinerary_id, amount_total, currency, status, created_at, catalog_itineraries(title_en, slug)")
+        .in("customer_email", requestEmails)
+        .eq("status", "paid")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const map = new Map<string, any[]>();
+      for (const row of (data as any[]) || []) {
+        const key = (row.customer_email || "").trim().toLowerCase();
+        if (!key) continue;
+        const arr = map.get(key) || [];
+        arr.push(row);
+        map.set(key, arr);
+      }
+      return map;
+    },
+  });
+
+
   const updateRequestStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { error } = await supabase.from("trip_requests" as any).update({ status } as any).eq("id", id);
