@@ -9,9 +9,20 @@ interface Props {
   itineraryTitle?: string
   downloadUrl?: string
   amount?: string
+  currency?: string
 }
 
-const Email = ({ customerName, itineraryTitle, downloadUrl, amount }: Props) => (
+const SYMBOLS: Record<string, string> = { EUR: '€', USD: '$', BRL: 'R$', NOK: 'kr ' }
+
+const formatPrice = (amount?: string, currency?: string) => {
+  if (!amount) return ''
+  const code = (currency ?? 'EUR').toUpperCase()
+  const sym = SYMBOLS[code]
+  if (code === 'NOK') return `${amount} NOK`
+  return sym ? `${sym}${amount}` : `${amount} ${code}`
+}
+
+const Email = ({ customerName, itineraryTitle, downloadUrl, amount, currency }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>Your itinerary is ready to download</Preview>
@@ -23,7 +34,7 @@ const Email = ({ customerName, itineraryTitle, downloadUrl, amount }: Props) => 
         </Text>
         <Text style={text}>
           Your purchase of <strong>{itineraryTitle ?? 'your itinerary'}</strong>
-          {amount ? ` (€${amount})` : ''} has been confirmed.
+          {amount ? ` (${formatPrice(amount, currency)})` : ''} has been confirmed.
         </Text>
         <Text style={text}>
           Click the button below to download your PDF itinerary. The link is valid for 7 days.

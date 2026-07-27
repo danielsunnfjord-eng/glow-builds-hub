@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: purchase } = await supabase
       .from("catalog_purchases")
-      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total, stripe_environment")
+      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total, currency, stripe_environment")
       .eq("download_token", token)
       .maybeSingle();
 
@@ -89,6 +89,7 @@ Deno.serve(async (req) => {
               itineraryTitle: title,
               downloadUrl,
               amount: purchase.amount_total ? String(purchase.amount_total) : undefined,
+              currency: purchase.currency ?? "EUR",
             },
           },
         });
@@ -108,7 +109,7 @@ Deno.serve(async (req) => {
               itineraryTitle: itin?.title_en ?? "(unknown)",
               itinerarySlug: itin?.slug,
               amount: purchase.amount_total ? String(purchase.amount_total) : undefined,
-              currency: "EUR",
+              currency: purchase.currency ?? "EUR",
               purchasedAt: new Date().toISOString(),
             },
           },
