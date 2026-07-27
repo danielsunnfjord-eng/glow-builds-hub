@@ -17,7 +17,7 @@ import AdvisorAssistant from "@/components/voyage/AdvisorAssistant";
 import CatalogShopManager from "@/components/voyage/CatalogShopManager";
 import RequestItineraryDialog from "@/components/voyage/RequestItineraryDialog";
 import ProjectItineraryDialog from "@/components/voyage/ProjectItineraryDialog";
-import { Sparkles, FileText, ShoppingBag } from "lucide-react";
+import { Sparkles, FileText } from "lucide-react";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
