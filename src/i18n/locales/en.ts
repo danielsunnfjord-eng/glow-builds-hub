@@ -741,7 +741,7 @@ export default {
       title: "Your next trip, the way you need it",
       subtitle: "Pick a ready-made itinerary and start planning today, or ask for a fully custom trip — both come from the same care and local knowledge.",
       readyEyebrow: "Fast and accessible",
-      readyTitle: "Ready-made itineraries",
+      readyTitle: "pre-designed itineraries",
       readyDesc: "Complete PDFs with day-by-day plans, local tips and estimated budgets. Free booking help included.",
       readyCta: "See itineraries",
       bespokeEyebrow: "tailor-made",
@@ -750,7 +750,7 @@ export default {
       bespokeCta: "Request a quote",
     },
     featured: {
-      eyebrow: "Ready-made itineraries",
+      eyebrow: "pre-designed itineraries",
       title: "Start planning today",
       seeAll: "See all",
       instantPdf: "Instant PDF",
