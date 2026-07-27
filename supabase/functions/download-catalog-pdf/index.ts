@@ -19,8 +19,14 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { token } = await req.json();
+    const url = new URL(req.url);
+    const isGet = req.method === "GET";
+    const token = isGet
+      ? url.searchParams.get("token")
+      : (await req.json().catch(() => ({})))?.token;
     if (!token) return json({ error: "Missing token" }, 400);
+
+
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
