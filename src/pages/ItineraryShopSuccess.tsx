@@ -121,7 +121,6 @@ const ItineraryShopSuccess = () => {
           )}
         </div>
       </main>
-      </main>
       <Footer />
     </div>
   );
