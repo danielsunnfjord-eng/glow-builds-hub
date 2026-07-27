@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
 
     const { data: purchase } = await supabase
       .from("catalog_purchases")
-      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total, stripe_environment")
+      .select("id, status, itinerary_id, stripe_session_id, customer_email, amount_total, currency, stripe_environment")
       .eq("download_token", token)
       .maybeSingle();
 
