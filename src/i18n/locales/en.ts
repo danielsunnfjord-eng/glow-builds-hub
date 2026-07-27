@@ -584,6 +584,8 @@ export default {
     deleteConfirm: "Delete this request?",
     requestFrom: "Request from",
     received: "Received",
+    customerBadge: "Customer",
+    previousPurchases: "Previous purchases",
   },
   aiEdit: {
     rewrite: "Rewrite",

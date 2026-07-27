@@ -1,44 +1,31 @@
-
 ## Goal
+Show admin, on each trip request in the dashboard, whether the client has already purchased an itinerary from the shop — matched automatically by email.
 
-Add the three sections shown in the mockups to the homepage while keeping "What does your travel advisor do?", "What I can arrange", and "What clients say" fully intact.
+## How the match works
+- On the Requests tab, for every visible `trip_requests` row, look up paid rows in `catalog_purchases` where `customer_email = trip_requests.client_email` (case-insensitive).
+- Group results per email so one query covers the whole list.
+- A request is a "customer" if it has ≥1 `paid` purchase for that email.
 
-## What the mockups show
+## UI changes (Admin.tsx, Requests tab only)
+On each request card, next to the status badge:
+- If purchases found: a green "Customer" badge showing the count (e.g. "Customer · 2 purchases").
+- Expand the card with a small "Previous purchases" block listing each: itinerary title, purchase date, amount + currency, status. Titles link to the itinerary shop detail page.
+- If no match: no extra badge (keeps the card clean).
 
-1. **Dual-path block** (image-71): Two side-by-side cards — "Ready-made itineraries" (description + "See itineraries" button → `/catalogue`, no price shown) and "Fully bespoke trip" (description + "Request a quote" button → `/start-your-journey`). Slim Daniel credentials strip below (avatar + IATA / Fora / 50+ trips badges).
+No changes to the public site, the trip request form, or the purchases table.
 
-2. **"How it works" + featured itineraries** (image-72): Keep the existing 3-step "How it works" block. Add a new "Start planning today" row showing 3 featured itineraries pulled from `catalog_itineraries` (published only, newest first) with a "See all →" link to `/catalogue`.
+## Technical details
+- New react-query query `["request-purchases", emails]` in `src/pages/Admin.tsx`:
+  - Collect unique lowercase emails from `tripRequests`.
+  - `supabase.from('catalog_purchases').select('id, customer_email, itinerary_id, amount_total, currency, status, created_at, catalog_itineraries(title_en, slug)').in('customer_email', emails).eq('status','paid')`.
+  - Build `Map<emailLower, Purchase[]>`.
+- Render badge + list from that map inside the existing `tripRequests.map(...)` block.
+- Add localized strings `requests.customerBadge`, `requests.previousPurchases`, `requests.noPurchases` to `en.ts`, `pt.ts`, `no.ts`.
 
-3. **WhatsApp CTA banner** (image-73): Dark ink banner "Where shall we go first?" with two buttons — green "Chat on WhatsApp" (uses `WHATSAPP_URL`) and gold "See itineraries" (→ `/catalogue`).
+## RLS / permissions
+`catalog_purchases` already allows staff/admin SELECT (used by existing sales dashboards), so no policy changes are needed. If the query returns empty for a known match, we'll re-verify the policy at implementation time.
 
-## Placement on `src/pages/Index.tsx`
-
-```text
-Navbar
-CuratedSection (existing — hero + how-it-works + advisor role + perks + services)
-NEW: <DualPathCards/>            ← inserted here
-NEW: <FeaturedItineraries/>      ← inserted here
-MeetDaniel  (existing — "What does your travel advisor do?")
-Reviews     (existing — "What clients say")
-NEW: <WhatsAppBanner/>
-PlanMyTrip  (existing)
-Footer
-```
-
-`CuratedSection.tsx`, `MeetDaniel.tsx`, and `Reviews.tsx` stay untouched.
-
-## Files to create
-
-- `src/components/voyage/DualPathCards.tsx` — two-card block + credentials strip. No prices.
-- `src/components/voyage/FeaturedItineraries.tsx` — fetches top 3 published itineraries via the supabase client, reuses card styling from `ItinerariesShop.tsx` and `formatPrice` / `usePreferredCurrency` from `src/lib/pricing.tsx` for each card's own price.
-- `src/components/voyage/WhatsAppBanner.tsx` — dark banner with WhatsApp + catalogue CTAs, using existing `WHATSAPP_URL` from `src/lib/whatsapp.ts` (no `target="_blank"`).
-
-## Files to modify
-
-- `src/pages/Index.tsx` — render the three new components in the order above; lazy-load `FeaturedItineraries` and `WhatsAppBanner` under the existing `Suspense`.
-- `src/i18n/locales/en.ts`, `pt.ts`, `no.ts` — add a new `home` namespace with all copy from the mockups (dual-path titles/descriptions/CTAs, credentials strip labels, featured section heading + "See all", WhatsApp banner text). Translated in EN / PT / NO.
-
-## Not touched
-
-- No schema, edge-function, pricing-logic, or checkout changes.
-- No starting-price display on the ready-made card.
+## Out of scope
+- No schema changes, no foreign key between the tables.
+- No changes to the client-facing form or emails.
+- Email normalization is limited to lowercasing; no alias handling (`+tag`, etc.).

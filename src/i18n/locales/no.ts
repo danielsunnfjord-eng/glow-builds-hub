@@ -569,6 +569,8 @@ export default {
     deleteConfirm: "Slette denne forespørselen?",
     requestFrom: "Forespørsel fra",
     received: "Mottatt",
+    customerBadge: "Kunde",
+    previousPurchases: "Tidligere kjøp",
   },
   aiEdit: {
     rewrite: "Omskriv",
