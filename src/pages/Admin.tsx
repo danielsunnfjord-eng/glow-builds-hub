@@ -681,18 +681,17 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4 mb-8">
                 {(() => {
                   const total = catalogPurchases.length;
-                  const paid = catalogPurchases.filter((p: any) => p.status === "paid").length;
-                  const revenueByCur = catalogPurchases
-                    .filter((p: any) => p.status === "paid")
-                    .reduce((acc: Record<string, number>, p: any) => {
-                      acc[p.currency] = (acc[p.currency] || 0) + (Number(p.amount_total) || 0);
-                      return acc;
-                    }, {} as Record<string, number>);
+                  const revenueByCur = catalogPurchases.reduce((acc: Record<string, number>, p: any) => {
+                    acc[p.currency] = (acc[p.currency] || 0) + (Number(p.amount_total) || 0);
+                    return acc;
+                  }, {} as Record<string, number>);
+                  const uniqueCustomers = new Set(catalogPurchases.map((p: any) => p.customer_email?.toLowerCase()).filter(Boolean)).size;
+                  const uniqueItineraries = new Set(catalogPurchases.map((p: any) => p.itinerary_id).filter(Boolean)).size;
                   return [
                     { label: t("admin.purchasesTotal"), val: total },
-                    { label: t("admin.purchasesPaid"), val: paid },
                     { label: t("admin.purchasesRevenue"), val: Object.entries(revenueByCur).map(([c, a]) => `${c} ${Number(a).toFixed(2)}`).join(" · ") || "—" },
-                    { label: t("admin.purchasesCurrency"), val: Object.keys(revenueByCur).join(" · ") || "—" },
+                    { label: t("admin.purchasesCustomers"), val: uniqueCustomers },
+                    { label: t("admin.purchasesItineraries"), val: uniqueItineraries },
                   ].map((s) => (
                     <div key={s.label} className="bg-voyage-white border border-parchment-3 rounded-lg p-5">
                       <div className="text-[0.68rem] font-semibold tracking-[0.1em] uppercase text-voyage-muted mb-1">{s.label}</div>
