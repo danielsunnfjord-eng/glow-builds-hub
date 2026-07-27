@@ -187,6 +187,7 @@ const AdminDashboard = () => {
       const { data, error } = await supabase
         .from("catalog_purchases")
         .select("id, customer_email, customer_name, amount_total, currency, status, download_token, download_expires_at, created_at, itinerary_id, catalog_itineraries(title_en, title_pt, title_no, slug, destination, duration)")
+        .eq("status", "paid")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data as any[]) || [];
