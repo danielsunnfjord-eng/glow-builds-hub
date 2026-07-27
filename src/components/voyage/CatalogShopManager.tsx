@@ -1763,7 +1763,17 @@ const CatalogShopManager = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 text-[0.82rem]">
                       <div>
                         <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.experience")}</span>
-                        <span className="text-ink">{s.experience_type || "—"}</span>
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {(s.experience_type || "")
+                            .split(",")
+                            .map((x) => x.trim())
+                            .filter(Boolean)
+                            .map((x, i) => (
+                              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-sm bg-parchment-2 text-[0.75rem] text-ink">
+                                {x}
+                              </span>
+                            )) || <span className="text-ink">—</span>}
+                        </div>
                       </div>
                       <div className="md:col-span-2">
                         <span className="text-voyage-muted text-[0.65rem] uppercase tracking-wider block">{t("adminSuggestions.email")}</span>
