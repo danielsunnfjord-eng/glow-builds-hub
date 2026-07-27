@@ -1492,7 +1492,15 @@ const CatalogShopManager = () => {
       label: "At least one hotel recommendation has been added",
       ok: s.hotels.some((h) => h.name.trim()),
     },
-    { key: "price", label: "Price has been set", ok: Number(s.priceEur) > 0 },
+    {
+      key: "price",
+      label: "Prices set for EUR, USD, BRL and NOK (distinct real values)",
+      ok:
+        Number(s.priceEur) > 0 &&
+        Number(s.priceUsd) > 0 && Number(s.priceUsd) !== Number(s.priceEur) &&
+        Number(s.priceBrl) > 0 && Number(s.priceBrl) !== Number(s.priceEur) &&
+        Number(s.priceNok) > 0 && Number(s.priceNok) !== Number(s.priceEur),
+    },
     {
       key: "summaries",
       label: "Short description filled in for EN / PT / NO",
