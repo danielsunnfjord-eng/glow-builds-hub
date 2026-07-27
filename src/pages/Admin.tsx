@@ -517,6 +517,9 @@ const AdminDashboard = () => {
                     </span>
                   )}
                 </button>
+                <button onClick={() => setActiveTab("purchases")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "purchases" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
+                  {t("admin.purchases")}
+                </button>
                 <button onClick={() => setActiveTab("projects")} className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.08em] uppercase border-b-2 transition-all ${activeTab === "projects" ? "border-ink text-ink" : "border-transparent text-voyage-muted hover:text-ink"}`}>
                   {t("admin.projects")}
                 </button>
