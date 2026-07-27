@@ -80,20 +80,25 @@ const ItinerariesShop = () => {
   }, [t]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["catalog-itineraries-public"],
+    queryKey: ["catalog-itineraries-public", lang],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("catalog_itineraries")
         .select(
           "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, primary_language",
         )
-        .eq("is_published", true)
+        .eq("is_published", true);
+      if (lang === "pt") query = query.eq("primary_language", "pt");
+      else if (lang === "en") query = query.eq("primary_language", "en");
+      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
+      const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as CatalogItem[];
     },
   });
+
 
   // Filter state
   const [search, setSearch] = useState("");
