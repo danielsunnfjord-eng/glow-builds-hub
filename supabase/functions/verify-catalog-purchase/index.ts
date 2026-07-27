@@ -67,18 +67,12 @@ Deno.serve(async (req) => {
 
       const { data: itin } = await fetchItin();
 
-      // Send confirmation email with PDF download link
+      // Send confirmation email with a durable download link that always
+      // resolves a fresh signed URL (works even if pdf_path is attached later).
       try {
         const title = itin?.title_en ?? "your itinerary";
-        let downloadUrl: string | null = null;
-        if (itin?.pdf_path) {
-          const { data: signed } = await supabase.storage
-            .from("catalog-pdfs")
-            .createSignedUrl(itin.pdf_path, 60 * 60 * 24 * 7, {
-              download: `${title}.pdf`.replace(/[^\w.\- ]/g, ""),
-            });
-          downloadUrl = signed?.signedUrl ?? null;
-        }
+        const downloadUrl = `${SUPABASE_URL}/functions/v1/download-catalog-pdf?token=${encodeURIComponent(token)}`;
+
         await supabase.functions.invoke("send-transactional-email", {
           body: {
             templateName: "catalog-purchase-confirmation",
