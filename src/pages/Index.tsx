@@ -38,7 +38,7 @@ const Index = () => {
           <FeaturedItineraries />
           <MeetDaniel />
           <Reviews />
-          <Reviews />
+
           <PlanMyTrip />
         </Suspense>
       </main>
