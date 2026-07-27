@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/voyage/Navbar";
-import CuratedSection from "@/components/voyage/CuratedSection";
+
 import Seo from "@/components/Seo";
 
 // Below-the-fold sections are code-split to keep the initial JS small.
@@ -33,7 +33,6 @@ const Index = () => {
       />
       <Navbar />
       <main>
-        <CuratedSection />
         <Suspense fallback={null}>
           <DualPathCards />
           <FeaturedItineraries />
