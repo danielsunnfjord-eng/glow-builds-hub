@@ -717,11 +717,5 @@ export default {
       seeAll: "Ver todos",
       instantPdf: "PDF instantâneo",
     },
-    waBanner: {
-      title: "Pra onde vamos primeiro?",
-      subtitle: "Escolha um roteiro pronto agora, ou me chame no WhatsApp pra montar algo sob medida.",
-      whatsapp: "Falar no WhatsApp",
-      shop: "Ver roteiros prontos",
-    },
   },
 };

@@ -730,11 +730,5 @@ export default {
       seeAll: "See all",
       instantPdf: "Instant PDF",
     },
-    waBanner: {
-      title: "Where shall we go first?",
-      subtitle: "Pick a ready-made itinerary now, or message me on WhatsApp to build something custom.",
-      whatsapp: "Chat on WhatsApp",
-      shop: "See itineraries",
-    },
   },
 };
