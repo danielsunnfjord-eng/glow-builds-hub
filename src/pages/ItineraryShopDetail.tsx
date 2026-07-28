@@ -460,95 +460,9 @@ const ItineraryShopDetail = () => {
           </ol>
         </nav>
 
-        {/* 3. TWO-COLUMN MAIN */}
+        {/* 3. MAIN */}
         <section className="px-16 max-md:px-6 py-16 max-md:py-10 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-14 max-lg:gap-10">
-            {/* RIGHT (main) column comes first in source on desktop via order — keep natural for mobile */}
-            <div className="lg:order-2">
-              {/* Sticky sidebar */}
-              <aside id="buy" className="lg:sticky lg:top-28 self-start scroll-mt-28 space-y-6">
-                {/* Price + buy */}
-                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-5 md:p-7">
-                  <div className="flex items-baseline justify-between gap-3 mb-1">
-                    <span className="text-[0.68rem] uppercase tracking-[0.16em] text-voyage-muted">
-                      {t("shop.buyNow")}
-                    </span>
-                    <span className="font-serif text-[1.7rem] md:text-[2.2rem] font-bold text-ink leading-none">
-                      {priceLabel}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 mb-5">
-                    <p className="text-[0.72rem] text-voyage-muted">
-                      {t("shop.instantDownload")}
-                    </p>
-                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
-                  </div>
-
-                  {canceled && (
-                    <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-[0.78rem]">
-                      {t("shop.canceled")}
-                    </div>
-                  )}
-
-                  <form onSubmit={handleBuy} className="space-y-3">
-                    <label className="block text-[0.68rem] uppercase tracking-[0.14em] text-ink/70">
-                      {t("shop.emailLabel")}
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t("shop.emailPlaceholder")}
-                      className="w-full px-4 py-3 rounded-sm border border-ink/15 bg-parchment text-[0.9rem] focus:outline-none focus:border-gold"
-                    />
-                    <p className="text-[0.7rem] text-voyage-muted">{t("shop.emailHelp")}</p>
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="w-full px-5 py-3.5 rounded-sm bg-ink text-voyage-white text-[0.78rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
-                    >
-                      {submitting
-                        ? t("shop.processing")
-                        : `${t("shop.buyFor")} ${priceLabel}`}
-                    </button>
-                    <p className="text-[0.65rem] text-voyage-muted text-center pt-1">
-                      🔒 {t("shop.securePayment")}
-                    </p>
-                  </form>
-                </div>
-
-
-                {/* What you receive */}
-                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg p-6">
-                  <h3 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
-                    {t("shop.whatYouGet")}
-                  </h3>
-                  <ul className="space-y-2.5">
-                    {includes.map((item, i) => (
-                      <li key={i} className="flex gap-2.5 text-[0.85rem] text-ink/85 leading-snug">
-                        <span className="text-gold mt-0.5">✓</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* WhatsApp CTA */}
-                <div className="bg-parchment border border-ink/[0.08] rounded-lg p-6 text-center">
-                  <MessageCircle className="w-5 h-5 text-gold mx-auto mb-2.5" />
-                  <a
-                    href={WHATSAPP_URL}
-                    className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
-                  >
-                    {t("curated.ctaWhatsapp")}
-                  </a>
-                </div>
-              </aside>
-            </div>
-
-            {/* MAIN editorial column */}
-            <div className="lg:order-1 min-w-0">
+          <div className="max-w-4xl">
               {/* Editorial intro */}
               {(summary || description) && (
                 <div className="mb-14">
@@ -616,6 +530,20 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
 
+              {/* What you receive */}
+              <div className="mb-14 bg-voyage-white border border-ink/[0.08] rounded-lg p-6">
+                <h3 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
+                  {t("shop.whatYouGet")}
+                </h3>
+                <ul className="space-y-2.5">
+                  {includes.map((item, i) => (
+                    <li key={i} className="flex gap-2.5 text-[0.85rem] text-ink/85 leading-snug">
+                      <span className="text-gold mt-0.5">✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
               {/* What to expect */}
               <div className="mb-14">
@@ -755,7 +683,6 @@ const ItineraryShopDetail = () => {
                 </div>
               )}
               </div>
-            </div>
 
             {/* Route map */}
             {data.subpage_map_url && (
@@ -777,6 +704,73 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Buy & Download and WhatsApp */}
+            <div className="max-w-4xl">
+              <div id="buy" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Price + buy */}
+                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-5 md:p-7">
+                  <div className="flex items-baseline justify-between gap-3 mb-1">
+                    <span className="text-[0.68rem] uppercase tracking-[0.16em] text-voyage-muted">
+                      {t("shop.buyNow")}
+                    </span>
+                    <span className="font-serif text-[1.7rem] md:text-[2.2rem] font-bold text-ink leading-none">
+                      {priceLabel}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <p className="text-[0.72rem] text-voyage-muted">
+                      {t("shop.instantDownload")}
+                    </p>
+                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
+                  </div>
+
+                  {canceled && (
+                    <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-[0.78rem]">
+                      {t("shop.canceled")}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleBuy} className="space-y-3">
+                    <label className="block text-[0.68rem] uppercase tracking-[0.14em] text-ink/70">
+                      {t("shop.emailLabel")}
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t("shop.emailPlaceholder")}
+                      className="w-full px-4 py-3 rounded-sm border border-ink/15 bg-parchment text-[0.9rem] focus:outline-none focus:border-gold"
+                    />
+                    <p className="text-[0.7rem] text-voyage-muted">{t("shop.emailHelp")}</p>
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full px-5 py-3.5 rounded-sm bg-ink text-voyage-white text-[0.78rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
+                    >
+                      {submitting
+                        ? t("shop.processing")
+                        : `${t("shop.buyFor")} ${priceLabel}`}
+                    </button>
+                    <p className="text-[0.65rem] text-voyage-muted text-center pt-1">
+                      🔒 {t("shop.securePayment")}
+                    </p>
+                  </form>
+                </div>
+
+                {/* WhatsApp CTA */}
+                <div className="bg-parchment border border-ink/[0.08] rounded-lg p-6 text-center flex flex-col justify-center">
+                  <MessageCircle className="w-5 h-5 text-gold mx-auto mb-2.5" />
+                  <a
+                    href={WHATSAPP_URL}
+                    className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
+                  >
+                    {t("curated.ctaWhatsapp")}
+                  </a>
+                </div>
+              </div>
+            </div>
           </section>
 
 
