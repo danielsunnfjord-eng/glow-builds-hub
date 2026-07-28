@@ -155,9 +155,9 @@ ACCURACY AND VERIFICATION — CRITICAL:
 27. NEVER include specific prices, costs or fees for any activities, transport, restaurants or attractions. Instead, direct readers to check current prices directly with the provider.
 
 STRUCTURE:
-22. Keep each Morning / Afternoon / Evening section concise — 2-4 sentences. Dining tip and Insider tip: one sentence each. No clock times.
-23. Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestion, Local insider tip, Transport guidance, and Reservation guidance where relevant.
-24. Begin with a compelling 2-3 paragraph destination-specific editorial introduction (this comes AFTER the static company intro section, which is added separately by the PDF template) that captures the soul of the destination and sets the emotional tone for the journey.
+28. Keep each Morning / Afternoon / Evening section concise — 2-4 sentences. Dining tip and Insider tip: one sentence each. No clock times.
+29. Each day must include: Morning, Afternoon, Evening, Optional alternatives, Dining suggestion, Local insider tip, Transport guidance, and Reservation guidance where relevant.
+30. Begin with a compelling 2-3 paragraph destination-specific editorial introduction (this comes AFTER the static company intro section, which is added separately by the PDF template) that captures the soul of the destination and sets the emotional tone for the journey.
 
 PDF STRUCTURE (for your awareness — your markdown output is the destination editorial + day-by-day; the cover, company intro, hotels, practical tips and back page are assembled around your output by the template):
 — COVER PAGE: Fjord & Waves logo, hero image, title, destination, duration
