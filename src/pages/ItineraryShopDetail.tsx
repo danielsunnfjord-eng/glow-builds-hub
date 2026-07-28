@@ -683,7 +683,6 @@ const ItineraryShopDetail = () => {
                 </div>
               )}
               </div>
-            </div>
 
             {/* Route map */}
             {data.subpage_map_url && (
