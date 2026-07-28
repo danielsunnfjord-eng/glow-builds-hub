@@ -705,9 +705,9 @@ const ItineraryShopDetail = () => {
               </div>
             )}
 
-            {/* Buy & Download and WhatsApp */}
+            {/* Buy & Download */}
             <div className="max-w-4xl">
-              <div id="buy" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div id="buy" className="grid grid-cols-1 gap-6">
                 {/* Price + buy */}
                 <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-5 md:p-7">
                   <div className="flex items-baseline justify-between gap-3 mb-1">
@@ -757,17 +757,6 @@ const ItineraryShopDetail = () => {
                       🔒 {t("shop.securePayment")}
                     </p>
                   </form>
-                </div>
-
-                {/* WhatsApp CTA */}
-                <div className="bg-parchment border border-ink/[0.08] rounded-lg p-6 text-center flex flex-col justify-center">
-                  <MessageCircle className="w-5 h-5 text-gold mx-auto mb-2.5" />
-                  <a
-                    href={WHATSAPP_URL}
-                    className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
-                  >
-                    {t("curated.ctaWhatsapp")}
-                  </a>
                 </div>
               </div>
             </div>
