@@ -766,7 +766,7 @@ const ItineraryShopDetail = () => {
         {/* 4. ABOUT TRAVEL DESIGNER */}
         <section className="bg-voyage-white border-y border-ink/[0.06]">
           <div className="max-w-6xl mx-auto px-16 max-md:px-6 py-20 max-md:py-14 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-12 items-center">
-            <div className="mx-auto md:mx-0">
+            <div className="mx-auto md:mx-0 flex flex-col items-center gap-5">
               <div className="relative w-[240px] h-[300px] overflow-hidden rounded-md shadow-lg">
                 <img
                   src={danielProfile}
@@ -775,6 +775,13 @@ const ItineraryShopDetail = () => {
                   loading="lazy"
                 />
               </div>
+              <a
+                href={WHATSAPP_URL}
+                className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
+              >
+                <MessageCircle className="w-4 h-4" />
+                {t("curated.ctaWhatsapp")}
+              </a>
             </div>
             <div>
               <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-4">
