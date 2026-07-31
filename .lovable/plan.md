@@ -1,34 +1,30 @@
-# Add Purchases overview to Admin
+Recover the "What does your travel advisor do?" block from the old CuratedSection and place it back on the homepage after the About Daniel section.
 
-## Current state
-- The Admin dashboard has tabs: Projects, Requests, Assistant, Routes, Creator.
-- The Catalogue module shows the itinerary editor/manager (`CatalogShopManager`), not customers.
-- `catalog_purchases` is only queried to match against trip-request emails in the Requests tab.
-- There is no place to see every customer who bought a pre-designed itinerary.
+## What we will build
 
-## Goal
-Add a dedicated **Purchases** tab in the Admin that lists all `catalog_purchases` records, including customer and itinerary details.
+1. Extract the advisor-value block into a new, focused component: `src/components/voyage/WhyAdvisor.tsx`.
+   - Left card: "What does your travel advisor do?" using `curated.whatDoes`, `curated.whatDoesP1`, and `curated.whatDoesP2`.
+   - Right stack: three perks using `curated.perk1Title/Desc`, `curated.perk2Title/Desc`, and `curated.perk3Title/Desc`.
+   - Keeps the same dark-ink styling and gold accents as the original section.
 
-## Changes
+2. Insert the new component into `src/pages/Index.tsx` immediately after `<MeetDaniel />` and before `<Reviews />`, so the homepage flow becomes:
+   - Hero
+   - DualPathCards
+   - FeaturedItineraries
+   - MeetDaniel
+   - **WhyAdvisor (new)**
+   - Reviews
+   - PlanMyTrip
+   - Footer
 
-### 1. `src/pages/Admin.tsx`
-- Add `"purchases"` to `activeTab` union.
-- Add a new tab button next to Requests/Projects.
-- Fetch `catalog_purchases` joined with `catalog_itineraries` (title, slug) and order by `created_at` descending.
-- Render a table with columns:
-  - Customer (name + email)
-  - Itinerary (title + link to `/catalogue/:slug`)
-  - Amount (with correct currency symbol)
-  - Status (paid / pending)
-  - Purchase date
-  - Download token / Actions (copy/resend link)
-- Add a stats row for total purchases, paid count, and revenue by currency.
+3. No translation changes are required — the existing `curated.*` keys are already present and localized in English, Portuguese, and Norwegian.
 
-### 2. Localization
-- Add new keys under `admin.purchases*` in `src/i18n/locales/en.ts`, `pt.ts`, and `no.ts`.
+## Files to modify
 
-### 3. No backend changes needed
-- `catalog_purchases` is already accessible via existing RLS policies for authenticated admin/staff users.
+- `src/components/voyage/WhyAdvisor.tsx` (new)
+- `src/pages/Index.tsx` (add `<WhyAdvisor />` after `<MeetDaniel />`)
 
-## Outcome
-Admins can open the **Purchases** tab and see a complete, filterable list of everyone who bought a pre-designed itinerary, with direct links to the itinerary subpages and quick revenue totals.
+## Out of scope
+
+- The full `CuratedSection.tsx` will be left untouched; it is currently not imported anywhere, but we will not delete it unless requested.
+- No hero duplication, no pricing table, no "How it works" steps — only the advisor block and perks.

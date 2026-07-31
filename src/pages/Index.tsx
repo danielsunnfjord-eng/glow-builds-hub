@@ -27,7 +27,7 @@ const lazyWithRetry = <T extends React.ComponentType<any>>(
 const MeetDaniel = lazyWithRetry(() => import("@/components/voyage/MeetDaniel"));
 const DualPathCards = lazyWithRetry(() => import("@/components/voyage/DualPathCards"));
 const FeaturedItineraries = lazyWithRetry(() => import("@/components/voyage/FeaturedItineraries"));
-
+const WhyAdvisor = lazyWithRetry(() => import("@/components/voyage/WhyAdvisor"));
 
 const Reviews = lazyWithRetry(() => import("@/components/voyage/Reviews"));
 const PlanMyTrip = lazyWithRetry(() => import("@/components/voyage/PlanMyTrip"));
@@ -56,6 +56,7 @@ const Index = () => {
           <DualPathCards />
           <FeaturedItineraries />
           <MeetDaniel />
+          <WhyAdvisor />
           <Reviews />
 
           <PlanMyTrip />
