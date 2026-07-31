@@ -56,6 +56,7 @@ const Index = () => {
           <DualPathCards />
           <FeaturedItineraries />
           <MeetDaniel />
+          <WhyAdvisor />
           <Reviews />
 
           <PlanMyTrip />
