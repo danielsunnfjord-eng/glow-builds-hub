@@ -12,7 +12,7 @@ const WhyAdvisor = () => {
   ];
 
   return (
-    <section className="bg-ink text-voyage-white py-28 px-16 max-md:px-6 max-md:py-16">
+    <section id="why-advisor" className="bg-ink text-voyage-white py-28 px-16 max-md:px-6 max-md:py-16">
       <div className="max-w-[1200px] mx-auto">
         <ScrollReveal>
           <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
