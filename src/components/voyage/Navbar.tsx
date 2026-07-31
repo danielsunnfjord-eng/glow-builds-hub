@@ -58,13 +58,7 @@ const Navbar = () => {
           >
             {t("nav.bookCall")}
           </a>
-          <a
-            href={WHATSAPP_URL}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-gold transition-colors no-underline"
-          >
-            <MessageCircle className="w-4 h-4" />
-            {t("curated.ctaWhatsapp")}
-          </a>
+          <WhatsAppIconButton size={26} label={t("curated.ctaWhatsapp")} />
         </div>
         <div className="md:hidden flex items-center gap-2">
           <LanguageSelector variant="light" />
