@@ -775,13 +775,11 @@ const ItineraryShopDetail = () => {
                   loading="lazy"
                 />
               </div>
-              <a
-                href={WHATSAPP_URL}
-                className="inline-flex w-full justify-center items-center gap-2 px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors no-underline"
-              >
-                <MessageCircle className="w-4 h-4" />
-                {t("curated.ctaWhatsapp")}
-              </a>
+              <WhatsAppIconButton
+                size={28}
+                label={t("curated.ctaWhatsapp")}
+                className="mx-auto"
+              />
             </div>
             <div>
               <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-4">
