@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.webp";
-import { WHATSAPP_URL } from "@/lib/whatsapp";
+import WhatsAppIconButton from "./WhatsAppIconButton";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
