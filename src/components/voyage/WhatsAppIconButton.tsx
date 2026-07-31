@@ -9,7 +9,7 @@ interface WhatsAppIconButtonProps {
 
 /** Official WhatsApp glyph — borderless icon button. */
 export const WhatsAppIconButton = ({
-  size = 26,
+  size = 32,
   label = "WhatsApp",
   className = "",
   onClick,

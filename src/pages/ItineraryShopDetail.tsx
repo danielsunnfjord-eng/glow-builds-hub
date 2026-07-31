@@ -776,7 +776,7 @@ const ItineraryShopDetail = () => {
                 />
               </div>
               <WhatsAppIconButton
-                size={28}
+                size={36}
                 label={t("curated.ctaWhatsapp")}
                 className="mx-auto"
               />

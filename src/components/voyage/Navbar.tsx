@@ -58,7 +58,7 @@ const Navbar = () => {
           >
             {t("nav.bookCall")}
           </a>
-          <WhatsAppIconButton size={26} label={t("curated.ctaWhatsapp")} />
+          <WhatsAppIconButton size={34} label={t("curated.ctaWhatsapp")} />
         </div>
         <div className="md:hidden flex items-center gap-2">
           <LanguageSelector variant="light" />
@@ -111,7 +111,7 @@ const Navbar = () => {
             {t("nav.bookCall")}
           </a>
           <WhatsAppIconButton
-            size={28}
+            size={32}
             label={t("curated.ctaWhatsapp")}
             className="self-center"
             onClick={() => setOpen(false)}
