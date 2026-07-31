@@ -14,6 +14,8 @@ export default {
     planMyTrip: "Planlegg Min Reise",
     bookCall: "Book Videosamtale",
     shop: "Reisebutikk",
+    reviews: "Hva kundene sier",
+    whyAdvisor: "Hvorfor en reiserådgiver",
   },
   shop: {
     badge: "Reisekatalog",

@@ -15,6 +15,8 @@ export default {
     planMyTrip: "Plan My Trip",
     bookCall: "Book a Video Call",
     shop: "Itinerary Shop",
+    reviews: "What clients say",
+    whyAdvisor: "Why a travel advisor",
   },
   shop: {
     badge: "Itinerary Catalogue",

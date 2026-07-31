@@ -14,6 +14,8 @@ export default {
     planMyTrip: "Planeje Sua Viagem",
     bookCall: "Agendar Videochamada",
     shop: "Loja de Roteiros",
+    reviews: "O que dizem os clientes",
+    whyAdvisor: "Por que um consultor de viagens",
   },
   shop: {
     badge: "Catálogo de Roteiros",
