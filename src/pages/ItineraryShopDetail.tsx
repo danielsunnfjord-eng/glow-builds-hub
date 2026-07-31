@@ -31,7 +31,7 @@ import {
   formatPrice,
   usePreferredCurrency,
 } from "@/lib/pricing";
-import { WHATSAPP_URL } from "@/lib/whatsapp";
+import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
