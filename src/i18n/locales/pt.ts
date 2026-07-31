@@ -725,7 +725,7 @@ export default {
   home: {
     dual: {
       eyebrow: "Feito pra quem viaja de verdade",
-      title: "Sua próxima viagem, do jeito que você precisar",
+      title: "Sua próxima viagem, do seu jeito",
       subtitle: "Escolha um roteiro pronto e comece a planejar hoje mesmo, ou peça uma viagem 100% sob medida — as duas opções vêm do mesmo cuidado e conhecimento local.",
       readyEyebrow: "Rápido e acessível",
       readyTitle: "Roteiros prontos",
