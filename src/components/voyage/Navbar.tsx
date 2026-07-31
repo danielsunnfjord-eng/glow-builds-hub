@@ -88,11 +88,11 @@ const Navbar = () => {
           >
             {t("nav.about")}
           </a>
-          <button onClick={() => goToSection("how-it-works")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.howItWorks")}
+          <button onClick={() => goToSection("why-advisor")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+            {t("nav.whyAdvisor")}
           </button>
-          <button onClick={() => goToSection("experiences")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
-            {t("nav.whatWeArrange")}
+          <button onClick={() => goToSection("reviews")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
+            {t("nav.reviews")}
           </button>
           <a
             href="/catalogue"
