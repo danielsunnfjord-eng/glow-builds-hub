@@ -723,7 +723,7 @@ export default {
   home: {
     dual: {
       eyebrow: "Laget for ekte reisende",
-      title: "Din neste reise, slik du trenger den",
+      title: "Din neste reise, slik du ønsker den",
       subtitle: "Velg et ferdig reiseopplegg og start planleggingen i dag, eller be om en helt skreddersydd tur — begge kommer med samme omtanke og lokalkunnskap.",
       readyEyebrow: "Raskt og tilgjengelig",
       readyTitle: "Ferdige reiseopplegg",
