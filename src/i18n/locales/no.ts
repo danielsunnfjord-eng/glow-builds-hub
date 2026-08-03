@@ -235,14 +235,12 @@ export default {
   footer: {
     tagline: "Uavhengig reiserådgiver. Medlem av Fora Travel. IATA-akkreditert. Jeg hjelper folk å reise bedre — uansett hvor det tar dem.",
     explore: "Utforsk",
-    howItWorks: "Slik fungerer det",
-    whatWeArrange: "Hva vi ordner",
-    requestQuote: "Be om tilbud",
     getInTouch: "Ta kontakt",
     planMyTrip: "Planlegg min reise",
     rights: "© 2026 Fjord & Waves Travel. Alle rettigheter reservert. · Org.nr: 928804860",
     admin: "Admin ·",
   },
+
   about: {
     badge: "Grunnlegger & Reiserådgiver",
     foraLine: "Fora Travel-rådgiver · IATA-akkreditert · 20+ Land Utforsket",

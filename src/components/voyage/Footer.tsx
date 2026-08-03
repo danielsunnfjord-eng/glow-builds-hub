@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { openCookieSettings } from "@/components/voyage/CookieConsent";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,9 +8,20 @@ const scrollToId = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 };
 
+
 const Footer = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { t } = useTranslation();
+
+  const goToSection = (id: string) => {
+    if (pathname === "/") {
+      scrollToId(id);
+    } else {
+      navigate(`/#${id}`);
+    }
+  };
+
 
   return (
     <>
@@ -23,9 +34,11 @@ const Footer = () => {
         </div>
         <div>
           <h5 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-voyage-white/30 mb-5">{t("footer.explore")}</h5>
-          <button onClick={() => scrollToId("curated")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5">{t("footer.howItWorks")}</button>
-          <button onClick={() => scrollToId("experiences")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5">{t("footer.whatWeArrange")}</button>
-          <button onClick={() => scrollToId("enquiry")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5">{t("footer.requestQuote")}</button>
+          <button onClick={() => navigate("/about")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.about")}</button>
+          <button onClick={() => goToSection("why-advisor")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.whyAdvisor")}</button>
+          <button onClick={() => goToSection("reviews")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.reviews")}</button>
+          <button onClick={() => navigate("/catalogue")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.shop")}</button>
+
         </div>
         <div>
           <h5 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-voyage-white/30 mb-5">{t("footer.getInTouch")}</h5>
