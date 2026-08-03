@@ -237,14 +237,12 @@ export default {
   footer: {
     tagline: "Consultor de viagens independente. Membro da Fora Travel. Credenciado IATA. Eu ajudo pessoas a viajar melhor — para onde quer que isso as leve.",
     explore: "Explorar",
-    howItWorks: "Como funciona",
-    whatWeArrange: "O que organizamos",
-    requestQuote: "Solicitar orçamento",
     getInTouch: "Contato",
     planMyTrip: "Planeje sua viagem",
     rights: "© 2026 Fjord & Waves Travel. Todos os direitos reservados. · Org.nr: 928804860",
     admin: "Admin ·",
   },
+
   about: {
     badge: "Fundador & Consultor de Viagens",
     foraLine: "Consultor Fora Travel · Credenciado IATA · 20+ Países Explorados",

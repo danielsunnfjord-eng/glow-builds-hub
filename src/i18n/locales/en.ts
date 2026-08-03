@@ -244,14 +244,12 @@ export default {
   footer: {
     tagline: "Independent travel advisor. Member of Fora Travel. IATA accredited. I help people travel better — wherever that takes them.",
     explore: "Explore",
-    howItWorks: "How it works",
-    whatWeArrange: "What we arrange",
-    requestQuote: "Request a quote",
     getInTouch: "Get in touch",
     planMyTrip: "Plan my trip",
     rights: "© 2026 Fjord & Waves Travel. All rights reserved. · Org.nr: 928804860",
     admin: "Admin ·",
   },
+
   // About
   about: {
     badge: "Founder & Travel Advisor",
