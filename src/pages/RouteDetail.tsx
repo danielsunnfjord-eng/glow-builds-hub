@@ -116,10 +116,7 @@ const RouteDetail = () => {
       },
     };
     if (data.hero_image_url) trip.image = data.hero_image_url;
-    if (data.destination) {
-      trip.touristType = "Independent travellers";
-      trip.subjectOf = undefined;
-    }
+    if (data.destination) trip.touristType = "Independent travellers";
     if (sequence.length > 0) {
       trip.itinerary = {
         "@type": "ItemList",
@@ -207,6 +204,7 @@ const RouteDetail = () => {
         description={data.summary || "A curated journey from Fjord & Waves Travel."}
         path={`/routes/${data.slug}`}
         image={data.hero_image_url ?? undefined}
+        jsonLd={jsonLd}
       />
       <Navbar />
 
