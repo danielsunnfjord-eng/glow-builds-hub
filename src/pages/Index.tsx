@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 
 import Seo from "@/components/Seo";
@@ -35,6 +36,8 @@ const Footer = lazyWithRetry(() => import("@/components/voyage/Footer"));
 
 const Index = () => {
   const { hash } = useLocation();
+  const { i18n } = useTranslation();
+  const isPt = i18n.language === "pt";
 
   useEffect(() => {
     if (hash) {
@@ -46,10 +49,19 @@ const Index = () => {
   return (
     <div>
       <Seo
-        title="Fjord & Waves Travel — Bespoke Travel Designed Around You"
-        description="Bespoke journeys planned by Daniel Lira Figueiredo, a Fora Travel advisor (IATA accredited). Flights, hotels and hidden-gem experiences tailored to you."
+        title={
+          isPt
+            ? "Roteiros de Viagem para Europa em Português | Fjord & Waves Travel"
+            : "Fjord & Waves Travel — Bespoke Travel Designed Around You"
+        }
+        description={
+          isPt
+            ? "Roteiros prontos e viagens sob medida para Europa, criados por um consultor brasileiro radicado há mais de 10 anos no continente. Atendimento em português, pagamento em reais."
+            : "Bespoke journeys planned by Daniel Lira Figueiredo, a Fora Travel advisor (IATA accredited). Flights, hotels and hidden-gem experiences tailored to you."
+        }
         path="/"
       />
+
       <Navbar />
       <main>
         <Suspense fallback={null}>
