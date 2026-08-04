@@ -81,7 +81,7 @@ const Navbar = () => {
             className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("nav.about")}
-          </a>
+          </Link>
           <button onClick={() => goToSection("why-advisor")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whyAdvisor")}
           </button>
@@ -94,7 +94,7 @@ const Navbar = () => {
             className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("nav.shop")}
-          </a>
+          </Link>
           <button
             onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
             className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
