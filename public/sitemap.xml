@@ -1,94 +1,484 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://fjordwavestravel.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/about"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/about"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/about"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/about"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/about"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/about"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/about"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/about"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/plan-my-trip</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/plan-my-trip"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/plan-my-trip</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/plan-my-trip"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/plan-my-trip</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/plan-my-trip"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/plan-my-trip"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/routes</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/routes"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/routes"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/routes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/routes"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop</loc>
+    <loc>https://fjordwavestravel.com/no/routes</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/routes"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/routes"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/routes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/routes"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/routes</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/routes"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/routes"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/routes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/routes"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/destinations/norway</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/destinations/norway"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/destinations/norway</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/destinations/norway"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/destinations/norway</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/destinations/norway"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/destinations/norway"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/legal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/legal"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/legal"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/legal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/legal"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/legal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/legal"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/legal"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/legal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/legal"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/legal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/legal"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/legal"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/legal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/legal"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/privacy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/privacy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/privacy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/privacy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/privacy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/privacy"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://fjordwavestravel.com/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/terms"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/terms"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/lisboa-para-brasileiros-de-primeira-viagem</loc>
+    <loc>https://fjordwavestravel.com/no/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/terms"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/terms"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/zona-sul-rio-de-janeiros-soulful-south-side</loc>
+    <loc>https://fjordwavestravel.com/no/catalogue/lisboa-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/lisboa-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/lisboa-para-brasileiros-de-primeira-viagem"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/norways-most-dramatic-regions-in-7-days</loc>
+    <loc>https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/primeira-vez-em-roma-o-roteiro-prtico</loc>
+    <loc>https://fjordwavestravel.com/no/catalogue/zona-sul-rio-de-janeiros-soulful-south-side</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/o-melhor-de-barcelona</loc>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/zona-sul-rio-de-janeiros-soulful-south-side</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/zona-sul-rio-de-janeiros-soulful-south-side"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/paris-para-brasileiros-de-primeira-viagem</loc>
+    <loc>https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/itineraries-shop/oslo-in-summer-a-nordic-capital-awakens</loc>
+    <loc>https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/primeira-vez-em-roma-o-roteiro-prtico</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/primeira-vez-em-roma-o-roteiro-prtico</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/paris-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/paris-para-brasileiros-de-primeira-viagem</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/oslo-in-summer-a-nordic-capital-awakens</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/oslo-in-summer-a-nordic-capital-awakens</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/oslo-in-summer-a-nordic-capital-awakens"/>
     <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
