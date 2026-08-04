@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { currentLocale, localePath } from "@/lib/locale";
 
 const STORAGE_KEY = "fw_cookie_consent_v1";
 
@@ -67,7 +68,7 @@ const CookieConsent = () => {
               <p className="text-sm text-voyage-white/75 leading-relaxed">
                 I use essential cookies to make this site work and, with your consent, optional
                 cookies to understand how it's used. Read more in the{" "}
-                <a href="/privacy" className="text-gold hover:underline">Privacy Policy</a>.
+                <a href={localePath("/privacy", currentLocale())} className="text-gold hover:underline">Privacy Policy</a>.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">
