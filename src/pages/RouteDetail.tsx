@@ -98,6 +98,68 @@ const RouteDetail = () => {
   const sequence = useMemo(() => extractSequence(data?.route), [data?.route]);
   const days = useMemo(() => extractDays(data?.days), [data?.days]);
   const highlights = useMemo(() => extractHighlights(data?.sales_copy), [data?.sales_copy]);
+
+  const jsonLd = useMemo(() => {
+    if (!data) return undefined;
+    const base = "https://fjordwavestravel.com";
+    const url = `${base}/routes/${data.slug}`;
+    const trip: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "TouristTrip",
+      name: data.title,
+      description: data.summary || "A curated journey from Fjord & Waves Travel.",
+      url,
+      provider: {
+        "@type": "TravelAgency",
+        name: "Fjord & Waves Travel",
+        url: base,
+      },
+    };
+    if (data.hero_image_url) trip.image = data.hero_image_url;
+    if (data.destination) trip.touristType = "Independent travellers";
+    if (sequence.length > 0) {
+      trip.itinerary = {
+        "@type": "ItemList",
+        numberOfItems: sequence.length,
+        itemListElement: sequence.map((s, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: { "@type": "TouristDestination", name: s },
+        })),
+      };
+    } else if (days.length > 0) {
+      trip.itinerary = {
+        "@type": "ItemList",
+        numberOfItems: days.length,
+        itemListElement: days.map((d, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: (d.title ?? d.day_title ?? `Day ${i + 1}`) as string,
+          description: (d.summary ?? d.experience_summary ?? d.description ?? "") as string,
+        })),
+      };
+    }
+    if (typeof data.price_eur === "number" && data.price_eur > 0) {
+      trip.offers = {
+        "@type": "Offer",
+        price: data.price_eur,
+        priceCurrency: "EUR",
+        url,
+        availability: "https://schema.org/InStock",
+      };
+    }
+    const breadcrumbs = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
+        { "@type": "ListItem", position: 2, name: "Routes", item: `${base}/routes` },
+        { "@type": "ListItem", position: 3, name: data.title, item: url },
+      ],
+    };
+    return [trip, breadcrumbs];
+  }, [data, sequence, days]);
+
   const salesObj = asObj(data?.sales_copy);
   const heroSubhead = (salesObj?.subheadline ?? salesObj?.subheading ?? "") as string;
   const longDesc = (salesObj?.long_description ?? salesObj?.description ?? "") as string;
@@ -142,6 +204,7 @@ const RouteDetail = () => {
         description={data.summary || "A curated journey from Fjord & Waves Travel."}
         path={`/routes/${data.slug}`}
         image={data.hero_image_url ?? undefined}
+        jsonLd={jsonLd}
       />
       <Navbar />
 

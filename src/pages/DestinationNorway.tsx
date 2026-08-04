@@ -36,12 +36,17 @@ const jsonLd = [
     name: "7-Day Norway Itinerary — Oslo, Fjords, Bergen & Lofoten",
     description: "A bespoke 7-day Norway itinerary covering Oslo, the Sognefjord region, Bergen and the Lofoten Islands, planned by Fjord & Waves Travel.",
     touristType: ["Independent travellers", "Couples", "Photography enthusiasts"],
-    itinerary: itinerary.map((d, i) => ({
+    itinerary: {
       "@type": "ItemList",
-      position: i + 1,
-      name: `${d.day}: ${d.title}`,
-      description: d.text,
-    })),
+      numberOfItems: itinerary.length,
+      itemListElement: itinerary.map((d, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: `${d.day}: ${d.title}`,
+        description: d.text,
+      })),
+    },
+
     provider: {
       "@type": "TravelAgency",
       name: "Fjord & Waves Travel",
