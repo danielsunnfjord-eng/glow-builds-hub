@@ -72,7 +72,7 @@ export default {
     customizeItem5: "Preço final depende do nível de mudança — você aprova antes de pagar",
     customizePriceNote: "Preço final depende do nível de mudança — você aprova antes de pagar.",
     getThis: "Adquirir este roteiro",
-    intro: "A jornada",
+    intro: "O roteiro",
     whatToExpect: "O que esperar",
     dayOverview: "Visão geral dia a dia",
     bestSeason: "Estação",
