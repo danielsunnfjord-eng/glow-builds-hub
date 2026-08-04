@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { HREFLANG, LOCALES, SITE_URL, currentLocale, localePath } from "@/lib/locale";
 
 interface SeoProps {
   title: string;
@@ -10,10 +11,11 @@ interface SeoProps {
   noindex?: boolean;
 }
 
-const SITE = "https://fjordwavestravel.com";
+const SITE = SITE_URL;
 
 const Seo = ({ title, description, path, image, type = "website", jsonLd, noindex }: SeoProps) => {
-  const url = `${SITE}${path}`;
+  const locale = currentLocale();
+  const url = `${SITE}${localePath(path, locale)}`;
   const img = image || `${SITE}/og-image.png`;
   const jsonLdArr = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
@@ -22,6 +24,11 @@ const Seo = ({ title, description, path, image, type = "website", jsonLd, noinde
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
+      {!noindex &&
+        LOCALES.map((lng) => (
+          <link key={lng} rel="alternate" hrefLang={HREFLANG[lng]} href={`${SITE}${localePath(path, lng)}`} />
+        ))}
+      {!noindex && <link rel="alternate" hrefLang="x-default" href={`${SITE}${localePath(path, "en")}`} />}
       {noindex && <meta name="robots" content="noindex,nofollow" />}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />

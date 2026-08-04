@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import CookieConsent from "./components/voyage/CookieConsent.tsx";
+import { currentBasename } from "@/lib/locale";
 
 // Code-split everything except the landing page
 const Admin = lazy(() => import("./pages/Admin.tsx"));
@@ -60,7 +61,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={currentBasename()}>
         <CookieConsent />
         <DeferredCalendly />
         <Suspense fallback={null}>

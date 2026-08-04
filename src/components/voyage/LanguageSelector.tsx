@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
+import { LOCALE_PREFIX, currentLocale, localePath, type Locale } from "@/lib/locale";
 
 const flagUrls: Record<string, string> = {
   en: "https://flagcdn.com/w80/gb.png",
@@ -11,18 +13,25 @@ interface LanguageSelectorProps {
 }
 
 const LanguageSelector = ({ variant = "light" }: LanguageSelectorProps) => {
-  const { i18n, t } = useTranslation();
-  const langs = ["en", "pt", "no"] as const;
+  const { t } = useTranslation();
+  const { pathname, search, hash } = useLocation();
+  const active = currentLocale();
+  const langs: Locale[] = ["en", "pt", "no"];
+
+  // pathname here is already basename-stripped by the router, so it is the
+  // language-neutral path; rebuild it under the target language prefix.
+  const hrefFor = (lng: Locale) => `${localePath(pathname, lng)}${search}${hash}`;
 
   return (
     <div className="flex items-center gap-1.5">
       {langs.map((lng) => (
-        <button
+        <a
           key={lng}
-          onClick={() => i18n.changeLanguage(lng)}
+          href={hrefFor(lng)}
+          hrefLang={LOCALE_PREFIX[lng] ? lng : "en"}
           title={t(`lang.${lng}`)}
-          className={`p-1 rounded transition-all ${
-            i18n.language === lng
+          className={`p-1 rounded transition-all inline-flex ${
+            active === lng
               ? variant === "dark"
                 ? "bg-voyage-white/20 ring-1 ring-voyage-white/30"
                 : "bg-ink/10 ring-1 ring-ink/20"
@@ -37,7 +46,7 @@ const LanguageSelector = ({ variant = "light" }: LanguageSelectorProps) => {
             loading="lazy"
             className="w-6 h-4 rounded-[2px] object-cover"
           />
-        </button>
+        </a>
       ))}
     </div>
   );

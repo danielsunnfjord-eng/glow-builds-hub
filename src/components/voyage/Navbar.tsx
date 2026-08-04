@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
@@ -27,22 +27,22 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-parchment/90 backdrop-blur-lg border-b border-gold/15 transition-all">
       <div className="flex justify-between items-center px-16 py-5 max-md:px-6 max-md:py-4">
-        <a href="/" className="cursor-pointer no-underline">
+        <Link to="/" className="cursor-pointer no-underline">
           <img src={logo} alt="Fjord & Waves Travel" width={800} height={537} className="h-28 max-md:h-12 w-auto [filter:contrast(1.4)_saturate(1.2)]" />
-        </a>
+        </Link>
         <div className="hidden md:flex gap-10 items-center">
-          <a href="/about" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
+          <Link to="/about" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
             {t("nav.about")}
-          </a>
+          </Link>
           <button onClick={() => goToSection("why-advisor")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whyAdvisor")}
           </button>
           <button onClick={() => goToSection("reviews")} className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.reviews")}
           </button>
-          <a href="/catalogue" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
+          <Link to="/catalogue" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
             {t("nav.shop")}
-          </a>
+          </Link>
           <LanguageSelector variant="light" />
           <button
             onClick={() => navigate("/start-your-journey")}
@@ -75,26 +75,26 @@ const Navbar = () => {
 
       {open && (
         <div className="md:hidden border-t border-gold/15 bg-parchment/95 backdrop-blur-lg px-6 py-4 flex flex-col gap-4">
-          <a
-            href="/about"
+          <Link
+            to="/about"
             onClick={() => setOpen(false)}
             className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("nav.about")}
-          </a>
+          </Link>
           <button onClick={() => goToSection("why-advisor")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.whyAdvisor")}
           </button>
           <button onClick={() => goToSection("reviews")} className="text-left text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors">
             {t("nav.reviews")}
           </button>
-          <a
-            href="/catalogue"
+          <Link
+            to="/catalogue"
             onClick={() => setOpen(false)}
             className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("nav.shop")}
-          </a>
+          </Link>
           <button
             onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
             className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"

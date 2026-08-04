@@ -17,5 +17,15 @@ Disallow: /login
 Disallow: /reset-password
 Disallow: /unsubscribe
 Disallow: /trip/
+Disallow: /no/admin
+Disallow: /no/login
+Disallow: /no/reset-password
+Disallow: /no/unsubscribe
+Disallow: /no/trip/
+Disallow: /pt-br/admin
+Disallow: /pt-br/login
+Disallow: /pt-br/reset-password
+Disallow: /pt-br/unsubscribe
+Disallow: /pt-br/trip/
 
 Sitemap: https://fjordwavestravel.com/sitemap.xml
