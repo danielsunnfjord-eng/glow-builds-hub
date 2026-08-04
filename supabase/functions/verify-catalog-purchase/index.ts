@@ -54,13 +54,14 @@ Deno.serve(async (req) => {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.payment_status === "paid") {
-      const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      // Paid downloads never expire: each click mints a fresh short-lived
+      // signed URL in download-catalog-pdf, so the customer link stays valid.
       const customerName = session.customer_details?.name ?? null;
       await supabase
         .from("catalog_purchases")
         .update({
           status: "paid",
-          download_expires_at: expires,
+          download_expires_at: null,
           customer_name: customerName,
         })
         .eq("id", purchase.id);

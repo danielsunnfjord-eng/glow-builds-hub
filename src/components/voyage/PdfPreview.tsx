@@ -778,16 +778,68 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         const merged = await PDFDocument.create();
         const A4_W = 595.28;
         const A4_H = 841.89;
-        const addRenderedPage = async (el: HTMLElement) => {
+
+        // Wait for webfonts and every image inside a page to be fully decoded
+        // before screenshotting it — otherwise html2canvas captures a white page.
+        const withTimeout = (p: Promise<unknown>, ms: number) =>
+          Promise.race([p, new Promise((res) => setTimeout(res, ms))]);
+        try {
+          await withTimeout((document as any).fonts?.ready ?? Promise.resolve(), 5000);
+        } catch { /* non-fatal */ }
+        const waitForImages = async (el: HTMLElement) => {
+          const imgs = Array.from(el.querySelectorAll("img"));
+          await withTimeout(
+            Promise.all(
+              imgs.map(async (img) => {
+                try {
+                  if (!img.complete || img.naturalWidth === 0) {
+                    await new Promise<void>((resolve) => {
+                      img.addEventListener("load", () => resolve(), { once: true });
+                      img.addEventListener("error", () => resolve(), { once: true });
+                    });
+                  }
+                  if ((img as any).decode) await (img as any).decode().catch(() => {});
+                } catch { /* ignore individual image failures */ }
+              }),
+            ),
+            15000,
+          );
+        };
+
+        // A laid-out page is "empty" when its content area holds no text and no
+        // images once the running header/footer and margin boxes are ignored.
+        // Paged.js emits such pages after a section break; they used to end up
+        // in the merged file as blank sheets.
+        const isEmptyLayoutPage = (el: HTMLElement) => {
+          const area =
+            el.querySelector<HTMLElement>(".pagedjs_page_content") ??
+            el.querySelector<HTMLElement>(".pagedjs_area") ??
+            el;
+          const clone = area.cloneNode(true) as HTMLElement;
+          clone
+            .querySelectorAll(
+              ".fjw-running-header, .fjw-print-footer, [class*='pagedjs_margin']",
+            )
+            .forEach((n) => n.remove());
+          const hasText = (clone.textContent || "").replace(/\s+/g, "").length > 0;
+          const hasMedia = clone.querySelector("img, svg, canvas") !== null;
+          return !hasText && !hasMedia;
+        };
+
+        const addRenderedPage = async (el: HTMLElement, { allowBlank = false } = {}) => {
+          if (!allowBlank && isEmptyLayoutPage(el)) return false;
+          await waitForImages(el);
           const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false });
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
           const bytes = await (await fetch(dataUrl)).arrayBuffer();
           const img = await merged.embedJpg(bytes);
           const page = merged.addPage([A4_W, A4_H]);
           page.drawImage(img, { x: 0, y: 0, width: A4_W, height: A4_H });
+          return true;
         };
-        // 1. Cover (first rendered page).
-        await addRenderedPage(pages[0]);
+        // 1. Cover (first rendered page). Must never be dropped.
+        const coverOk = await addRenderedPage(pages[0], { allowBlank: true });
+        if (!coverOk) throw new Error("Cover page could not be captured.");
         // 2. Uploaded body PDF.
         const bodyBytes = await fetch(bodyPdfUrl!).then((r) => {
           if (!r.ok) throw new Error(`Could not fetch uploaded PDF (${r.status})`);
@@ -796,7 +848,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         const bodyDoc = await PDFDocument.load(bodyBytes);
         const copied = await merged.copyPages(bodyDoc, bodyDoc.getPageIndices());
         copied.forEach((p) => merged.addPage(p));
-        // 3. Tail pages (hotels + back).
+        // 3. Tail pages (hotels + back) — blank layout pages are skipped.
         for (let i = 1; i < pages.length; i++) await addRenderedPage(pages[i]);
         const out = await merged.save();
         const blob = new Blob([out as BlobPart], { type: "application/pdf" });
@@ -857,11 +909,11 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
                   <button
                     type="button"
                     onClick={handleAttachToStore}
-                    disabled={attaching}
+                    disabled={attaching || merging || !!mergeError || !mergedPdfUrl}
                     title="Upload this PDF to the store. Customers who purchase this itinerary will download exactly this file."
                     className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/40 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40"
                   >
-                    {attaching ? "Attaching…" : "🛒 Attach to Store"}
+                    {attaching ? "Attaching…" : `🛒 Attach to Store (${pageInfo.total} pages)`}
                   </button>
                 )}
                 <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
