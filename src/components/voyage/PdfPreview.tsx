@@ -806,26 +806,30 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
           );
         };
 
-        // A captured page is "blank" when every sampled pixel is white.
-        const isBlankCanvas = (canvas: HTMLCanvasElement) => {
-          const ctx = canvas.getContext("2d");
-          if (!ctx) return false;
-          try {
-            const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const step = 4 * 97; // sparse sample for speed
-            for (let i = 0; i < data.length; i += step) {
-              if (data[i] < 248 || data[i + 1] < 248 || data[i + 2] < 248) return false;
-            }
-            return true;
-          } catch {
-            return false;
-          }
+        // A laid-out page is "empty" when its content area holds no text and no
+        // images once the running header/footer and margin boxes are ignored.
+        // Paged.js emits such pages after a section break; they used to end up
+        // in the merged file as blank sheets.
+        const isEmptyLayoutPage = (el: HTMLElement) => {
+          const area =
+            el.querySelector<HTMLElement>(".pagedjs_page_content") ??
+            el.querySelector<HTMLElement>(".pagedjs_area") ??
+            el;
+          const clone = area.cloneNode(true) as HTMLElement;
+          clone
+            .querySelectorAll(
+              ".fjw-running-header, .fjw-print-footer, [class*='pagedjs_margin']",
+            )
+            .forEach((n) => n.remove());
+          const hasText = (clone.textContent || "").replace(/\s+/g, "").length > 0;
+          const hasMedia = clone.querySelector("img, svg, canvas") !== null;
+          return !hasText && !hasMedia;
         };
 
         const addRenderedPage = async (el: HTMLElement, { allowBlank = false } = {}) => {
+          if (!allowBlank && isEmptyLayoutPage(el)) return false;
           await waitForImages(el);
           const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false });
-          if (!allowBlank && isBlankCanvas(canvas)) return false;
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
           const bytes = await (await fetch(dataUrl)).arrayBuffer();
           const img = await merged.embedJpg(bytes);
