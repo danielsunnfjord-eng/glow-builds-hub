@@ -176,7 +176,6 @@ const Legal = () => {
           </p>
         </section>
       </main>
-      </main>
       <Footer />
     </div>
   );
