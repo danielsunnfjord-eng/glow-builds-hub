@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Check } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
+const PT_BADGES = [
+  "Atendimento em português",
+  "Pagamento em reais",
+  "Roteiros feitos por quem vive na Europa",
+];
+
 const DualPathCards = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isPt = i18n.language === "pt";
 
   return (
     <section className="bg-parchment pt-60 pb-24 px-6 md:px-16">
@@ -19,8 +27,29 @@ const DualPathCards = () => {
             <p className="text-[0.95rem] text-voyage-muted leading-relaxed">
               {t("home.dual.subtitle")}
             </p>
+            {isPt && (
+              <>
+                <p className="mt-4 text-[0.95rem] text-voyage-muted leading-relaxed">
+                  Criado por um brasileiro que vive na Europa desde 2010 — roteiros com
+                  conhecimento real, não só pesquisa no Google. Atendimento em português, com
+                  pagamento facilitado em reais.
+                </p>
+                <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3">
+                  {PT_BADGES.map((badge) => (
+                    <li
+                      key={badge}
+                      className="flex items-center gap-2 text-[0.72rem] font-medium tracking-[0.06em] uppercase text-ink/80"
+                    >
+                      <Check className="h-3.5 w-3.5 text-gold" strokeWidth={3} />
+                      {badge}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </ScrollReveal>
+
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ScrollReveal>
