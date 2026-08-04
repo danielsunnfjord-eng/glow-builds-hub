@@ -778,16 +778,64 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         const merged = await PDFDocument.create();
         const A4_W = 595.28;
         const A4_H = 841.89;
-        const addRenderedPage = async (el: HTMLElement) => {
+
+        // Wait for webfonts and every image inside a page to be fully decoded
+        // before screenshotting it — otherwise html2canvas captures a white page.
+        const withTimeout = (p: Promise<unknown>, ms: number) =>
+          Promise.race([p, new Promise((res) => setTimeout(res, ms))]);
+        try {
+          await withTimeout((document as any).fonts?.ready ?? Promise.resolve(), 5000);
+        } catch { /* non-fatal */ }
+        const waitForImages = async (el: HTMLElement) => {
+          const imgs = Array.from(el.querySelectorAll("img"));
+          await withTimeout(
+            Promise.all(
+              imgs.map(async (img) => {
+                try {
+                  if (!img.complete || img.naturalWidth === 0) {
+                    await new Promise<void>((resolve) => {
+                      img.addEventListener("load", () => resolve(), { once: true });
+                      img.addEventListener("error", () => resolve(), { once: true });
+                    });
+                  }
+                  if ((img as any).decode) await (img as any).decode().catch(() => {});
+                } catch { /* ignore individual image failures */ }
+              }),
+            ),
+            15000,
+          );
+        };
+
+        // A captured page is "blank" when every sampled pixel is white.
+        const isBlankCanvas = (canvas: HTMLCanvasElement) => {
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return false;
+          try {
+            const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const step = 4 * 97; // sparse sample for speed
+            for (let i = 0; i < data.length; i += step) {
+              if (data[i] < 248 || data[i + 1] < 248 || data[i + 2] < 248) return false;
+            }
+            return true;
+          } catch {
+            return false;
+          }
+        };
+
+        const addRenderedPage = async (el: HTMLElement, { allowBlank = false } = {}) => {
+          await waitForImages(el);
           const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff", logging: false });
+          if (!allowBlank && isBlankCanvas(canvas)) return false;
           const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
           const bytes = await (await fetch(dataUrl)).arrayBuffer();
           const img = await merged.embedJpg(bytes);
           const page = merged.addPage([A4_W, A4_H]);
           page.drawImage(img, { x: 0, y: 0, width: A4_W, height: A4_H });
+          return true;
         };
-        // 1. Cover (first rendered page).
-        await addRenderedPage(pages[0]);
+        // 1. Cover (first rendered page). Must never be dropped.
+        const coverOk = await addRenderedPage(pages[0], { allowBlank: true });
+        if (!coverOk) throw new Error("Cover page could not be captured.");
         // 2. Uploaded body PDF.
         const bodyBytes = await fetch(bodyPdfUrl!).then((r) => {
           if (!r.ok) throw new Error(`Could not fetch uploaded PDF (${r.status})`);
@@ -796,7 +844,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         const bodyDoc = await PDFDocument.load(bodyBytes);
         const copied = await merged.copyPages(bodyDoc, bodyDoc.getPageIndices());
         copied.forEach((p) => merged.addPage(p));
-        // 3. Tail pages (hotels + back).
+        // 3. Tail pages (hotels + back) — blank layout pages are skipped.
         for (let i = 1; i < pages.length; i++) await addRenderedPage(pages[i]);
         const out = await merged.save();
         const blob = new Blob([out as BlobPart], { type: "application/pdf" });
