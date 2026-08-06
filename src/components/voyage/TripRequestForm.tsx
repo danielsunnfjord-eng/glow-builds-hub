@@ -7,10 +7,29 @@ const INTEREST_OPTIONS = [
   { key: "adventure", emoji: "🏔️" },
   { key: "culture", emoji: "🏛️" },
   { key: "gastronomy", emoji: "🍷" },
-  { key: "relaxation", emoji: "🧘" },
   { key: "nature", emoji: "🌿" },
+  { key: "citybreak", emoji: "🏙️" },
+  { key: "relaxation", emoji: "🧘" },
+  { key: "beach", emoji: "🏖️" },
+  { key: "romantic", emoji: "💞" },
+  { key: "family", emoji: "👨‍👩‍👧" },
+  { key: "wellness", emoji: "💆" },
+  { key: "luxury", emoji: "✨" },
+  { key: "wildlife", emoji: "🐋" },
+  { key: "roadtrip", emoji: "🚗" },
+  { key: "photography", emoji: "📷" },
   { key: "nightlife", emoji: "🌃" },
+  { key: "festivals", emoji: "🎉" },
+  { key: "hiking", emoji: "🥾" },
+  { key: "scenicrailways", emoji: "🚂" },
+  { key: "cruises", emoji: "🛳️" },
+  { key: "history", emoji: "🏰" },
+  { key: "shopping", emoji: "🛍️" },
+  { key: "surfing", emoji: "🏄" },
+  { key: "localexperiences", emoji: "🤝" },
+  { key: "winteractivities", emoji: "❄️" },
 ];
+
 
 const ACCOMMODATION_OPTIONS = ["boutiqueHotel", "resort", "airbnb", "cabin", "other"] as const;
 const PACE_OPTIONS = ["intense", "relaxed", "mixed"] as const;
