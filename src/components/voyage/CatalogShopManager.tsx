@@ -1485,8 +1485,13 @@ const CatalogShopManager = () => {
   // Pre-publish checklist
   type Check = { key: string; label: string; ok: boolean };
   const buildChecklist = (s: EditorState): Check[] => [
-    { key: "audited", label: "Itinerary has been audited", ok: !!s.auditedAt },
+    // Audit is only required for itineraries written inside the itinerary maker.
+    // Externally created itineraries (body uploaded as PDF) have nothing to audit.
+    ...(s.content.trim()
+      ? [{ key: "audited", label: "Itinerary has been audited", ok: !!s.auditedAt }]
+      : [{ key: "body", label: "Body content written or a body PDF attached", ok: !!s.bodyPdfUrl }]),
     { key: "cover", label: "Cover image has been uploaded", ok: !!s.heroImageUrl },
+
     {
       key: "hotels",
       label: "At least one hotel recommendation has been added",
