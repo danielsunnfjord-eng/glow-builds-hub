@@ -162,20 +162,23 @@ const ItineraryShopDetail = () => {
   });
 
   const { data: related = [] } = useQuery({
-    queryKey: ["catalog-related", slug],
+    queryKey: ["catalog-related", slug, lang],
     queryFn: async () => {
-      const { data: res, error } = await supabase
+      let query = supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, primary_language")
         .eq("is_published", true)
-        .neq("slug", slug!)
-        .order("sort_order", { ascending: true })
-        .limit(3);
+        .neq("slug", slug!);
+      if (lang === "pt") query = query.eq("primary_language", "pt");
+      else if (lang === "en") query = query.eq("primary_language", "en");
+      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
+      const { data: res, error } = await query.order("sort_order", { ascending: true }).limit(3);
       if (error) throw error;
       return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur" | "price_usd" | "price_brl" | "price_nok">>;
     },
     enabled: !!slug,
   });
+
 
   const title = data ? pick(lang, data.title_en, data.title_pt, data.title_no) : "";
   const summary = data ? pick(lang, data.summary_en, data.summary_pt, data.summary_no) : "";
