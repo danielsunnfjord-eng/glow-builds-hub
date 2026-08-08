@@ -304,36 +304,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/catalogue/experience-the-northern-lights</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
@@ -449,6 +419,36 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/experience-the-northern-lights</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
