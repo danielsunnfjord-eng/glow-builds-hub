@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import logo from "@/assets/logo.webp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";

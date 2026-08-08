@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";

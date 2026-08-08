@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { MapPin, Calendar, Compass, Sparkles } from "lucide-react";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";

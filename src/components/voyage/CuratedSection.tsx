@@ -1,6 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import {
   Clock, ShieldCheck, Sparkles,
   Hotel, Map, Phone,

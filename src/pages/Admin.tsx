@@ -1,6 +1,6 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import logo from "@/assets/logo-horizontal.webp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";

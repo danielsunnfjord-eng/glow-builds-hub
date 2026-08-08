@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/lib/router-compat";
 import { LOCALE_PREFIX, currentLocale, localePath, type Locale } from "@/lib/locale";
 
 const flagUrls: Record<string, string> = {
