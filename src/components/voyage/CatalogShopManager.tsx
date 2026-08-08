@@ -797,6 +797,7 @@ const CatalogShopManager = () => {
     setGdocInfo({ id: null, url: null, lastSyncedAt: null });
     setGdocError(null);
     setGdocConflict(null);
+    setDbBudgetLabel(null);
     setEditorOpen(true);
   };
 
@@ -885,6 +886,7 @@ const CatalogShopManager = () => {
     } catch {
       // Recovery should never block opening the editor.
     }
+    setDbBudgetLabel((r as any).estimated_trip_budget || null);
     setState(nextState);
     setSectionPrompt(nextSectionPrompt);
     setAuditAction({ status: "idle", message: "" });
