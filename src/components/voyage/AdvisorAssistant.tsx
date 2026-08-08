@@ -1715,8 +1715,8 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <ItineraryEditor
                   ref={editorRef}
                   content={itineraryContent}
-                  destination={selectedProject.destination}
-                  tripDuration={selectedProject.trip_duration}
+                  destination={selectedProject!.destination}
+                  tripDuration={selectedProject!.trip_duration}
                   budget={budget}
                   coverLabel={budgetCoverLabel}
                   onBudgetSaved={handleBudgetSaved}
