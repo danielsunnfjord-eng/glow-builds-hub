@@ -1,54 +1,27 @@
-# Why itinerary links show no preview on social media
+# Real social previews for itinerary links (SSR route)
 
-## What's actually happening
+Yes — Option B is the right call if social sharing matters for selling itineraries. It is the only route where any link, copied from anywhere, shows the itinerary's own title, description, and hero image on WhatsApp, Facebook, Instagram, and LinkedIn.
 
-I fetched an itinerary URL as Facebook's crawler would:
+## Why
 
-`https://fjordwavestravel.com/catalogue/primeira-vez-em-roma-o-roteiro-prtico`
+Social crawlers do not run JavaScript. Today they receive the static `index.html` head for every URL, so `https://fjordwavestravel.com/catalogue/<slug>` previews as the generic homepage card (and its `og:url` even points back to the homepage, which is why some platforms show nothing at all). A share-link workaround only fixes links shared through a button — not links people copy from the address bar or that Google/LinkedIn re-crawl.
 
-The crawler receives only the static `index.html` head:
+Server-side rendering sends the correct head with the page itself, so every URL is correct everywhere, and Google also reads the itinerary pages without relying on JS execution.
 
-- title: "Fjord & Waves Travel — Bespoke Travel Designed Around You"
-- `og:url`: `https://fjordwavestravel.com/` (the homepage, not the itinerary)
-- `og:image`: the generic site image
+## Plan
 
-The per-page tags in `src/components/Seo.tsx` (itinerary title, hero image, description) are added by JavaScript after the page loads. Facebook, Instagram, WhatsApp, and LinkedIn do not run JavaScript, so they never see them.
+1. **Quick correction first** — remove the hardcoded `og:url` from `index.html` so shared links stop being reattributed to the homepage. Immediately turns "no preview" into a valid generic card while the migration happens.
+2. **Migrate the site to Lovable's latest template (TanStack Start, with SSR).** Run in place; the routing, pages, and backend stay. [What the upgrade gives you](https://lovable.dev/blog/building-apps-using-tanstack-start)
+3. **Move page metadata to server-rendered head tags.** Replace the client-side `Seo` component usage with route-level head data so each page emits its own title, description, canonical, hreflang, and og tags at request time.
+4. **Per-itinerary previews on shop pages.** The itinerary route loads its record on the server and emits `og:title` (itinerary title in the page language), `og:description` (summary), `og:image` (hero image), and a self-referencing `og:url`.
+5. **Verify** by fetching a few live itinerary URLs as a social crawler and confirming the correct tags come back, in all three languages.
 
-On top of that, the hardcoded `og:url` pointing at the homepage tells the crawler "this page is really the homepage", which is why some platforms collapse the preview to nothing instead of at least showing the generic card.
+## Notes
 
-## Fix, in two steps
+- The migration uses credits and touches framework files across the app; if anything looks wrong it can be reverted from chat history.
+- Social platforms cache previews. Already-shared links keep the old card until re-scraped — Facebook's Sharing Debugger can force a refresh.
+- Hero images should be reasonably sized (1200×630 renders best); very tall or very small images may be ignored by some platforms.
 
-### Step 1 — Quick correction (safe, immediate)
+## Scope
 
-In `index.html`, remove the hardcoded `og:url` (and the canonical if present) so crawlers stop reattributing every shared link to the homepage. Every shared itinerary link will then at least show a valid Fjord & Waves card with the site image and description, instead of an empty preview.
-
-This does not give per-itinerary titles or images.
-
-### Step 2 — Real per-itinerary previews
-
-Two possible routes:
-
-**Option A — Share-link endpoint (works on the current setup)**
-
-Add a backend function that serves a crawler-friendly page per itinerary:
-
-- URL shape: `https://fjordwavestravel.com/s/<slug>` handled by a backend function
-- It reads the itinerary from the database and returns a tiny HTML page containing the real `og:title`, `og:description`, `og:image` (the itinerary hero image), and `og:url`
-- Real visitors are redirected instantly to the normal `/catalogue/<slug>` page
-- The Copy-link/share button in the shop uses this `/s/<slug>` link
-
-Result: correct picture, title, and description in WhatsApp, Facebook, Instagram, and LinkedIn — but only for links shared through the share button. Someone copying the address bar URL still gets the generic card.
-
-**Option B — Server-side rendering (complete fix)**
-
-Upgrade the site to Lovable's latest template with server-side rendering, so every URL — copied from the address bar or shared from anywhere — serves its own real head tags. This also improves how Google reads the itinerary pages. [What the upgrade gives you](https://lovable.dev/blog/building-apps-using-tanstack-start). It is a bigger migration and touches the whole app.
-
-## Technical notes
-
-- `src/components/Seo.tsx` is correct for Google (it executes JS); it is only insufficient for social crawlers.
-- Option A adds one edge function plus a share-URL helper used by the itinerary page; no schema changes.
-- Social platforms cache previews. After the fix, previously shared links keep the old card until re-scraped (Facebook's Sharing Debugger can force a refresh).
-
-## Proposed scope for this change
-
-Step 1 plus Option A, unless you prefer to go straight to the SSR migration.
+Steps 1–5 above. No design, copy, pricing, or database changes.
