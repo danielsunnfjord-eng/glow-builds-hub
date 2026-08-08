@@ -74,7 +74,7 @@ const FeaturedItineraries = () => {
             </div>
             <Link
               to="/catalogue"
-              className="inline-flex items-center gap-2 px-5 py-3 border border-ink/20 rounded-sm text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-ink hover:bg-ink hover:text-voyage-white transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 border border-ink/20 rounded-xs text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-ink hover:bg-ink hover:text-voyage-white transition-colors"
             >
               {t("home.featured.seeAll")} →
             </Link>
@@ -92,7 +92,7 @@ const FeaturedItineraries = () => {
               <ScrollReveal key={trip.id} className="h-full">
                 <Link
                   to={`/catalogue/${trip.slug}`}
-                  className="group flex flex-col h-full rounded-lg overflow-hidden border border-ink/[0.08] bg-voyage-white shadow-sm hover:shadow-xl transition-all duration-300"
+                  className="group flex flex-col h-full rounded-lg overflow-hidden border border-ink/[0.08] bg-voyage-white shadow-xs hover:shadow-xl transition-all duration-300"
                 >
                   <div className="relative aspect-[4/3] bg-parchment-2 overflow-hidden">
                     {trip.hero_image_url && (

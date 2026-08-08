@@ -38,7 +38,7 @@ const AiPreviewPanel = ({ original, preview, onAccept, onReject, loading }: AiPr
             {t("aiEdit.original") || "Original"}
           </div>
           <div
-            className="fjw-ai-preview bg-white/5 rounded p-2 text-white/60 text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-white/10"
+            className="fjw-ai-preview bg-white/5 rounded-sm p-2 text-white/60 text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-white/10"
             dangerouslySetInnerHTML={{ __html: markdownToHtml(original) }}
           />
         </div>
@@ -52,7 +52,7 @@ const AiPreviewPanel = ({ original, preview, onAccept, onReject, loading }: AiPr
             {t("aiEdit.suggested") || "Suggested"}
           </div>
           <div
-            className="fjw-ai-preview bg-gold/5 rounded p-2 text-white text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-gold/20"
+            className="fjw-ai-preview bg-gold/5 rounded-sm p-2 text-white text-[0.68rem] leading-relaxed overflow-y-auto max-h-[180px] border border-gold/20"
             dangerouslySetInnerHTML={{ __html: markdownToHtml(preview) }}
           />
         </div>
@@ -62,14 +62,14 @@ const AiPreviewPanel = ({ original, preview, onAccept, onReject, loading }: AiPr
         <button
           type="button"
           onClick={onReject}
-          className="flex-1 px-3 py-1.5 rounded text-[0.65rem] font-medium text-white/70 bg-white/10 hover:bg-white/20 transition-all"
+          className="flex-1 px-3 py-1.5 rounded-sm text-[0.65rem] font-medium text-white/70 bg-white/10 hover:bg-white/20 transition-all"
         >
           ✕ {t("aiEdit.reject") || "Reject"}
         </button>
         <button
           type="button"
           onClick={onAccept}
-          className="flex-1 px-3 py-1.5 rounded text-[0.65rem] font-semibold text-ink bg-gold hover:bg-gold/80 transition-all"
+          className="flex-1 px-3 py-1.5 rounded-sm text-[0.65rem] font-semibold text-ink bg-gold hover:bg-gold/80 transition-all"
         >
           ✓ {t("aiEdit.accept") || "Accept"}
         </button>

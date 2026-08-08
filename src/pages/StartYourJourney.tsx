@@ -47,7 +47,7 @@ const StartYourJourney = () => {
             </p>
             <button
               onClick={scrollToForm}
-              className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
+              className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
             >
               {t("startJourney.cta")}
             </button>
@@ -70,7 +70,7 @@ const StartYourJourney = () => {
                 {t("startJourney.formSubtitle")}
               </p>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm">
+            <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-xs">
               <TripRequestForm onSuccess={() => navigate("/thank-you")} />
             </div>
           </div>

@@ -36,7 +36,7 @@ export function amountFor(row: PriceRow | null | undefined, cur: DisplayCurrency
 
 /** Format a numeric amount into a short display string, e.g. "$120", "R$620", "kr 1200". */
 export function formatAmount(amount: number, cur: DisplayCurrency): string {
-  const rounded = Math.round(amount);
+  const rounded-sm = Math.round(amount);
   switch (cur) {
     case "USD":
       return `$${rounded}`;
@@ -147,7 +147,7 @@ export function CurrencyToggle({ variant = "light", className = "" }: CurrencyTo
             onClick={() => setEnPref(c)}
             aria-pressed={active}
             title={c}
-            className={`px-2 py-1 rounded text-[0.65rem] font-semibold tracking-[0.1em] uppercase transition-all ${
+            className={`px-2 py-1 rounded-sm text-[0.65rem] font-semibold tracking-[0.1em] uppercase transition-all ${
               active
                 ? variant === "dark"
                   ? "bg-voyage-white/20 ring-1 ring-voyage-white/30 text-voyage-white"

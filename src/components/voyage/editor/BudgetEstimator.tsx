@@ -33,7 +33,7 @@ function convert(value: number, fromCcy: string, toCcy: string): number {
 
 function fmt(value: number, ccy: string): string {
   const sym = CURRENCY_SYMBOL[ccy] || "";
-  const rounded = Math.round(value);
+  const rounded-sm = Math.round(value);
   return ccy === "NOK" ? `${rounded} ${sym}` : `${sym}${rounded}`;
 }
 
@@ -407,7 +407,7 @@ const BudgetEstimator = ({
               </Button>
             </div>
 
-            <div className="border border-parchment-3 rounded overflow-hidden">
+            <div className="border border-parchment-3 rounded-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-[#3D6B74] text-white text-xs uppercase tracking-wider">
                   <tr>

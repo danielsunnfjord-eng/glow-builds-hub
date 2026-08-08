@@ -78,7 +78,7 @@ const TranslateBar = ({ editing, setEditing, editLang, setEditLang }: Props) => 
       </span>
       <div className="flex items-center gap-2 ml-auto flex-wrap">
         <label className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted">Editing in</label>
-        <div className="flex rounded-sm overflow-hidden border border-parchment-3">
+        <div className="flex rounded-xs overflow-hidden border border-parchment-3">
           {LANGS.map((l) => (
             <button
               key={l.code}
@@ -98,7 +98,7 @@ const TranslateBar = ({ editing, setEditing, editLang, setEditLang }: Props) => 
           type="button"
           onClick={translate}
           disabled={busy}
-          className="px-4 py-1.5 rounded-sm bg-gold text-ink text-[0.7rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+          className="px-4 py-1.5 rounded-xs bg-gold text-ink text-[0.7rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
         >
           {busy ? "Translating…" : "Translate to other languages"}
         </button>

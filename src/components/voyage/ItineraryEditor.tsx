@@ -72,7 +72,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
       editorProps: {
         attributes: {
           class:
-            "fjw-editor-wysiwyg max-w-none focus:outline-none",
+            "fjw-editor-wysiwyg max-w-none focus:outline-hidden",
         },
       },
 
@@ -169,7 +169,7 @@ const ItineraryEditor = forwardRef<ItineraryEditorHandle, ItineraryEditorProps>(
 
     return (
       <div className="relative fjw-editor-shell">
-        <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-sm fjw-no-print">
+        <div className="sticky top-0 z-30 border-b border-parchment-3 bg-voyage-white shadow-xs fjw-no-print">
           <Toolbar
             editor={editor}
             destination={destination ?? null}

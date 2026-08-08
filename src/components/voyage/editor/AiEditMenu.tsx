@@ -41,7 +41,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
   // Preview state
   const [preview, setPreview] = useState<{ original: string; result: string; from: number; to: number } | null>(null);
 
-  // Track popup state in a ref so the editor blur handler (registered once)
+  // Track popup state in a ref so the editor blur-sm handler (registered once)
   // can read the latest value without re-binding.
   const popupOpenRef = useRef(false);
   useEffect(() => {
@@ -71,12 +71,12 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     };
 
     editor.on("selectionUpdate", checkSelection);
-    editor.on("blur", handleBlur);
+    editor.on("blur-sm", handleBlur);
     editor.on("focus", checkSelection);
 
     return () => {
       editor.off("selectionUpdate", checkSelection);
-      editor.off("blur", handleBlur);
+      editor.off("blur-sm", handleBlur);
       editor.off("focus", checkSelection);
     };
   }, [editor]);
@@ -199,7 +199,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
             disabled={!!loading || !!preview}
             onClick={() => runAction(key)}
             title={t(labelKey) || key}
-            className={`px-2 py-1 rounded text-[0.65rem] font-medium transition-all ${
+            className={`px-2 py-1 rounded-sm text-[0.65rem] font-medium transition-all ${
               loading === key
                 ? "bg-gold/30 text-gold animate-pulse"
                 : "text-white/80 hover:bg-white/10 hover:text-white"
@@ -216,7 +216,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
             type="button"
             disabled={!!loading || !!preview}
             onClick={() => { setShowTranslate(!showTranslate); setShowCustom(false); }}
-            className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
+            className="px-2 py-1 rounded-sm text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
             title={t("aiEdit.translate") || "Translate"}
           >
             🌐 {t("aiEdit.translate") || "Translate"}
@@ -229,7 +229,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
                   type="button"
                   disabled={!!loading}
                   onClick={() => { runAction(key); setShowTranslate(false); }}
-                  className={`w-full text-left px-2 py-1 rounded text-[0.65rem] font-medium transition-all ${
+                  className={`w-full text-left px-2 py-1 rounded-sm text-[0.65rem] font-medium transition-all ${
                     loading === key
                       ? "bg-gold/30 text-gold animate-pulse"
                       : "text-white/80 hover:bg-white/10 hover:text-white"
@@ -248,7 +248,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
           type="button"
           disabled={!!loading || !!preview}
           onClick={() => { setShowCustom(!showCustom); setShowTranslate(false); }}
-          className="px-2 py-1 rounded text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
+          className="px-2 py-1 rounded-sm text-[0.65rem] font-medium text-white/80 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-all"
           title={t("aiEdit.custom") || "Custom prompt"}
         >
           💬
@@ -262,7 +262,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
               onChange={(e) => setCustomPrompt(e.target.value)}
               onMouseDown={(e) => e.stopPropagation()}
               placeholder={t("aiEdit.customPlaceholder") || "Tell AI what to do with the selected text..."}
-              className="w-full bg-white/10 text-white text-[0.7rem] rounded px-2 py-1.5 border border-white/20 focus:border-gold focus:outline-none resize-none h-16 placeholder:text-white/40"
+              className="w-full bg-white/10 text-white text-[0.7rem] rounded-sm px-2 py-1.5 border border-white/20 focus:border-gold focus:outline-hidden resize-none h-16 placeholder:text-white/40"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -274,7 +274,7 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
               type="button"
               disabled={!!loading || !customPrompt.trim()}
               onClick={() => runAction("custom", customPrompt)}
-              className="mt-1 w-full px-2 py-1 rounded bg-gold text-ink text-[0.65rem] font-semibold hover:bg-gold/80 disabled:opacity-40 transition-all"
+              className="mt-1 w-full px-2 py-1 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold hover:bg-gold/80 disabled:opacity-40 transition-all"
             >
               {loading === "custom" ? "⏳ ..." : `✨ ${t("aiEdit.apply") || "Apply"}`}
             </button>

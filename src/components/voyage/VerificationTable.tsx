@@ -503,7 +503,7 @@ const VerificationTable = ({ content, destination }: Props) => {
     <details
       open={open}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
-      className="rounded border border-parchment-3 bg-parchment/40"
+      className="rounded-sm border border-parchment-3 bg-parchment/40"
     >
       <summary className="cursor-pointer select-none px-3 py-2 text-[0.85rem] font-medium text-ink flex items-center justify-between gap-3">
         <span className="flex items-center gap-2">
@@ -528,7 +528,7 @@ const VerificationTable = ({ content, destination }: Props) => {
               <button
                 type="button"
                 onClick={copyCsv}
-                className="text-[0.72rem] px-2 py-1 rounded border border-parchment-3 hover:bg-parchment"
+                className="text-[0.72rem] px-2 py-1 rounded-sm border border-parchment-3 hover:bg-parchment"
               >
                 Copy as CSV
               </button>
@@ -563,8 +563,8 @@ const VerificationTable = ({ content, destination }: Props) => {
                         <span
                           className={
                             r.confidence === "Verify"
-                              ? "inline-block px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[0.7rem]"
-                              : "inline-block px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-900 text-[0.7rem]"
+                              ? "inline-block px-1.5 py-0.5 rounded-sm bg-amber-100 text-amber-900 text-[0.7rem]"
+                              : "inline-block px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-900 text-[0.7rem]"
                           }
                         >
                           {r.confidence}
@@ -578,7 +578,7 @@ const VerificationTable = ({ content, destination }: Props) => {
             </div>
             <p className="mt-2 text-[0.7rem] text-voyage-muted">
               Rows flagged
-              <span className="mx-1 px-1 rounded bg-amber-100 text-amber-900">Verify</span>
+              <span className="mx-1 px-1 rounded-sm bg-amber-100 text-amber-900">Verify</span>
               mention hours, prices, seasonal dates, awards or Michelin — double-check before publishing.
             </p>
           </>

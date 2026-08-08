@@ -1,0 +1,23 @@
+{
+  "customizations": [
+    { "token": "--background/--foreground/--card/--card-foreground/--popover/--popover-foreground brand HSL values", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--primary/--primary-foreground/--secondary/--secondary-foreground", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--muted/--muted-foreground/--accent/--accent-foreground/--destructive/--destructive-foreground", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--border/--input/--ring/--radius (4px)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--ink/--ink2/--ink3 + bg-ink/text-ink-2/text-ink-3 utilities", "source": "src/index.css + tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "--parchment/--parchment2/--parchment3 + parchment utilities", "source": "src/index.css + tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "--gold/--gold2/--gold-light + gold utilities", "source": "src/index.css + tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "--sage/--voyage-muted/--voyage-white + utilities", "source": "src/index.css + tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "--shadow-elegant", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "--sidebar-* token set", "source": "src/index.css + tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "font-serif (Cormorant Garamond) / font-sans (Montserrat)", "source": "tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "container (centered, 2rem padding, 1400px cap)", "source": "tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "accordion-down/accordion-up keyframes + animations", "source": "tailwind.config.ts", "reappliedIn": "src/styles.css" },
+    { "token": "base layer (body font/overflow, scroll-behavior, scrollbar styling)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "fadeUp/scaleIn/pulse-bar animation utilities + font-serif-display", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "TipTap image-resizer styles", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "fjw WYSIWYG/PDF shared styles + pagination rules", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "print rules (A4 cover/back full bleed, fjw-print-page)", "source": "src/index.css", "reappliedIn": "src/styles.css" },
+    { "token": "fjw-audit-flash + editor canvas/page-break/status-bar styles", "source": "src/index.css", "reappliedIn": "src/styles.css" }
+  ]
+}

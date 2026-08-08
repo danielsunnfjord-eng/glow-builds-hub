@@ -46,7 +46,7 @@ const Navbar = () => {
           <LanguageSelector variant="light" />
           <button
             onClick={() => navigate("/start-your-journey")}
-            className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
+            className="px-5 py-2.5 rounded-xs border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
           </button>
@@ -54,7 +54,7 @@ const Navbar = () => {
             href={calendlyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+            className="px-5 py-2.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
           >
             {t("nav.bookCall")}
           </a>
@@ -97,7 +97,7 @@ const Navbar = () => {
           </Link>
           <button
             onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
-            className="px-5 py-2.5 rounded-sm border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
+            className="px-5 py-2.5 rounded-xs border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
           </button>
@@ -106,7 +106,7 @@ const Navbar = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}
-            className="px-5 py-2.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:bg-gold hover:text-ink transition-colors no-underline"
+            className="px-5 py-2.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase text-center hover:bg-gold hover:text-ink transition-colors no-underline"
           >
             {t("nav.bookCall")}
           </a>

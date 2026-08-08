@@ -26,7 +26,7 @@ const MeetDaniel = () => {
             </p>
             <button
               onClick={() => navigate("/about")}
-              className="inline-flex items-center gap-2 px-6 py-3 border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase rounded-sm hover:bg-ink hover:text-voyage-white transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase rounded-xs hover:bg-ink hover:text-voyage-white transition-colors"
             >
               {t("meetDaniel.cta")}
             </button>

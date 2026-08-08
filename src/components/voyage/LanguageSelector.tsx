@@ -30,7 +30,7 @@ const LanguageSelector = ({ variant = "light" }: LanguageSelectorProps) => {
           href={hrefFor(lng)}
           hrefLang={LOCALE_PREFIX[lng] ? lng : "en"}
           title={t(`lang.${lng}`)}
-          className={`p-1 rounded transition-all inline-flex ${
+          className={`p-1 rounded-sm transition-all inline-flex ${
             active === lng
               ? variant === "dark"
                 ? "bg-voyage-white/20 ring-1 ring-voyage-white/30"

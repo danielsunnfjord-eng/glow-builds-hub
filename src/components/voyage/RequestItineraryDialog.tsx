@@ -140,14 +140,14 @@ const RequestItineraryDialog = ({ open, onOpenChange, request, onSaved }: Props)
         <div className="flex justify-end gap-2 pt-3">
           <button
             onClick={() => onOpenChange(false)}
-            className="px-4 py-2 rounded-sm border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
+            className="px-4 py-2 rounded-xs border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={phase !== "ready" || !content.trim()}
-            className="px-5 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            className="px-5 py-2 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
           >
             {phase === "saving" && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
             Save as Project

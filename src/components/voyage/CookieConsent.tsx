@@ -60,7 +60,7 @@ const CookieConsent = () => {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[100] p-4 md:p-6 pointer-events-none">
-      <div className="pointer-events-auto max-w-3xl mx-auto bg-ink text-voyage-white rounded-sm shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-gold/20 overflow-hidden">
+      <div className="pointer-events-auto max-w-3xl mx-auto bg-ink text-voyage-white rounded-xs shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-gold/20 overflow-hidden">
         {!showSettings ? (
           <div className="p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5">
             <div className="flex-1">
@@ -74,19 +74,19 @@ const CookieConsent = () => {
             <div className="flex flex-wrap gap-2 shrink-0">
               <button
                 onClick={() => setShowSettings(true)}
-                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-sm transition-colors"
+                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
                 Manage
               </button>
               <button
                 onClick={() => accept(false, false)}
-                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-sm transition-colors"
+                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
                 Reject optional
               </button>
               <button
                 onClick={() => accept(true, true)}
-                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-sm transition-colors"
+                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-xs transition-colors"
               >
                 Accept all
               </button>
@@ -98,7 +98,7 @@ const CookieConsent = () => {
             <h3 className="font-serif text-xl text-voyage-white mb-4">Manage your cookies</h3>
 
             <div className="space-y-3 mb-6">
-              <label className="flex items-start gap-3 p-4 rounded-sm border border-voyage-white/10 bg-voyage-white/[0.02]">
+              <label className="flex items-start gap-3 p-4 rounded-xs border border-voyage-white/10 bg-voyage-white/[0.02]">
                 <input type="checkbox" checked readOnly className="mt-1 accent-gold" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-voyage-white">Essential</p>
@@ -109,7 +109,7 @@ const CookieConsent = () => {
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-4 rounded-sm border border-voyage-white/10 bg-voyage-white/[0.02] cursor-pointer">
+              <label className="flex items-start gap-3 p-4 rounded-xs border border-voyage-white/10 bg-voyage-white/[0.02] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={analytics}
@@ -124,7 +124,7 @@ const CookieConsent = () => {
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 p-4 rounded-sm border border-voyage-white/10 bg-voyage-white/[0.02] cursor-pointer">
+              <label className="flex items-start gap-3 p-4 rounded-xs border border-voyage-white/10 bg-voyage-white/[0.02] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={marketing}
@@ -144,13 +144,13 @@ const CookieConsent = () => {
             <div className="flex flex-wrap gap-2 justify-end">
               <button
                 onClick={() => accept(false, false)}
-                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-sm transition-colors"
+                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
                 Reject optional
               </button>
               <button
                 onClick={() => accept(analytics, marketing)}
-                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-sm transition-colors"
+                className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-xs transition-colors"
               >
                 Save preferences
               </button>

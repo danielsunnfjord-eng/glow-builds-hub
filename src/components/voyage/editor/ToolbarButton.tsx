@@ -15,7 +15,7 @@ const ToolbarButton = ({ active, onClick, children, title, disabled, className }
     onClick={onClick}
     disabled={disabled}
     title={title}
-    className={`px-2 py-1 rounded-sm text-[0.72rem] font-medium transition-colors ${
+    className={`px-2 py-1 rounded-xs text-[0.72rem] font-medium transition-colors ${
       active
         ? "bg-gold text-ink"
         : "text-voyage-muted hover:bg-parchment-2 hover:text-ink"

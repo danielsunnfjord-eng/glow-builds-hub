@@ -1,0 +1,208 @@
+/**
+ * Router-compat shim — bridges react-router-dom v6 call sites to
+ * @tanstack/react-router without hand-rewriting every component.
+ *
+ * Fjord & Waves addition: the old app ran three parallel BrowserRouter
+ * basenames ("" for EN, "/no" for Norwegian, "/pt-br" for pt-BR). The
+ * TanStack router matches the full pathname (routes carry an optional
+ * {-$locale} prefix), so this shim re-creates the basename illusion:
+ *  - useLocation() returns the locale-stripped pathname (like basename did)
+ *  - useNavigate()/Link/Navigate prepend the current locale prefix to
+ *    absolute targets, so `navigate("/about")` on /no/... goes to /no/about.
+ * Cross-locale navigation continues to use plain <a href> full-page loads,
+ * exactly as before the migration.
+ */
+import {
+  useNavigate as tsNavigate,
+  useLocation as tsLocation,
+  useParams as tsParams,
+  useRouter,
+  Link as TSLink,
+  Navigate as TSNavigate,
+  Outlet as TSOutlet,
+} from "@tanstack/react-router";
+import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode } from "react";
+import { detectLocaleFromPath, stripLocalePrefix, LOCALE_PREFIX } from "@/lib/locale";
+
+// ---------- locale-prefix (basename) emulation ----------
+
+function prefixForPathname(pathname: string): string {
+  return LOCALE_PREFIX[detectLocaleFromPath(pathname)] ?? "";
+}
+
+/** Prepend the active locale prefix to an absolute router path. */
+function withLocalePrefix(pathname: string, currentFullPathname: string): string {
+  if (!pathname.startsWith("/")) return pathname; // relative / "." targets untouched
+  const prefix = prefixForPathname(currentFullPathname);
+  if (!prefix) return pathname;
+  // Never double-prefix a target that already carries a locale prefix.
+  if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return pathname;
+  return pathname === "/" ? `${prefix}/` : `${prefix}${pathname}`;
+}
+
+// ---------- shared URL parsing ----------
+
+function parseTo(to: string): { pathname: string; search?: Record<string, string>; hash?: string } {
+  const [beforeHash, hashStr] = (to ?? "").split("#");
+  const [pathname, searchStr] = (beforeHash ?? "").split("?");
+  return {
+    // react-router keeps the current path for search-only ("?a=1") and
+    // hash-only ("#section") targets; TanStack's "." means current route.
+    pathname: pathname || ".",
+    search: searchStr ? Object.fromEntries(new URLSearchParams(searchStr)) : undefined,
+    hash: hashStr || undefined,
+  };
+}
+
+// ---------- useNavigate ----------
+
+type NavigateOptions = { replace?: boolean; state?: unknown };
+
+type NavigateFn = {
+  (to: string | number, options?: NavigateOptions): void;
+  (delta: number): void;
+};
+
+export function useNavigate(): NavigateFn {
+  const tsNav = tsNavigate();
+  const router = useRouter();
+  return useCallback(
+    (to: string | number, options?: NavigateOptions) => {
+      if (typeof to === "number") {
+        router.history.go(to);
+        return;
+      }
+      const { pathname, search, hash } = parseTo(to);
+      const target = withLocalePrefix(pathname, router.state.location.pathname);
+      tsNav({
+        to: target,
+        search: search as never,
+        hash,
+        state: options?.state as never,
+        replace: options?.replace,
+      });
+    },
+    [tsNav, router],
+  ) as NavigateFn;
+}
+
+// ---------- useLocation ----------
+
+export function useLocation() {
+  const loc = tsLocation();
+  const strippedPathname = stripLocalePrefix(loc.pathname);
+  return useMemo(
+    () => ({
+      pathname: strippedPathname,
+      search: loc.searchStr ? `?${loc.searchStr}` : "",
+      hash: loc.hash ?? "",
+      state: (loc.state ?? null) as unknown,
+      key: strippedPathname + (loc.searchStr ?? ""),
+    }),
+    [strippedPathname, loc.searchStr, loc.hash, loc.state],
+  );
+}
+
+// ---------- useParams ----------
+
+export function useParams<
+  T extends Record<string, string | undefined> = Record<string, string | undefined>,
+>(): T {
+  return tsParams({ strict: false } as never) as T;
+}
+
+// ---------- useSearchParams (react-router-dom compat) ----------
+
+export function useSearchParams(): [
+  URLSearchParams,
+  (
+    init: URLSearchParams | Record<string, string> | ((prev: URLSearchParams) => URLSearchParams),
+    opts?: { replace?: boolean },
+  ) => void,
+] {
+  const loc = tsLocation();
+  const nav = tsNavigate();
+  const router = useRouter();
+  const params = useMemo(() => new URLSearchParams(loc.searchStr ?? ""), [loc.searchStr]);
+  const setParams = useCallback(
+    (
+      init: URLSearchParams | Record<string, string> | ((prev: URLSearchParams) => URLSearchParams),
+      opts?: { replace?: boolean },
+    ) => {
+      // Functional updaters read the router's live location, not the render
+      // snapshot — react-router passes call-time params, and chained updates
+      // within one tick must see each other's writes.
+      const live = router.state.location;
+      const current = new URLSearchParams(live.searchStr ?? "");
+      const next =
+        typeof init === "function"
+          ? init(current)
+          : init instanceof URLSearchParams
+            ? init
+            : new URLSearchParams(init);
+      const searchObj: Record<string, string> = {};
+      next.forEach((v, k) => {
+        searchObj[k] = v;
+      });
+      nav({ to: live.pathname, search: searchObj as never, replace: opts?.replace });
+    },
+    [nav, router],
+  );
+  return [params, setParams];
+}
+
+// ---------- Link ----------
+
+type LinkProps = Omit<ComponentProps<typeof TSLink>, "to"> & {
+  to: string;
+  replace?: boolean;
+  state?: unknown;
+  children?: ReactNode;
+};
+
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
+  { to, replace, state, children, ...rest },
+  ref,
+) {
+  const router = useRouter();
+  const { pathname, search, hash } = parseTo(to);
+  const target = withLocalePrefix(pathname, router.state.location.pathname);
+  return (
+    <TSLink
+      ref={ref as never}
+      to={target as never}
+      search={search as never}
+      hash={hash}
+      replace={replace}
+      state={state as never}
+      {...((rest ?? {}) as Record<string, unknown>)}
+    >
+      {children}
+    </TSLink>
+  );
+});
+
+// ---------- Navigate ----------
+
+export function Navigate({ to, replace, state }: { to: string; replace?: boolean; state?: unknown }) {
+  const router = useRouter();
+  const { pathname, search, hash } = parseTo(to);
+  const target = withLocalePrefix(pathname, router.state.location.pathname);
+  return (
+    <TSNavigate
+      to={target as never}
+      search={search as never}
+      hash={hash}
+      state={state as never}
+      replace={replace}
+    />
+  );
+}
+
+// ---------- Outlet ----------
+
+export const Outlet = TSOutlet;
+
+// ---------- NavLink (minimal) ----------
+
+export const NavLink = Link;

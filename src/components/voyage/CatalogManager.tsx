@@ -82,7 +82,7 @@ const CatalogManager = ({ onEdit }: { onEdit?: (id: string) => void }) => {
         <div>
           <h1 className="font-serif text-3xl font-bold mb-1">Routes catalogue</h1>
           <p className="text-[0.85rem] text-voyage-muted">
-            Manage which Route Maker itineraries appear on the public <code className="text-xs bg-parchment px-1.5 py-0.5 rounded">/routes</code> catalogue.
+            Manage which Route Maker itineraries appear on the public <code className="text-xs bg-parchment px-1.5 py-0.5 rounded-sm">/routes</code> catalogue.
             {rows.length > 0 && <> {published} of {rows.length} published.</>}
           </p>
         </div>
@@ -107,7 +107,7 @@ const CatalogManager = ({ onEdit }: { onEdit?: (id: string) => void }) => {
           <div className="divide-y divide-parchment-3">
             {filtered.map((r) => (
               <div key={r.id} className="flex items-center gap-4 p-4 hover:bg-parchment/30">
-                <div className="w-20 h-16 rounded bg-parchment-2 flex-shrink-0 overflow-hidden">
+                <div className="w-20 h-16 rounded-sm bg-parchment-2 flex-shrink-0 overflow-hidden">
                   {r.hero_image_url ? (
                     <img src={r.hero_image_url} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -118,9 +118,9 @@ const CatalogManager = ({ onEdit }: { onEdit?: (id: string) => void }) => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <div className="font-medium text-ink truncate">{r.title}</div>
                     {r.is_published ? (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded">Published</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded-sm">Published</span>
                     ) : (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded">Draft</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded-sm">Draft</span>
                     )}
                     <span className="text-[0.65rem] uppercase tracking-wider text-voyage-muted">{r.status}</span>
                   </div>
@@ -133,7 +133,7 @@ const CatalogManager = ({ onEdit }: { onEdit?: (id: string) => void }) => {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {r.is_published && r.slug && (
-                    <Link to={`/routes/${r.slug}`} target="_blank" className="p-2 hover:bg-parchment rounded" title="View public page">
+                    <Link to={`/routes/${r.slug}`} target="_blank" className="p-2 hover:bg-parchment rounded-sm" title="View public page">
                       <ExternalLink className="w-4 h-4 text-voyage-muted" />
                     </Link>
                   )}

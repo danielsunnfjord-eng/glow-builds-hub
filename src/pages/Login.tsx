@@ -96,11 +96,11 @@ const Login = () => {
   };
 
   const passwordInputClass =
-    "w-full pl-4 pr-12 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+    "w-full pl-4 pr-12 py-3 rounded-xs bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
   const inputClass =
-    "px-4 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+    "px-4 py-3 rounded-xs bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
   const btnClass =
-    "px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60";
+    "px-6 py-3 rounded-xs bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60";
 
   const renderPasswordField = (
     value: string,
@@ -146,7 +146,7 @@ const Login = () => {
         </div>
 
         {notice && view === "login" && (
-          <div className="mb-6 px-4 py-3 rounded-sm bg-gold/10 border border-gold/30 text-gold text-[0.8rem] text-center">
+          <div className="mb-6 px-4 py-3 rounded-xs bg-gold/10 border border-gold/30 text-gold text-[0.8rem] text-center">
             {notice}
           </div>
         )}

@@ -36,13 +36,13 @@ export default class EditorErrorBoundary extends React.Component<Props, State> {
     if (this.state.error) {
       if (this.props.fallback) return this.props.fallback(this.state.error, this.reset);
       return (
-        <div className="rounded border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="rounded-sm border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="font-semibold mb-1">The editor hit a rendering error.</div>
           <div className="opacity-80 mb-2">{this.state.error.message}</div>
           <button
             type="button"
             onClick={this.reset}
-            className="px-3 py-1.5 rounded bg-ink text-voyage-white text-xs uppercase tracking-wider"
+            className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-xs uppercase tracking-wider"
           >
             Reload editor
           </button>

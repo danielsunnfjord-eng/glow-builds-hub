@@ -50,7 +50,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://..."
-            className="w-full text-xs border border-parchment-3 rounded px-2 py-1 mb-1.5 focus:outline-none focus:border-gold"
+            className="w-full text-xs border border-parchment-3 rounded-sm px-2 py-1 mb-1.5 focus:outline-hidden focus:border-gold"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 onSetLink(url);
@@ -64,7 +64,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
             <button
               type="button"
               onClick={() => { onSetLink(url); setOpenWithNotify(false); }}
-              className="flex-1 text-[0.65rem] bg-gold text-ink rounded px-2 py-1 hover:bg-gold/80"
+              className="flex-1 text-[0.65rem] bg-gold text-ink rounded-sm px-2 py-1 hover:bg-gold/80"
             >
               Apply
             </button>
@@ -72,7 +72,7 @@ const LinkPopover = ({ isActive, currentHref, onSetLink, onUnsetLink, title, onO
               <button
                 type="button"
                 onClick={() => { onUnsetLink(); setOpenWithNotify(false); }}
-                className="text-[0.65rem] border border-parchment-3 text-voyage-muted rounded px-2 py-1 hover:bg-parchment"
+                className="text-[0.65rem] border border-parchment-3 text-voyage-muted rounded-sm px-2 py-1 hover:bg-parchment"
               >
                 Remove
               </button>

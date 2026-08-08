@@ -61,14 +61,14 @@ const ColorPicker = ({ type, currentColor, onColorSelect, title }: ColorPickerPr
           <span className="flex flex-col items-center leading-none">
             <span className="text-[0.7rem] font-bold">A</span>
             <span
-              className="w-3.5 h-1 rounded-sm mt-0.5"
+              className="w-3.5 h-1 rounded-xs mt-0.5"
               style={{ backgroundColor: currentColor || "#1a1a1a" }}
             />
           </span>
         ) : (
           <span className="flex flex-col items-center leading-none">
             <span
-              className="text-[0.7rem] font-bold px-0.5 rounded-sm"
+              className="text-[0.7rem] font-bold px-0.5 rounded-xs"
               style={{ backgroundColor: currentColor || "#fef08a" }}
             >
               ab
@@ -89,7 +89,7 @@ const ColorPicker = ({ type, currentColor, onColorSelect, title }: ColorPickerPr
                   onColorSelect(c.value);
                   setOpen(false);
                 }}
-                className={`w-6 h-6 rounded-sm border transition-all hover:scale-110 ${
+                className={`w-6 h-6 rounded-xs border transition-all hover:scale-110 ${
                   currentColor === c.value ? "border-gold ring-1 ring-gold" : "border-parchment-3"
                 } ${!c.value ? "bg-voyage-white relative" : ""}`}
                 style={c.value ? (type === "text" ? { color: c.value, backgroundColor: c.value } : { backgroundColor: c.value }) : undefined}

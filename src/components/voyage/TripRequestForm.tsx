@@ -214,7 +214,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputClass = "w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
   const labelClass = "text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block";
   const hintClass = "text-xs text-muted-foreground mt-1";
 
@@ -265,7 +265,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             value={phoneCountry}
             onChange={(e) => setPhoneCountry(e.target.value)}
             aria-label={t("tripForm.countryCode")}
-            className="w-full px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="w-full px-2 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           >
             {COUNTRY_CODES.map((c) => (
               <option key={c.code} value={c.code}>
@@ -283,7 +283,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
             title={t("tripForm.phoneNumberHint")}
             inputMode="tel"
             autoComplete="tel-national"
-            className="w-full min-w-0 px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="w-full min-w-0 px-4 py-3 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
         <p className={hintClass}>{t("tripForm.phoneHint")}</p>
@@ -330,7 +330,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
                     ages[idx] = Math.min(17, Math.max(0, Number(e.target.value)));
                     setForm({ ...form, children_ages: ages });
                   }}
-                  className="w-16 px-2 py-2 rounded-lg bg-background border border-border text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="w-16 px-2 py-2 rounded-lg bg-background border border-border text-foreground text-sm text-center focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
                 <span className="text-xs text-muted-foreground">{t("tripForm.years")}</span>
               </div>
@@ -368,7 +368,7 @@ const TripRequestForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           id="visited_before"
           checked={form.visited_before}
           onChange={(e) => setForm({ ...form, visited_before: e.target.checked })}
-          className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20"
+          className="w-4 h-4 rounded-sm border-border text-primary focus:ring-primary/20"
         />
         <label htmlFor="visited_before" className="text-sm text-foreground cursor-pointer">
           {t("tripForm.visitedBefore")}
