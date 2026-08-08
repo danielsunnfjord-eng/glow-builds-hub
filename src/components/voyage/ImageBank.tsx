@@ -292,7 +292,7 @@ const ImageBank = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by filename or city…"
-          className="flex-1 min-w-[220px] px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold"
+          className="flex-1 min-w-[220px] px-3 py-2 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-hidden focus:border-gold"
         />
 
         <div className="flex items-center gap-2">
@@ -301,7 +301,7 @@ const ImageBank = () => {
             value={uploadCity}
             onChange={(e) => setUploadCity(e.target.value)}
             placeholder={activeCity !== "all" ? activeCity : "City folder…"}
-            className="px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.78rem] w-[150px] focus:outline-none focus:border-gold"
+            className="px-3 py-2 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.78rem] w-[150px] focus:outline-hidden focus:border-gold"
             title="Where to save the upload (defaults to the active city)"
           />
           <input
@@ -315,7 +315,7 @@ const ImageBank = () => {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.7rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
+            className="px-4 py-2 rounded-xs bg-gold text-ink text-[0.7rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
           >
             {isUploading ? "⏳ Uploading…" : "📤 Upload"}
           </button>
@@ -324,7 +324,7 @@ const ImageBank = () => {
         <button
           onClick={loadAll}
           disabled={loading}
-          className="px-3 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.7rem] hover:border-ink hover:text-ink transition-colors"
+          className="px-3 py-2 rounded-xs border border-parchment-3 text-voyage-muted text-[0.7rem] hover:border-ink hover:text-ink transition-colors"
         >
           {loading ? "⏳" : "↻ Refresh"}
         </button>
@@ -332,7 +332,7 @@ const ImageBank = () => {
         {selected.size > 0 && (
           <button
             onClick={deleteSelected}
-            className="px-4 py-2 rounded-sm bg-destructive text-voyage-white text-[0.7rem] font-semibold tracking-[0.08em] uppercase hover:bg-destructive/90"
+            className="px-4 py-2 rounded-xs bg-destructive text-voyage-white text-[0.7rem] font-semibold tracking-[0.08em] uppercase hover:bg-destructive/90"
           >
             🗑 Delete {selected.size}
           </button>
@@ -413,7 +413,7 @@ const ImageBank = () => {
                   }
                 }}
                 placeholder="e.g. dubrovnik"
-                className="w-full px-2 py-1 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.75rem] focus:outline-none focus:border-gold"
+                className="w-full px-2 py-1 rounded-xs bg-voyage-white border border-parchment-3 text-ink text-[0.75rem] focus:outline-hidden focus:border-gold"
               />
               <div className="flex gap-1">
                 <button
@@ -430,13 +430,13 @@ const ImageBank = () => {
                     setShowNewCity(false);
                     setNewCityName("");
                   }}
-                  className="flex-1 px-2 py-1 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2"
+                  className="flex-1 px-2 py-1 rounded-xs bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2"
                 >
                   Create
                 </button>
                 <button
                   onClick={() => { setShowNewCity(false); setNewCityName(""); }}
-                  className="flex-1 px-2 py-1 rounded-sm border border-parchment-3 text-voyage-muted text-[0.65rem] font-semibold uppercase tracking-wide hover:border-ink hover:text-ink"
+                  className="flex-1 px-2 py-1 rounded-xs border border-parchment-3 text-voyage-muted text-[0.65rem] font-semibold uppercase tracking-wide hover:border-ink hover:text-ink"
                 >
                   Cancel
                 </button>
@@ -527,7 +527,7 @@ const ImageBank = () => {
 
                     {/* Select checkbox */}
                     <label
-                      className={`absolute top-2 left-2 w-5 h-5 rounded bg-voyage-white/90 border border-parchment-3 flex items-center justify-center cursor-pointer transition-opacity ${
+                      className={`absolute top-2 left-2 w-5 h-5 rounded-sm bg-voyage-white/90 border border-parchment-3 flex items-center justify-center cursor-pointer transition-opacity ${
                         isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                       }`}
                     >
@@ -553,14 +553,14 @@ const ImageBank = () => {
                       <div className="flex gap-1 mt-1.5">
                         <button
                           onClick={() => copyUrl(img.url)}
-                          className="flex-1 px-1.5 py-1 rounded text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
+                          className="flex-1 px-1.5 py-1 rounded-sm text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
                           title="Copy URL"
                         >
                           🔗
                         </button>
                         <button
                           onClick={() => copyMarkdown(img)}
-                          className="flex-1 px-1.5 py-1 rounded text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
+                          className="flex-1 px-1.5 py-1 rounded-sm text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
                           title="Copy as Markdown"
                         >
                           📋
@@ -570,14 +570,14 @@ const ImageBank = () => {
                             const target = prompt(`Move "${img.name}" to which city?`, img.city);
                             if (target) moveImage(img, target);
                           }}
-                          className="flex-1 px-1.5 py-1 rounded text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
+                          className="flex-1 px-1.5 py-1 rounded-sm text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors"
                           title="Move to another city"
                         >
                           📁
                         </button>
                         <button
                           onClick={() => deleteImage(img)}
-                          className="flex-1 px-1.5 py-1 rounded text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-destructive hover:text-destructive transition-colors"
+                          className="flex-1 px-1.5 py-1 rounded-sm text-[0.6rem] font-semibold border border-parchment-3 text-voyage-muted hover:border-destructive hover:text-destructive transition-colors"
                           title="Delete"
                         >
                           🗑
@@ -610,13 +610,13 @@ const ImageBank = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => copyUrl(preview.url)}
-                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
+                  className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
                 >
                   🔗 URL
                 </button>
                 <button
                   onClick={() => copyMarkdown(preview)}
-                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
+                  className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
                 >
                   📋 Markdown
                 </button>
@@ -625,13 +625,13 @@ const ImageBank = () => {
                   download={preview.name}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
+                  className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:border-gold hover:text-gold"
                 >
                   ⤓ Download
                 </a>
                 <button
                   onClick={() => setPreview(null)}
-                  className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85"
+                  className="px-3 py-1.5 rounded-xs bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85"
                 >
                   ✕ Close
                 </button>

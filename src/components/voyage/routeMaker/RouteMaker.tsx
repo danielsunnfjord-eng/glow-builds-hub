@@ -450,7 +450,7 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
                   <div>
                     <h2 className="font-serif text-lg">Publish to catalogue</h2>
                     <p className="text-[0.78rem] text-voyage-muted">
-                      These fields control how the route appears on the public <code className="bg-parchment px-1 rounded">/routes</code> page.
+                      These fields control how the route appears on the public <code className="bg-parchment px-1 rounded-sm">/routes</code> page.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -480,9 +480,9 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
                       Published — visible to the public on /routes
                     </Label>
                     {publishData.is_published ? (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded">Live</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded-sm">Live</span>
                     ) : (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded">Draft</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded-sm">Draft</span>
                     )}
                   </div>
                   <div className="md:col-span-2">
@@ -604,7 +604,7 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
                   </div>
                   <details className="text-xs text-voyage-muted">
                     <summary className="cursor-pointer">Preview compiled brief sent to AI</summary>
-                    <pre className="mt-2 bg-parchment/40 border border-parchment-3 rounded p-2 whitespace-pre-wrap break-words">
+                    <pre className="mt-2 bg-parchment/40 border border-parchment-3 rounded-sm p-2 whitespace-pre-wrap break-words">
 {composeBriefText(briefData) || "(empty)"}
                     </pre>
                   </details>
@@ -652,7 +652,7 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
                         const output = col ? (current as any)[col] : null;
                         const hasOutput = output !== null && output !== undefined && output !== "";
                         return (
-                          <div key={s.id} className="border border-parchment-3/60 rounded p-3">
+                          <div key={s.id} className="border border-parchment-3/60 rounded-sm p-3">
                             <div className="flex items-center justify-between mb-2">
                               <div className="text-sm font-medium">{s.label}</div>
                               <Button
@@ -669,7 +669,7 @@ const RouteMaker = ({ initialSelectedId = null }: { initialSelectedId?: string |
                               </Button>
                             </div>
                             {hasOutput && (
-                              <pre className="text-[0.72rem] bg-parchment/40 border border-parchment-3 rounded p-2 overflow-auto max-h-72 whitespace-pre-wrap break-words text-ink-2">
+                              <pre className="text-[0.72rem] bg-parchment/40 border border-parchment-3 rounded-sm p-2 overflow-auto max-h-72 whitespace-pre-wrap break-words text-ink-2">
                                 {typeof output === "string"
                                   ? output
                                   : JSON.stringify(output, null, 2)}

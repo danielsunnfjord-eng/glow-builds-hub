@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import PdfJsViewer from "./PdfJsViewer";
 
 const input =
-  "w-full px-3 py-2.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+  "w-full px-3 py-2.5 rounded-xs bg-voyage-white border border-parchment-3 text-ink text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
 const label = "block text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted mb-1";
 
 const cloneDoc = (doc: any) => JSON.parse(JSON.stringify(doc || {}));
@@ -596,7 +596,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                 <div className="flex gap-1 mt-2 flex-wrap">
                   {contextImages.map((img, i) => (
                     <div key={i} className="relative">
-                      <img src={img} alt="" className="w-12 h-12 object-cover rounded" />
+                      <img src={img} alt="" className="w-12 h-12 object-cover rounded-sm" />
                       <button
                         onClick={() => setContextImages(contextImages.filter((_, j) => j !== i))}
                         className="absolute -top-1 -right-1 bg-destructive text-voyage-white w-4 h-4 rounded-full text-[0.6rem] leading-none"
@@ -613,7 +613,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               type="button"
               onClick={generateText}
               disabled={genText || (!brief && !urls && !docText && contextImages.length === 0)}
-              className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+              className="px-4 py-2 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
             >
               {genText ? "Generating…" : "✨ Generate all text fields"}
             </button>
@@ -621,7 +621,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               type="button"
               onClick={generateHero}
               disabled={genHero}
-              className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+              className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
             >
               {genHero ? "Creating…" : "🖼 Generate hero image"}
             </button>
@@ -650,7 +650,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                 type="button"
                 onClick={generateGallery}
                 disabled={genGallery}
-                className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
               >
                 {genGallery ? "Creating…" : `🖼 Generate gallery (${galleryCount} ${galleryCount === 1 ? "image" : "images"})`}
               </button>
@@ -689,7 +689,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                 type="button"
                 onClick={generatePdfDraft}
                 disabled={genPdf}
-                className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+                className="px-4 py-2 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
               >
                 {genPdf ? "Writing draft…" : draft ? "↻ Re-generate draft" : "✍️ 1. Generate draft"}
               </button>
@@ -698,7 +698,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   type="button"
                   onClick={loadSavedDraft}
                   disabled={loadingSavedDraft}
-                  className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                 >
                   {loadingSavedDraft ? "Opening…" : "Open saved draft"}
                 </button>
@@ -706,7 +706,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
               <button
                 type="button"
                 onClick={startEditableDraft}
-                className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
               >
                 Open editable draft
               </button>
@@ -715,7 +715,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   type="button"
                   onClick={previewAttachedPdf}
                   disabled={previewing}
-                  className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                 >
                   {previewing ? "Opening…" : "👁 Preview attached PDF"}
                 </button>
@@ -726,21 +726,21 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
             </div>
 
             {previewUrl && documentView !== "pdf" && (
-              <div className="mt-4 border border-gold/30 bg-parchment-1/40 rounded-sm overflow-hidden">
+              <div className="mt-4 border border-gold/30 bg-parchment-1/40 rounded-xs overflow-hidden">
                 <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-gold/20">
                   <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">PDF preview</span>
                   <div className="flex flex-wrap gap-2">
                     <a
                       href={previewUrl}
                       download="itinerary-preview.pdf"
-                      className="px-3 py-1.5 rounded-sm border border-ink text-ink text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                      className="px-3 py-1.5 rounded-xs border border-ink text-ink text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
                     >
                       Download
                     </a>
                     <button
                       type="button"
                       onClick={closePreview}
-                      className="px-3 py-1.5 rounded-sm border border-parchment-3 text-voyage-muted text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                      className="px-3 py-1.5 rounded-xs border border-parchment-3 text-voyage-muted text-[0.68rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
                     >
                       Close
                     </button>
@@ -760,7 +760,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                   {/* LEFT: Refine controls */}
                   <div className="lg:col-span-2 space-y-4">
-                    <div className="rounded-sm border border-gold/40 bg-voyage-white p-4 space-y-3">
+                    <div className="rounded-xs border border-gold/40 bg-voyage-white p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-serif font-semibold text-ink text-[0.9rem]">💬 Refine with AI</div>
@@ -802,7 +802,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                           <div className="flex gap-2 mt-2 flex-wrap">
                             {refineImages.map((img, i) => (
                               <div key={i} className="relative">
-                                <img src={img} alt="" className="w-16 h-16 object-cover rounded border border-parchment-3" />
+                                <img src={img} alt="" className="w-16 h-16 object-cover rounded-sm border border-parchment-3" />
                                 <button
                                   type="button"
                                   onClick={() => setRefineImages(refineImages.filter((_, j) => j !== i))}
@@ -819,13 +819,13 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                           type="button"
                           onClick={refineDraft}
                           disabled={refining}
-                          className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
+                          className="px-4 py-2 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50"
                         >
                           {refining ? "Thinking…" : "✨ Suggest changes"}
                         </button>
                       ) : (
                         <div className="space-y-3">
-                          <div className="rounded-sm border border-gold/40 bg-gold/5 p-4 max-h-[55vh] overflow-auto">
+                          <div className="rounded-xs border border-gold/40 bg-gold/5 p-4 max-h-[55vh] overflow-auto">
                             <div className="text-[0.7rem] uppercase tracking-[0.1em] text-gold font-semibold mb-2">Suggested updated document</div>
                             <DraftPreview doc={pendingDraft} />
                           </div>
@@ -833,14 +833,14 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                             <button
                               type="button"
                               onClick={acceptPendingDraft}
-                              className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
+                              className="px-4 py-2 rounded-xs bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white"
                             >
                               ✓ Accept changes
                             </button>
                             <button
                               type="button"
                               onClick={rejectPendingDraft}
-                              className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                              className="px-4 py-2 rounded-xs border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
                             >
                               ✕ Discard
                             </button>
@@ -855,7 +855,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                         type="button"
                         onClick={renderPdfFromDraft}
                         disabled={renderingPdf || !!pendingDraft}
-                        className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                        className="px-4 py-2 rounded-xs bg-gold text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                       >
                         {renderingPdf ? "Rendering…" : "📄 Render PDF (ready for catalog)"}
                       </button>
@@ -864,7 +864,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                           type="button"
                           onClick={saveDraft}
                           disabled={savingDraft || !!pendingDraft}
-                          className="px-4 py-2 rounded-sm border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
+                          className="px-4 py-2 rounded-xs border border-ink text-ink text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-ink hover:text-voyage-white disabled:opacity-50"
                         >
                           {savingDraft ? "Saving…" : "💾 Save draft"}
                         </button>
@@ -872,14 +872,14 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                       <button
                         type="button"
                         onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                        className="px-4 py-2 rounded-xs border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
                       >
                         {showAdvanced ? "Hide manual editor" : "⚙ Manual editor"}
                       </button>
                       <button
                         type="button"
                         onClick={() => { setDraft(null); setDraftJson(""); setPendingDraft(null); }}
-                        className="px-4 py-2 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
+                        className="px-4 py-2 rounded-xs border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:text-ink"
                       >
                         Close draft
                       </button>
@@ -890,7 +890,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                       <div className="space-y-2 border-t border-parchment-3 pt-4">
                         <div className="flex items-center justify-between gap-2">
                           <label className={label + " mb-0"}>Manual editor — fine-tune individual fields and images</label>
-                          <div className="flex border border-parchment-3 rounded-sm overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
+                          <div className="flex border border-parchment-3 rounded-xs overflow-hidden text-[0.68rem] uppercase tracking-[0.1em]">
                             {(["edit", "json"] as const).map((mode) => (
                               <button
                                 key={mode}
@@ -914,7 +914,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                         )}
 
                         {draftView === "edit" && draftPreviewError && (
-                          <p className="rounded-sm border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
+                          <p className="rounded-xs border border-destructive/30 bg-destructive/10 p-3 text-[0.75rem] text-destructive">
                             JSON error: {draftPreviewError}. Switch to JSON to repair it.
                           </p>
                         )}
@@ -934,7 +934,7 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                   {/* RIGHT: Current document preview — always visible, tall & scrollable */}
                   {!pendingDraft && (draftPreview || editing.pdf_path) && !draftPreviewError && (
                     <div className="lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
-                      <div className="rounded-sm border border-parchment-3 bg-voyage-white h-[78vh] min-h-[620px] overflow-hidden flex flex-col">
+                      <div className="rounded-xs border border-parchment-3 bg-voyage-white h-[78vh] min-h-[620px] overflow-hidden flex flex-col">
                         <div className="shrink-0 flex items-center justify-between gap-3 border-b border-parchment-3 bg-voyage-white px-5 py-3">
                           <div>
                             <div className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted">Current document</div>
@@ -955,13 +955,13 @@ const AiAssistantPanel = ({ editing, setEditing }: Props) => {
                             previewUrl ? (
                               <div className="flex flex-col gap-3 h-full">
                                 <div className="flex items-center justify-end gap-2">
-                                  <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-sm">Open in new tab</a>
-                                  <a href={previewUrl} download={`itinerary-${editing.id || "draft"}.pdf`} className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-sm">Download</a>
+                                  <a href={previewUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-xs">Open in new tab</a>
+                                  <a href={previewUrl} download={`itinerary-${editing.id || "draft"}.pdf`} className="px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.1em] border border-parchment-3 text-voyage-muted hover:text-ink hover:border-ink rounded-xs">Download</a>
                                 </div>
                                 <PdfJsViewer url={previewUrl} />
                               </div>
                             ) : (
-                              <button type="button" onClick={openPdfDocumentView} disabled={previewing} className="px-4 py-2 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50">
+                              <button type="button" onClick={openPdfDocumentView} disabled={previewing} className="px-4 py-2 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.1em] uppercase hover:bg-gold hover:text-ink disabled:opacity-50">
                                 {previewing ? "Opening full PDF…" : "Open full attached PDF"}
                               </button>
                             )
@@ -1017,13 +1017,13 @@ const StructuredDraftEditor = ({
   };
 
   return (
-    <div className="rounded-sm border border-parchment-3 bg-voyage-white p-4 space-y-5 max-h-[62vh] overflow-auto">
+    <div className="rounded-xs border border-parchment-3 bg-voyage-white p-4 space-y-5 max-h-[62vh] overflow-auto">
       <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4 items-start">
         <div className="space-y-2">
           {doc.cover_image_url ? (
-            <img src={doc.cover_image_url} alt="Draft cover" className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />
+            <img src={doc.cover_image_url} alt="Draft cover" className="w-full aspect-[4/3] object-cover rounded-xs border border-parchment-3" />
           ) : (
-            <div className="w-full aspect-[4/3] rounded-sm border border-dashed border-parchment-3 bg-parchment flex items-center justify-center text-[0.72rem] text-voyage-muted">
+            <div className="w-full aspect-[4/3] rounded-xs border border-dashed border-parchment-3 bg-parchment flex items-center justify-center text-[0.72rem] text-voyage-muted">
               No cover image
             </div>
           )}
@@ -1078,7 +1078,7 @@ const StructuredDraftEditor = ({
           {highlights.map((item: any, i: number) => (
             <div key={i} className="flex gap-2">
               <input className={input} value={String(item || "")} onChange={(e) => updateList("highlights", highlights.map((h: any, j: number) => j === i ? e.target.value : h))} />
-              <button type="button" onClick={() => updateList("highlights", highlights.filter((_: any, j: number) => j !== i))} className="px-3 rounded-sm border border-parchment-3 text-voyage-muted hover:text-destructive">×</button>
+              <button type="button" onClick={() => updateList("highlights", highlights.filter((_: any, j: number) => j !== i))} className="px-3 rounded-xs border border-parchment-3 text-voyage-muted hover:text-destructive">×</button>
             </div>
           ))}
         </div>
@@ -1090,7 +1090,7 @@ const StructuredDraftEditor = ({
           <button type="button" onClick={() => updateList("days", [...days, { day: days.length + 1, title: "", location: "", morning: "", afternoon: "", evening: "", where_to_stay: "", where_to_eat: "", tips: "", image_url: "" }])} className="text-[0.7rem] uppercase tracking-[0.1em] text-gold hover:text-ink">+ Add day</button>
         </div>
         {days.map((day: any, i: number) => (
-          <article key={i} className="rounded-sm border border-parchment-3 bg-parchment/40 p-3 space-y-3">
+          <article key={i} className="rounded-xs border border-parchment-3 bg-parchment/40 p-3 space-y-3">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[0.7rem] uppercase tracking-[0.14em] text-gold">Day {day.day ?? i + 1}</p>
               <button type="button" onClick={() => updateList("days", days.filter((_: any, j: number) => j !== i).map((d: any, j: number) => ({ ...d, day: j + 1 })))} className="text-[0.7rem] uppercase tracking-[0.1em] text-voyage-muted hover:text-destructive">Remove</button>
@@ -1106,7 +1106,7 @@ const StructuredDraftEditor = ({
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-3 items-start">
-              {day.image_url && <img src={day.image_url} alt={`Day ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-sm border border-parchment-3" />}
+              {day.image_url && <img src={day.image_url} alt={`Day ${i + 1}`} className="w-full aspect-[4/3] object-cover rounded-xs border border-parchment-3" />}
               <div className="space-y-2">
                 <label className={label}>Day image URL</label>
                 <input className={input} value={day.image_url || ""} onChange={(e) => update(["days", i, "image_url"], e.target.value)} />
@@ -1172,7 +1172,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
   return (
     <div className="font-serif text-ink text-[0.85rem] leading-relaxed space-y-6">
       {doc.cover_image_url && (
-        <img src={doc.cover_image_url} alt="" className="w-full max-h-[280px] object-cover rounded" />
+        <img src={doc.cover_image_url} alt="" className="w-full max-h-[280px] object-cover rounded-sm" />
       )}
       <header className="text-center border-b border-parchment-3 pb-4">
         <p className="text-[0.65rem] uppercase tracking-[0.18em] text-gold mb-1">
@@ -1229,7 +1229,7 @@ const DraftPreview = ({ doc }: { doc: any }) => {
               <h3 className="text-lg font-semibold">{d.title || ""}</h3>
               {d.location && <p className="italic text-voyage-muted text-[0.78rem] mb-2">{d.location}</p>}
               {d.image_url && (
-                <img src={d.image_url} alt="" className="w-full max-h-[220px] object-cover rounded my-2" />
+                <img src={d.image_url} alt="" className="w-full max-h-[220px] object-cover rounded-sm my-2" />
               )}
               {[
                 ["Morning", d.morning],

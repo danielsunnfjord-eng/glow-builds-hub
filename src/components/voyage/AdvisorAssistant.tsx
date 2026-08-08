@@ -980,7 +980,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
     toast({ title: t("aa.imageReordered") });
   };
 
-  const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+  const inputClass = "w-full px-3 py-2.5 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
 
   return (
     <div className="flex flex-col gap-6">
@@ -1076,14 +1076,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <div className="inline-flex rounded-full border border-parchment-3 bg-parchment p-0.5 text-[0.68rem]">
                   <button
                     onClick={() => setChatMode("discuss")}
-                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "discuss" ? "bg-ink text-voyage-white shadow-sm" : "text-voyage-muted hover:text-ink"}`}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "discuss" ? "bg-ink text-voyage-white shadow-xs" : "text-voyage-muted hover:text-ink"}`}
                     title="Chat without changing the itinerary"
                   >
                     💬 Discuss
                   </button>
                   <button
                     onClick={() => setChatMode("edit")}
-                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "edit" ? "bg-gold text-ink shadow-sm font-semibold" : "text-voyage-muted hover:text-ink"}`}
+                    className={`px-3 py-1 rounded-full transition-all ${chatMode === "edit" ? "bg-gold text-ink shadow-xs font-semibold" : "text-voyage-muted hover:text-ink"}`}
                     title="Apply your next message as edits to the itinerary"
                   >
                     ✏️ Apply edits
@@ -1141,7 +1141,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                             return next;
                           });
                         }}
-                        className="accent-gold w-4 h-4 rounded"
+                        className="accent-gold w-4 h-4 rounded-sm"
                       />
                       {p}
                     </label>
@@ -1167,7 +1167,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                             return next;
                           });
                         }}
-                        className="accent-sage w-4 h-4 rounded"
+                        className="accent-sage w-4 h-4 rounded-sm"
                       />
                       <span className="flex-1">{item}</span>
                       <button
@@ -1200,7 +1200,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                       }
                     }}
                     placeholder={t("aa.customItemPlaceholder")}
-                    className="flex-1 px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.8rem] focus:outline-none focus:border-gold transition-colors"
+                    className="flex-1 px-3 py-2 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.8rem] focus:outline-hidden focus:border-gold transition-colors"
                   />
                   <button
                     onClick={() => {
@@ -1209,7 +1209,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                       setSelectedCustom((prev) => new Set([...prev, customItems.length]));
                       setCustomInput("");
                     }}
-                    className="px-4 py-2 rounded-sm bg-ink/10 text-ink text-[0.72rem] font-semibold tracking-[0.06em] uppercase hover:bg-ink/20 transition-colors"
+                    className="px-4 py-2 rounded-xs bg-ink/10 text-ink text-[0.72rem] font-semibold tracking-[0.06em] uppercase hover:bg-ink/20 transition-colors"
                   >
                     {t("aa.addBtn")}
                   </button>
@@ -1229,13 +1229,13 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                         setSelectedCustom(new Set());
                         handleSend(combined);
                       }}
-                      className="px-5 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                      className="px-5 py-2.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                     >
                       {t("aa.buildItinerary")} ({selectedPrompts.size + selectedCustom.size})
                     </button>
                     <button
                       onClick={() => { setSelectedPrompts(new Set()); setSelectedCustom(new Set()); }}
-                      className="px-4 py-2.5 rounded-sm border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.06em] uppercase hover:border-ink hover:text-ink transition-colors"
+                      className="px-4 py-2.5 rounded-xs border border-parchment-3 text-voyage-muted text-[0.72rem] font-medium tracking-[0.06em] uppercase hover:border-ink hover:text-ink transition-colors"
                     >
                       {t("aa.clearSelection")}
                     </button>
@@ -1260,7 +1260,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   ) : (
                     <div>
                       {msg.fileName && (
-                        <span className="inline-block mb-1.5 px-2 py-0.5 bg-voyage-white/20 rounded text-[0.68rem]">📎 {msg.fileName}</span>
+                        <span className="inline-block mb-1.5 px-2 py-0.5 bg-voyage-white/20 rounded-sm text-[0.68rem]">📎 {msg.fileName}</span>
                       )}
                       <p className="whitespace-pre-wrap">{msg.content.replace(/\n\n---\n📎 Uploaded form:[\s\S]*$/, "").trim() || `Uploaded ${msg.fileName}`}</p>
                     </div>
@@ -1310,7 +1310,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     setSelectedPrompts(new Set());
                     handleSend(combined);
                   }}
-                  className="mt-1.5 px-4 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                  className="mt-1.5 px-4 py-1.5 rounded-xs bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                 >
                   {t("aa.sendSelected")} ({selectedPrompts.size})
                 </button>
@@ -1321,7 +1321,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
           {/* Input */}
           <div className="p-3 border-t border-parchment-3">
             {attachedFile && (
-              <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-gold/10 border border-gold/20 rounded-sm text-[0.72rem] text-gold">
+              <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-gold/10 border border-gold/20 rounded-xs text-[0.72rem] text-gold">
                 <span>📎 {attachedFile.name}</span>
                 <button onClick={() => setAttachedFile(null)} className="ml-auto text-destructive hover:text-destructive/80 text-xs">✕</button>
               </div>
@@ -1338,7 +1338,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
                 title={t("aa.uploadForm")}
-                className="px-3 py-2 rounded-sm border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-40 self-end text-lg"
+                className="px-3 py-2 rounded-xs border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold transition-colors disabled:opacity-40 self-end text-lg"
               >
                 📎
               </button>
@@ -1354,12 +1354,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 }}
                 placeholder={selectedProject ? t("aa.placeholder", { name: selectedProject.client_name }) : t("aa.placeholderGeneric")}
                 rows={2}
-                className="flex-1 px-3 py-2 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-none focus:border-gold transition-colors resize-none"
+                className="flex-1 px-3 py-2 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.82rem] focus:outline-hidden focus:border-gold transition-colors resize-none"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={isLoading || (!input.trim() && !attachedFile)}
-                className="px-4 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40 self-end"
+                className="px-4 py-2 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40 self-end"
               >
                 {t("aa.sendBtn")}
               </button>
@@ -1375,7 +1375,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
               {previousItinerary !== null && !pendingEdit && (
                 <button
                   onClick={revertEdits}
-                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                  className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
                   title="Revert the last AI edit"
                 >
                   ↩ Revert
@@ -1386,14 +1386,14 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   <button
                     onClick={() => saveDraft(itineraryContent, messages)}
                     disabled={isSaving || !selectedProjectId}
-                    className="px-3 py-1.5 rounded-sm bg-sage text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-sage/80 transition-colors disabled:opacity-40"
+                    className="px-3 py-1.5 rounded-xs bg-sage text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-sage/80 transition-colors disabled:opacity-40"
                     title={!selectedProjectId ? t("aa.selectProjectToSave") : ""}
                   >
                     💾 {isSaving ? t("aa.savingDraft") : t("aa.saveDraft")}
                   </button>
                   <button
                     onClick={() => setShowImagePanel(!showImagePanel)}
-                    className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
+                    className={`px-3 py-1.5 rounded-xs text-[0.68rem] font-semibold tracking-[0.08em] uppercase transition-colors ${
                       showImagePanel
                         ? "bg-gold/20 text-gold border border-gold/30"
                         : "border border-parchment-3 text-voyage-muted hover:border-gold hover:text-gold"
@@ -1403,20 +1403,20 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                   </button>
                   <button
                     onClick={() => setShowPdfPreview(true)}
-                    className="px-3 py-1.5 rounded-sm border border-gold text-gold text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold/10 transition-colors"
+                    className="px-3 py-1.5 rounded-xs border border-gold text-gold text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold/10 transition-colors"
                   >
                     👁️ {t("aa.pdfPreview", "Preview")}
                   </button>
                   <button
                     onClick={handleShareLink}
                     disabled={isSharing}
-                    className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85 transition-colors disabled:opacity-40"
+                    className="px-3 py-1.5 rounded-xs bg-ink text-voyage-white text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-ink/85 transition-colors disabled:opacity-40"
                   >
                     🔗 {isSharing ? t("aa.sharing", "Sharing...") : t("aa.share", "Share with Client")}
                   </button>
                   <button
                     onClick={handleExportPdf}
-                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                    className="px-3 py-1.5 rounded-xs bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
                     📄 {t("aa.exportPdf")}
                   </button>
@@ -1436,19 +1436,19 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 <div className="flex gap-2">
                   <button
                     onClick={rejectPendingEdit}
-                    className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
+                    className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.68rem] text-voyage-muted font-semibold tracking-[0.08em] uppercase hover:border-ink hover:text-ink transition-colors"
                   >
                     ✕ Reject
                   </button>
                   <button
                     onClick={acceptPendingEdit}
-                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
+                    className="px-3 py-1.5 rounded-xs bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors"
                   >
                     ✓ Accept edit
                   </button>
                 </div>
               </div>
-              <div className="max-h-[260px] overflow-y-auto rounded border border-gold/20 bg-voyage-white p-3 prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-p:text-ink-2">
+              <div className="max-h-[260px] overflow-y-auto rounded-sm border border-gold/20 bg-voyage-white p-3 prose prose-sm max-w-none prose-headings:font-serif prose-headings:text-ink prose-p:text-ink-2">
                 <ReactMarkdown>{pendingEdit}</ReactMarkdown>
               </div>
             </div>
@@ -1465,12 +1465,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                     onChange={(e) => setAiImagePrompt(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") handleAiImageGenerate(); }}
                     placeholder={t("aa.aiPlaceholder")}
-                    className="flex-1 px-2.5 py-1.5 rounded-sm bg-voyage-white border border-parchment-3 text-ink text-[0.78rem] focus:outline-none focus:border-gold transition-colors"
+                    className="flex-1 px-2.5 py-1.5 rounded-xs bg-voyage-white border border-parchment-3 text-ink text-[0.78rem] focus:outline-hidden focus:border-gold transition-colors"
                   />
                   <button
                     onClick={handleAiImageGenerate}
                     disabled={isGeneratingImage || !aiImagePrompt.trim()}
-                    className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
+                    className="px-3 py-1.5 rounded-xs bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40"
                   >
                     {isGeneratingImage ? "⏳" : t("aa.generate")}
                   </button>
@@ -1497,12 +1497,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 ) : cityBank.length === 0 ? (
                   <p className="text-[0.7rem] text-voyage-muted italic">No images saved for {cityLabel} yet. Uploads will be auto-organized here.</p>
                 ) : (
-                  <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto p-1 rounded bg-voyage-white/60 border border-parchment-3">
+                  <div className="grid grid-cols-4 gap-1.5 max-h-[180px] overflow-y-auto p-1 rounded-sm bg-voyage-white/60 border border-parchment-3">
                     {cityBank.map((img) => (
                       <button
                         key={img.url}
                         onClick={() => insertImageAtCursor(img.url, cityLabel || "Travel photo", `From ${cityLabel} bank`)}
-                        className="group relative rounded overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
+                        className="group relative rounded-sm overflow-hidden border border-parchment-3 hover:border-gold transition-colors"
                         title={img.name}
                       >
                         <img src={img.url} alt={img.name} className="w-full h-16 object-cover" loading="lazy" />
@@ -1541,7 +1541,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                 />
                 <button
                   onClick={() => imageUploadRef.current?.click()}
-                  className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
+                  className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.72rem] text-voyage-muted hover:border-gold hover:text-gold transition-all"
                 >
                   {t("aa.chooseImage")}
                 </button>
@@ -1564,7 +1564,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); setCropTarget({ index: i, url: img.url }); }}
-                          className="absolute top-1 right-1 bg-ink/60 hover:bg-ink/80 text-voyage-white rounded-sm px-1.5 py-0.5 text-[0.6rem] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                          className="absolute top-1 right-1 bg-ink/60 hover:bg-ink/80 text-voyage-white rounded-xs px-1.5 py-0.5 text-[0.6rem] opacity-0 group-hover:opacity-100 transition-opacity z-10"
                           title={t("aa.cropImage", "Crop")}
                         >
                           ✂️
@@ -1602,7 +1602,7 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                           }`}
                         >
                           <span className="text-voyage-muted text-[0.65rem] w-5 text-center select-none">☰</span>
-                          <img src={img.url} alt={img.alt} className="w-12 h-8 object-cover rounded" loading="lazy" />
+                          <img src={img.url} alt={img.alt} className="w-12 h-8 object-cover rounded-sm" loading="lazy" />
                           <span className="text-[0.7rem] text-ink truncate flex-1">{img.alt || "Image"}</span>
                           <span className="text-[0.6rem] text-voyage-muted">#{i + 1}</span>
                         </div>
@@ -1675,12 +1675,12 @@ const AdvisorAssistant = ({ projects }: AdvisorAssistantProps) => {
                                 }
                               }}
                               placeholder="Or describe a specific change for this day…"
-                              className="flex-1 px-2.5 py-1.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.75rem] focus:outline-none focus:border-gold"
+                              className="flex-1 px-2.5 py-1.5 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.75rem] focus:outline-hidden focus:border-gold"
                             />
                             <button
                               onClick={() => editDay(activeDayIdx, dayInstruction)}
                               disabled={!dayInstruction.trim() || editingDayIdx !== null}
-                              className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2 disabled:opacity-40"
+                              className="px-3 py-1.5 rounded-xs bg-gold text-ink text-[0.65rem] font-semibold uppercase tracking-wide hover:bg-gold-2 disabled:opacity-40"
                             >
                               {editingDayIdx === activeDayIdx ? "⏳…" : "Apply"}
                             </button>

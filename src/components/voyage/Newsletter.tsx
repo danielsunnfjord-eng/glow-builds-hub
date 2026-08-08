@@ -49,8 +49,8 @@ const Newsletter = () => {
             <div className="text-gold font-serif text-lg">{t("newsletter.success")}</div>
           ) : (
             <form onSubmit={handleSubmit} className="flex gap-3 max-w-md mx-auto max-sm:flex-col">
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("newsletter.placeholder")} className="flex-1 px-5 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors" />
-              <button type="submit" disabled={loading} className="flex items-center justify-center gap-2 px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.8rem] tracking-[0.08em] uppercase hover:bg-gold/90 transition-colors disabled:opacity-60">
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("newsletter.placeholder")} className="flex-1 px-5 py-3 rounded-xs bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors" />
+              <button type="submit" disabled={loading} className="flex items-center justify-center gap-2 px-6 py-3 rounded-xs bg-gold text-ink font-semibold text-[0.8rem] tracking-[0.08em] uppercase hover:bg-gold/90 transition-colors disabled:opacity-60">
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 {loading ? t("newsletter.subscribing") : t("newsletter.subscribe")}
               </button>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import type { ItineraryDay } from "@/lib/itineraryParser";
@@ -192,7 +192,7 @@ const SharedItinerary = () => {
           <div className="flex gap-2 flex-shrink-0">
             <button
               onClick={handleInstall}
-              className="px-3 py-1 bg-gold text-ink rounded font-semibold tracking-[0.06em] uppercase"
+              className="px-3 py-1 bg-gold text-ink rounded-sm font-semibold tracking-[0.06em] uppercase"
             >
               {t("share.install", "Install")}
             </button>
@@ -243,13 +243,13 @@ const SharedItinerary = () => {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6">
         {/* Action bar */}
-        <div className="sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-parchment/95 backdrop-blur border-b border-parchment-3 flex items-center justify-between gap-3">
+        <div className="sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-parchment/95 backdrop-blur-sm border-b border-parchment-3 flex items-center justify-between gap-3">
           <p className="text-[0.65rem] tracking-[0.2em] uppercase text-voyage-muted truncate">
             {t("share.yourItinerary", "Your itinerary")}
           </p>
           <button
             onClick={handleExportPdf}
-            className="px-3 py-1.5 rounded bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors flex-shrink-0"
+            className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.68rem] font-semibold tracking-[0.08em] uppercase hover:bg-gold-2 transition-colors flex-shrink-0"
           >
             📄 {t("aa.exportPdf", "Export PDF")}
           </button>
@@ -258,7 +258,7 @@ const SharedItinerary = () => {
         {/* Rich itinerary — renders the same markdown as the advisor preview / PDF */}
         <article className="py-6 sm:py-8">
           <div
-            className="shared-itinerary-content bg-voyage-white border border-parchment-3 rounded-lg p-5 sm:p-8 shadow-sm"
+            className="shared-itinerary-content bg-voyage-white border border-parchment-3 rounded-lg p-5 sm:p-8 shadow-xs"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         </article>

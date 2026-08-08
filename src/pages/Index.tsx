@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 

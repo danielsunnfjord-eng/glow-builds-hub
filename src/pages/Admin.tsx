@@ -1,6 +1,6 @@
 import { useState, useRef, lazy, Suspense } from "react";
 import logo from "@/assets/logo-horizontal.webp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -471,7 +471,7 @@ const AdminDashboard = () => {
     return entries.map(([cur, val]) => `${CURRENCY_SYMBOLS[cur] || cur}${val.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`).join(" · ");
   };
 
-  const inputClass = "w-full px-3 py-2.5 rounded-sm bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+  const inputClass = "w-full px-3 py-2.5 rounded-xs bg-parchment border border-parchment-3 text-ink text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
   const selectClass = inputClass;
 
   const TABLE_HEADERS = [
@@ -491,10 +491,10 @@ const AdminDashboard = () => {
           </div>
           <div className="flex gap-2 items-center">
             <LanguageSelector variant="dark" />
-            <button onClick={() => navigate("/")} className="px-4 py-2 rounded-sm border border-voyage-white/10 text-voyage-white/45 text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:border-voyage-white/30 hover:text-voyage-white transition-all">
+            <button onClick={() => navigate("/")} className="px-4 py-2 rounded-xs border border-voyage-white/10 text-voyage-white/45 text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:border-voyage-white/30 hover:text-voyage-white transition-all">
               {t("admin.site")}
             </button>
-            <button onClick={async () => { await supabase.auth.signOut(); navigate("/login"); }} className="px-4 py-2 rounded-sm border border-destructive/30 text-destructive text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:bg-destructive/10 transition-all">
+            <button onClick={async () => { await supabase.auth.signOut(); navigate("/login"); }} className="px-4 py-2 rounded-xs border border-destructive/30 text-destructive text-[0.72rem] font-medium tracking-[0.08em] uppercase hover:bg-destructive/10 transition-all">
               {t("admin.logout")}
             </button>
           </div>
@@ -577,7 +577,7 @@ const AdminDashboard = () => {
                     const emailKey = (req.client_email || "").trim().toLowerCase();
                     const clientPurchases = emailKey ? (purchasesByEmail.get(emailKey) || []) : [];
                     return (
-                      <div key={req.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5 hover:shadow-sm transition-shadow">
+                      <div key={req.id} className="bg-voyage-white border border-parchment-3 rounded-lg p-5 hover:shadow-xs transition-shadow">
                         <div className="flex justify-between items-start mb-3 max-md:flex-col max-md:gap-2">
                           <div>
                             <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -597,7 +597,7 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         {clientPurchases.length > 0 && (
-                          <div className="mb-4 bg-sage/5 border border-sage/20 rounded-sm p-3">
+                          <div className="mb-4 bg-sage/5 border border-sage/20 rounded-xs p-3">
                             <div className="text-[0.7rem] uppercase tracking-wider text-sage font-semibold mb-2">
                               {t("requests.previousPurchases")}
                             </div>
@@ -635,14 +635,14 @@ const AdminDashboard = () => {
                           {req.estimated_budget && <div><span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block">{t("tripForm.budget")}</span><span className="text-ink">{req.estimated_budget}</span></div>}
                         </div>
                         {req.notes && (
-                          <div className="bg-parchment rounded-sm p-3 mb-4 text-[0.82rem] text-ink-2">
+                          <div className="bg-parchment rounded-xs p-3 mb-4 text-[0.82rem] text-ink-2">
                             <span className="text-voyage-muted text-[0.7rem] uppercase tracking-wider block mb-1">{t("admin.notes")}</span>
                             {req.notes}
                           </div>
                         )}
                         <div className="flex gap-2 flex-wrap">
                           {req.status === "new" && (
-                            <button onClick={() => updateRequestStatus.mutate({ id: req.id, status: "reviewed" })} className="px-3 py-1.5 rounded-sm border border-sage/30 text-[0.72rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">
+                            <button onClick={() => updateRequestStatus.mutate({ id: req.id, status: "reviewed" })} className="px-3 py-1.5 rounded-xs border border-sage/30 text-[0.72rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">
                               {t("requests.markReviewed")}
                             </button>
                           )}
@@ -650,16 +650,16 @@ const AdminDashboard = () => {
                             <>
                               <button
                                 onClick={() => { setGenRequest(req); setGenOpen(true); }}
-                                className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                                className="px-3 py-1.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
                               >
                                 <Sparkles className="w-3.5 h-3.5" /> Generate Itinerary
                               </button>
-                              <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
+                              <button onClick={() => convertRequestToProject(req)} className="px-3 py-1.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.06em] hover:bg-gold-2 transition-colors">
                                 {t("requests.createProject")}
                               </button>
                             </>
                           )}
-                          <button onClick={() => { if (confirm(t("requests.deleteConfirm"))) deleteRequest.mutate(req.id); }} className="px-3 py-1.5 rounded-sm border border-parchment-3 text-[0.72rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">
+                          <button onClick={() => { if (confirm(t("requests.deleteConfirm"))) deleteRequest.mutate(req.id); }} className="px-3 py-1.5 rounded-xs border border-parchment-3 text-[0.72rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">
                             {t("admin.delete")}
                           </button>
                         </div>
@@ -745,7 +745,7 @@ const AdminDashboard = () => {
                                 <a href={`/download-catalog-pdf?token=${p.download_token}`} className="text-[0.72rem] font-semibold tracking-[0.06em] uppercase underline hover:text-gold" target="_blank" rel="noreferrer">{t("admin.download")}</a>
                                 <button
                                   onClick={() => { if (confirm(t("admin.deletePurchaseConfirm"))) deletePurchase.mutate(p.id); }}
-                                  className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all"
+                                  className="px-2.5 py-1 rounded-xs border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all"
                                 >
                                   {t("admin.delete")}
                                 </button>
@@ -766,7 +766,7 @@ const AdminDashboard = () => {
               <h1 className="font-serif text-3xl font-bold mb-1">{t("admin.clientProjects")}</h1>
               <p className="text-[0.85rem] text-voyage-muted">{t("admin.clientProjectsDesc")}</p>
             </div>
-            <button onClick={openNew} className="px-5 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors">
+            <button onClick={openNew} className="px-5 py-2.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors">
               {t("admin.newProject")}
             </button>
           </div>
@@ -848,7 +848,7 @@ const AdminDashboard = () => {
                               </button>
                             </>
                           ) : (
-                            <button onClick={() => triggerUpload(p.id)} disabled={uploadingId === p.id} className="px-2.5 py-1 rounded-sm border border-dashed border-gold/40 text-[0.68rem] font-medium text-gold hover:border-gold hover:bg-gold/5 transition-all">
+                            <button onClick={() => triggerUpload(p.id)} disabled={uploadingId === p.id} className="px-2.5 py-1 rounded-xs border border-dashed border-gold/40 text-[0.68rem] font-medium text-gold hover:border-gold hover:bg-gold/5 transition-all">
                               {uploadingId === p.id ? t("admin.uploading") : t("admin.upload")}
                             </button>
                           )}
@@ -858,15 +858,15 @@ const AdminDashboard = () => {
                         <div className="flex gap-2 flex-wrap">
                           <button
                             onClick={() => { setItinProject(p); setItinOpen(true); }}
-                            className="px-2.5 py-1 rounded-sm border border-ink/30 text-[0.68rem] font-medium text-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-1"
+                            className="px-2.5 py-1 rounded-xs border border-ink/30 text-[0.68rem] font-medium text-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-1"
                           >
                             <FileText className="w-3 h-3" /> Itinerary
                           </button>
-                          <button onClick={() => openEdit(p)} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-gold hover:text-gold transition-all">{t("admin.edit")}</button>
+                          <button onClick={() => openEdit(p)} className="px-2.5 py-1 rounded-xs border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-gold hover:text-gold transition-all">{t("admin.edit")}</button>
                           {p.itinerary_pdf_path && p.client_email && (
-                            <button onClick={() => openSendDialog(p)} className="px-2.5 py-1 rounded-sm border border-sage/30 text-[0.68rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">{t("admin.send")}</button>
+                            <button onClick={() => openSendDialog(p)} className="px-2.5 py-1 rounded-xs border border-sage/30 text-[0.68rem] font-medium text-sage hover:border-sage hover:bg-sage/5 transition-all">{t("admin.send")}</button>
                           )}
-                          <button onClick={() => { if (confirm(t("admin.deleteConfirm"))) deleteMutation.mutate(p.id); }} className="px-2.5 py-1 rounded-sm border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">{t("admin.delete")}</button>
+                          <button onClick={() => { if (confirm(t("admin.deleteConfirm"))) deleteMutation.mutate(p.id); }} className="px-2.5 py-1 rounded-xs border border-parchment-3 text-[0.68rem] font-medium text-voyage-muted hover:border-destructive hover:text-destructive transition-all">{t("admin.delete")}</button>
                         </div>
                       </td>
                     </tr>
@@ -988,7 +988,7 @@ const AdminDashboard = () => {
                           key={cur}
                           type="button"
                           onClick={() => setForm({ ...form, currency: cur, price: "" })}
-                          className={`px-3 py-1.5 rounded-sm text-[0.68rem] font-semibold tracking-[0.06em] border transition-all ${
+                          className={`px-3 py-1.5 rounded-xs text-[0.68rem] font-semibold tracking-[0.06em] border transition-all ${
                             form.currency === cur
                               ? "bg-gold text-ink border-gold"
                               : "bg-parchment text-voyage-muted border-parchment-3 hover:border-gold"
@@ -1050,7 +1050,7 @@ const AdminDashboard = () => {
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-1 block">{t("admin.notes")}</label>
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className={inputClass} />
             </div>
-            <button type="submit" disabled={saveMutation.isPending} className="mt-2 px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60">
+            <button type="submit" disabled={saveMutation.isPending} className="mt-2 px-6 py-3 rounded-xs bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60">
               {saveMutation.isPending ? t("admin.saving") : editingId ? t("admin.updateProject") : t("admin.createProject")}
             </button>
           </form>
@@ -1071,7 +1071,7 @@ const AdminDashboard = () => {
               <label className="text-[0.7rem] font-medium text-voyage-muted uppercase tracking-wider mb-2 block">{t("admin.chooseTemplate")}</label>
               <div className="flex flex-col gap-2">
                 {EMAIL_TEMPLATES.map((tpl) => (
-                  <button key={tpl.id} onClick={() => setSelectedTemplate(tpl.id)} className={`text-left p-3 rounded-sm border transition-all ${selectedTemplate === tpl.id ? "border-gold bg-gold/5" : "border-parchment-3 hover:border-gold/40"}`}>
+                  <button key={tpl.id} onClick={() => setSelectedTemplate(tpl.id)} className={`text-left p-3 rounded-xs border transition-all ${selectedTemplate === tpl.id ? "border-gold bg-gold/5" : "border-parchment-3 hover:border-gold/40"}`}>
                     <div className="text-[0.82rem] font-medium text-ink">{tpl.label}</div>
                     <div className="text-[0.72rem] text-voyage-muted mt-0.5">{tpl.description}</div>
                   </button>
@@ -1079,13 +1079,13 @@ const AdminDashboard = () => {
               </div>
             </div>
             {sendProject?.itinerary_pdf_path && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-parchment rounded-sm border border-parchment-3">
+              <div className="flex items-center gap-2 px-3 py-2 bg-parchment rounded-xs border border-parchment-3">
                 <span className="text-[0.78rem]">📎</span>
                 <span className="text-[0.78rem] text-ink truncate">{sendProject.itinerary_pdf_path.split("/").pop()}</span>
                 <button onClick={() => openPdf(sendProject.itinerary_pdf_path!)} className="ml-auto text-[0.68rem] text-gold hover:text-gold-2 underline">{t("admin.preview")}</button>
               </div>
             )}
-            <button onClick={handleSendEmail} disabled={isSending} className="px-6 py-3 rounded-sm bg-sage text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-sage/90 transition-colors disabled:opacity-60">
+            <button onClick={handleSendEmail} disabled={isSending} className="px-6 py-3 rounded-xs bg-sage text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-sage/90 transition-colors disabled:opacity-60">
               {isSending ? t("admin.sendingEmail") : t("admin.sendEmail")}
             </button>
           </div>

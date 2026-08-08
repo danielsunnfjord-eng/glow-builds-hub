@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@/lib/router-compat";
 import { openCookieSettings } from "@/components/voyage/CookieConsent";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";

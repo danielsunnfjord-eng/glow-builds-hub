@@ -304,7 +304,7 @@ const AiWritingAssistantPanel = () => {
   ];
 
   return (
-    <div className="rounded border border-parchment-3 bg-voyage-white p-4 space-y-3">
+    <div className="rounded-sm border border-parchment-3 bg-voyage-white p-4 space-y-3">
       <div className="flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-gold" />
         <div className="font-medium text-ink text-[0.92rem]">AI Writing Assistant</div>
@@ -1768,7 +1768,7 @@ const CatalogShopManager = () => {
                     <div className="flex justify-between items-start mb-2 flex-wrap gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-serif text-lg font-bold text-ink">{s.destination}</span>
-                        <span className={`text-[0.6rem] uppercase tracking-wider px-2 py-0.5 rounded border ${statusColors[s.status] || statusColors.new}`}>
+                        <span className={`text-[0.6rem] uppercase tracking-wider px-2 py-0.5 rounded-sm border ${statusColors[s.status] || statusColors.new}`}>
                           {statusLabel}
                         </span>
                       </div>
@@ -1785,7 +1785,7 @@ const CatalogShopManager = () => {
                             .map((x) => x.trim())
                             .filter(Boolean)
                             .map((x, i) => (
-                              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-sm bg-parchment-2 text-[0.75rem] text-ink">
+                              <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-xs bg-parchment-2 text-[0.75rem] text-ink">
                                 {x}
                               </span>
                             )) || <span className="text-ink">—</span>}
@@ -1797,7 +1797,7 @@ const CatalogShopManager = () => {
                       </div>
                     </div>
                     {s.details && (
-                      <div className="bg-parchment rounded-sm p-3 mb-3 text-[0.82rem] text-ink-2 whitespace-pre-wrap">
+                      <div className="bg-parchment rounded-xs p-3 mb-3 text-[0.82rem] text-ink-2 whitespace-pre-wrap">
                         {s.details}
                       </div>
                     )}
@@ -1850,32 +1850,32 @@ const CatalogShopManager = () => {
           <div className="divide-y divide-parchment-3">
             {filtered.map((r) => (
               <div key={r.id} className="flex items-center gap-4 p-4 hover:bg-parchment/30">
-                <div className="w-20 h-16 rounded bg-parchment-2 flex-shrink-0 overflow-hidden">
+                <div className="w-20 h-16 rounded-sm bg-parchment-2 flex-shrink-0 overflow-hidden">
                   {r.hero_image_url ? <img src={r.hero_image_url} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gradient-to-br from-fjord/30 to-ocean/30" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <div className="font-medium text-ink truncate">{r.title_en || "(untitled)"}</div>
                     {r.is_published ? (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded">Published</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-fjord/15 text-fjord px-2 py-0.5 rounded-sm">Published</span>
                     ) : (
-                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded">Draft</span>
+                      <span className="text-[0.65rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded-sm">Draft</span>
                     )}
                     {r.audited_at && (
-                      <span className="text-[0.6rem] uppercase tracking-wider bg-sage/10 text-sage px-2 py-0.5 rounded inline-flex items-center gap-1">
+                      <span className="text-[0.6rem] uppercase tracking-wider bg-sage/10 text-sage px-2 py-0.5 rounded-sm inline-flex items-center gap-1">
                         <ClipboardCheck className="w-3 h-3" /> Audited
                       </span>
                     )}
                     {(r.stripe_product_id_sandbox || r.stripe_product_id_live) ? (
                       <span
-                        className="text-[0.6rem] uppercase tracking-wider bg-ocean/10 text-ocean px-2 py-0.5 rounded"
+                        className="text-[0.6rem] uppercase tracking-wider bg-ocean/10 text-ocean px-2 py-0.5 rounded-sm"
                         title={r.stripe_synced_at ? `Last synced ${new Date(r.stripe_synced_at).toLocaleString()}` : "Synced to Stripe"}
                       >
                         Stripe ✓
                       </span>
                     ) : (
                       <span
-                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded"
+                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded-sm"
                         title="Not yet synced to Stripe. Stripe will auto-create the product on first checkout if not synced manually."
                       >
                         Stripe ○
@@ -1883,14 +1883,14 @@ const CatalogShopManager = () => {
                     )}
                     {(r as any).pdf_path ? (
                       <span
-                        className="text-[0.6rem] uppercase tracking-wider bg-gold/15 text-gold px-2 py-0.5 rounded"
+                        className="text-[0.6rem] uppercase tracking-wider bg-gold/15 text-gold px-2 py-0.5 rounded-sm"
                         title="PDF attached to store — customers can download after purchase."
                       >
                         PDF ✓
                       </span>
                     ) : (
                       <span
-                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded"
+                        className="text-[0.6rem] uppercase tracking-wider bg-parchment-2 text-voyage-muted px-2 py-0.5 rounded-sm"
                         title="No PDF attached. Open PDF Preview and click 'Attach to Store'."
                       >
                         PDF ○
@@ -1979,7 +1979,7 @@ const CatalogShopManager = () => {
               Fill in the cover page fields. Body content is edited in Google Docs and rendered into the PDF on Finalise.
             </DialogDescription>
             <div className="mt-2 space-y-1 text-[0.75rem]">
-              {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+              {restoredNotice && <div className="rounded-sm border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
 
               <div className="text-voyage-muted">
                 {autoSaveStatus === "saving" && "Auto-saving draft…"}
@@ -2201,7 +2201,7 @@ const CatalogShopManager = () => {
               </p>
               <div className="space-y-3">
                 {state.subpageDayOverview.map((day, idx) => (
-                  <div key={idx} className="space-y-2 p-3 rounded border border-ink/[0.08] bg-voyage-white">
+                  <div key={idx} className="space-y-2 p-3 rounded-sm border border-ink/[0.08] bg-voyage-white">
                     <div className="flex gap-2 items-start">
                       <Input
                         value={day.label}
@@ -2260,7 +2260,7 @@ const CatalogShopManager = () => {
               </p>
               <div className="space-y-3">
                 {state.subpageExpectations.map((ex, idx) => (
-                  <div key={idx} className="space-y-2 p-3 rounded border border-ink/[0.08] bg-voyage-white">
+                  <div key={idx} className="space-y-2 p-3 rounded-sm border border-ink/[0.08] bg-voyage-white">
                     <div className="flex gap-2 items-start">
                       <Input
                         value={ex.title}
@@ -2327,7 +2327,7 @@ const CatalogShopManager = () => {
               <Label>Cover image</Label>
 
               <div className="flex items-center gap-3">
-                {state.heroImageUrl && <img src={state.heroImageUrl} alt="cover" className="w-24 h-16 object-cover rounded" />}
+                {state.heroImageUrl && <img src={state.heroImageUrl} alt="cover" className="w-24 h-16 object-cover rounded-sm" />}
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleUploadCover(e.target.files[0])} />
                 <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={uploading}>
                   {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
@@ -2361,7 +2361,7 @@ const CatalogShopManager = () => {
           </div>
 
           {/* SECTION 2 — BODY CONTENT (Google Docs) */}
-          <div className="mt-2 p-4 border border-parchment-3 rounded bg-voyage-white">
+          <div className="mt-2 p-4 border border-parchment-3 rounded-sm bg-voyage-white">
             <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
               <div>
                 <div className="font-serif text-lg font-bold flex items-center gap-2">
@@ -2390,7 +2390,7 @@ const CatalogShopManager = () => {
                   type="button"
                   onClick={runAudit}
                   disabled={auditing || applyingAudit || !state.content.trim()}
-                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
                   title={!state.content.trim() ? "Generate or import body content first" : "Run an AI audit on the current draft"}
                 >
                   {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
@@ -2401,7 +2401,7 @@ const CatalogShopManager = () => {
                     type="button"
                     onClick={applyAudit}
                     disabled={applyingAudit || failedAuditBatch !== null || !state.auditItems.some((i) => i.selected)}
-                    className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                    className="px-4 py-2 rounded-xs border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                   >
                     {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                     {applyingAudit ? "Rewriting…" : `Apply Selected (${state.auditItems.filter((i) => i.selected).length})`}
@@ -2412,7 +2412,7 @@ const CatalogShopManager = () => {
                     type="button"
                     onClick={retryFailedAuditBatch}
                     disabled={applyingAudit}
-                    className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                    className="px-4 py-2 rounded-xs border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                   >
                     {applyingAudit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
                     Retry batch {failedAuditBatch.batchNumber}
@@ -2423,7 +2423,7 @@ const CatalogShopManager = () => {
                     type="button"
                     onClick={keepOriginalAudit}
                     disabled={applyingAudit}
-                    className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                    className="px-4 py-2 rounded-xs border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
                   >
                     Keep original
                   </button>
@@ -2446,7 +2446,7 @@ const CatalogShopManager = () => {
               )}
 
               {auditAction.status !== "idle" && (
-                <div className={`mt-3 rounded border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                <div className={`mt-3 rounded-sm border px-3 py-2 text-[0.78rem] ${auditAction.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
                   <div className="flex items-center gap-2 font-medium">
                     {auditAction.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
                     {auditAction.message}
@@ -2470,7 +2470,7 @@ const CatalogShopManager = () => {
                           type="button"
                           onClick={retryFailedItems}
                           disabled={applyingAudit}
-                          className="px-3 py-1.5 rounded-sm border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-xs border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
                         >
                           {applyingAudit ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCcw className="w-3 h-3" />}
                           Retry {applySummary.failedItems.length} failed
@@ -2479,7 +2479,7 @@ const CatalogShopManager = () => {
                       <button
                         type="button"
                         onClick={viewUpdatedItinerary}
-                        className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xs bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
                       >
                         <Eye className="w-3 h-3" /> View Updated Itinerary
                       </button>
@@ -2502,7 +2502,7 @@ const CatalogShopManager = () => {
 
 
             {gdocInfo.id && gdocInfo.url ? (
-              <div className="rounded border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
+              <div className="rounded-sm border border-parchment-3 bg-parchment/30 p-3 flex flex-wrap items-center gap-3 justify-between">
                 <div className="text-[0.85rem]">
                   <div className="flex items-center gap-1.5 font-medium text-ink">
                     📄 Google Doc linked
@@ -2539,14 +2539,14 @@ const CatalogShopManager = () => {
                     href={gdocInfo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment"
                   >
                     Open in Google Docs <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </div>
             ) : state.id ? (
-              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+              <div className="rounded-sm border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
                 <div className="mb-2">
                   No Google Doc linked yet.
                   {state.content.trim()
@@ -2566,14 +2566,14 @@ const CatalogShopManager = () => {
                 )}
               </div>
             ) : (
-              <div className="rounded border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
+              <div className="rounded-sm border border-dashed border-parchment-3 bg-parchment/20 p-3 text-[0.82rem] text-voyage-muted">
                 Save the itinerary first to create its linked Google Doc.
               </div>
             )}
 
             {/* Body PDF upload + Preview PDF. The uploaded PDF is merged
                 between the fixed cover page and the fixed hotels + back pages. */}
-            <div className="mt-4 rounded border border-parchment-3 bg-voyage-white p-3">
+            <div className="mt-4 rounded-sm border border-parchment-3 bg-voyage-white p-3">
               <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
                 <div>
                   <div className="font-medium text-ink text-[0.92rem] flex items-center gap-2">
@@ -2584,7 +2584,7 @@ const CatalogShopManager = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="inline-flex items-center gap-1.5 rounded border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment cursor-pointer">
+                  <label className="inline-flex items-center gap-1.5 rounded-sm border border-parchment-3 bg-voyage-white px-3 py-1.5 text-[0.78rem] text-ink hover:bg-parchment cursor-pointer">
                     {bodyPdfUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                     {state.bodyPdfUrl ? "Replace PDF" : "Upload PDF"}
                     <input
@@ -2637,7 +2637,7 @@ const CatalogShopManager = () => {
 
 
           {/* HOTELS */}
-          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+          <div className="mt-6 p-4 border border-parchment-3 rounded-sm bg-voyage-white">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
               <div>
                 <div className="font-serif text-lg font-bold flex items-center gap-2">
@@ -2663,7 +2663,7 @@ const CatalogShopManager = () => {
 
             <div className="space-y-4">
               {state.hotels.map((h, i) => (
-                <div key={h.id} className="border border-parchment-3 rounded p-3 bg-parchment/30">
+                <div key={h.id} className="border border-parchment-3 rounded-sm p-3 bg-parchment/30">
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="text-[0.7rem] uppercase tracking-wider text-voyage-muted">Hotel #{i + 1}</div>
                     <div className="flex items-center gap-2">
@@ -2738,7 +2738,7 @@ const CatalogShopManager = () => {
                         return (
                           <div key={slot} className="space-y-1.5">
                             <div className="text-[0.7rem] text-voyage-muted">Image {slot + 1}{slot === 0 ? " (required)" : " (optional)"}</div>
-                            <div className="aspect-[4/3] rounded border border-parchment-3 bg-voyage-white overflow-hidden relative group">
+                            <div className="aspect-[4/3] rounded-sm border border-parchment-3 bg-voyage-white overflow-hidden relative group">
                               {photo?.url ? (
                                 <>
                                   <img src={photo.url} alt={photo.caption || ""} className="w-full h-full object-cover" />
@@ -2790,7 +2790,7 @@ const CatalogShopManager = () => {
           </div>
 
           {/* BUDGET ESTIMATOR — AI-generated per-person budget, drives the cover label. */}
-          <div className="mt-6 p-4 border border-parchment-3 rounded bg-voyage-white">
+          <div className="mt-6 p-4 border border-parchment-3 rounded-sm bg-voyage-white">
             <div className="flex items-start justify-between flex-wrap gap-3">
               <div>
                 <div className="font-serif text-lg font-bold flex items-center gap-2">
@@ -2834,7 +2834,7 @@ const CatalogShopManager = () => {
 
 
           {/* CHECKLIST */}
-          <div className="mt-6 p-4 border border-parchment-3 rounded bg-parchment/30">
+          <div className="mt-6 p-4 border border-parchment-3 rounded-sm bg-parchment/30">
             <div className="font-serif text-lg font-bold mb-2">Pre-publish checklist</div>
             <ul className="space-y-1.5">
               {checklist.map((c) => (
@@ -2982,12 +2982,12 @@ const CatalogShopManager = () => {
         return (
           <>
             {available.length > 1 && (
-              <div className="fixed top-4 right-4 z-[70] flex gap-1 bg-voyage-white border border-parchment-3 rounded shadow-md p-1 fjw-no-print">
+              <div className="fixed top-4 right-4 z-[70] flex gap-1 bg-voyage-white border border-parchment-3 rounded-sm shadow-md p-1 fjw-no-print">
                 {available.map((l) => (
                   <button
                     key={l}
                     onClick={() => setPreviewLang(l)}
-                    className={`px-2 py-1 text-[0.7rem] uppercase tracking-wider rounded ${previewLang === l ? "bg-ink text-voyage-white" : "text-voyage-muted hover:text-ink"}`}
+                    className={`px-2 py-1 text-[0.7rem] uppercase tracking-wider rounded-sm ${previewLang === l ? "bg-ink text-voyage-white" : "text-voyage-muted hover:text-ink"}`}
                   >
                     {l}
                   </button>

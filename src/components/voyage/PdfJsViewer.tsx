@@ -42,7 +42,7 @@ const PdfJsViewer = ({ url }: Props) => {
         error={<div className="p-6 text-sm text-red-600">Failed to load PDF.</div>}
       >
         {Array.from({ length: numPages }, (_, i) => (
-          <div key={i} className="mb-3 shadow-sm">
+          <div key={i} className="mb-3 shadow-xs">
             <Page
               pageNumber={i + 1}
               width={width}

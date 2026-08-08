@@ -39,7 +39,7 @@ const PlanMyTripPage = () => {
             {t("planTrip.dialogDesc")}
           </p>
 
-          <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm">
+          <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-xs">
             <TripRequestForm onSuccess={() => setSubmitted(true)} />
           </div>
 

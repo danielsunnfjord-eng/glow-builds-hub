@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
@@ -71,7 +71,7 @@ const ItineraryShopSuccess = () => {
       <Seo title="Purchase confirmed — Fjord & Waves Travel" description="Your itinerary purchase is being prepared for download." path="/catalogue/success" noindex />
       <Navbar />
       <main className="flex-1 pt-44 pb-24 px-6 flex items-center justify-center max-md:pt-36 max-md:pb-20">
-        <div className="bg-voyage-white border border-ink/[0.06] rounded-lg shadow-sm p-10 md:p-12 max-w-lg w-full text-center">
+        <div className="bg-voyage-white border border-ink/[0.06] rounded-lg shadow-xs p-10 md:p-12 max-w-lg w-full text-center">
           {status === "loading" && (
             <>
               <div className="text-4xl mb-4">⏳</div>
@@ -91,7 +91,7 @@ const ItineraryShopSuccess = () => {
               <button
                 onClick={download}
                 disabled={downloading}
-                className="w-full px-6 py-4 rounded-sm bg-ink text-voyage-white text-[0.85rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
+                className="w-full px-6 py-4 rounded-xs bg-ink text-voyage-white text-[0.85rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
               >
                 📄 {downloading ? t("shop.processing") : t("shop.downloadPdf")}
               </button>

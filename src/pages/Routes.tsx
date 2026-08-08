@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
@@ -167,7 +167,7 @@ const Routes = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search routes…"
-                    className="w-full pl-9 pr-3 py-2.5 text-[0.85rem] bg-voyage-white border border-ink/10 rounded-sm focus:outline-none focus:border-gold text-ink"
+                    className="w-full pl-9 pr-3 py-2.5 text-[0.85rem] bg-voyage-white border border-ink/10 rounded-xs focus:outline-hidden focus:border-gold text-ink"
                   />
                 </div>
               </div>
@@ -178,7 +178,7 @@ const Routes = () => {
                 <select
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  className="w-full px-3 py-2.5 text-[0.85rem] bg-voyage-white border border-ink/10 rounded-sm focus:outline-none focus:border-gold text-ink"
+                  className="w-full px-3 py-2.5 text-[0.85rem] bg-voyage-white border border-ink/10 rounded-xs focus:outline-hidden focus:border-gold text-ink"
                 >
                   <option value="">All destinations</option>
                   {destinations.map((d) => (
@@ -218,7 +218,7 @@ const Routes = () => {
               </p>
               <Link
                 to="/plan-my-trip"
-                className="inline-block px-8 py-3 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+                className="inline-block px-8 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
               >
                 {t("nav.planMyTrip")}
               </Link>
@@ -239,7 +239,7 @@ const Routes = () => {
                 <ScrollReveal key={r.id}>
                   <Link
                     to={`/routes/${slug}`}
-                    className="group block w-full rounded-lg overflow-hidden bg-voyage-white border border-ink/[0.06] shadow-sm hover:shadow-xl transition-all duration-300"
+                    className="group block w-full rounded-lg overflow-hidden bg-voyage-white border border-ink/[0.06] shadow-xs hover:shadow-xl transition-all duration-300"
                   >
                     <div className="aspect-[4/5] overflow-hidden bg-parchment-2 relative">
                       {r.hero_image_url ? (
@@ -253,7 +253,7 @@ const Routes = () => {
                         <div className="w-full h-full bg-gradient-to-br from-fjord/40 to-ocean/30" />
                       )}
                       {Number(r.price_eur) > 0 && (
-                        <div className="absolute top-4 right-4 bg-voyage-white/95 backdrop-blur px-3 py-1.5 rounded-full text-[0.72rem] font-semibold text-ink tracking-wide">
+                        <div className="absolute top-4 right-4 bg-voyage-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-[0.72rem] font-semibold text-ink tracking-wide">
                           €{Number(r.price_eur).toFixed(0)}
                         </div>
                       )}
@@ -299,7 +299,7 @@ const Routes = () => {
             </p>
             <Link
               to="/plan-my-trip"
-              className="inline-block px-8 py-3.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+              className="inline-block px-8 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
             >
               {t("nav.planMyTrip")}
             </Link>

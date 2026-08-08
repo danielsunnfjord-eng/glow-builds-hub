@@ -50,9 +50,18 @@ export function localePath(path: string, locale: Locale): string {
   return clean === "/" ? `${prefix}/` : `${prefix}${clean}`;
 }
 
+// During SSR there is no window; the root route's beforeLoad records the
+// request's locale here so render-time currentLocale() calls match the URL.
+let serverLocale: Locale = "en";
+
+/** Called from the root route on the server before rendering. */
+export function setServerLocale(locale: Locale): void {
+  serverLocale = locale;
+}
+
 /** Current locale derived from the browser URL (safe during SSR/build). */
 export function currentLocale(): Locale {
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return serverLocale;
   return detectLocaleFromPath(window.location.pathname);
 }
 

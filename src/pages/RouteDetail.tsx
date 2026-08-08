@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "@/lib/router-compat";
 import { ChevronRight, MapPin, Calendar, Compass } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
@@ -233,7 +233,7 @@ const RouteDetail = () => {
             <div className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-2 max-w-3xl">
               {sequence.map((s, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-voyage-white/15 backdrop-blur border border-voyage-white/20 text-voyage-white text-[0.78rem]">
+                  <span className="px-3 py-1 rounded-full bg-voyage-white/15 backdrop-blur-sm border border-voyage-white/20 text-voyage-white text-[0.78rem]">
                     {s}
                   </span>
                   {i < sequence.length - 1 && <ChevronRight className="w-3.5 h-3.5 text-voyage-white/50" />}
@@ -244,7 +244,7 @@ const RouteDetail = () => {
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               to={`/plan-my-trip?destination=${encodeURIComponent(data.destination ?? data.title)}`}
-              className="px-8 py-3.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.12em] uppercase hover:bg-voyage-white transition-colors"
+              className="px-8 py-3.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.12em] uppercase hover:bg-voyage-white transition-colors"
             >
               Plan this trip
             </Link>
@@ -435,7 +435,7 @@ const RouteDetail = () => {
                     </div>
                     <Link
                       to="/plan-my-trip"
-                      className="inline-block px-7 py-3 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+                      className="inline-block px-7 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
                     >
                       Book a consultation
                     </Link>
@@ -448,7 +448,7 @@ const RouteDetail = () => {
           {/* Sticky sidebar */}
           <aside className="col-span-12 lg:col-span-4">
             <div className="lg:sticky lg:top-32 space-y-6">
-              <div className="border border-parchment-3 rounded-lg bg-voyage-white shadow-sm overflow-hidden">
+              <div className="border border-parchment-3 rounded-lg bg-voyage-white shadow-xs overflow-hidden">
                 <div className="p-6 border-b border-parchment-3 bg-parchment/30">
                   <div className="text-[0.65rem] uppercase tracking-[0.18em] text-voyage-muted mb-1">From</div>
                   <div className="font-serif text-[2rem] font-bold text-ink leading-none">
@@ -479,7 +479,7 @@ const RouteDetail = () => {
                 <div className="p-6 pt-0">
                   <Link
                     to={`/plan-my-trip?destination=${encodeURIComponent(data.destination ?? data.title)}`}
-                    className="block w-full text-center px-6 py-3.5 rounded-sm bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
+                    className="block w-full text-center px-6 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
                   >
                     Plan this trip
                   </Link>

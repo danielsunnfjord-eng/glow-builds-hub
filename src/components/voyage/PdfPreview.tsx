@@ -911,22 +911,22 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
                     onClick={handleAttachToStore}
                     disabled={attaching || merging || !!mergeError || !mergedPdfUrl}
                     title="Upload this PDF to the store. Customers who purchase this itinerary will download exactly this file."
-                    className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/40 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40"
+                    className="px-4 py-1.5 text-[0.72rem] rounded-sm border border-ink/40 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40"
                   >
                     {attaching ? "Attaching…" : `🛒 Attach to Store (${pageInfo.total} pages)`}
                   </button>
                 )}
-                <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
+                <button type="button" onClick={handleExportMerged} className="px-4 py-1.5 text-[0.72rem] rounded-sm bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors">
                   📄 Download PDF
                 </button>
               </>
 
             ) : (
               <>
-                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40">
+                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded-sm border border-ink/30 text-ink font-semibold tracking-[0.06em] uppercase hover:bg-parchment-2 transition-colors disabled:opacity-40">
                   🖨 Print
                 </button>
-                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40">
+                <button type="button" onClick={handlePrint} disabled={usePdfMerge} className="px-4 py-1.5 text-[0.72rem] rounded-sm bg-gold text-ink font-semibold tracking-[0.06em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-40">
                   📄 Export PDF
                 </button>
               </>
@@ -935,7 +935,7 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
               type="button"
               onClick={onClose}
               aria-label="Close PDF preview"
-              className="ml-1 inline-flex items-center justify-center w-8 h-8 rounded-full border border-ink/20 bg-voyage-white text-ink hover:bg-destructive hover:text-white hover:border-destructive transition-colors text-base leading-none shadow-sm"
+              className="ml-1 inline-flex items-center justify-center w-8 h-8 rounded-full border border-ink/20 bg-voyage-white text-ink hover:bg-destructive hover:text-white hover:border-destructive transition-colors text-base leading-none shadow-xs"
             >
               ✕
             </button>
@@ -943,12 +943,12 @@ const PdfPreview = ({ content, contentHtml, bodyPdfUrl, project, hotels, onClose
         </div>
         <div ref={scrollRef} className="relative flex-1 min-h-0 h-0 overflow-y-scroll overscroll-contain touch-pan-y bg-[#e8e0d0] fjw-print-root">
           {(isRendering || (usePdfMerge && merging)) && (
-            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
+            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded-sm bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
               {usePdfMerge ? "Merging uploaded body PDF…" : "Paginating…"}
             </div>
           )}
           {mergeError && (
-            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded bg-destructive px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
+            <div className="fjw-no-print absolute left-1/2 top-8 z-10 -translate-x-1/2 rounded-sm bg-destructive px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-voyage-white shadow-lg">
               {mergeError}
             </div>
           )}

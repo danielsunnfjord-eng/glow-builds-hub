@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import ScrollReveal from "./ScrollReveal";
 import planTripImg from "@/assets/plan-trip-card.webp";
 import { useTranslation } from "react-i18next";

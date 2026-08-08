@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Navbar from "@/components/voyage/Navbar";
@@ -63,7 +63,7 @@ const About = () => {
             { icon: "🏔️", text: t("about.h4") },
           ].map((item) => (
             <ScrollReveal key={item.text}>
-              <div className="flex items-start gap-4 p-6 rounded-sm bg-parchment border border-gold/20 shadow-sm">
+              <div className="flex items-start gap-4 p-6 rounded-xs bg-parchment border border-gold/20 shadow-xs">
                 <span className="text-2xl">{item.icon}</span>
                 <p className="text-sm text-ink leading-relaxed font-medium">{item.text}</p>
               </div>
@@ -78,7 +78,7 @@ const About = () => {
           <ScrollReveal>
             <h2 className="font-serif text-3xl text-voyage-white mb-4">{t("about.ctaTitle")}</h2>
             <p className="text-voyage-white/60 mb-8 max-w-md mx-auto text-sm leading-relaxed">{t("about.ctaSubtitle")}</p>
-            <button onClick={() => navigate("/")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+            <button onClick={() => navigate("/")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
               {t("about.ctaBtn")}
             </button>
           </ScrollReveal>

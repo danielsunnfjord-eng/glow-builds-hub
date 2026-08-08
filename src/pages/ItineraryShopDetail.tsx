@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useSearchParams, useNavigate } from "@/lib/router-compat";
 import {
   ChevronRight,
   Clock,
@@ -418,7 +418,7 @@ const ItineraryShopDetail = () => {
 
               <a
                 href="#buy"
-                className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-sm bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-xs bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
               >
                 {t("shop.getThis", "Get this itinerary")}
                 <span className="h-3 md:h-4 w-px bg-ink/30" />
@@ -427,7 +427,7 @@ const ItineraryShopDetail = () => {
             </div>
           </div>
           {data.hero_image_credit && (
-            <div className="absolute bottom-3 right-4 max-md:right-3 text-[0.62rem] tracking-[0.08em] text-voyage-white/85 bg-ink/45 backdrop-blur-sm px-2 py-1 rounded-sm">
+            <div className="absolute bottom-3 right-4 max-md:right-3 text-[0.62rem] tracking-[0.08em] text-voyage-white/85 bg-ink/45 backdrop-blur-sm px-2 py-1 rounded-xs">
               {data.hero_image_credit}
             </div>
           )}
@@ -488,7 +488,7 @@ const ItineraryShopDetail = () => {
               {/* INCLUDED + CUSTOMIZE dual callouts */}
               <div className="mb-14 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Included box */}
-                <div className="rounded-lg border border-emerald-700/20 bg-emerald-700/10 p-6 max-md:p-5 shadow-sm">
+                <div className="rounded-lg border border-emerald-700/20 bg-emerald-700/10 p-6 max-md:p-5 shadow-xs">
                   <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-emerald-900 mb-3">
                     {t("shop.includedTitle", "Included")}
                   </div>
@@ -506,7 +506,7 @@ const ItineraryShopDetail = () => {
                 </div>
 
                 {/* Customize box */}
-                <div className="rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 shadow-sm">
+                <div className="rounded-lg border border-gold/40 bg-gold/10 p-6 max-md:p-5 shadow-xs">
                   <div className="text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-ink mb-3">
                     {t("shop.customizeTitle", "Customize this trip")}
                   </div>
@@ -526,7 +526,7 @@ const ItineraryShopDetail = () => {
                   </p>
                   <button
                     onClick={() => navigate("/plan-my-trip")}
-                    className="w-full px-4 py-2.5 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
                   >
                     {t("shop.customizeContact", "Get in touch for a free quote")}
                   </button>
@@ -712,7 +712,7 @@ const ItineraryShopDetail = () => {
             <div className="max-w-4xl">
               <div id="buy" className="grid grid-cols-1 gap-6">
                 {/* Price + buy */}
-                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-sm p-5 md:p-7">
+                <div className="bg-voyage-white border border-ink/[0.08] rounded-lg shadow-xs p-5 md:p-7">
                   <div className="flex items-baseline justify-between gap-3 mb-1">
                     <span className="text-[0.68rem] uppercase tracking-[0.16em] text-voyage-muted">
                       {t("shop.buyNow")}
@@ -729,7 +729,7 @@ const ItineraryShopDetail = () => {
                   </div>
 
                   {canceled && (
-                    <div className="mb-4 p-3 rounded bg-destructive/10 text-destructive text-[0.78rem]">
+                    <div className="mb-4 p-3 rounded-sm bg-destructive/10 text-destructive text-[0.78rem]">
                       {t("shop.canceled")}
                     </div>
                   )}
@@ -744,13 +744,13 @@ const ItineraryShopDetail = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t("shop.emailPlaceholder")}
-                      className="w-full px-4 py-3 rounded-sm border border-ink/15 bg-parchment text-[0.9rem] focus:outline-none focus:border-gold"
+                      className="w-full px-4 py-3 rounded-xs border border-ink/15 bg-parchment text-[0.9rem] focus:outline-hidden focus:border-gold"
                     />
                     <p className="text-[0.7rem] text-voyage-muted">{t("shop.emailHelp")}</p>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full px-5 py-3.5 rounded-sm bg-ink text-voyage-white text-[0.78rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
+                      className="w-full px-5 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.78rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors disabled:opacity-50"
                     >
                       {submitting
                         ? t("shop.processing")
@@ -860,7 +860,7 @@ const ItineraryShopDetail = () => {
                     <Link
                       key={r.id}
                       to={`/catalogue/${r.slug}`}
-                      className="group block rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow"
+                      className="group block rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-xs hover:shadow-lg transition-shadow"
                     >
                       <div className="aspect-[4/5] overflow-hidden bg-parchment-2">
                         {r.hero_image_url && (

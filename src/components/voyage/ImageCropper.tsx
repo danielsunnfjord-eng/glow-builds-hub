@@ -89,14 +89,14 @@ const ImageCropper = ({ imageUrl, onCropComplete, onCancel }: ImageCropperProps)
         <div className="px-4 py-3 border-t border-parchment-3 flex justify-end gap-2">
           <button
             onClick={onCancel}
-            className="px-4 py-1.5 text-sm rounded border border-parchment-3 text-voyage-muted hover:text-ink transition-colors"
+            className="px-4 py-1.5 text-sm rounded-sm border border-parchment-3 text-voyage-muted hover:text-ink transition-colors"
           >
             {t("aa.cancel", "Cancel")}
           </button>
           <button
             onClick={handleApply}
             disabled={!completedCrop}
-            className="px-4 py-1.5 text-sm rounded bg-gold text-ink font-medium hover:bg-gold/90 transition-colors disabled:opacity-40"
+            className="px-4 py-1.5 text-sm rounded-sm bg-gold text-ink font-medium hover:bg-gold/90 transition-colors disabled:opacity-40"
           >
             {t("aa.applyCrop", "Apply Crop")}
           </button>

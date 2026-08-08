@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
@@ -66,7 +66,7 @@ const DualPathCards = () => {
               </p>
               <Link
                 to="/catalogue"
-                className="inline-flex items-center justify-center self-start px-6 py-3 bg-ink text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-ink/85 transition-colors"
+                className="inline-flex items-center justify-center self-start px-6 py-3 bg-ink text-voyage-white font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-ink/85 transition-colors"
               >
                 {t("home.dual.readyCta")}
               </Link>
@@ -87,7 +87,7 @@ const DualPathCards = () => {
               </p>
               <Link
                 to="/start-your-journey"
-                className="inline-flex items-center justify-center self-start px-6 py-3 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 transition-colors"
+                className="inline-flex items-center justify-center self-start px-6 py-3 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 transition-colors"
               >
                 {t("home.dual.bespokeCta")}
               </Link>

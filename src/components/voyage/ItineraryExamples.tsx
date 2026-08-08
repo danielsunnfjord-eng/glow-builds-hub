@@ -118,7 +118,7 @@ const ItineraryExamples = () => {
             <button
               type="button"
               onClick={() => openTripPopup(trip.url)}
-              className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-sm hover:shadow-lg transition-shadow text-left cursor-pointer"
+              className="group block w-full rounded-lg overflow-hidden border border-ink/[0.06] bg-voyage-white shadow-xs hover:shadow-lg transition-shadow text-left cursor-pointer"
             >
               <div className="aspect-[16/10] overflow-hidden">
                 <img

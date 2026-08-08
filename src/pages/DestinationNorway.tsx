@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { MapPin, Calendar, Compass, Sparkles } from "lucide-react";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
@@ -92,10 +92,10 @@ const DestinationNorway = () => {
               A bespoke 7-day Norway trip plan — Oslo, the fjords, Bergen and Lofoten — built by a Fora Travel advisor who has lived and travelled here for years. Hotels, trains, fjord cruises and quiet hidden corners, all handled.
             </p>
             <div className="flex gap-3 mt-8 flex-wrap">
-              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
                 Plan my trip
               </button>
-              <a href="#itinerary" className="px-8 py-4 border border-voyage-white/25 text-voyage-white/85 font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-voyage-white/5 transition-colors">
+              <a href="#itinerary" className="px-8 py-4 border border-voyage-white/25 text-voyage-white/85 font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-voyage-white/5 transition-colors">
                 See the 7-day itinerary
               </a>
             </div>
@@ -117,7 +117,7 @@ const DestinationNorway = () => {
             <ol className="space-y-5">
               {itinerary.map((d) => (
                 <ScrollReveal key={d.day}>
-                  <li className="flex gap-6 p-6 rounded-sm bg-parchment-2 border border-gold/20">
+                  <li className="flex gap-6 p-6 rounded-xs bg-parchment-2 border border-gold/20">
                     <div className="shrink-0 w-20 text-[0.7rem] tracking-[0.15em] uppercase font-semibold text-gold-2 pt-1">{d.day}</div>
                     <div>
                       <h3 className="font-serif text-xl text-ink mb-1.5">{d.title}</h3>
@@ -143,7 +143,7 @@ const DestinationNorway = () => {
             <div className="grid grid-cols-2 gap-6 max-md:grid-cols-1">
               {regions.map((r) => (
                 <ScrollReveal key={r.name}>
-                  <div className="p-7 rounded-sm bg-parchment border border-gold/20 h-full">
+                  <div className="p-7 rounded-xs bg-parchment border border-gold/20 h-full">
                     <h3 className="font-serif text-2xl text-ink mb-3">{r.name}</h3>
                     <p className="text-sm text-voyage-muted leading-relaxed font-light">{r.text}</p>
                   </div>
@@ -166,7 +166,7 @@ const DestinationNorway = () => {
             <div className="grid grid-cols-2 gap-6 max-md:grid-cols-1">
               {seasons.map((s) => (
                 <ScrollReveal key={s.period}>
-                  <div className="p-7 rounded-sm bg-parchment-2 border border-gold/20 h-full">
+                  <div className="p-7 rounded-xs bg-parchment-2 border border-gold/20 h-full">
                     <p className="text-[0.7rem] tracking-[0.15em] uppercase font-semibold text-gold-2 mb-2">{s.period}</p>
                     <h3 className="font-serif text-xl text-ink mb-2">{s.title}</h3>
                     <p className="text-sm text-voyage-muted leading-relaxed font-light">{s.text}</p>
@@ -187,7 +187,7 @@ const DestinationNorway = () => {
               <p className="text-voyage-white/65 mb-8 max-w-lg mx-auto text-sm leading-relaxed font-light">
                 Share your dates, group size and what excites you. I'll come back with a tailored proposal — flights, hotels, fjord cruises, the lot.
               </p>
-              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-sm hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
                 Plan my trip
               </button>
             </ScrollReveal>

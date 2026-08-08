@@ -90,7 +90,7 @@ const AuditChecklist = ({
           const status = statuses?.[it.id];
           return (
             <li key={it.id}>
-              <label className="flex items-start gap-2 p-2 rounded bg-voyage-white/70 hover:bg-voyage-white cursor-pointer border border-transparent hover:border-gold/40 transition-colors">
+              <label className="flex items-start gap-2 p-2 rounded-sm bg-voyage-white/70 hover:bg-voyage-white cursor-pointer border border-transparent hover:border-gold/40 transition-colors">
                 <input
                   type="checkbox"
                   checked={it.selected}

@@ -135,7 +135,7 @@ const TravelerPersonasPanel = () => {
   const filtered = filterOrigin === "all" ? rows : rows.filter((r) => r.origin === filterOrigin);
 
   return (
-    <details className="rounded border border-parchment-3 bg-parchment/40 mb-6">
+    <details className="rounded-sm border border-parchment-3 bg-parchment/40 mb-6">
       <summary className="cursor-pointer select-none px-4 py-3 text-[0.9rem] font-semibold text-ink flex items-center justify-between gap-3">
         <span className="flex items-center gap-2">
           🌍 Traveler Personas
@@ -208,7 +208,7 @@ const TravelerPersonasPanel = () => {
                       <button
                         type="button"
                         onClick={() => toggleActive.mutate(r)}
-                        className={`inline-block px-2 py-0.5 rounded text-[0.7rem] font-medium ${
+                        className={`inline-block px-2 py-0.5 rounded-sm text-[0.7rem] font-medium ${
                           r.is_active
                             ? "bg-emerald-100 text-emerald-900"
                             : "bg-parchment-3 text-voyage-muted"

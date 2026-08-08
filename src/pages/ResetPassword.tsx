@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import logo from "@/assets/logo.webp";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -69,7 +69,7 @@ const ResetPassword = () => {
   };
 
   const inputClass =
-    "w-full pl-4 pr-12 py-3 rounded-sm bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-none focus:border-gold transition-colors";
+    "w-full pl-4 pr-12 py-3 rounded-xs bg-voyage-white/10 border border-voyage-white/20 text-voyage-white placeholder:text-voyage-white/40 text-[0.85rem] focus:outline-hidden focus:border-gold transition-colors";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink px-6">
@@ -85,7 +85,7 @@ const ResetPassword = () => {
             <p className="text-[0.85rem] text-red-300 text-center">{error}</p>
             <button
               onClick={() => navigate("/login")}
-              className="px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors"
+              className="px-6 py-3 rounded-xs bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors"
             >
               Back to sign in
             </button>
@@ -127,7 +127,7 @@ const ResetPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 rounded-sm bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60"
+              className="px-6 py-3 rounded-xs bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-60"
             >
               {loading ? "Updating..." : "Update Password"}
             </button>

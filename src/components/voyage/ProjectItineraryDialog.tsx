@@ -575,7 +575,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               {[project?.trip_duration, project?.start_date, project?.end_date].filter(Boolean).join(" · ") || "Edit the itinerary, cover, and internal notes."}
             </DialogDescription>
             <div className="mt-2 space-y-1 text-[0.75rem]">
-              {restoredNotice && <div className="rounded border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
+              {restoredNotice && <div className="rounded-sm border border-gold/40 bg-gold/10 px-3 py-2 text-ink">{restoredNotice}</div>}
               <div className="text-voyage-muted">
                 {autoSaveStatus === "saving" && "Auto-saving draft…"}
                 {autoSaveStatus === "saved" && lastAutoSavedAt && `Draft auto-saved ${new Date(lastAutoSavedAt).toLocaleTimeString()}`}
@@ -602,7 +602,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     statuses={itemStatuses}
                   />
                   {applyStatus.status !== "idle" && (
-                    <div className={`mt-2 rounded border px-3 py-2 text-[0.78rem] ${applyStatus.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
+                    <div className={`mt-2 rounded-sm border px-3 py-2 text-[0.78rem] ${applyStatus.status === "error" ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-gold/40 bg-gold/10 text-ink"}`}>
                       <div className="flex items-center gap-2 font-medium">
                         {applyStatus.status === "running" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <AlertCircle className="w-3.5 h-3.5" />}
                         {applyStatus.message}
@@ -625,7 +625,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                               type="button"
                               onClick={retryFailedItems}
                               disabled={applying}
-                              className="px-3 py-1.5 rounded-sm border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
+                              className="px-3 py-1.5 rounded-xs border border-destructive/40 text-[0.7rem] font-medium uppercase tracking-wider text-destructive hover:bg-destructive hover:text-voyage-white transition-colors inline-flex items-center gap-1.5 disabled:opacity-50"
                             >
                               {applying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCcw className="w-3 h-3" />}
                               Retry {applySummary.failedItems.length} failed
@@ -634,7 +634,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                           <button
                             type="button"
                             onClick={viewUpdatedItinerary}
-                            className="px-3 py-1.5 rounded-sm bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-xs bg-ink text-voyage-white text-[0.7rem] font-medium uppercase tracking-wider hover:bg-gold hover:text-ink transition-colors inline-flex items-center gap-1.5"
                           >
                             <Eye className="w-3 h-3" /> View Updated Itinerary
                           </button>
@@ -683,7 +683,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                     <button
                       onClick={() => heroInputRef.current?.click()}
                       disabled={uploadingHero}
-                      className="absolute bottom-1 right-1 bg-voyage-white/90 text-ink text-[0.65rem] px-2 py-0.5 rounded uppercase tracking-wider"
+                      className="absolute bottom-1 right-1 bg-voyage-white/90 text-ink text-[0.65rem] px-2 py-0.5 rounded-sm uppercase tracking-wider"
                     >
                       Replace
                     </button>
@@ -709,14 +709,14 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                       value={heroCredit}
                       onChange={(e) => setHeroCredit(e.target.value)}
                       placeholder="Photo credit (optional) — e.g. © Visit Norway"
-                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-none focus:border-gold"
+                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-hidden focus:border-gold"
                     />
                     <input
                       type="text"
                       value={heroCaption}
                       onChange={(e) => setHeroCaption(e.target.value)}
                       placeholder="Caption / description (optional)"
-                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-none focus:border-gold"
+                      className="w-full p-1.5 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.72rem] focus:outline-hidden focus:border-gold"
                     />
                   </div>
                 )}
@@ -730,7 +730,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                   value={tagline}
                   onChange={(e) => setTagline(e.target.value)}
                   placeholder="Your Journey, Curated."
-                  className="w-full p-2 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.8rem] focus:outline-none focus:border-gold transition-colors"
+                  className="w-full p-2 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.8rem] focus:outline-hidden focus:border-gold transition-colors"
                 />
               </div>
 
@@ -741,7 +741,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Private notes for your team — not visible to the customer."
-                  className="flex-1 w-full p-3 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.8rem] focus:outline-none focus:border-gold transition-colors resize-none"
+                  className="flex-1 w-full p-3 rounded-md border border-parchment-3 bg-parchment text-ink text-[0.8rem] focus:outline-hidden focus:border-gold transition-colors resize-none"
                 />
               </div>
             </div>
@@ -752,14 +752,14 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
               <button
                 onClick={handleExportPdf}
                 disabled={!content.trim()}
-                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 rounded-xs border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
               >
                 <FileText className="w-3.5 h-3.5" /> Export PDF
               </button>
               <button
                 onClick={runAudit}
                 disabled={auditing || applying || !content.trim()}
-                className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 rounded-xs border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
               >
                 {auditing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
                 {auditing ? "Auditing…" : "Audit Itinerary"}
@@ -768,7 +768,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 <button
                   onClick={applyImprovements}
                   disabled={applying || failedApplyBatch !== null || !auditItems.some((i) => i.selected)}
-                  className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   {applying ? "Rewriting…" : `Apply Selected (${auditItems.filter((i) => i.selected).length})`}
@@ -778,7 +778,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 <button
                   onClick={retryFailedBatch}
                   disabled={applying}
-                  className="px-4 py-2 rounded-sm border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-gold bg-gold/10 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:bg-gold hover:text-ink transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {applying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                   Retry batch {failedApplyBatch.batchNumber}
@@ -788,7 +788,7 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
                 <button
                   onClick={keepOriginal}
                   disabled={applying}
-                  className="px-4 py-2 rounded-sm border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-xs border border-ink/25 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-ink hover:border-ink hover:bg-ink hover:text-voyage-white transition-all inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   <Undo2 className="w-3.5 h-3.5" /> Keep Original
                 </button>
@@ -798,14 +798,14 @@ const ProjectItineraryDialog = ({ open, onOpenChange, project, onSaved }: Props)
             <div className="flex gap-2">
               <button
                 onClick={requestClose}
-                className="px-4 py-2 rounded-sm border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
+                className="px-4 py-2 rounded-xs border border-parchment-3 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-voyage-muted hover:border-ink hover:text-ink transition-all"
               >
                 Close
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-5 py-2 rounded-sm bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+                className="px-5 py-2 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.1em] uppercase hover:bg-gold-2 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Changes

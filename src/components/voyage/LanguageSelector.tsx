@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "@/lib/router-compat";
 import { LOCALE_PREFIX, currentLocale, localePath, type Locale } from "@/lib/locale";
 
 const flagUrls: Record<string, string> = {
@@ -30,7 +30,7 @@ const LanguageSelector = ({ variant = "light" }: LanguageSelectorProps) => {
           href={hrefFor(lng)}
           hrefLang={LOCALE_PREFIX[lng] ? lng : "en"}
           title={t(`lang.${lng}`)}
-          className={`p-1 rounded transition-all inline-flex ${
+          className={`p-1 rounded-sm transition-all inline-flex ${
             active === lng
               ? variant === "dark"
                 ? "bg-voyage-white/20 ring-1 ring-voyage-white/30"
