@@ -16,7 +16,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import CookieConsent from "@/components/voyage/CookieConsent";
 import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
-import { HTML_LANG, detectLocaleFromPath } from "@/lib/locale";
+import { HTML_LANG, detectLocaleFromPath, setServerLocale } from "@/lib/locale";
 // ported from main.tsx — i18next must initialise before any component renders
 import i18n from "../i18n";
 // ported from main.tsx — Google Analytics loader (browser-only, fired in useEffect)
@@ -30,6 +30,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   beforeLoad: async ({ location }) => {
     // The URL is the single source of truth for language (/, /no/, /pt-br/).
     const locale = detectLocaleFromPath(location.pathname);
+    setServerLocale(locale);
     if (i18n.language !== locale) {
       await i18n.changeLanguage(locale);
     }
