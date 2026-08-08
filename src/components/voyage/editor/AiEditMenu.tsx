@@ -71,12 +71,12 @@ const AiEditMenu = ({ editor }: AiEditMenuProps) => {
     };
 
     editor.on("selectionUpdate", checkSelection);
-    editor.on("blur-sm", handleBlur);
+    editor.on("blur", handleBlur);
     editor.on("focus", checkSelection);
 
     return () => {
       editor.off("selectionUpdate", checkSelection);
-      editor.off("blur-sm", handleBlur);
+      editor.off("blur", handleBlur);
       editor.off("focus", checkSelection);
     };
   }, [editor]);

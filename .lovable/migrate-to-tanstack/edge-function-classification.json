@@ -1,0 +1,32 @@
+{
+  "functions": [
+    { "name": "advisor-assistant", "classification": "internal-only", "signal": "streamed fetch from AdvisorAssistant.tsx (custom streaming response)", "outcome": "left" },
+    { "name": "ai-text-transform", "classification": "internal-only", "signal": "invoked from CatalogShopManager.tsx", "outcome": "left" },
+    { "name": "audit-itinerary-claude", "classification": "internal-only", "signal": "streamed fetch from 2 src/ files", "outcome": "left" },
+    { "name": "create-catalog-checkout", "classification": "internal-only", "signal": "invoked from ItineraryShopDetail.tsx", "outcome": "left" },
+    { "name": "download-catalog-pdf", "classification": "fixed-URL external", "signal": "URL embedded in purchase confirmation emails (verify-catalog-purchase builds /functions/v1/download-catalog-pdf links)", "outcome": "left" },
+    { "name": "estimate-itinerary-budget", "classification": "internal-only", "signal": "invoked from editor", "outcome": "left" },
+    { "name": "gdrive-sync-itinerary", "classification": "internal-only", "signal": "invoked from 4 src/ files", "outcome": "left" },
+    { "name": "generate-catalog-images", "classification": "internal-only", "signal": "invoked from editor", "outcome": "left" },
+    { "name": "generate-catalog-itinerary", "classification": "internal-only", "signal": "streamed generation from CatalogShopManager.tsx", "outcome": "left" },
+    { "name": "generate-catalog-pdf", "classification": "internal-only", "signal": "invoked from 10 src/ call sites", "outcome": "left" },
+    { "name": "generate-itinerary-claude", "classification": "internal-only", "signal": "streamed fetch from RequestItineraryDialog.tsx", "outcome": "left" },
+    { "name": "generate-itinerary-image", "classification": "internal-only", "signal": "raw fetch from src/", "outcome": "left" },
+    { "name": "generate-itinerary-map", "classification": "internal-only", "signal": "invoked from src/", "outcome": "left" },
+    { "name": "handle-email-suppression", "classification": "webhook receiver", "signal": "Resend suppression webhook handler", "outcome": "left" },
+    { "name": "handle-email-unsubscribe", "classification": "fixed-URL external", "signal": "unsubscribe links in sent emails; also invoked from Unsubscribe.tsx", "outcome": "left" },
+    { "name": "notify-trip-request", "classification": "internal-only", "signal": "invoked from trip request form", "outcome": "left" },
+    { "name": "parse-form-upload", "classification": "internal-only", "signal": "raw fetch from 2 src/ files", "outcome": "left" },
+    { "name": "preview-transactional-email", "classification": "unknown", "signal": "no internal call sites; admin/testing utility — URL treated as load-bearing", "outcome": "left" },
+    { "name": "process-email-queue", "classification": "cron target", "signal": "pg_cron job 'process-email-queue' (email_infra.sql, net.http_post every 5s)", "outcome": "left" },
+    { "name": "route-maker-step", "classification": "internal-only", "signal": "invoked from src/", "outcome": "left" },
+    { "name": "send-itinerary-email", "classification": "internal-only", "signal": "invoked from Admin.tsx", "outcome": "left" },
+    { "name": "send-transactional-email", "classification": "function-to-function", "signal": "invoked from other edge functions (email queue writers) that stay on Supabase", "outcome": "left" },
+    { "name": "subscribe-newsletter", "classification": "internal-only", "signal": "invoked from newsletter form", "outcome": "left" },
+    { "name": "sync-catalog-stripe-products", "classification": "internal-only", "signal": "invoked from CatalogShopManager.tsx", "outcome": "left" },
+    { "name": "translate-catalog-fields", "classification": "internal-only", "signal": "invoked from editor", "outcome": "left" },
+    { "name": "translate-hotels", "classification": "internal-only", "signal": "invoked from PdfPreview.tsx", "outcome": "left" },
+    { "name": "trip-proxy", "classification": "unknown", "signal": "no internal call sites; verify_jwt disabled in config.toml — likely external share-link consumer", "outcome": "left" },
+    { "name": "verify-catalog-purchase", "classification": "internal-only", "signal": "invoked from ItineraryShopSuccess.tsx; builds email links", "outcome": "left" }
+  ]
+}

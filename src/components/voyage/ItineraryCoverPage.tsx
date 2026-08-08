@@ -24,6 +24,18 @@ import React from "react";
  *   season            string   — e.g. "Summer 2026"
  *   photoCredit       string   — optional, shown below hero image
  */
+interface ItineraryCoverPageProps {
+  heroImageUrl?: string;
+  eyebrow?: string;
+  title?: string;
+  location?: string;
+  shortDescription?: string;
+  duration?: string;
+  region?: string;
+  season?: string;
+  photoCredit?: string;
+}
+
 export default function ItineraryCoverPage({
   heroImageUrl,
   eyebrow = "A pre-designed and inspirational itinerary",
@@ -34,7 +46,7 @@ export default function ItineraryCoverPage({
   region = "",
   season = "",
   photoCredit = "",
-}) {
+}: ItineraryCoverPageProps) {
   return (
     <>
       <style>{`

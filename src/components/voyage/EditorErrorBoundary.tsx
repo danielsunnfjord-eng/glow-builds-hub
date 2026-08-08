@@ -19,20 +19,20 @@ interface State {
  * preserved because only this subtree fails to render.
  */
 export default class EditorErrorBoundary extends React.Component<Props, State> {
-  state: State = { error: null };
+  override state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
     return { error };
   }
 
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
+  override componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error("[EditorErrorBoundary] caught", error, info);
     this.props.onError?.(error);
   }
 
   reset = () => this.setState({ error: null });
 
-  render() {
+  override render() {
     if (this.state.error) {
       if (this.props.fallback) return this.props.fallback(this.state.error, this.reset);
       return (
