@@ -33,7 +33,7 @@ function convert(value: number, fromCcy: string, toCcy: string): number {
 
 function fmt(value: number, ccy: string): string {
   const sym = CURRENCY_SYMBOL[ccy] || "";
-  const rounded-sm = Math.round(value);
+  const rounded = Math.round(value);
   return ccy === "NOK" ? `${rounded} ${sym}` : `${sym}${rounded}`;
 }
 

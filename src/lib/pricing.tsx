@@ -36,7 +36,7 @@ export function amountFor(row: PriceRow | null | undefined, cur: DisplayCurrency
 
 /** Format a numeric amount into a short display string, e.g. "$120", "R$620", "kr 1200". */
 export function formatAmount(amount: number, cur: DisplayCurrency): string {
-  const rounded-sm = Math.round(amount);
+  const rounded = Math.round(amount);
   switch (cur) {
     case "USD":
       return `$${rounded}`;
