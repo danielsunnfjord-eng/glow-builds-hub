@@ -79,6 +79,7 @@ interface CatalogRow {
   itinerary_content_no: string | null;
   experience_type: string[] | null;
   season: string[] | null;
+  estimated_trip_budget?: string | null;
 
   hotels: any[] | null;
   audit_report: string | null;
@@ -365,6 +366,9 @@ const CatalogShopManager = () => {
   const [state, setState] = useState<EditorState>(blankEditor);
   const [budget, setBudget] = useState<import("./editor/BudgetEstimator").BudgetData | null>(null);
   const [budgetCoverLabel, setBudgetCoverLabel] = useState<string | null>(null);
+  // Budget label as stored in the database for the itinerary being edited.
+  // Used as the source of truth so the cover works across browsers/sessions.
+  const [dbBudgetLabel, setDbBudgetLabel] = useState<string | null>(null);
   const [budgetOpen, setBudgetOpen] = useState(false);
   const [bodySnapshotOpen, setBodySnapshotOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -600,7 +604,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -650,14 +654,16 @@ const CatalogShopManager = () => {
       const id = state.id || null;
       const { budget, coverLabel } = loadBudget(id);
       setBudget(budget);
-      setBudgetCoverLabel(coverLabel);
+      // Prefer the persisted database value; fall back to local unsaved work.
+      setBudgetCoverLabel(dbBudgetLabel || coverLabel);
     });
-  }, [state.id]);
+  }, [state.id, dbBudgetLabel]);
 
   const handleBudgetSaved = useCallback(
     (b: import("./editor/BudgetEstimator").BudgetData | null, lbl: string | null) => {
       setBudget(b);
       setBudgetCoverLabel(lbl);
+      if (lbl) setDbBudgetLabel(lbl);
       import("@/lib/itineraryBudgetStore").then(({ saveBudget }) => {
         saveBudget(state.id || null, { budget: b, coverLabel: lbl });
       });
@@ -791,6 +797,7 @@ const CatalogShopManager = () => {
     setGdocInfo({ id: null, url: null, lastSyncedAt: null });
     setGdocError(null);
     setGdocConflict(null);
+    setDbBudgetLabel(null);
     setEditorOpen(true);
   };
 
@@ -879,6 +886,7 @@ const CatalogShopManager = () => {
     } catch {
       // Recovery should never block opening the editor.
     }
+    setDbBudgetLabel((r as any).estimated_trip_budget || null);
     setState(nextState);
     setSectionPrompt(nextSectionPrompt);
     setAuditAction({ status: "idle", message: "" });
@@ -1569,7 +1577,6 @@ const CatalogShopManager = () => {
           .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
           .filter((e) => e.title.length > 0 || e.description.length > 0),
         subpage_map_url: state.subpageMapUrl.trim() || null,
-        estimated_trip_budget: budgetCoverLabel,
         primary_language: state.language,
       };
 
@@ -1582,6 +1589,10 @@ const CatalogShopManager = () => {
       // For brand-new itineraries with no Google Doc yet, we still seed the
       // first body copy from the editor so the initial Google Doc can be
       // created from it.
+      // Only write the budget label when we actually have one — an empty local
+      // value must never wipe the stored cover/subpage budget.
+      if (budgetCoverLabel) payload.estimated_trip_budget = budgetCoverLabel;
+
       const hasGoogleDoc = !!gdocInfo.id;
       if (!hasGoogleDoc) {
         payload[contentField] = state.content;
