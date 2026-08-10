@@ -771,6 +771,37 @@ export default {
     formTitle: "Questionário de planejamento de viagem",
     formSubtitle: "Alguns detalhes nos ajudam a montar uma proposta com a sua cara.",
   },
+  pricingPage: {
+    seoTitle: "Pre\u00e7os e taxas | Fjord & Waves Travel",
+    seoDescription: "Pre\u00e7os claros para guias de viagem prontos, consultorias individuais e viagens sob medida. Convers\u00e3o em tempo real em BRL, EUR, USD e NOK.",
+    badge: "Pre\u00e7os",
+    title: "Pre\u00e7os transparentes, sem surpresas",
+    subtitle: "Todas as op\u00e7\u00f5es abaixo t\u00eam valor fixo e informado antes. Voc\u00ea sempre sabe quanto vai pagar antes de come\u00e7armos.",
+    faqEyebrow: "Bom saber",
+    faqHeading: "D\u00favidas sobre pre\u00e7os",
+    faq: {
+      "0": {
+        q: "A viagem em si est\u00e1 inclu\u00edda na taxa de planejamento?",
+        a: "N\u00e3o. As taxas cobrem planejamento, consultoria e apoio nas reservas. Voos, hot\u00e9is, transfers e experi\u00eancias s\u00e3o pagos \u00e0 parte, normalmente direto ao fornecedor ou pela reserva da ag\u00eancia.",
+      },
+      "1": {
+        q: "Por que existe uma taxa de planejamento?",
+        a: "Ela paga a pesquisa, o desenho do roteiro e o tempo dedicado a adaptar tudo a voc\u00ea. Tamb\u00e9m garante independ\u00eancia: recomendo o que combina com voc\u00ea, n\u00e3o o que paga mais comiss\u00e3o.",
+      },
+      "2": {
+        q: "Em qual moeda serei cobrado?",
+        a: "Os pre\u00e7os s\u00e3o definidos em NOK. Voc\u00ea pode visualizar em BRL, EUR ou USD com c\u00e2mbio em tempo real; o valor final aparece antes de confirmar o pagamento.",
+      },
+      "3": {
+        q: "Posso migrar de um guia pronto para uma viagem sob medida?",
+        a: "Sim. Se comprar um guia pronto e depois quiser um roteiro sob medida, me avise \u2014 o valor do guia \u00e9 considerado.",
+      },
+      "4": {
+        q: "O que acontece depois do pagamento?",
+        a: "Os guias t\u00eam download imediato. Para consultorias e viagens sob medida, agendamos uma chamada e come\u00e7o a montar seu plano logo em seguida.",
+      },
+    },
+  },
   pricing: {
     "eyebrow": "PREÇOS",
     "heading": "Escolha como você quer viajar conosco",

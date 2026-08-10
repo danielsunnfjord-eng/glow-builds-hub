@@ -43,6 +43,9 @@ const Navbar = () => {
           <Link to="/catalogue" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
             {t("nav.shop")}
           </Link>
+          <Link to="/pricing" className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline">
+            {t("nav.pricing")}
+          </Link>
           <LanguageSelector variant="light" />
           <button
             onClick={() => navigate("/start-your-journey")}
@@ -94,6 +97,13 @@ const Navbar = () => {
             className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
           >
             {t("nav.shop")}
+          </Link>
+          <Link
+            to="/pricing"
+            onClick={() => setOpen(false)}
+            className="text-[0.78rem] font-medium tracking-[0.1em] uppercase text-voyage-muted hover:text-ink transition-colors no-underline"
+          >
+            {t("nav.pricing")}
           </Link>
           <button
             onClick={() => { setOpen(false); navigate("/start-your-journey"); }}

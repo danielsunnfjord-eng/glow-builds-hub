@@ -784,6 +784,37 @@ export default {
     formTitle: "Travel Planning Questionnaire",
     formSubtitle: "A few details help us craft a proposal that feels made for you.",
   },
+  pricingPage: {
+    seoTitle: "Pricing & Fees | Fjord & Waves Travel",
+    seoDescription: "Clear pricing for pre-made travel guides, one-to-one consultations and fully bespoke journeys. Live currency conversion in NOK, EUR, USD and BRL.",
+    badge: "Pricing",
+    title: "Transparent pricing, no surprises",
+    subtitle: "Every option below is a flat, upfront fee. You always know what you pay before we start planning.",
+    faqEyebrow: "Good to know",
+    faqHeading: "Questions about pricing",
+    faq: {
+      "0": {
+        q: "Do I pay for the trip itself on top of the planning fee?",
+        a: "Yes. The fees here cover planning, advice and booking support. Flights, hotels, transfers and experiences are paid separately \u2014 usually directly to the supplier or through my agency booking.",
+      },
+      "1": {
+        q: "Why do you charge a planning fee at all?",
+        a: "The fee pays for the research, route design and time spent tailoring the trip to you. It also means my advice is independent \u2014 I recommend what fits you, not what pays the most commission.",
+      },
+      "2": {
+        q: "Which currency am I charged in?",
+        a: "Prices are set in NOK. You can preview them in EUR, USD or BRL using live exchange rates; the amount you are charged at checkout is shown before you confirm.",
+      },
+      "3": {
+        q: "Can I upgrade from a pre-made guide to a bespoke trip?",
+        a: "Yes. If you buy a pre-made travel guide and later want a tailor-made journey, tell me and the guide price is taken into account.",
+      },
+      "4": {
+        q: "What happens after I pay?",
+        a: "For guides, you get an instant download. For consultations and bespoke journeys, we schedule a call, and I start building your plan right after.",
+      },
+    },
+  },
   pricing: {
     "eyebrow": "PRICING",
     "heading": "Choose how you'd like to travel with us",
