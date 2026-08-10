@@ -39,6 +39,7 @@ const Footer = () => {
           <button onClick={() => goToSection("why-advisor")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.whyAdvisor")}</button>
           <button onClick={() => goToSection("reviews")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.reviews")}</button>
           <button onClick={() => navigate("/catalogue")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.shop")}</button>
+          <button onClick={() => navigate("/pricing")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.pricing")}</button>
 
         </div>
         <div>
