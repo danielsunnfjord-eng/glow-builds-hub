@@ -27,6 +27,8 @@ const CARDS: CardData[] = [
   { key: "card3", nok: 6000, features: 4, href: "/start-your-journey", highlight: true },
 ];
 
+const TABLE_ROWS: number[] = [3000, 3650, 4350, 5650];
+
 const Pricing = () => {
   const { t } = useTranslation();
   const { active, rate, setCurrency, available, showPicker } = useActiveCurrency();
@@ -153,6 +155,101 @@ const Pricing = () => {
             );
           })}
         </div>
+
+        <ScrollReveal>
+          <div className="mt-14">
+            <div className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {t("pricing.table.eyebrow")}
+            </div>
+            <h3 className="font-serif text-[clamp(1.4rem,2.6vw,1.9rem)] font-bold text-ink mb-6 tracking-tight">
+              {t("pricing.table.heading")}
+            </h3>
+
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-hidden rounded-lg border border-ink/[0.08]">
+              <table className="w-full border-collapse text-left">
+                <thead>
+                  <tr className="bg-ink text-voyage-white">
+                    <th className="px-6 py-4 text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
+                      {t("pricing.table.groupSize")}
+                    </th>
+                    <th className="px-6 py-4 text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
+                      {t("pricing.table.duration")}
+                    </th>
+                    <th className="px-6 py-4 text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-gold-2">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span>{t("pricing.table.price")}</span>
+                        {showPicker && <CurrencySelect />}
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {TABLE_ROWS.map((nok, i) => (
+                    <tr
+                      key={i}
+                      className={i % 2 === 0 ? "bg-parchment-2" : "bg-[#f0e3cf]/40"}
+                    >
+                      <td className="px-6 py-4 text-[0.92rem] text-ink/85 border-t border-ink/[0.06]">
+                        {t(`pricing.table.rows.${i}.group`)}
+                      </td>
+                      <td className="px-6 py-4 text-[0.92rem] text-ink/85 border-t border-ink/[0.06]">
+                        {t(`pricing.table.rows.${i}.duration`)}
+                      </td>
+                      <td className="px-6 py-4 font-serif text-[1.15rem] font-bold text-gold border-t border-ink/[0.06] whitespace-nowrap">
+                        {format(nok)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile stacked cards */}
+            <div className="md:hidden space-y-4">
+              {showPicker && (
+                <div className="flex items-center justify-between gap-3 rounded-lg bg-ink px-4 py-3">
+                  <span className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-voyage-white">
+                    {t("pricing.table.price")}
+                  </span>
+                  <CurrencySelect />
+                </div>
+              )}
+              {TABLE_ROWS.map((nok, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg border border-ink/[0.08] bg-parchment-2 p-5"
+                >
+                  <div className="text-[0.58rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted">
+                    {t("pricing.table.groupSize")}
+                  </div>
+                  <div className="text-[0.95rem] text-ink/85 mb-3">
+                    {t(`pricing.table.rows.${i}.group`)}
+                  </div>
+                  <div className="text-[0.58rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted">
+                    {t("pricing.table.duration")}
+                  </div>
+                  <div className="text-[0.95rem] text-ink/85 mb-3">
+                    {t(`pricing.table.rows.${i}.duration`)}
+                  </div>
+                  <div className="text-[0.58rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted">
+                    {t("pricing.table.price")}
+                  </div>
+                  <div className="font-serif text-[1.35rem] font-bold text-gold leading-none mt-1">
+                    {format(nok)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {rateNote && (
+              <p className="mt-3 text-[0.68rem] text-voyage-muted">{rateNote}</p>
+            )}
+          </div>
+        </ScrollReveal>
+
+
 
         <ScrollReveal>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 bg-[#f0e3cf]/60 border border-gold/25 rounded-lg p-8 md:p-10">

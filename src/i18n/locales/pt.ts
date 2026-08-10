@@ -860,6 +860,19 @@ export default {
         "O valor total da taxa é descontado da sua reserva final",
         "Sem taxas de planejamento ocultas"
       ]
+    },
+    "table": {
+      "eyebrow": "Preços de consultoria",
+      "heading": "Preço da consultoria por tamanho do grupo e duração",
+      "groupSize": "TAMANHO DO GRUPO",
+      "duration": "DURAÇÃO DA VIAGEM",
+      "price": "PREÇO",
+      "rows": [
+        { "group": "1–2 pessoas", "duration": "Até 7 dias" },
+        { "group": "1–2 pessoas", "duration": "8–14 dias" },
+        { "group": "3–5 pessoas", "duration": "Qualquer duração" },
+        { "group": "6+ pessoas", "duration": "Qualquer duração" }
+      ]
     }
   },
 };

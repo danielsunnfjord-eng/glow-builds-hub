@@ -2,18 +2,10 @@ import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import Pricing from "@/components/voyage/Pricing";
-import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Seo from "@/components/Seo";
-
-const FAQ_COUNT = 5;
 
 const PricingPage = () => {
   const { t } = useTranslation();
-
-  const faqs = Array.from({ length: FAQ_COUNT }, (_, i) => ({
-    q: t(`pricingPage.faq.${i}.q`),
-    a: t(`pricingPage.faq.${i}.a`),
-  }));
 
   return (
     <div>
@@ -21,15 +13,6 @@ const PricingPage = () => {
         title={t("pricingPage.seoTitle")}
         description={t("pricingPage.seoDescription")}
         path="/pricing"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }}
       />
       <Navbar />
       <main>
@@ -57,34 +40,6 @@ const PricingPage = () => {
 
         <Pricing />
 
-        <section className="bg-parchment-2 py-20 px-6 md:px-16">
-          <div className="max-w-[900px] mx-auto">
-            <ScrollReveal>
-              <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-4 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-                {t("pricingPage.faqEyebrow")}
-              </div>
-              <h2 className="font-serif text-[clamp(1.7rem,3.2vw,2.4rem)] font-bold text-ink mb-10 tracking-tight">
-                {t("pricingPage.faqHeading")}
-              </h2>
-            </ScrollReveal>
-            <div className="space-y-4">
-              {faqs.map((f) => (
-                <ScrollReveal key={f.q}>
-                  <details className="group bg-parchment border border-ink/[0.08] rounded-lg p-6">
-                    <summary className="cursor-pointer list-none font-serif text-[1.1rem] font-bold text-ink flex items-start justify-between gap-4">
-                      {f.q}
-                      <span className="text-gold text-xl leading-none transition-transform group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <p className="mt-3 text-[0.92rem] text-voyage-muted leading-relaxed">{f.a}</p>
-                  </details>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

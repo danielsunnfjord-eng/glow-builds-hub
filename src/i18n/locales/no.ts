@@ -858,6 +858,19 @@ export default {
         "Hele avgiften trekkes fra din endelige bestilling",
         "Ingen skjulte planleggingsavgifter"
       ]
+    },
+    "table": {
+      "eyebrow": "Priser for konsultasjon",
+      "heading": "Konsultasjonspris etter gruppestørrelse og reiselengde",
+      "groupSize": "GRUPPESTØRRELSE",
+      "duration": "REISENS VARIGHET",
+      "price": "PRIS",
+      "rows": [
+        { "group": "1–2 personer", "duration": "Inntil 7 dager" },
+        { "group": "1–2 personer", "duration": "8–14 dager" },
+        { "group": "3–5 personer", "duration": "Uansett varighet" },
+        { "group": "6+ personer", "duration": "Uansett varighet" }
+      ]
     }
   },
 };
