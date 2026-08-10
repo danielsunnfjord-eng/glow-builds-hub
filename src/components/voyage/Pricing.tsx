@@ -102,8 +102,8 @@ interface CardData {
 
 const CARDS: CardData[] = [
   { key: "card1", nok: 385, features: 4, href: "/catalogue" },
-  { key: "card2", nok: 3000, features: 3, href: CALENDLY_URL, external: true },
-  { key: "card3", nok: 6000, features: 5, href: "/start-your-journey", highlight: true },
+  { key: "card2", nok: 3000, features: 6, href: CALENDLY_URL, external: true },
+  { key: "card3", nok: 6000, features: 4, href: "/start-your-journey", highlight: true },
 ];
 
 const Pricing = () => {

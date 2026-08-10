@@ -795,7 +795,10 @@ export default {
       "description": "Receba orientação especializada e um plano personalizado.",
       "price_label": "A PARTIR DE",
       "features": [
-        "Tudo do Pronto para usar",
+        "Ajuda para reservar hotéis",
+        "Suporte para reservar atividades e experiências",
+        "Reserva de transfers",
+        "Orientação sobre seguro viagem",
         "Roteiro dia a dia personalizado",
         "Consultoria individual"
       ],
@@ -809,7 +812,6 @@ export default {
       "fee_note": "Consultoria gratuita · Taxa de criação*",
       "price_label": "A PARTIR DE",
       "features": [
-        "Tudo da Consultoria",
         "Viagem desenhada do zero",
         "Hospedagens, transfers e atividades reservados",
         "Recomendações feitas para você",
