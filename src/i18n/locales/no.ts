@@ -130,6 +130,7 @@ export default {
     badge: "Reiserådgiver · Fora Travel · IATA-akkreditert",
     title1: "Hvor vil du",
     title2: "reise?",
+    titleSr: "Skreddersydd reiseplanlegging og ferdige reiseopplegg for Norge og Norden",
     subtitle: "Fortell meg din drømmedestinasjon, så skaper jeg en reise skreddersydd for deg — fra fly og hoteller til skjulte perler.",
     cta: "Planlegg Min Reise",
     howItWorks: "Slik Fungerer Det",
