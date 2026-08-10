@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
-import Seo from "@/components/Seo";
 
 interface RouteRow {
   id: string;
@@ -199,13 +198,6 @@ const RouteDetail = () => {
 
   return (
     <div className="min-h-screen bg-voyage-white">
-      <Seo
-        title={`${data.title} — Fjord & Waves Travel`}
-        description={data.summary || "A curated journey from Fjord & Waves Travel."}
-        path={`/routes/${data.slug}`}
-        image={data.hero_image_url ?? undefined}
-        jsonLd={jsonLd}
-      />
       <Navbar />
 
       {/* Hero */}

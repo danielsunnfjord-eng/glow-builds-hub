@@ -3,7 +3,6 @@ import { useLocation } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 
-import Seo from "@/components/Seo";
 
 // Retry a dynamic import once, then hard-reload if the chunk hash is stale
 // (happens after a new deploy when the browser still holds the old index.html).
@@ -48,19 +47,6 @@ const Index = () => {
   }, [hash]);
   return (
     <div>
-      <Seo
-        title={
-          isPt
-            ? "Roteiros de Viagem para Europa | Fjord & Waves"
-            : "Fjord & Waves Travel — Bespoke Travel Designed Around You"
-        }
-        description={
-          isPt
-            ? "Roteiros prontos e viagens sob medida para a Europa, criados por um consultor brasileiro na Europa. Atendimento em português, pagamento em reais."
-            : "Bespoke journeys planned by Daniel Lira Figueiredo, a Fora Travel advisor (IATA accredited). Flights, hotels and hidden-gem experiences tailored to you."
-        }
-        path="/"
-      />
 
       <Navbar />
       <main>

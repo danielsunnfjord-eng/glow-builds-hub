@@ -22,7 +22,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 import {
@@ -399,16 +398,21 @@ const ItineraryShopDetail = () => {
   const showCurrencyToggle = !baseNok && lang === "en";
 
 
+  // Descriptive, language-specific image alt text (scene + place, not a label).
+  const altFor = (suffix?: string) => {
+    const place = data?.destination || title;
+    const dur = data?.duration ? `${data.duration}` : "";
+    const base =
+      lang === "pt"
+        ? `${title} — paisagem de ${place} do roteiro de viagem${dur ? ` de ${dur}` : ""}`
+        : lang === "no"
+          ? `${title} — landskapsbilde fra ${place} i denne reiseruten${dur ? ` på ${dur}` : ""}`
+          : `${title} — ${place} scenery from this ${dur ? `${dur} ` : ""}travel itinerary`;
+    return suffix ? `${base} (${suffix})` : base;
+  };
+
   return (
     <div className="min-h-screen bg-parchment">
-      <Seo
-        title={`${title} — Fjord & Waves Travel`}
-        description={(summary || description || "").slice(0, 160)}
-        path={`/catalogue/${data.slug}`}
-        image={data.hero_image_url || undefined}
-        type="product"
-        jsonLd={productJsonLd}
-      />
       <Navbar />
 
       <main>
@@ -417,7 +421,7 @@ const ItineraryShopDetail = () => {
           {data.hero_image_url && (
             <img
               src={data.hero_image_url}
-              alt={title}
+              alt={altFor()}
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
@@ -729,7 +733,7 @@ const ItineraryShopDetail = () => {
                       <img
                         key={i}
                         src={url}
-                        alt={`${title} ${i + 1}`}
+                        alt={altFor(String(i + 1))}
                         loading="lazy"
                         className="w-full mb-3 rounded-md object-cover break-inside-avoid"
                         style={{

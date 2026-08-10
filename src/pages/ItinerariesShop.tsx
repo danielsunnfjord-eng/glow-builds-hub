@@ -11,7 +11,6 @@ import Navbar from "@/components/voyage/Navbar";
 
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
-import Seo from "@/components/Seo";
 import LanguageSelector from "@/components/voyage/LanguageSelector";
 import { CurrencyToggle } from "@/lib/pricing";
 import { toast } from "sonner";
@@ -215,11 +214,6 @@ const ItinerariesShop = () => {
 
   return (
     <div className="min-h-screen bg-parchment">
-      <Seo
-        title="Curated Journeys — Travel Catalogue · Fjord & Waves Travel"
-        description="Handcrafted, ready-to-travel itineraries from Daniel Lira Figueiredo. Filter by destination, experience and season, and download instantly."
-        path="/catalogue"
-      />
       <Navbar />
 
       {/* HERO */}

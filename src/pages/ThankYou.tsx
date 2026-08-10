@@ -3,7 +3,6 @@ import { Link } from "@/lib/router-compat";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import Seo from "@/components/Seo";
 
 declare global {
   interface Window {
@@ -34,12 +33,6 @@ const ThankYou = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo
-        title="Thank You | Fjord & Waves Travel"
-        description="We have received your travel request and will be in touch shortly."
-        path="/thank-you"
-        noindex
-      />
       <Helmet>
         {/* Google Ads conversion fallback for users without JS-tracking enabled */}
       </Helmet>
