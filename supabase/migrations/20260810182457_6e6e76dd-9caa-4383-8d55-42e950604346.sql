@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.get_catalog_sales_counts() TO anon, authenticated;
