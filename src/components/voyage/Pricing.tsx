@@ -27,6 +27,8 @@ const CARDS: CardData[] = [
   { key: "card3", nok: 6000, features: 4, href: "/start-your-journey", highlight: true },
 ];
 
+const TABLE_ROWS: number[] = [3000, 3650, 4350, 5650];
+
 const Pricing = () => {
   const { t } = useTranslation();
   const { active, rate, setCurrency, available, showPicker } = useActiveCurrency();
