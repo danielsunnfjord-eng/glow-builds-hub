@@ -45,22 +45,44 @@ function useNokRates() {
       return;
     }
     let alive = true;
-    fetch("https://api.frankfurter.app/latest?from=NOK&to=BRL,EUR,USD")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("fx"))))
-      .then((data: { rates?: Rates }) => {
+
+    const fromFrankfurter = async (): Promise<Rates> => {
+      const r = await fetch("https://api.frankfurter.dev/v1/latest?base=NOK&symbols=BRL,EUR,USD");
+      if (!r.ok) throw new Error("fx");
+      const data = (await r.json()) as { rates?: Rates };
+      if (!data?.rates?.["USD"]) throw new Error("fx");
+      return data.rates;
+    };
+
+    const fromErApi = async (): Promise<Rates> => {
+      const r = await fetch("https://open.er-api.com/v6/latest/NOK");
+      if (!r.ok) throw new Error("fx");
+      const data = (await r.json()) as { rates?: Rates };
+      if (!data?.rates?.["USD"]) throw new Error("fx");
+      return { BRL: data.rates["BRL"]!, EUR: data.rates["EUR"]!, USD: data.rates["USD"]! };
+    };
+
+    (async () => {
+      try {
+        let fetched: Rates;
+        try {
+          fetched = await fromFrankfurter();
+        } catch {
+          fetched = await fromErApi();
+        }
         if (!alive) return;
-        if (!data?.rates) throw new Error("fx");
-        const next: Rates = { NOK: 1, ...data.rates };
+        const next: Rates = { NOK: 1, ...fetched };
         setRates(next);
         try {
           window.localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), rates: next }));
         } catch {
           /* ignore */
         }
-      })
-      .catch(() => {
+      } catch {
         if (alive) setFailed(true);
-      });
+      }
+    })();
+
     return () => {
       alive = false;
     };
