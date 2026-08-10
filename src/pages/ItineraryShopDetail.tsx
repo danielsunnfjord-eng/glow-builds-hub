@@ -454,22 +454,30 @@ const ItineraryShopDetail = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href="#buy"
-                  className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-xs bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
-                >
-                  {t("shop.getThis", "Get this itinerary")}
-                  <span className="h-3 md:h-4 w-px bg-ink/30" />
-                  {priceLabel}
-                </a>
-                {baseNok && showFxPicker && (
-                  <CurrencyPicker
-                    value={activeCurrency}
-                    onChange={setCurrency}
-                    available={fxAvailable}
-                    label={t("pricing.currencyLabel", "Currency")}
-                  />
-                )}
+                <div className="inline-flex max-w-full items-center overflow-hidden rounded-xs bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase shadow-lg transition-colors hover:bg-voyage-white">
+                  <a
+                    href="#buy"
+                    className="inline-flex items-center px-5 py-3 md:px-7 md:py-4"
+                  >
+                    {t("shop.getThis", "Get this itinerary")}
+                  </a>
+                  {baseNok && showFxPicker && (
+                    <>
+                      <span className="h-3 md:h-4 w-px shrink-0 bg-ink/30" />
+                      <CurrencyPicker
+                        value={activeCurrency}
+                        onChange={setCurrency}
+                        available={fxAvailable}
+                        label={t("pricing.currencyLabel", "Currency")}
+                        className="[&>select]:border-0 [&>select]:bg-transparent [&>select]:rounded-none [&>select]:py-0 [&>select]:pl-2 [&>select]:pr-7 [&>select]:text-ink"
+                      />
+                    </>
+                  )}
+                  <span className="h-3 md:h-4 w-px shrink-0 bg-ink/30" />
+                  <span className="px-4 py-3 md:px-5 md:py-4 whitespace-nowrap">
+                    {priceLabel}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
