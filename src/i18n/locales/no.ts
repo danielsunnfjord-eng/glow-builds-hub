@@ -773,7 +773,7 @@ export default {
     seoTitle: "Priser og honorar | Fjord & Waves Travel",
     seoDescription: "Tydelige priser for ferdiglagde reiseguider, r\u00e5dgivning \u00e9n-til-\u00e9n og skreddersydde reiser. Live valutakurs i NOK, EUR, USD og BRL.",
     badge: "Priser",
-    title: "Tydelige priser, ingen overraskelser",
+    title: "Tydelige, ærlige priser fra første dag.",
     subtitle: "Prisene våre er helt transparente og strukturert som faste forhåndsgebyrer. Du vil alltid vite den nøyaktige investeringen som kreves før vi starter planleggingsprosessen, slik at uventede kostnader elimineres fullstendig.",
     faqEyebrow: "Greit \u00e5 vite",
     faqHeading: "Sp\u00f8rsm\u00e5l om pris",
