@@ -804,8 +804,8 @@ export default {
   },
   pricing: {
     "eyebrow": "PREÇOS",
-    "heading": "Escolha como você quer viajar conosco",
-    "subtext": "Seja para seguir um roteiro pronto ou pedir que desenhemos sua viagem do zero, cada opção é feita com cuidado e conhecimento local.",
+     "heading": "Convidamos você a escolher seu estilo de viagem preferido.",
+     "subtext": "Seja optando por um de nossos roteiros selecionados ou por uma viagem totalmente personalizada, criada do zero, cada experiência tem como base uma expertise autêntica e um cuidado excepcional.",
     "currencyLabel": "Moeda",
     "card1": {
       "label": "PRONTO PARA USAR",

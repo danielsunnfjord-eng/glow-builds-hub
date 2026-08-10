@@ -802,8 +802,8 @@ export default {
   },
   pricing: {
     "eyebrow": "PRISER",
-    "heading": "Velg hvordan du vil reise med oss",
-    "subtext": "Enten du er fornøyd med et ferdig reiseopplegg eller vil at vi designer reisen din fra bunnen av, er hvert alternativ bygget på omsorg og lokal kunnskap.",
+     "heading": "Vi inviterer deg til å velge din foretrukne reisestil.",
+     "subtext": "Enten du velger en av våre kuraterte reiseruter eller en helt skreddersydd reise designet fra bunnen av, er hver opplevelse forankret i ekte ekspertise og enestående omtanke.",
     "currencyLabel": "Valuta",
     "card1": {
       "label": "FERDIGLAGET",
