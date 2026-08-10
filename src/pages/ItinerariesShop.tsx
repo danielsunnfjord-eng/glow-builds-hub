@@ -397,18 +397,13 @@ const ItinerariesShop = () => {
                         </div>
                       );
                     })()}
-                    <div className="flex items-baseline justify-between border-t border-parchment-3 pt-4 mt-auto">
-                      <div className="flex flex-col">
-                        {formatDuration(trip.duration, t) && (
-                          <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted mb-0.5">
-                            {formatDuration(trip.duration, t)}
-                          </span>
-                        )}
-                        <span className="font-serif text-[1.25rem] font-bold text-ink">
-                          {formatPrice(trip, lang, enPref)}
+                    <div className="flex items-end justify-between border-t border-parchment-3 pt-4 mt-auto">
+                      {formatDuration(trip.duration, t) && (
+                        <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">
+                          {formatDuration(trip.duration, t)}
                         </span>
-                      </div>
-                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xs border border-ink/30 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-ink group-hover:bg-ink group-hover:text-voyage-white transition-colors">
+                      )}
+                      <span className="ml-auto inline-flex items-center gap-1.5 px-4 py-2 rounded-xs border border-ink/30 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-ink group-hover:bg-ink group-hover:text-voyage-white transition-colors">
                         {t("catalogue.viewItinerary")}
                         <ArrowRight className="w-3 h-3" />
                       </span>
