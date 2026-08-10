@@ -771,5 +771,63 @@ export default {
     formTitle: "Questionário de planejamento de viagem",
     formSubtitle: "Alguns detalhes nos ajudam a montar uma proposta com a sua cara.",
   },
+  pricing: {
+    "eyebrow": "PREÇOS",
+    "heading": "Escolha como você quer viajar conosco",
+    "subtext": "Seja para seguir um roteiro pronto ou pedir que desenhemos sua viagem do zero, cada opção é feita com cuidado e conhecimento local.",
+    "currencyLabel": "Moeda",
+    "card1": {
+      "label": "PRONTO PARA USAR",
+      "title": "Roteiro da Noruega",
+      "description": "Baixe um roteiro completo em PDF com suporte para reservas.",
+      "price_label": "A PARTIR DE",
+      "features": [
+        "Ajuda para reservar hotéis",
+        "Suporte para reservar atividades e experiências",
+        "Reserva de transfers",
+        "Orientação sobre seguro viagem"
+      ],
+      "button": "VER ROTEIROS"
+    },
+    "card2": {
+      "label": "CONSULTORIA",
+      "title": "Consultoria individual",
+      "description": "Receba orientação especializada e um plano personalizado.",
+      "price_label": "A PARTIR DE",
+      "features": [
+        "Tudo do Pronto para usar",
+        "Roteiro dia a dia personalizado",
+        "Consultoria individual"
+      ],
+      "button": "AGENDAR CONSULTORIA"
+    },
+    "card3": {
+      "badge": "MAIS POPULAR",
+      "label": "SOB MEDIDA",
+      "title": "Viagem personalizada",
+      "description": "Nós desenhamos, planejamos e reservamos toda a sua viagem.",
+      "fee_note": "Consultoria gratuita · Taxa de criação*",
+      "price_label": "A PARTIR DE",
+      "features": [
+        "Tudo da Consultoria",
+        "Viagem desenhada do zero",
+        "Hospedagens, transfers e atividades reservados",
+        "Recomendações feitas para você",
+        "Suporte 24/7 durante a viagem"
+      ],
+      "button": "SOLICITAR ORÇAMENTO"
+    },
+    "explainer": {
+      "heading": "Por que cobramos uma taxa para a Viagem personalizada?",
+      "body": "Uma viagem totalmente sob medida exige muitas horas de pesquisa, coordenação de reservas e suporte 24/7 durante a viagem. A taxa nos permite dedicar a cada viagem o cuidado que ela merece — os planos Pronto para usar e Consultoria continuam sem taxas além do preço informado.",
+      "good_news_label": "A BOA NOTÍCIA",
+      "good_news": [
+        "Sua consultoria é totalmente gratuita",
+        "Você só paga a taxa se quiser que desenhemos sua viagem do zero",
+        "O valor total da taxa é descontado da sua reserva final",
+        "Sem taxas de planejamento ocultas"
+      ]
+    }
+  },
 };
 

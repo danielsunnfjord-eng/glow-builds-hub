@@ -769,5 +769,63 @@ export default {
     formTitle: "Spørreskjema for reiseplanlegging",
     formSubtitle: "Noen få detaljer hjelper oss å lage et forslag som føles laget for deg.",
   },
+  pricing: {
+    "eyebrow": "PRISER",
+    "heading": "Velg hvordan du vil reise med oss",
+    "subtext": "Enten du er fornøyd med et ferdig reiseopplegg eller vil at vi designer reisen din fra bunnen av, er hvert alternativ bygget på omsorg og lokal kunnskap.",
+    "currencyLabel": "Valuta",
+    "card1": {
+      "label": "FERDIGLAGET",
+      "title": "Norge-reiserute",
+      "description": "Last ned en komplett PDF-reiserute med bookingstøtte.",
+      "price_label": "FRA",
+      "features": [
+        "Hjelp med å bestille hotell",
+        "Støtte til å bestille aktiviteter og opplevelser",
+        "Bestilling av transport",
+        "Veiledning om reiseforsikring"
+      ],
+      "button": "SE REISERUTER"
+    },
+    "card2": {
+      "label": "KONSULTASJON",
+      "title": "En-til-en-konsultasjon",
+      "description": "Få ekspertråd og en skreddersydd plan.",
+      "price_label": "FRA",
+      "features": [
+        "Alt i Ferdiglaget",
+        "Skreddersydd dag-for-dag reiserute",
+        "En-til-en konsultasjon"
+      ],
+      "button": "BOOK EN KONSULTASJON"
+    },
+    "card3": {
+      "badge": "MEST POPULÆR",
+      "label": "SKREDDERSYDD",
+      "title": "Skreddersydd reise",
+      "description": "Vi designer, planlegger og booker hele reisen din.",
+      "fee_note": "Gratis konsultasjon · Designavgift*",
+      "price_label": "FRA",
+      "features": [
+        "Alt i Konsultasjon",
+        "Reise designet fra bunnen av",
+        "Opphold, transport og aktiviteter booket",
+        "Anbefalinger bygget rundt deg",
+        "24/7 støtte under reisen"
+      ],
+      "button": "BE OM ET TILBUD"
+    },
+    "explainer": {
+      "heading": "Hvorfor tar vi en avgift for Skreddersydd reise?",
+      "body": "En helt skreddersydd reise krever mange timer med research, bookingkoordinering og 24/7 støtte under reisen. Avgiften lar oss gi hver skreddersydde reise den omsorgen den fortjener — Ferdiglaget og Konsultasjon forblir avgiftsfrie utover oppgitt pris.",
+      "good_news_label": "DE GODE NYHETENE",
+      "good_news": [
+        "Konsultasjonen din er helt gratis",
+        "Du betaler kun avgiften hvis du ønsker at vi designer reisen din fra bunnen av",
+        "Hele avgiften trekkes fra din endelige bestilling",
+        "Ingen skjulte planleggingsavgifter"
+      ]
+    }
+  },
 };
 
