@@ -817,8 +817,8 @@ export default {
   },
   pricing: {
     "eyebrow": "PRICING",
-    "heading": "Choose how you'd like to travel with us",
-    "subtext": "Whether you're happy with a ready-made itinerary or want us to design your journey from scratch, every option is built around care and local knowledge.",
+     "heading": "We invite you to select your preferred style of travel.",
+     "subtext": "Whether you choose one of our curated itineraries or opt for a completely bespoke journey designed from scratch, every experience is rooted in authentic expertise and exceptional care.",
     "currencyLabel": "Currency",
     "card1": {
       "label": "READY-MADE",
