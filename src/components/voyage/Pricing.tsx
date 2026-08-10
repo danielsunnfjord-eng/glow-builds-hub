@@ -108,25 +108,25 @@ const Pricing = () => {
                     </p>
                   )}
 
-                  {card.key !== "card3" && (
-                    <>
-                      <div className="mb-1 flex items-end justify-between gap-3 flex-wrap">
-                        <div className="min-w-0">
+                  <>
+                    <div className="mb-1 flex items-end justify-between gap-3 flex-wrap">
+                      <div className="min-w-0">
+                        {card.key !== "card3" && (
                           <div className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted mb-1">
                             {t(`${base}.price_label`)}
                           </div>
-                          <div className="font-serif text-[2rem] font-bold text-ink leading-none">
-                            {format(card.nok)}
-                          </div>
+                        )}
+                        <div className="font-serif text-[2rem] font-bold text-ink leading-none">
+                          {format(card.nok)}
                         </div>
-                        {showPicker && <CurrencySelect />}
                       </div>
-                      {rateNote && (
-                        <p className="text-[0.68rem] text-voyage-muted mb-6">{rateNote}</p>
-                      )}
-                      {!rateNote && <div className="mb-6" />}
-                    </>
-                  )}
+                      {showPicker && <CurrencySelect />}
+                    </div>
+                    {rateNote && (
+                      <p className="text-[0.68rem] text-voyage-muted mb-6">{rateNote}</p>
+                    )}
+                    {!rateNote && <div className="mb-6" />}
+                  </>
 
                   <ul className="space-y-2.5 mb-8 flex-1">
                     {features.map((f) => (
