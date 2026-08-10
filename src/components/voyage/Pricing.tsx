@@ -1,95 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import {
+  CurrencyPicker,
+  formatFromNok,
+  useActiveCurrency,
+  type Code,
+} from "@/lib/fx";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
-
-type Code = "NOK" | "BRL" | "EUR" | "USD";
-
-const CURRENCIES: { code: Code; flag: string; locale: string }[] = [
-  { code: "NOK", flag: "🇳🇴", locale: "nb-NO" },
-  { code: "BRL", flag: "🇧🇷", locale: "pt-BR" },
-  { code: "EUR", flag: "🇪🇺", locale: "de-DE" },
-  { code: "USD", flag: "🇺🇸", locale: "en-US" },
-];
-
-const CACHE_KEY = "fw_fx_nok_rates";
-const TTL_MS = 24 * 60 * 60 * 1000;
-
-type Rates = Record<string, number>;
-
-const readCache = (): Rates | null => {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { at: number; rates: Rates };
-    if (!parsed?.rates || Date.now() - parsed.at > TTL_MS) return null;
-    return parsed.rates;
-  } catch {
-    return null;
-  }
-};
-
-/** Live FX rates with NOK as base. Returns null while loading, {} on failure. */
-function useNokRates() {
-  const [rates, setRates] = useState<Rates | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    const cached = readCache();
-    if (cached) {
-      setRates(cached);
-      return;
-    }
-    let alive = true;
-
-    const fromFrankfurter = async (): Promise<Rates> => {
-      const r = await fetch("https://api.frankfurter.dev/v1/latest?base=NOK&symbols=BRL,EUR,USD");
-      if (!r.ok) throw new Error("fx");
-      const data = (await r.json()) as { rates?: Rates };
-      if (!data?.rates?.["USD"]) throw new Error("fx");
-      return data.rates;
-    };
-
-    const fromErApi = async (): Promise<Rates> => {
-      const r = await fetch("https://open.er-api.com/v6/latest/NOK");
-      if (!r.ok) throw new Error("fx");
-      const data = (await r.json()) as { rates?: Rates };
-      if (!data?.rates?.["USD"]) throw new Error("fx");
-      return { BRL: data.rates["BRL"]!, EUR: data.rates["EUR"]!, USD: data.rates["USD"]! };
-    };
-
-    (async () => {
-      try {
-        let fetched: Rates;
-        try {
-          fetched = await fromFrankfurter();
-        } catch {
-          fetched = await fromErApi();
-        }
-        if (!alive) return;
-        const next: Rates = { NOK: 1, ...fetched };
-        setRates(next);
-        try {
-          window.localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), rates: next }));
-        } catch {
-          /* ignore */
-        }
-      } catch {
-        if (alive) setFailed(true);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  return { rates: rates ?? { NOK: 1 }, ready: rates !== null, failed };
-}
 
 interface CardData {
   key: "card1" | "card2" | "card3";
@@ -108,44 +29,24 @@ const CARDS: CardData[] = [
 
 const Pricing = () => {
   const { t } = useTranslation();
-  const { rates, failed } = useNokRates();
-  const [currency, setCurrency] = useState<Code>("NOK");
-
-  const showPicker = !failed;
-  const active = currency === "NOK" || rates[currency] ? currency : "NOK";
-  const meta = CURRENCIES.find((c) => c.code === active)!;
-  const rate = active === "NOK" ? 1 : Number(rates[active] ?? 1);
+  const { active, rate, setCurrency, available, showPicker } = useActiveCurrency();
 
   const format = useMemo(
-    () => (nok: number) =>
-      new Intl.NumberFormat(meta.locale, {
-        style: "currency",
-        currency: active,
-        maximumFractionDigits: active === "NOK" ? 0 : 2,
-      }).format(nok * rate),
-    [meta.locale, active, rate],
+    () => (nok: number) => formatFromNok(nok, active, rate),
+    [active, rate],
   );
 
-  const rateNote =
-    active === "NOK" ? null : `1 NOK = ${rate.toFixed(4)} ${active}`;
+  const rateNote = active === "NOK" ? null : `1 NOK = ${rate.toFixed(4)} ${active}`;
 
-  const CurrencyPicker = () => (
-    <div className="relative inline-flex items-center">
-      <select
-        value={active}
-        onChange={(e) => setCurrency(e.target.value as Code)}
-        aria-label={t("pricing.currencyLabel")}
-        className="appearance-none bg-parchment border border-ink/15 rounded-xs pl-3 pr-8 py-1.5 text-[0.75rem] font-semibold tracking-[0.08em] text-ink cursor-pointer hover:border-ink/35 transition-colors"
-      >
-        {CURRENCIES.filter((c) => c.code === "NOK" || rates[c.code]).map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.flag} {c.code}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-voyage-muted" />
-    </div>
+  const CurrencySelect = () => (
+    <CurrencyPicker
+      value={active}
+      onChange={(c: Code) => setCurrency(c)}
+      available={available}
+      label={t("pricing.currencyLabel")}
+    />
   );
+
 
   return (
     <section id="pricing" className="bg-parchment py-24 px-6 md:px-16">
@@ -214,7 +115,7 @@ const Pricing = () => {
                         {format(card.nok)}
                       </div>
                     </div>
-                    {showPicker && <CurrencyPicker />}
+                    {showPicker && <CurrencySelect />}
                   </div>
                   {rateNote && (
                     <p className="text-[0.68rem] text-voyage-muted mb-6">{rateNote}</p>

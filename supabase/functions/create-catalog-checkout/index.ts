@@ -17,6 +17,10 @@ interface Body {
   language?: string;
   currency?: string;
   environment?: "sandbox" | "live";
+  /** Dynamic NOK-based pricing (new flow) */
+  base_nok?: number;
+  fx_rate?: number;
+  amount_minor?: number;
 }
 
 const ALLOWED_CURRENCIES = ["usd", "eur", "brl", "nok"] as const;
@@ -27,6 +31,32 @@ const PRICE_COLUMN: Record<CurrencyCode, "price_usd" | "price_eur" | "price_brl"
   brl: "price_brl",
   nok: "price_nok",
 };
+
+const MINOR_PRECISION: Record<CurrencyCode, number> = { usd: 2, eur: 2, brl: 2, nok: 0 };
+
+/** Live NOK-base rates, server-side, used to sanity-check the client amount. */
+async function fetchNokRates(): Promise<Record<string, number> | null> {
+  try {
+    const r = await fetch(
+      "https://api.frankfurter.dev/v1/latest?base=NOK&symbols=BRL,EUR,USD",
+    );
+    if (!r.ok) throw new Error("fx");
+    const data = (await r.json()) as { rates?: Record<string, number> };
+    if (!data?.rates?.["USD"]) throw new Error("fx");
+    return { NOK: 1, ...data.rates };
+  } catch {
+    try {
+      const r = await fetch("https://open.er-api.com/v6/latest/NOK");
+      if (!r.ok) throw new Error("fx");
+      const data = (await r.json()) as { rates?: Record<string, number> };
+      if (!data?.rates?.["USD"]) throw new Error("fx");
+      return { NOK: 1, BRL: data.rates["BRL"]!, EUR: data.rates["EUR"]!, USD: data.rates["USD"]! };
+    } catch {
+      return null;
+    }
+  }
+}
+
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -79,17 +109,64 @@ Deno.serve(async (req) => {
     if (currency !== (requested as CurrencyCode)) {
       console.warn(`Invalid currency '${requested}', falling back to EUR`);
     }
-    let amount = Number(itin[PRICE_COLUMN[currency]] ?? 0);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      console.warn(
-        `Missing/invalid price for currency '${currency}' on itinerary ${itin.id}; falling back to EUR`,
-      );
-      currency = "eur";
-      amount = Number(itin.price_eur ?? 0);
+
+    const baseNok = Number(itin.price_nok ?? 0);
+    const useDynamic = Number.isFinite(baseNok) && baseNok > 0 && body.base_nok !== undefined;
+
+    let amount = 0;
+    let fxRateUsed = 1;
+
+    if (useDynamic) {
+      // NOK-based dynamic pricing: recompute server-side with our own live
+      // rate and only accept the client figure when it matches closely.
+      const rates = currency === "nok" ? { NOK: 1 } : await fetchNokRates();
+      if (!rates || (currency !== "nok" && !rates[currency.toUpperCase()])) {
+        // FX unavailable → never guess: charge in NOK.
+        currency = "nok";
+      }
+      fxRateUsed =
+        currency === "nok" ? 1 : Number(rates![currency.toUpperCase()]);
+      const precision = MINOR_PRECISION[currency];
+      const factor = Math.pow(10, precision);
+      const serverAmount = Math.round(baseNok * fxRateUsed * factor) / factor;
+
+      const clientAmount =
+        typeof body.amount_minor === "number" && body.amount_minor > 0
+          ? body.amount_minor / 100
+          : null;
+
+      if (
+        clientAmount !== null &&
+        Math.abs(clientAmount - serverAmount) / serverAmount <= 0.05
+      ) {
+        // Honour exactly what the customer saw on the page.
+        amount = clientAmount;
+        if (typeof body.fx_rate === "number" && body.fx_rate > 0) {
+          fxRateUsed = body.fx_rate;
+        }
+      } else {
+        if (clientAmount !== null) {
+          console.warn(
+            `Client amount ${clientAmount} ${currency} deviates from server ${serverAmount}; using server amount`,
+          );
+        }
+        amount = serverAmount;
+      }
+    } else {
+      amount = Number(itin[PRICE_COLUMN[currency]] ?? 0);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        console.warn(
+          `Missing/invalid price for currency '${currency}' on itinerary ${itin.id}; falling back to EUR`,
+        );
+        currency = "eur";
+        amount = Number(itin.price_eur ?? 0);
+      }
     }
+
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({ error: "Itinerary has no valid price" }, 500);
     }
+
 
     const { data: purchase, error: purchaseErr } = await supabase
       .from("catalog_purchases")
@@ -146,6 +223,8 @@ Deno.serve(async (req) => {
       success_url: successUrl,
       cancel_url: cancelUrl,
       customer_email: body.email,
+      // Our own locked FX rate decides the charge — never Stripe's conversion.
+      adaptive_pricing: { enabled: false },
       line_items: [
         {
           price_data: {
@@ -160,7 +239,14 @@ Deno.serve(async (req) => {
       metadata: {
         purchase_id: purchase.id,
         itinerary_id: itin.id,
+        itinerary_title: itin.title_en ?? "",
+        itinerary_slug: itin.slug,
+        base_price_nok: String(baseNok || ""),
+        charged_currency: currency.toUpperCase(),
+        charged_amount: String(amount),
+        fx_rate_nok: String(fxRateUsed),
         download_token: purchase.download_token,
+
       },
     });
 

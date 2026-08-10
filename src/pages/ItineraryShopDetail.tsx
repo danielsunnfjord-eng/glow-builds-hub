@@ -31,6 +31,14 @@ import {
   formatPrice,
   usePreferredCurrency,
 } from "@/lib/pricing";
+import {
+  CurrencyPicker,
+  convertFromNok,
+  formatFromNok,
+  toMinorUnits,
+  useActiveCurrency,
+  type Code,
+} from "@/lib/fx";
 import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
 
 // --- Day-by-day markdown parser ---------------------------------------------
@@ -146,6 +154,14 @@ const ItineraryShopDetail = () => {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { enPref } = usePreferredCurrency();
+  const {
+    active: activeCurrency,
+    rate: fxRate,
+    setCurrency,
+    available: fxAvailable,
+    showPicker: showFxPicker,
+  } = useActiveCurrency();
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["catalog-itinerary", slug],
@@ -233,12 +249,29 @@ const ItineraryShopDetail = () => {
     }
   }, [slug]);
 
+  // NOK is the single source of truth; everything else is converted with the
+  // session-locked FX rate, and the same numbers are sent to Stripe.
+  const rawNok = Number(data?.price_nok ?? 0);
+  const baseNok = Number.isFinite(rawNok) && rawNok > 0 ? rawNok : null;
+
   const handleBuy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!data) return;
     setSubmitting(true);
     try {
       const { getPaymentsEnvironment } = await import("@/lib/payments-env");
+      const dynamic = baseNok
+        ? {
+            base_nok: baseNok,
+            currency: activeCurrency.toLowerCase(),
+            fx_rate: activeCurrency === "NOK" ? 1 : fxRate,
+            amount_minor: toMinorUnits(
+              convertFromNok(baseNok, activeCurrency, activeCurrency === "NOK" ? 1 : fxRate),
+              activeCurrency,
+            ),
+          }
+        : { currency: currencyForLang(lang, enPref).toLowerCase() };
+
       const { data: res, error } = await supabase.functions.invoke(
         "create-catalog-checkout",
         {
@@ -247,11 +280,12 @@ const ItineraryShopDetail = () => {
             email,
             origin: window.location.origin,
             language: lang,
-            currency: currencyForLang(lang, enPref).toLowerCase(),
             environment: getPaymentsEnvironment(),
+            ...dynamic,
           },
         },
       );
+
       if (error || !res?.url) throw error || new Error("No URL");
       window.location.href = res.url;
     } catch (err) {
@@ -359,8 +393,11 @@ const ItineraryShopDetail = () => {
     },
   };
 
-  const priceLabel = formatPrice(data, lang, enPref);
-  const showCurrencyToggle = lang === "en";
+  const priceLabel = baseNok
+    ? formatFromNok(baseNok, activeCurrency, fxRate)
+    : formatPrice(data, lang, enPref);
+  const showCurrencyToggle = !baseNok && lang === "en";
+
 
   return (
     <div className="min-h-screen bg-parchment">
@@ -725,7 +762,16 @@ const ItineraryShopDetail = () => {
                     <p className="text-[0.72rem] text-voyage-muted">
                       {t("shop.instantDownload")}
                     </p>
-                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
+                    {baseNok
+                      ? showFxPicker && (
+                          <CurrencyPicker
+                            value={activeCurrency}
+                            onChange={(c: Code) => setCurrency(c)}
+                            available={fxAvailable}
+                            label={t("pricing.currencyLabel", "Currency")}
+                          />
+                        )
+                      : showCurrencyToggle && <CurrencyToggle variant="light" />}
                   </div>
 
                   {canceled && (
