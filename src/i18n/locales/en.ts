@@ -675,6 +675,8 @@ export default {
     description: "Each one offers a starting point for planning your own trip — a sense of pace, route, and rhythm to build from. Please note that details on the ground may shift over time, so treat these itineraries as a foundation rather than a fixed plan, and always check current conditions before booking.",
     cardLanguage: "Language",
     cardCreated: "Created",
+    cardViews: "views",
+    cardDownloads: "downloads",
     language: { en: "English", pt: "Portuguese", no: "Norwegian" },
     viewItinerary: "View Itinerary",
     empty: "New itineraries coming soon. In the meantime, let me design one just for you.",

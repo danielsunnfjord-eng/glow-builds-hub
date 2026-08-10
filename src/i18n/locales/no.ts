@@ -660,6 +660,8 @@ export default {
     description: "Hver enkelt gir et utgangspunkt for å planlegge din egen tur — en følelse av tempo, rute og rytme å bygge videre på. Merk at detaljer på reisen kan endre seg over tid, så behandle disse reiserutene som et fundament snarere enn en fastlagt plan, og sjekk alltid gjeldende forhold før du booker.",
     cardLanguage: "Språk",
     cardCreated: "Opprettet",
+    cardViews: "visninger",
+    cardDownloads: "nedlastinger",
     language: { en: "Engelsk", pt: "Portugisisk", no: "Norsk" },
     viewItinerary: "Se Reiserute",
     empty: "Nye reiseruter kommer snart. I mellomtiden kan jeg designe en bare for deg.",

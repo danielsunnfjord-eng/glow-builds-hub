@@ -662,6 +662,8 @@ export default {
     description: "Cada um oferece um ponto de partida para planejar sua própria viagem — um sentido de ritmo, rota e cadência a partir do qual construir. Observe que detalhes no destino podem mudar com o tempo, então trate estes roteiros como uma base, não como um plano fixo, e sempre verifique as condições atuais antes de reservar.",
     cardLanguage: "Idioma",
     cardCreated: "Criado em",
+    cardViews: "visualizações",
+    cardDownloads: "downloads",
     language: { en: "Inglês", pt: "Português", no: "Norueguês" },
     viewItinerary: "Ver Roteiro",
     empty: "Novos roteiros em breve. Enquanto isso, posso criar um só para você.",
