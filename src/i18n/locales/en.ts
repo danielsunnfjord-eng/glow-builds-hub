@@ -133,6 +133,7 @@ export default {
     title1: "Where do you",
     title2: "want to go?",
     subtitle: "Tell me your dream destination and I'll craft a journey tailored entirely to you — from flights and hotels to hidden-gem experiences.",
+    titleSr: "Bespoke travel planning and ready-made itineraries for Norway and the Nordics",
     cta: "Plan My Trip",
     howItWorks: "How It Works",
     scroll: "Scroll",

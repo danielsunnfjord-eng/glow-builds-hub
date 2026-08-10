@@ -21,9 +21,9 @@ const DualPathCards = () => {
             <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-4">
               {t("home.dual.eyebrow")}
             </div>
-            <h1 className="font-serif text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-tight text-ink mb-4">
+            <h2 className="font-serif text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-tight text-ink mb-4">
               {t("home.dual.title")}
-            </h1>
+            </h2>
             <p className="text-[0.95rem] text-voyage-muted leading-relaxed">
               {t("home.dual.subtitle")}
             </p>

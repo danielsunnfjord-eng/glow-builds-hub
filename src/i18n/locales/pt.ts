@@ -130,6 +130,7 @@ export default {
     badge: "Consultor de Viagens · Fora Travel · Credenciado IATA",
     title1: "Para onde você",
     title2: "quer ir?",
+    titleSr: "Planejamento de viagens sob medida e roteiros prontos para a Noruega e a Escandinávia",
     subtitle: "Conte-me seu destino dos sonhos e eu criarei uma viagem feita sob medida para você — de voos e hotéis a experiências únicas.",
     cta: "Planeje Sua Viagem",
     howItWorks: "Como Funciona",

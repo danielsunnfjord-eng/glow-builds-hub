@@ -37,6 +37,7 @@ const Hero = () => {
         <h1 className="font-serif text-[clamp(3.2rem,7vw,6rem)] font-bold leading-[0.95] text-voyage-white mb-8 tracking-tight animate-fade-up-1">
           {t("hero.title1")}
           <em className="block italic font-normal text-gold-2">{t("hero.title2")}</em>
+          <span className="sr-only"> — {t("hero.titleSr")}</span>
         </h1>
         <p className="text-base font-light text-voyage-white/60 max-w-[460px] leading-relaxed mb-12 animate-fade-up-2">
           {t("hero.subtitle")}
