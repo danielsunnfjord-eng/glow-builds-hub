@@ -791,7 +791,7 @@ export default {
     "currencyLabel": "Currency",
     "card1": {
       "label": "READY-MADE",
-      "title": "Norway Itinerary",
+      "title": "Pre-made travel guides",
       "description": "Download a complete PDF itinerary with booking support.",
       "price_label": "FROM",
       "features": [

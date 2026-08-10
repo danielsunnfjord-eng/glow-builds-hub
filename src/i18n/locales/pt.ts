@@ -778,7 +778,7 @@ export default {
     "currencyLabel": "Moeda",
     "card1": {
       "label": "PRONTO PARA USAR",
-      "title": "Roteiro da Noruega",
+      "title": "Guias de viagem prontos",
       "description": "Baixe um roteiro completo em PDF com suporte para reservas.",
       "price_label": "A PARTIR DE",
       "features": [
