@@ -29,7 +29,6 @@ const MeetDaniel = lazyWithRetry(() => import("@/components/voyage/MeetDaniel"))
 const DualPathCards = lazyWithRetry(() => import("@/components/voyage/DualPathCards"));
 const FeaturedItineraries = lazyWithRetry(() => import("@/components/voyage/FeaturedItineraries"));
 const WhyAdvisor = lazyWithRetry(() => import("@/components/voyage/WhyAdvisor"));
-const Pricing = lazyWithRetry(() => import("@/components/voyage/Pricing"));
 
 const Reviews = lazyWithRetry(() => import("@/components/voyage/Reviews"));
 const PlanMyTrip = lazyWithRetry(() => import("@/components/voyage/PlanMyTrip"));
@@ -68,7 +67,6 @@ const Index = () => {
         <Suspense fallback={null}>
           <DualPathCards />
           <FeaturedItineraries />
-          <Pricing />
           <MeetDaniel />
           <WhyAdvisor />
           <Reviews />
