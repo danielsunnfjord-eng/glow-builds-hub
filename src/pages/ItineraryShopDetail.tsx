@@ -249,12 +249,29 @@ const ItineraryShopDetail = () => {
     }
   }, [slug]);
 
+  // NOK is the single source of truth; everything else is converted with the
+  // session-locked FX rate, and the same numbers are sent to Stripe.
+  const rawNok = Number(data?.price_nok ?? 0);
+  const baseNok = Number.isFinite(rawNok) && rawNok > 0 ? rawNok : null;
+
   const handleBuy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!data) return;
     setSubmitting(true);
     try {
       const { getPaymentsEnvironment } = await import("@/lib/payments-env");
+      const dynamic = baseNok
+        ? {
+            base_nok: baseNok,
+            currency: activeCurrency.toLowerCase(),
+            fx_rate: activeCurrency === "NOK" ? 1 : fxRate,
+            amount_minor: toMinorUnits(
+              convertFromNok(baseNok, activeCurrency, activeCurrency === "NOK" ? 1 : fxRate),
+              activeCurrency,
+            ),
+          }
+        : { currency: currencyForLang(lang, enPref).toLowerCase() };
+
       const { data: res, error } = await supabase.functions.invoke(
         "create-catalog-checkout",
         {
@@ -263,11 +280,12 @@ const ItineraryShopDetail = () => {
             email,
             origin: window.location.origin,
             language: lang,
-            currency: currencyForLang(lang, enPref).toLowerCase(),
             environment: getPaymentsEnvironment(),
+            ...dynamic,
           },
         },
       );
+
       if (error || !res?.url) throw error || new Error("No URL");
       window.location.href = res.url;
     } catch (err) {
