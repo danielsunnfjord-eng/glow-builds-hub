@@ -788,7 +788,7 @@ export default {
     seoTitle: "Pricing & Fees | Fjord & Waves Travel",
     seoDescription: "Clear pricing for pre-made travel guides, one-to-one consultations and fully bespoke journeys. Live currency conversion in NOK, EUR, USD and BRL.",
     badge: "Pricing",
-    title: "Transparent pricing, no surprises",
+    title: "Clear, honest pricing from day one.",
     subtitle: "Our pricing is fully transparent and structured as flat, upfront fees. You will always know the exact investment required before we begin the planning process, completely eliminating unexpected costs.",
     faqEyebrow: "Good to know",
     faqHeading: "Questions about pricing",
