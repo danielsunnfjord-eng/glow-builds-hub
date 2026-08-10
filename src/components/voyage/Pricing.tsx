@@ -110,9 +110,11 @@ const Pricing = () => {
 
                   <div className="mb-1 flex items-end justify-between gap-3 flex-wrap">
                     <div className="min-w-0">
-                      <div className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted mb-1">
-                        {t(`${base}.price_label`)}
-                      </div>
+                      {card.key !== "card3" && (
+                        <div className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted mb-1">
+                          {t(`${base}.price_label`)}
+                        </div>
+                      )}
                       <div className="font-serif text-[2rem] font-bold text-ink leading-none">
                         {format(card.nok)}
                       </div>
