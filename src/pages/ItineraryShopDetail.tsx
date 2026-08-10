@@ -453,14 +453,24 @@ const ItineraryShopDetail = () => {
                 )}
               </div>
 
-              <a
-                href="#buy"
-                className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-xs bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
-              >
-                {t("shop.getThis", "Get this itinerary")}
-                <span className="h-3 md:h-4 w-px bg-ink/30" />
-                {priceLabel}
-              </a>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="#buy"
+                  className="inline-flex items-center gap-2 md:gap-3 px-5 md:px-7 py-3 md:py-4 rounded-xs bg-gold text-ink text-[0.7rem] md:text-[0.78rem] font-semibold tracking-[0.14em] md:tracking-[0.16em] uppercase hover:bg-voyage-white transition-colors shadow-lg"
+                >
+                  {t("shop.getThis", "Get this itinerary")}
+                  <span className="h-3 md:h-4 w-px bg-ink/30" />
+                  {priceLabel}
+                </a>
+                {baseNok && showFxPicker && (
+                  <CurrencyPicker
+                    value={activeCurrency}
+                    onChange={setCurrency}
+                    available={fxAvailable}
+                    label={t("pricing.currencyLabel", "Currency")}
+                  />
+                )}
+              </div>
             </div>
           </div>
           {data.hero_image_credit && (
