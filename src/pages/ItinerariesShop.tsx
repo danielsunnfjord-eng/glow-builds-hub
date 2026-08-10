@@ -89,7 +89,7 @@ const ItinerariesShop = () => {
       let query = supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, primary_language",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language",
         )
         .eq("is_published", true);
       if (lang === "pt") query = query.eq("primary_language", "pt");
@@ -102,6 +102,23 @@ const ItinerariesShop = () => {
       return data as CatalogItem[];
     },
   });
+
+  const { data: salesCounts } = useQuery({
+    queryKey: ["catalog-sales-counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_catalog_sales_counts");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((row: { itinerary_id: string; sales_count: number }) => {
+        map[row.itinerary_id] = Number(row.sales_count) || 0;
+      });
+      return map;
+    },
+  });
+
+  const numberLocale = lang === "pt" ? "pt-BR" : lang === "no" ? "nb-NO" : "en-GB";
+  const formatCount = (n: number) => new Intl.NumberFormat(numberLocale).format(n);
+
 
 
   // Filter state
