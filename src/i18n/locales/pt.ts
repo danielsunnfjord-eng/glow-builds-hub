@@ -775,7 +775,7 @@ export default {
     seoTitle: "Pre\u00e7os e taxas | Fjord & Waves Travel",
     seoDescription: "Pre\u00e7os claros para guias de viagem prontos, consultorias individuais e viagens sob medida. Convers\u00e3o em tempo real em BRL, EUR, USD e NOK.",
     badge: "Pre\u00e7os",
-    title: "Pre\u00e7os transparentes, sem surpresas",
+    title: "Preços claros e honestos desde o primeiro dia.",
     subtitle: "Nossos preços são totalmente transparentes e estruturados como taxas fixas e antecipadas. Você sempre saberá exatamente qual investimento é necessário antes de iniciarmos o processo de planejamento, eliminando completamente custos inesperados.",
     faqEyebrow: "Bom saber",
     faqHeading: "D\u00favidas sobre pre\u00e7os",
