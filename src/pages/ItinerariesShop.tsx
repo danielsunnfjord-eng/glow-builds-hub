@@ -13,7 +13,7 @@ import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
 import Seo from "@/components/Seo";
 import LanguageSelector from "@/components/voyage/LanguageSelector";
-import { CurrencyToggle, formatPrice, usePreferredCurrency } from "@/lib/pricing";
+import { CurrencyToggle } from "@/lib/pricing";
 import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
 
