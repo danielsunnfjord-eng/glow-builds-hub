@@ -16,6 +16,7 @@ import { Route as Char123LocaleChar125AdminRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125LegalRouteImport } from './routes/{-$locale}/legal'
 import { Route as Char123LocaleChar125LoginRouteImport } from './routes/{-$locale}/login'
 import { Route as Char123LocaleChar125PlanMyTripRouteImport } from './routes/{-$locale}/plan-my-trip'
+import { Route as Char123LocaleChar125PricingRouteImport } from './routes/{-$locale}/pricing'
 import { Route as Char123LocaleChar125PrivacyRouteImport } from './routes/{-$locale}/privacy'
 import { Route as Char123LocaleChar125ResetPasswordRouteImport } from './routes/{-$locale}/reset-password'
 import { Route as Char123LocaleChar125StartYourJourneyRouteImport } from './routes/{-$locale}/start-your-journey'
@@ -72,6 +73,12 @@ const Char123LocaleChar125PlanMyTripRoute =
   Char123LocaleChar125PlanMyTripRouteImport.update({
     id: '/plan-my-trip',
     path: '/plan-my-trip',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125PricingRoute =
+  Char123LocaleChar125PricingRouteImport.update({
+    id: '/pricing',
+    path: '/pricing',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
 const Char123LocaleChar125PrivacyRoute =
@@ -178,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
+  '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
+  '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
@@ -228,6 +237,7 @@ export interface FileRoutesById {
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
+  '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
+    | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/start-your-journey'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
+    | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/start-your-journey'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
+    | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/start-your-journey'
@@ -376,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/plan-my-trip'
       fullPath: '/{-$locale}/plan-my-trip'
       preLoaderRoute: typeof Char123LocaleChar125PlanMyTripRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/pricing': {
+      id: '/{-$locale}/pricing'
+      path: '/pricing'
+      fullPath: '/{-$locale}/pricing'
+      preLoaderRoute: typeof Char123LocaleChar125PricingRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
     '/{-$locale}/privacy': {
@@ -499,6 +519,7 @@ interface Char123LocaleChar125RouteChildren {
   Char123LocaleChar125LegalRoute: typeof Char123LocaleChar125LegalRoute
   Char123LocaleChar125LoginRoute: typeof Char123LocaleChar125LoginRoute
   Char123LocaleChar125PlanMyTripRoute: typeof Char123LocaleChar125PlanMyTripRoute
+  Char123LocaleChar125PricingRoute: typeof Char123LocaleChar125PricingRoute
   Char123LocaleChar125PrivacyRoute: typeof Char123LocaleChar125PrivacyRoute
   Char123LocaleChar125ResetPasswordRoute: typeof Char123LocaleChar125ResetPasswordRoute
   Char123LocaleChar125StartYourJourneyRoute: typeof Char123LocaleChar125StartYourJourneyRoute
@@ -524,6 +545,7 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
   Char123LocaleChar125LegalRoute: Char123LocaleChar125LegalRoute,
   Char123LocaleChar125LoginRoute: Char123LocaleChar125LoginRoute,
   Char123LocaleChar125PlanMyTripRoute: Char123LocaleChar125PlanMyTripRoute,
+  Char123LocaleChar125PricingRoute: Char123LocaleChar125PricingRoute,
   Char123LocaleChar125PrivacyRoute: Char123LocaleChar125PrivacyRoute,
   Char123LocaleChar125ResetPasswordRoute:
     Char123LocaleChar125ResetPasswordRoute,

@@ -769,6 +769,37 @@ export default {
     formTitle: "Spørreskjema for reiseplanlegging",
     formSubtitle: "Noen få detaljer hjelper oss å lage et forslag som føles laget for deg.",
   },
+  pricingPage: {
+    seoTitle: "Priser og honorar | Fjord & Waves Travel",
+    seoDescription: "Tydelige priser for ferdiglagde reiseguider, r\u00e5dgivning \u00e9n-til-\u00e9n og skreddersydde reiser. Live valutakurs i NOK, EUR, USD og BRL.",
+    badge: "Priser",
+    title: "Tydelige priser, ingen overraskelser",
+    subtitle: "Alle alternativene under har en fast pris oppgitt p\u00e5 forh\u00e5nd. Du vet alltid hva du betaler f\u00f8r vi starter planleggingen.",
+    faqEyebrow: "Greit \u00e5 vite",
+    faqHeading: "Sp\u00f8rsm\u00e5l om pris",
+    faq: {
+      "0": {
+        q: "Betaler jeg for selve reisen i tillegg til planleggingshonoraret?",
+        a: "Ja. Honoraret dekker planlegging, r\u00e5dgivning og hjelp med bestillinger. Fly, hotell, transport og opplevelser betales separat \u2014 vanligvis direkte til leverand\u00f8r eller via byr\u00e5bestilling.",
+      },
+      "1": {
+        q: "Hvorfor tar dere planleggingshonorar?",
+        a: "Honoraret dekker research, ruteplanlegging og tiden som g\u00e5r med til \u00e5 tilpasse reisen til deg. Det gj\u00f8r ogs\u00e5 r\u00e5dene uavhengige \u2014 jeg anbefaler det som passer deg, ikke det som gir mest provisjon.",
+      },
+      "2": {
+        q: "Hvilken valuta blir jeg belastet i?",
+        a: "Prisene er satt i NOK. Du kan se dem i EUR, USD eller BRL med live valutakurs; bel\u00f8pet du betaler vises f\u00f8r du bekrefter.",
+      },
+      "3": {
+        q: "Kan jeg oppgradere fra ferdig guide til skreddersydd reise?",
+        a: "Ja. Kj\u00f8per du en ferdiglagd reiseguide og senere \u00f8nsker en skreddersydd reise, sier du bare fra \u2014 prisen p\u00e5 guiden tas med i regnestykket.",
+      },
+      "4": {
+        q: "Hva skjer etter at jeg har betalt?",
+        a: "Guider lastes ned umiddelbart. For r\u00e5dgivning og skreddersydde reiser avtaler vi en samtale, og jeg starter planen rett etterp\u00e5.",
+      },
+    },
+  },
   pricing: {
     "eyebrow": "PRISER",
     "heading": "Velg hvordan du vil reise med oss",
