@@ -398,6 +398,19 @@ const ItineraryShopDetail = () => {
   const showCurrencyToggle = !baseNok && lang === "en";
 
 
+  // Descriptive, language-specific image alt text (scene + place, not a label).
+  const altFor = (suffix?: string) => {
+    const place = data?.destination || title;
+    const dur = data?.duration ? `${data.duration}` : "";
+    const base =
+      lang === "pt"
+        ? `${title} — paisagem de ${place} do roteiro de viagem${dur ? ` de ${dur}` : ""}`
+        : lang === "no"
+          ? `${title} — landskapsbilde fra ${place} i denne reiseruten${dur ? ` på ${dur}` : ""}`
+          : `${title} — ${place} scenery from this ${dur ? `${dur} ` : ""}travel itinerary`;
+    return suffix ? `${base} (${suffix})` : base;
+  };
+
   return (
     <div className="min-h-screen bg-parchment">
       <Navbar />
@@ -408,7 +421,7 @@ const ItineraryShopDetail = () => {
           {data.hero_image_url && (
             <img
               src={data.hero_image_url}
-              alt={title}
+              alt={altFor()}
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
@@ -720,7 +733,7 @@ const ItineraryShopDetail = () => {
                       <img
                         key={i}
                         src={url}
-                        alt={`${title} ${i + 1}`}
+                        alt={altFor(String(i + 1))}
                         loading="lazy"
                         className="w-full mb-3 rounded-md object-cover break-inside-avoid"
                         style={{
