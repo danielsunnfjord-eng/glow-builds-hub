@@ -359,8 +359,11 @@ const ItineraryShopDetail = () => {
     },
   };
 
-  const priceLabel = formatPrice(data, lang, enPref);
-  const showCurrencyToggle = lang === "en";
+  const priceLabel = baseNok
+    ? formatFromNok(baseNok, activeCurrency, fxRate)
+    : formatPrice(data, lang, enPref);
+  const showCurrencyToggle = !baseNok && lang === "en";
+
 
   return (
     <div className="min-h-screen bg-parchment">
