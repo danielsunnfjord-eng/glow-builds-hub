@@ -364,36 +364,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/catalogue/rio-carnaval</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/no/catalogue/rio-carnaval</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
@@ -419,6 +389,36 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/rio-carnaval</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/rio-carnaval</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/rio-carnaval"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/rio-carnaval"/>
     <lastmod>2026-08-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
