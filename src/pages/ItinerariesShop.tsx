@@ -415,6 +415,24 @@ const ItinerariesShop = () => {
                         </div>
                       );
                     })()}
+                    {(() => {
+                      const views = trip.view_count ?? 0;
+                      const downloads = salesCounts?.[trip.id] ?? 0;
+                      return (
+                        <div className="flex items-center gap-4 mb-4 text-[0.8rem] text-voyage-muted">
+                          <span className="inline-flex items-center gap-1.5" title={t("catalogue.cardViews")} aria-label={`${views} ${t("catalogue.cardViews")}`}>
+                            <Eye className="w-4 h-4" aria-hidden="true" />
+                            {formatCount(views)}
+                          </span>
+                          {downloads > 0 && (
+                            <span className="inline-flex items-center gap-1.5" title={t("catalogue.cardDownloads")} aria-label={`${downloads} ${t("catalogue.cardDownloads")}`}>
+                              <Download className="w-4 h-4" aria-hidden="true" />
+                              {formatCount(downloads)}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                     <div className="flex items-end justify-between border-t border-parchment-3 pt-4 mt-auto">
                       {formatDuration(trip.duration, t) && (
                         <span className="text-[0.72rem] uppercase tracking-[0.1em] text-voyage-muted">
