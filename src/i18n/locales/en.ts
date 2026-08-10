@@ -789,7 +789,7 @@ export default {
     seoDescription: "Clear pricing for pre-made travel guides, one-to-one consultations and fully bespoke journeys. Live currency conversion in NOK, EUR, USD and BRL.",
     badge: "Pricing",
     title: "Transparent pricing, no surprises",
-    subtitle: "Every option below is a flat, upfront fee. You always know what you pay before we start planning.",
+    subtitle: "Our pricing is fully transparent and structured as flat, upfront fees. You will always know the exact investment required before we begin the planning process, completely eliminating unexpected costs.",
     faqEyebrow: "Good to know",
     faqHeading: "Questions about pricing",
     faq: {

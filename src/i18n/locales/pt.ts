@@ -776,7 +776,7 @@ export default {
     seoDescription: "Pre\u00e7os claros para guias de viagem prontos, consultorias individuais e viagens sob medida. Convers\u00e3o em tempo real em BRL, EUR, USD e NOK.",
     badge: "Pre\u00e7os",
     title: "Pre\u00e7os transparentes, sem surpresas",
-    subtitle: "Todas as op\u00e7\u00f5es abaixo t\u00eam valor fixo e informado antes. Voc\u00ea sempre sabe quanto vai pagar antes de come\u00e7armos.",
+    subtitle: "Nossos preços são totalmente transparentes e estruturados como taxas fixas e antecipadas. Você sempre saberá exatamente qual investimento é necessário antes de iniciarmos o processo de planejamento, eliminando completamente custos inesperados.",
     faqEyebrow: "Bom saber",
     faqHeading: "D\u00favidas sobre pre\u00e7os",
     faq: {
