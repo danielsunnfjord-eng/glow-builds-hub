@@ -873,6 +873,19 @@ export default {
         "The full fee is deducted from your final booking",
         "No hidden planning fees"
       ]
+    },
+    "table": {
+      "eyebrow": "Consultation pricing",
+      "heading": "Consultation price by group size and trip length",
+      "groupSize": "GROUP SIZE",
+      "duration": "DURATION OF TRIP",
+      "price": "PRICE",
+      "rows": [
+        { "group": "1–2 people", "duration": "Up to 7 days" },
+        { "group": "1–2 people", "duration": "8–14 days" },
+        { "group": "3–5 people", "duration": "Any duration" },
+        { "group": "6+ people", "duration": "Any duration" }
+      ]
     }
   },
 };
