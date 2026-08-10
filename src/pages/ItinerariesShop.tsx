@@ -400,6 +400,8 @@ const ItinerariesShop = () => {
                         lang === "pt" ? "pt-BR" : lang === "no" ? "nb-NO" : "en-GB",
                         { day: "2-digit", month: "short", year: "numeric" },
                       );
+                      const views = trip.view_count ?? 0;
+                      const downloads = salesCounts?.[trip.id] ?? 0;
                       return (
                         <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-4 text-[0.62rem] tracking-[0.12em] uppercase text-voyage-muted">
                           <span className="inline-flex items-center gap-1.5">
@@ -412,22 +414,22 @@ const ItinerariesShop = () => {
                             <span className="font-semibold text-ink/70">{t("catalogue.cardCreated")}:</span>
                             <span>{created}</span>
                           </span>
-                        </div>
-                      );
-                    })()}
-                    {(() => {
-                      const views = trip.view_count ?? 0;
-                      const downloads = salesCounts?.[trip.id] ?? 0;
-                      return (
-                        <div className="flex items-center gap-4 mb-4 text-[0.8rem] text-voyage-muted">
-                          <span className="inline-flex items-center gap-1.5" title={t("catalogue.cardViews")} aria-label={`${views} ${t("catalogue.cardViews")}`}>
-                            <Eye className="w-4 h-4" aria-hidden="true" />
-                            {formatCount(views)}
+                          <span
+                            className="inline-flex items-center gap-1.5"
+                            title={t("catalogue.cardViews")}
+                            aria-label={`${views} ${t("catalogue.cardViews")}`}
+                          >
+                            <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span>{formatCount(views)}</span>
                           </span>
                           {downloads > 0 && (
-                            <span className="inline-flex items-center gap-1.5" title={t("catalogue.cardDownloads")} aria-label={`${downloads} ${t("catalogue.cardDownloads")}`}>
-                              <Download className="w-4 h-4" aria-hidden="true" />
-                              {formatCount(downloads)}
+                            <span
+                              className="inline-flex items-center gap-1.5"
+                              title={t("catalogue.cardDownloads")}
+                              aria-label={`${downloads} ${t("catalogue.cardDownloads")}`}
+                            >
+                              <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                              <span>{formatCount(downloads)}</span>
                             </span>
                           )}
                         </div>
