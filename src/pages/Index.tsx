@@ -67,7 +67,6 @@ const Index = () => {
         <Suspense fallback={null}>
           <DualPathCards />
           <FeaturedItineraries />
-          <Pricing />
           <MeetDaniel />
           <WhyAdvisor />
           <Reviews />
