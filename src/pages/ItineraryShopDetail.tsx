@@ -146,6 +146,14 @@ const ItineraryShopDetail = () => {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { enPref } = usePreferredCurrency();
+  const {
+    active: activeCurrency,
+    rate: fxRate,
+    setCurrency,
+    available: fxAvailable,
+    showPicker: showFxPicker,
+  } = useActiveCurrency();
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["catalog-itinerary", slug],
