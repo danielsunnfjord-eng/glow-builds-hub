@@ -115,7 +115,7 @@ const Pricing = () => {
                         {format(card.nok)}
                       </div>
                     </div>
-                    {showPicker && <CurrencyPicker />}
+                    {showPicker && <CurrencySelect />}
                   </div>
                   {rateNote && (
                     <p className="text-[0.68rem] text-voyage-muted mb-6">{rateNote}</p>
