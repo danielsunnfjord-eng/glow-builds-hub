@@ -223,6 +223,8 @@ Deno.serve(async (req) => {
       success_url: successUrl,
       cancel_url: cancelUrl,
       customer_email: body.email,
+      // Our own locked FX rate decides the charge — never Stripe's conversion.
+      adaptive_pricing: { enabled: false },
       line_items: [
         {
           price_data: {
@@ -237,7 +239,14 @@ Deno.serve(async (req) => {
       metadata: {
         purchase_id: purchase.id,
         itinerary_id: itin.id,
+        itinerary_title: itin.title_en ?? "",
+        itinerary_slug: itin.slug,
+        base_price_nok: String(baseNok || ""),
+        charged_currency: currency.toUpperCase(),
+        charged_amount: String(amount),
+        fx_rate_nok: String(fxRateUsed),
         download_token: purchase.download_token,
+
       },
     });
 
