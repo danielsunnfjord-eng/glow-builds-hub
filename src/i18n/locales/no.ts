@@ -776,7 +776,7 @@ export default {
     "currencyLabel": "Valuta",
     "card1": {
       "label": "FERDIGLAGET",
-      "title": "Norge-reiserute",
+      "title": "Ferdiglagde reiseguider",
       "description": "Last ned en komplett PDF-reiserute med bookingstøtte.",
       "price_label": "FRA",
       "features": [
