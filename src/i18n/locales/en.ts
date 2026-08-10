@@ -808,7 +808,10 @@ export default {
       "description": "Get expert advice and a tailored plan.",
       "price_label": "FROM",
       "features": [
-        "Everything in Ready-made",
+        "Help booking hotels",
+        "Support booking activities and experiences",
+        "Transfer bookings",
+        "Travel insurance guidance",
         "Tailored day-by-day itinerary",
         "One-to-one consultation"
       ],
@@ -822,7 +825,6 @@ export default {
       "fee_note": "Free consultation · Design fee*",
       "price_label": "FROM",
       "features": [
-        "Everything in Consultation",
         "Journey designed from scratch",
         "Stays, transfers & activities booked",
         "Recommendations built around you",

@@ -793,7 +793,10 @@ export default {
       "description": "Få ekspertråd og en skreddersydd plan.",
       "price_label": "FRA",
       "features": [
-        "Alt i Ferdiglaget",
+        "Hjelp med å bestille hotell",
+        "Støtte til å bestille aktiviteter og opplevelser",
+        "Bestilling av transport",
+        "Veiledning om reiseforsikring",
         "Skreddersydd dag-for-dag reiserute",
         "En-til-en konsultasjon"
       ],
@@ -807,7 +810,6 @@ export default {
       "fee_note": "Gratis konsultasjon · Designavgift*",
       "price_label": "FRA",
       "features": [
-        "Alt i Konsultasjon",
         "Reise designet fra bunnen av",
         "Opphold, transport og aktiviteter booket",
         "Anbefalinger bygget rundt deg",
