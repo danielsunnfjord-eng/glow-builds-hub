@@ -17,6 +17,10 @@ interface Body {
   language?: string;
   currency?: string;
   environment?: "sandbox" | "live";
+  /** Dynamic NOK-based pricing (new flow) */
+  base_nok?: number;
+  fx_rate?: number;
+  amount_minor?: number;
 }
 
 const ALLOWED_CURRENCIES = ["usd", "eur", "brl", "nok"] as const;
@@ -27,6 +31,32 @@ const PRICE_COLUMN: Record<CurrencyCode, "price_usd" | "price_eur" | "price_brl"
   brl: "price_brl",
   nok: "price_nok",
 };
+
+const MINOR_PRECISION: Record<CurrencyCode, number> = { usd: 2, eur: 2, brl: 2, nok: 0 };
+
+/** Live NOK-base rates, server-side, used to sanity-check the client amount. */
+async function fetchNokRates(): Promise<Record<string, number> | null> {
+  try {
+    const r = await fetch(
+      "https://api.frankfurter.dev/v1/latest?base=NOK&symbols=BRL,EUR,USD",
+    );
+    if (!r.ok) throw new Error("fx");
+    const data = (await r.json()) as { rates?: Record<string, number> };
+    if (!data?.rates?.["USD"]) throw new Error("fx");
+    return { NOK: 1, ...data.rates };
+  } catch {
+    try {
+      const r = await fetch("https://open.er-api.com/v6/latest/NOK");
+      if (!r.ok) throw new Error("fx");
+      const data = (await r.json()) as { rates?: Record<string, number> };
+      if (!data?.rates?.["USD"]) throw new Error("fx");
+      return { NOK: 1, BRL: data.rates["BRL"]!, EUR: data.rates["EUR"]!, USD: data.rates["USD"]! };
+    } catch {
+      return null;
+    }
+  }
+}
+
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
