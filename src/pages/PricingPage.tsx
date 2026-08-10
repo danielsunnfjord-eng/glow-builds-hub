@@ -2,18 +2,12 @@ import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import Pricing from "@/components/voyage/Pricing";
-import Seo from "@/components/Seo";
 
 const PricingPage = () => {
   const { t } = useTranslation();
 
   return (
     <div>
-      <Seo
-        title={t("pricingPage.seoTitle")}
-        description={t("pricingPage.seoDescription")}
-        path="/pricing"
-      />
       <Navbar />
       <main>
         <section className="pt-44 pb-16 px-16 bg-ink relative overflow-hidden max-lg:px-10 max-md:px-6 max-md:pt-36 max-md:pb-12">

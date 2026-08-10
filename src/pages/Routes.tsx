@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
-import Seo from "@/components/Seo";
 
 interface RouteCard {
   id: string;
@@ -95,18 +94,6 @@ const Routes = () => {
 
   return (
     <div className="min-h-screen bg-voyage-white">
-      <Seo
-        title="All Routes — Curated Norway Journeys | Fjord & Waves"
-        description="A handpicked collection of curated journeys across Norway and beyond. Book as they are, or adapt them with us to make them your own."
-        path="/routes"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "All Routes — Fjord & Waves Travel",
-          url: "https://fjordwavestravel.com/routes",
-          description: "Curated travel routes designed by Fjord & Waves Travel.",
-        }}
-      />
       <Navbar />
 
       {/* Editorial hero */}

@@ -4,7 +4,6 @@ import { useNavigate } from "@/lib/router-compat";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import Seo from "@/components/Seo";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -73,7 +72,6 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-ink px-6">
-      <Seo title="Reset Password — Fjord & Waves Travel" description="Reset your Fjord & Waves Travel account password." path="/reset-password" noindex />
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <img src={logo} alt="Fjord & Waves Travel" width={400} height={224} className="h-16 w-auto mx-auto mb-3 brightness-0 invert" />

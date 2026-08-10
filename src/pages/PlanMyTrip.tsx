@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import Seo from "@/components/Seo";
 import TripRequestForm from "@/components/voyage/TripRequestForm";
 import { useState } from "react";
 import { Video } from "lucide-react";
@@ -15,19 +14,6 @@ const PlanMyTripPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo
-        title="Plan My Trip — Bespoke Itinerary Brief | Fjord & Waves"
-        description="Brief your bespoke itinerary in 3 minutes. Share dates, destinations and travel style — Daniel will design a tailored proposal for you."
-        path="/plan-my-trip"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "ContactPage",
-          name: "Plan My Trip — Fjord & Waves Travel",
-          url: "https://fjordwavestravel.com/plan-my-trip",
-          description: "Submit a trip brief to Fjord & Waves Travel.",
-          provider: { "@type": "TravelAgency", name: "Fjord & Waves Travel", url: "https://fjordwavestravel.com" },
-        }}
-      />
       <Navbar />
       <main>
       <main className="flex-1 py-28 px-6 max-md:py-20">

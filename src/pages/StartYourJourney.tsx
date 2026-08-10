@@ -2,7 +2,6 @@ import { useNavigate } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import Seo from "@/components/Seo";
 import TripRequestForm from "@/components/voyage/TripRequestForm";
 import heroImage from "@/assets/start-journey-hero.jpg";
 
@@ -16,11 +15,6 @@ const StartYourJourney = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo
-        title={t("startJourney.seoTitle")}
-        description={t("startJourney.seoDesc")}
-        path="/start-your-journey"
-      />
       <Navbar />
       <main className="flex-1">
         {/* Hero */}

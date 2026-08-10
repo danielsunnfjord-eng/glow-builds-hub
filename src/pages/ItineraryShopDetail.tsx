@@ -22,7 +22,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import Seo from "@/components/Seo";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 import {
@@ -401,14 +400,6 @@ const ItineraryShopDetail = () => {
 
   return (
     <div className="min-h-screen bg-parchment">
-      <Seo
-        title={`${title} — Fjord & Waves Travel`}
-        description={(summary || description || "").slice(0, 160)}
-        path={`/catalogue/${data.slug}`}
-        image={data.hero_image_url || undefined}
-        type="product"
-        jsonLd={productJsonLd}
-      />
       <Navbar />
 
       <main>
