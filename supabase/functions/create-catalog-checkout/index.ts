@@ -109,17 +109,64 @@ Deno.serve(async (req) => {
     if (currency !== (requested as CurrencyCode)) {
       console.warn(`Invalid currency '${requested}', falling back to EUR`);
     }
-    let amount = Number(itin[PRICE_COLUMN[currency]] ?? 0);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      console.warn(
-        `Missing/invalid price for currency '${currency}' on itinerary ${itin.id}; falling back to EUR`,
-      );
-      currency = "eur";
-      amount = Number(itin.price_eur ?? 0);
+
+    const baseNok = Number(itin.price_nok ?? 0);
+    const useDynamic = Number.isFinite(baseNok) && baseNok > 0 && body.base_nok !== undefined;
+
+    let amount = 0;
+    let fxRateUsed = 1;
+
+    if (useDynamic) {
+      // NOK-based dynamic pricing: recompute server-side with our own live
+      // rate and only accept the client figure when it matches closely.
+      const rates = currency === "nok" ? { NOK: 1 } : await fetchNokRates();
+      if (!rates || (currency !== "nok" && !rates[currency.toUpperCase()])) {
+        // FX unavailable → never guess: charge in NOK.
+        currency = "nok";
+      }
+      fxRateUsed =
+        currency === "nok" ? 1 : Number(rates![currency.toUpperCase()]);
+      const precision = MINOR_PRECISION[currency];
+      const factor = Math.pow(10, precision);
+      const serverAmount = Math.round(baseNok * fxRateUsed * factor) / factor;
+
+      const clientAmount =
+        typeof body.amount_minor === "number" && body.amount_minor > 0
+          ? body.amount_minor / 100
+          : null;
+
+      if (
+        clientAmount !== null &&
+        Math.abs(clientAmount - serverAmount) / serverAmount <= 0.05
+      ) {
+        // Honour exactly what the customer saw on the page.
+        amount = clientAmount;
+        if (typeof body.fx_rate === "number" && body.fx_rate > 0) {
+          fxRateUsed = body.fx_rate;
+        }
+      } else {
+        if (clientAmount !== null) {
+          console.warn(
+            `Client amount ${clientAmount} ${currency} deviates from server ${serverAmount}; using server amount`,
+          );
+        }
+        amount = serverAmount;
+      }
+    } else {
+      amount = Number(itin[PRICE_COLUMN[currency]] ?? 0);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        console.warn(
+          `Missing/invalid price for currency '${currency}' on itinerary ${itin.id}; falling back to EUR`,
+        );
+        currency = "eur";
+        amount = Number(itin.price_eur ?? 0);
+      }
     }
+
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({ error: "Itinerary has no valid price" }, 500);
     }
+
 
     const { data: purchase, error: purchaseErr } = await supabase
       .from("catalog_purchases")
