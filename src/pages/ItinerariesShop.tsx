@@ -76,7 +76,6 @@ const formatDuration = (s: string | null, t: any): string | null => {
 const ItinerariesShop = () => {
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
-  const { enPref } = usePreferredCurrency();
   const showCurrencyToggle = lang === "en";
 
   useEffect(() => {
