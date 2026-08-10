@@ -31,6 +31,14 @@ import {
   formatPrice,
   usePreferredCurrency,
 } from "@/lib/pricing";
+import {
+  CurrencyPicker,
+  convertFromNok,
+  formatFromNok,
+  toMinorUnits,
+  useActiveCurrency,
+  type Code,
+} from "@/lib/fx";
 import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
 
 // --- Day-by-day markdown parser ---------------------------------------------
