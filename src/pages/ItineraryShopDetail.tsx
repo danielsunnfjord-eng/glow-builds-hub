@@ -762,7 +762,16 @@ const ItineraryShopDetail = () => {
                     <p className="text-[0.72rem] text-voyage-muted">
                       {t("shop.instantDownload")}
                     </p>
-                    {showCurrencyToggle && <CurrencyToggle variant="light" />}
+                    {baseNok
+                      ? showFxPicker && (
+                          <CurrencyPicker
+                            value={activeCurrency}
+                            onChange={(c: Code) => setCurrency(c)}
+                            available={fxAvailable}
+                            label={t("pricing.currencyLabel", "Currency")}
+                          />
+                        )
+                      : showCurrencyToggle && <CurrencyToggle variant="light" />}
                   </div>
 
                   {canceled && (
