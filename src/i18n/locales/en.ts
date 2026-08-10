@@ -784,5 +784,63 @@ export default {
     formTitle: "Travel Planning Questionnaire",
     formSubtitle: "A few details help us craft a proposal that feels made for you.",
   },
+  pricing: {
+    "eyebrow": "PRICING",
+    "heading": "Choose how you'd like to travel with us",
+    "subtext": "Whether you're happy with a ready-made itinerary or want us to design your journey from scratch, every option is built around care and local knowledge.",
+    "currencyLabel": "Currency",
+    "card1": {
+      "label": "READY-MADE",
+      "title": "Norway Itinerary",
+      "description": "Download a complete PDF itinerary with booking support.",
+      "price_label": "FROM",
+      "features": [
+        "Help booking hotels",
+        "Support booking activities and experiences",
+        "Transfer bookings",
+        "Travel insurance guidance"
+      ],
+      "button": "SEE ITINERARIES"
+    },
+    "card2": {
+      "label": "CONSULTATION",
+      "title": "One-on-One Consult",
+      "description": "Get expert advice and a tailored plan.",
+      "price_label": "FROM",
+      "features": [
+        "Everything in Ready-made",
+        "Tailored day-by-day itinerary",
+        "One-to-one consultation"
+      ],
+      "button": "BOOK A CONSULTATION"
+    },
+    "card3": {
+      "badge": "MOST POPULAR",
+      "label": "BESPOKE",
+      "title": "Custom Journey",
+      "description": "We design, plan and book your entire journey.",
+      "fee_note": "Free consultation · Design fee*",
+      "price_label": "FROM",
+      "features": [
+        "Everything in Consultation",
+        "Journey designed from scratch",
+        "Stays, transfers & activities booked",
+        "Recommendations built around you",
+        "24/7 support while traveling"
+      ],
+      "button": "REQUEST A QUOTE"
+    },
+    "explainer": {
+      "heading": "Why do we charge a Custom Journey fee?",
+      "body": "A fully bespoke journey takes many hours of research, booking coordination, and 24/7 support during travel. The fee lets us give every custom journey the care it deserves — the Ready-made and Consultation tiers stay fee-free beyond their listed price.",
+      "good_news_label": "THE GOOD NEWS",
+      "good_news": [
+        "Your consultation is completely free",
+        "You only pay the fee if you'd like us to design your journey from scratch",
+        "The full fee is deducted from your final booking",
+        "No hidden planning fees"
+      ]
+    }
+  },
 };
 
