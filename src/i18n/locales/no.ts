@@ -774,7 +774,7 @@ export default {
     seoDescription: "Tydelige priser for ferdiglagde reiseguider, r\u00e5dgivning \u00e9n-til-\u00e9n og skreddersydde reiser. Live valutakurs i NOK, EUR, USD og BRL.",
     badge: "Priser",
     title: "Tydelige priser, ingen overraskelser",
-    subtitle: "Alle alternativene under har en fast pris oppgitt p\u00e5 forh\u00e5nd. Du vet alltid hva du betaler f\u00f8r vi starter planleggingen.",
+    subtitle: "Prisene våre er helt transparente og strukturert som faste forhåndsgebyrer. Du vil alltid vite den nøyaktige investeringen som kreves før vi starter planleggingsprosessen, slik at uventede kostnader elimineres fullstendig.",
     faqEyebrow: "Greit \u00e5 vite",
     faqHeading: "Sp\u00f8rsm\u00e5l om pris",
     faq: {
