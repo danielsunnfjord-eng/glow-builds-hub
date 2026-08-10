@@ -107,7 +107,6 @@ export const Route = createFileRoute("/{-$locale}/catalogue/$slug")({
       ...(meta.destination
         ? { itinerary: { "@type": "Place", name: meta.destination } }
         : {}),
-      ...(meta.duration ? { touristType: undefined, subjectOf: undefined } : {}),
       provider: {
         "@type": "TravelAgency",
         name: "Fjord & Waves Travel",
