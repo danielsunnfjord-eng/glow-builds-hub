@@ -60,7 +60,7 @@ export default {
     includedItem2: "Støtte med booking av aktiviteter og opplevelser",
     includedItem3: "Booking av transfer",
     includedItem4: "Veiledning om reiseforsikring",
-    includedItem5: "Hjelp hvis det oppstår problemer under reisen",
+    
     customizeTitle: "Tilpass dette reiseopplegget",
     customizeIntro: "Vil du at reiseopplegget skal tilpasses gruppestørrelse, budsjett eller interesser?",
     customizeContact: "Ta kontakt for et gratis pristilbud",

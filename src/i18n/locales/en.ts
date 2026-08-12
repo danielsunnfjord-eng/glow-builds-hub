@@ -61,7 +61,7 @@ export default {
     includedItem2: "Support booking activities and experiences",
     includedItem3: "Transfer bookings",
     includedItem4: "Travel insurance guidance",
-    includedItem5: "Assistance if issues arise during the trip",
+    
     customizeTitle: "Customize this itinerary",
     customizeIntro: "Want the itinerary adapted to your group size, budget, or interests?",
     customizeContact: "Get in touch for a free quote",
