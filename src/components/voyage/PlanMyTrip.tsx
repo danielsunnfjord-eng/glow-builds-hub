@@ -1,5 +1,6 @@
 import { useNavigate } from "@/lib/router-compat";
 import ScrollReveal from "./ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import planTripImg from "@/assets/plan-trip-card.webp";
 import { useTranslation } from "react-i18next";
 import { Video } from "lucide-react";
@@ -10,6 +11,7 @@ const PlanMyTrip = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const calendlyUrl = CALENDLY_URL;
+  const { isEnglish, open: openIntake } = useIntakeCta();
 
   return (
     <section className="py-28 px-16 bg-background max-md:px-6 max-md:py-16" id="enquiry">
@@ -21,7 +23,7 @@ const PlanMyTrip = () => {
           <p className="text-[0.92rem] text-muted-foreground leading-relaxed mb-10 text-center">{t("planTrip.subtitle")}</p>
         </ScrollReveal>
         <ScrollReveal>
-          <button onClick={() => navigate("/start-your-journey")} className="group block w-full overflow-hidden rounded-xl border border-border shadow-md hover:shadow-xl transition-all duration-300 bg-card cursor-pointer text-left">
+          <button onClick={() => (isEnglish ? openIntake() : navigate("/start-your-journey"))} className="group block w-full overflow-hidden rounded-xl border border-border shadow-md hover:shadow-xl transition-all duration-300 bg-card cursor-pointer text-left">
             <div className="relative aspect-[16/9] overflow-hidden">
               <img src={planTripImg} alt="Plan your curated trip" loading="lazy" width={1024} height={640} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

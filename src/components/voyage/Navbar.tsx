@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import logo from "@/assets/logo-horizontal.webp";
 import WhatsAppIconButton from "./WhatsAppIconButton";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
@@ -14,6 +15,7 @@ const Navbar = () => {
   const { t, i18n } = useTranslation();
   const calendlyUrl = CALENDLY_URL;
   const [open, setOpen] = useState(false);
+  const { isEnglish, open: openIntake } = useIntakeCta();
 
   const goToSection = (id: string) => {
     setOpen(false);
@@ -48,7 +50,7 @@ const Navbar = () => {
           </Link>
           <LanguageSelector variant="light" />
           <button
-            onClick={() => navigate("/start-your-journey")}
+            onClick={() => (isEnglish ? openIntake() : navigate("/start-your-journey"))}
             className="px-5 py-2.5 rounded-xs border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
@@ -106,7 +108,7 @@ const Navbar = () => {
             {t("nav.pricing")}
           </Link>
           <button
-            onClick={() => { setOpen(false); navigate("/start-your-journey"); }}
+            onClick={() => { setOpen(false); if (isEnglish) { openIntake(); } else { navigate("/start-your-journey"); } }}
             className="px-5 py-2.5 rounded-xs border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:border-ink/60 transition-colors"
           >
             {t("nav.planMyTrip")}
