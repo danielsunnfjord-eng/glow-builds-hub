@@ -557,7 +557,7 @@ const ItineraryShopDetail = () => {
                     {t("shop.includedIntro", "What you receive with this itinerary.")}
                   </p>
                   <ul className="space-y-2.5">
-                    {[1, 2, 3, 4, 5].map((n) => (
+                    {[1, 2, 3, 4].map((n) => (
                       <li key={n} className="flex items-start gap-3 text-[0.9rem] text-emerald-950/80">
                         <Check className="w-4 h-4 text-emerald-800 mt-0.5 shrink-0" aria-hidden="true" />
                         <span>{t(`shop.includedItem${n}`, `Included item ${n}`)}</span>

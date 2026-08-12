@@ -60,7 +60,7 @@ export default {
     includedItem2: "Suporte com reservas de atividades e experiências",
     includedItem3: "Reserva de transfers",
     includedItem4: "Orientação sobre seguro viagem",
-    includedItem5: "Assistência caso surjam problemas durante a viagem",
+    
     customizeTitle: "Personalizar este roteiro",
     customizeIntro: "Quer o roteiro adaptado para o tamanho do seu grupo, orçamento ou interesses?",
     customizeContact: "Entre em contato para um orçamento gratuito",
