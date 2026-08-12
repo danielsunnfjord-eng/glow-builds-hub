@@ -85,7 +85,7 @@ const DestinationNorway = () => {
               A bespoke 7-day Norway trip plan — Oslo, the fjords, Bergen and Lofoten — built by a Fora Travel advisor who has lived and travelled here for years. Hotels, trains, fjord cruises and quiet hidden corners, all handled.
             </p>
             <div className="flex gap-3 mt-8 flex-wrap">
-              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+              <button onClick={() => (isEnglish ? openIntake() : navigate("/plan-my-trip"))} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
                 Plan my trip
               </button>
               <a href="#itinerary" className="px-8 py-4 border border-voyage-white/25 text-voyage-white/85 font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-voyage-white/5 transition-colors">
@@ -180,7 +180,7 @@ const DestinationNorway = () => {
               <p className="text-voyage-white/65 mb-8 max-w-lg mx-auto text-sm leading-relaxed font-light">
                 Share your dates, group size and what excites you. I'll come back with a tailored proposal — flights, hotels, fjord cruises, the lot.
               </p>
-              <button onClick={() => navigate("/plan-my-trip")} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
+              <button onClick={() => (isEnglish ? openIntake() : navigate("/plan-my-trip"))} className="px-8 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(169,198,193,0.25)] transition-all">
                 Plan my trip
               </button>
             </ScrollReveal>

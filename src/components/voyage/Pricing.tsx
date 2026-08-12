@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "@/lib/router-compat";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
@@ -149,6 +150,7 @@ const Pricing = () => {
                   ) : (
                     <Link
                       to={card.href}
+                      onClick={card.href === "/start-your-journey" ? onIntakeClick : undefined}
                       className={`inline-flex items-center justify-center px-6 py-3 font-semibold text-[0.75rem] tracking-[0.1em] uppercase rounded-xs transition-colors no-underline ${btnClass}`}
                     >
                       {t(`${base}.button`)}

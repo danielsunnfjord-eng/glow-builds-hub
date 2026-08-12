@@ -2,6 +2,7 @@ import { Link } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 const PT_BADGES = [
   "Atendimento em português",
@@ -12,6 +13,7 @@ const PT_BADGES = [
 const DualPathCards = () => {
   const { t, i18n } = useTranslation();
   const isPt = i18n.language === "pt";
+  const { onIntakeClick } = useIntakeCta();
 
   return (
     <section className="bg-parchment pt-60 pb-24 px-6 md:px-16">
@@ -87,6 +89,7 @@ const DualPathCards = () => {
               </p>
               <Link
                 to="/start-your-journey"
+                onClick={onIntakeClick}
                 className="inline-flex items-center justify-center self-start px-6 py-3 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 transition-colors"
               >
                 {t("home.dual.bespokeCta")}

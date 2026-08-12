@@ -323,7 +323,7 @@ const ItinerariesShop = () => {
         {!isLoading && (data?.length ?? 0) === 0 && (
           <div className="border border-ink/10 bg-voyage-white rounded-lg p-12 text-center">
             <p className="text-[0.9rem] text-voyage-muted mb-4">{t("catalogue.empty")}</p>
-            <Link to="/plan-my-trip" className="inline-block px-6 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors">
+            <Link to="/plan-my-trip" onClick={onIntakeClick} className="inline-block px-6 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors">
               {t("nav.planMyTrip")}
             </Link>
           </div>
@@ -464,6 +464,7 @@ const ItinerariesShop = () => {
             </p>
             <Link
               to="/plan-my-trip"
+              onClick={onIntakeClick}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-gold hover:text-ink transition-colors"
             >
               {t("catalogue.tailor.cta")}

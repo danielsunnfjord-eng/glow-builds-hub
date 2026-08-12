@@ -205,6 +205,7 @@ const Routes = () => {
               </p>
               <Link
                 to="/plan-my-trip"
+                onClick={onIntakeClick}
                 className="inline-block px-8 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
               >
                 {t("nav.planMyTrip")}
@@ -286,6 +287,7 @@ const Routes = () => {
             </p>
             <Link
               to="/plan-my-trip"
+              onClick={onIntakeClick}
               className="inline-block px-8 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
             >
               {t("nav.planMyTrip")}
