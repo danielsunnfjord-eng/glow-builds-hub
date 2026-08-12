@@ -32,6 +32,8 @@ const TABLE_ROWS: number[] = [3000, 3650, 4350, 5650];
 
 const Pricing = () => {
   const { t } = useTranslation();
+  const { onIntakeClick } = useIntakeCta();
+
   const { active, rate, setCurrency, available, showPicker } = useActiveCurrency();
 
   const format = useMemo(
