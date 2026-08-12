@@ -211,14 +211,17 @@ function RootComponent() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <CookieConsent />
-          <DeferredCalendly />
-          <Suspense fallback={null}>
-            <Outlet />
-          </Suspense>
+          <IntakeFormProvider>
+            <Toaster />
+            <Sonner />
+            <CookieConsent />
+            <DeferredCalendly />
+            <Suspense fallback={null}>
+              <Outlet />
+            </Suspense>
+          </IntakeFormProvider>
         </TooltipProvider>
+
       </QueryClientProvider>
     </HelmetProvider>
   );
