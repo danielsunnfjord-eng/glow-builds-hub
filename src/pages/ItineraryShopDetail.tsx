@@ -39,6 +39,7 @@ import {
   type Code,
 } from "@/lib/fx";
 import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
@@ -143,6 +144,7 @@ const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
 
 
 const ItineraryShopDetail = () => {
+  const { isEnglish, open: openIntake } = useIntakeCta();
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.substring(0, 2) || "en";

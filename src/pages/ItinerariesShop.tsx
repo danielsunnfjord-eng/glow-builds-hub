@@ -15,6 +15,7 @@ import LanguageSelector from "@/components/voyage/LanguageSelector";
 import { CurrencyToggle } from "@/lib/pricing";
 import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 interface CatalogItem {
   id: string;
@@ -74,6 +75,7 @@ const formatDuration = (s: string | null, t: any): string | null => {
 
 
 const ItinerariesShop = () => {
+  const { onIntakeClick } = useIntakeCta();
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
   const showCurrencyToggle = lang === "en";

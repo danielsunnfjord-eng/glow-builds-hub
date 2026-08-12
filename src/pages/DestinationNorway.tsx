@@ -3,6 +3,7 @@ import { MapPin, Calendar, Compass, Sparkles } from "lucide-react";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 const itinerary = [
   { day: "Day 1", title: "Arrival in Oslo", text: "Settle into a design hotel near Aker Brygge. Evening walk along the harbour and dinner at a New Nordic restaurant." },
@@ -64,6 +65,7 @@ const jsonLd = [
 ];
 
 const DestinationNorway = () => {
+  const { isEnglish, open: openIntake } = useIntakeCta();
   const navigate = useNavigate();
 
   return (

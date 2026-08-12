@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 interface RouteCard {
   id: string;
@@ -49,6 +50,7 @@ const extractSequence = (route: unknown): string[] => {
 };
 
 const Routes = () => {
+  const { onIntakeClick } = useIntakeCta();
   const { t } = useTranslation();
   useEffect(() => {
     document.title = `All Routes · Fjord & Waves Travel`;

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 interface RouteRow {
   id: string;
@@ -70,6 +71,7 @@ const extractHighlights = (sales: unknown): string[] => {
 };
 
 const RouteDetail = () => {
+  const { onIntakeClick } = useIntakeCta();
   const { slug } = useParams();
   const { t } = useTranslation();
 
