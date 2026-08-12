@@ -82,10 +82,20 @@ export function IntakeFormProvider({ children }: { children: ReactNode }) {
               allow="clipboard-write"
               className="w-full flex-1 border-0"
             />
-            <p className="border-t border-ink/10 bg-parchment px-5 py-3 text-center text-[0.82rem] leading-relaxed text-voyage-muted">
-              Thank you for your submission. Once you&rsquo;ve completed the form, you can close this
-              window to continue browsing.
-            </p>
+            <div className="border-t border-ink/10 bg-parchment px-5 py-3 text-center">
+              <p className="text-[0.82rem] leading-relaxed text-voyage-muted">
+                Thank you for your submission. Once you&rsquo;ve completed the form, you can close this
+                window to continue browsing.
+              </p>
+              <a
+                href={INTAKE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-block text-[0.75rem] font-medium uppercase tracking-[0.1em] text-ink underline"
+              >
+                Form not loading? Open it in a new tab
+              </a>
+            </div>
           </div>
         </div>
       )}
