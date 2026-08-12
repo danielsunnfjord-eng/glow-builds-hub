@@ -14,6 +14,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import CookieConsent from "@/components/voyage/CookieConsent";
+import { IntakeFormProvider } from "@/components/voyage/IntakeFormModal";
+
 import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 import { HTML_LANG, detectLocaleFromPath, setServerLocale } from "@/lib/locale";
