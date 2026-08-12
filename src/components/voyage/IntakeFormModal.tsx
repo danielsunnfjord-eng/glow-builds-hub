@@ -66,7 +66,7 @@ export function IntakeFormProvider({ children }: { children: ReactNode }) {
           aria-label="Trip planning form"
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3 md:p-6"
         >
-          <div className="relative flex h-full max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-xl bg-parchment p-8 pt-12 shadow-2xl md:p-10 md:pt-14">
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -75,26 +75,21 @@ export function IntakeFormProvider({ children }: { children: ReactNode }) {
             >
               <X className="h-5 w-5" />
             </button>
-            <iframe
-              src={INTAKE_URL}
-              title="Fjord & Waves Travel intake form"
-              loading="lazy"
-              allow="clipboard-write"
-              className="w-full flex-1 border-0"
-            />
-            <div className="border-t border-ink/10 bg-parchment px-5 py-3 text-center">
-              <p className="text-[0.82rem] leading-relaxed text-voyage-muted">
-                Thank you for your submission. Once you&rsquo;ve completed the form, you can close this
-                window to continue browsing.
+            <div className="flex flex-col items-center text-center">
+              <p className="font-body text-base leading-relaxed text-ink md:text-lg">
+                To fill out your intake form, please open it in a new tab.
               </p>
               <a
                 href={INTAKE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 inline-block text-[0.75rem] font-medium uppercase tracking-[0.1em] text-ink underline"
+                className="mt-6 inline-flex items-center justify-center rounded-md bg-ink px-8 py-3.5 font-sans text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-ink/90"
               >
-                Form not loading? Open it in a new tab
+                Open Intake Form
               </a>
+              <p className="mt-5 text-[0.82rem] leading-relaxed text-voyage-muted">
+                Once you&rsquo;ve submitted the form, you can close this window and continue browsing.
+              </p>
             </div>
           </div>
         </div>
