@@ -109,6 +109,60 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://fjordwavestravel.com/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/pricing"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/pricing"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/pricing"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/pricing"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/pricing"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/pricing"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/start-your-journey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/start-your-journey"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/start-your-journey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/start-your-journey"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/start-your-journey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/start-your-journey"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/start-your-journey"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://fjordwavestravel.com/catalogue</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue"/>
@@ -304,36 +358,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://fjordwavestravel.com/catalogue/destino-aurora-boreal-na-noruega</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/destino-aurora-boreal-na-noruega"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/destino-aurora-boreal-na-noruega"/>
@@ -364,12 +388,42 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/sogn-og-fjordane-the-soul-of-norwegian-fjords"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -379,7 +433,7 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -389,7 +443,7 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/norways-most-dramatic-regions-in-7-days"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/norways-most-dramatic-regions-in-7-days"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -429,7 +483,7 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -439,7 +493,7 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -449,7 +503,7 @@
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/experience-the-northern-lights"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/experience-the-northern-lights"/>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
