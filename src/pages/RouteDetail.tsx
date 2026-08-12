@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import ScrollReveal from "@/components/voyage/ScrollReveal";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 interface RouteRow {
   id: string;
@@ -70,6 +71,7 @@ const extractHighlights = (sales: unknown): string[] => {
 };
 
 const RouteDetail = () => {
+  const { onIntakeClick } = useIntakeCta();
   const { slug } = useParams();
   const { t } = useTranslation();
 
@@ -235,6 +237,7 @@ const RouteDetail = () => {
           )}
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
+              onClick={onIntakeClick}
               to={`/plan-my-trip?destination=${encodeURIComponent(data.destination ?? data.title)}`}
               className="px-8 py-3.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.12em] uppercase hover:bg-voyage-white transition-colors"
             >
@@ -426,6 +429,7 @@ const RouteDetail = () => {
                       {data.upsell}
                     </div>
                     <Link
+                      onClick={onIntakeClick}
                       to="/plan-my-trip"
                       className="inline-block px-7 py-3 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
                     >
@@ -470,6 +474,7 @@ const RouteDetail = () => {
                 </div>
                 <div className="p-6 pt-0">
                   <Link
+                    onClick={onIntakeClick}
                     to={`/plan-my-trip?destination=${encodeURIComponent(data.destination ?? data.title)}`}
                     className="block w-full text-center px-6 py-3.5 rounded-xs bg-ink text-voyage-white text-[0.72rem] font-medium tracking-[0.12em] uppercase hover:bg-gold hover:text-ink transition-colors"
                   >

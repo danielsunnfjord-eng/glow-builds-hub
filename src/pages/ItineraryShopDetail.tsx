@@ -39,6 +39,7 @@ import {
   type Code,
 } from "@/lib/fx";
 import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
@@ -143,6 +144,7 @@ const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
 
 
 const ItineraryShopDetail = () => {
+  const { isEnglish, open: openIntake } = useIntakeCta();
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.substring(0, 2) || "en";
@@ -584,7 +586,7 @@ const ItineraryShopDetail = () => {
                     {t("shop.customizePriceNote", "Final price depends on the level of change — you approve before paying.")}
                   </p>
                   <button
-                    onClick={() => navigate("/plan-my-trip")}
+                    onClick={() => (isEnglish ? openIntake() : navigate("/plan-my-trip"))}
                     className="w-full px-4 py-2.5 rounded-xs bg-gold text-ink text-[0.72rem] font-semibold tracking-[0.14em] uppercase hover:bg-voyage-white transition-colors"
                   >
                     {t("shop.customizeContact", "Get in touch for a free quote")}
