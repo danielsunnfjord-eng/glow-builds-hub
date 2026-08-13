@@ -194,8 +194,13 @@ function buildSystemPrompt(values: {
   experience_type: string;
   duration: string;
   notes: string;
+  outputFormat: 'itinerary' | 'guide';
 }): string {
-  return BASE_SYSTEM_PROMPT
+  const formatInstruction =
+    values.outputFormat === 'itinerary'
+      ? 'The user has selected FORMAT A (day-by-day itinerary). Use the day/morning/afternoon/evening structure with a logical route flow between days.'
+      : 'The user has selected FORMAT B (practical guide). Organize the response strictly into themed sections (Attractions, Accommodation, Transportation, Food, Safety, Tips). Do NOT divide by day or by time of day.';
+  return `${BASE_SYSTEM_PROMPT}\n\n${formatInstruction}`
     .replace(/{language}/g, values.language)
     .replace(/{destination}/g, values.destination || 'Not specified')
     .replace(/{experience_type}/g, values.experience_type || 'Not specified')
