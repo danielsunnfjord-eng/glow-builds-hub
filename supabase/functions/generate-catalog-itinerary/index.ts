@@ -440,27 +440,56 @@ Return ONLY the JSON object. No code fences, no explanation.`;
       matched: persona ? { origin: persona.origin, destination: persona.destination } : null,
     });
 
-    const baseSystem = buildSystemPrompt({
-      language: langName,
-      destination,
-      experience_type,
-      duration,
-      notes: brief,
-    });
+    const isGuide = output_format === 'guide';
+    const baseSystem = isGuide
+      ? buildGuideSystemPrompt({
+        language: langName,
+        destination,
+        experience_type,
+        notes: brief,
+      })
+      : buildSystemPrompt({
+        language: langName,
+        destination,
+        experience_type,
+        duration,
+        notes: brief,
+      });
     const systemPrompt = personaBlock ? personaBlock + baseSystem : baseSystem;
 
     // Build the sequence of user prompts (one per Anthropic call).
     const userPrompts: string[] = [];
 
     if (mode === 'section') {
+      if (isGuide) {
+        userPrompts.push(
+          `Write the response entirely in ${langName}.\n\n` +
+            `Here is an existing practical travel guide draft (markdown):\n\n` +
+            `"""\n${existing_content}\n"""\n\n` +
+            `Please regenerate ONLY the section described below, keeping the same premium editorial style, tone and conventions ` +
+            `(thematic section headings, concise practical guidance, no day-by-day structure, no clock times, no AI clichés). ` +
+            `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
+            `Section instruction: ${section_instruction}`,
+        );
+      } else {
+        userPrompts.push(
+          `Write the response entirely in ${langName}.\n\n` +
+            `Here is an existing catalogue itinerary draft (markdown):\n\n` +
+            `"""\n${existing_content}\n"""\n\n` +
+            `Please regenerate ONLY the section described below, keeping the same premium editorial style, tone and conventions ` +
+            `(Morning / Afternoon / Evening sub-sections of 2-4 sentences each, one-sentence Dining tip and Insider tip, transport guidance woven into the narrative, no clock times, no AI clichés). ` +
+            `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
+            `Section instruction: ${section_instruction}`,
+        );
+      }
+    } else if (isGuide) {
+      // Practical guides are generated in a single pass.
       userPrompts.push(
-        `Write the response entirely in ${langName}.\n\n` +
-          `Here is an existing catalogue itinerary draft (markdown):\n\n` +
-          `"""\n${existing_content}\n"""\n\n` +
-          `Please regenerate ONLY the section described below, keeping the same premium editorial style, tone and conventions ` +
-          `(Morning / Afternoon / Evening sub-sections of 2-4 sentences each, one-sentence Dining tip and Insider tip, transport guidance woven into the narrative, no clock times, no AI clichés). ` +
-          `Return JUST the rewritten section as markdown — no preamble, no explanation.\n\n` +
-          `Section instruction: ${section_instruction}`,
+        `Produce the premium practical travel guide now in markdown. ` +
+          `Write a compelling 2-3 paragraph editorial introduction first (no heading), ` +
+          `then the complete thematic guide with clear \`##\` section headings. ` +
+          `Cover the most useful topics for this destination: Getting There, Getting Around, Where to Stay, Money & Costs, When to Go, What to Pack, Etiquette & Culture, Safety & Health, Food & Dining, Top Experiences, Hidden Gems, and Useful Contacts as relevant. ` +
+          `Keep each section concise but useful. End naturally — no closing remarks.`,
       );
     } else {
       // Two-pass generation to keep streams flowing and avoid truncation.
