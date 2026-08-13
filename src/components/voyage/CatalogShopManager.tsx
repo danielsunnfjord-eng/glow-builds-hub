@@ -1518,6 +1518,9 @@ const CatalogShopManager = () => {
       label: "Price set in NOK (base currency)",
       ok: Number(s.priceNok) > 0,
     },
+    ...(s.outputFormat === "guide"
+      ? []
+      : [{ key: "duration", label: "Duration set (day-by-day itinerary)", ok: !!s.duration.trim() }]),
     {
       key: "summaries",
       label: "Short description filled in for EN / PT / NO",
@@ -2065,7 +2068,35 @@ const CatalogShopManager = () => {
               </div>
             </div>
 
-            {state.outputFormat === "itinerary" && (
+            <div className="md:col-span-2">
+              <Label>Output format</Label>
+              <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background mt-1.5">
+                {[
+                  { key: "itinerary", label: "Day-by-day Itinerary" },
+                  { key: "guide", label: "Practical Guide" },
+                ].map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
+                    className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
+                      state.outputFormat === opt.key
+                        ? "bg-ink text-voyage-white"
+                        : "text-voyage-muted hover:text-ink"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[0.68rem] text-voyage-muted mt-1">
+                {isGuide
+                  ? "A themed practical guide (attractions, transport, food, safety…). No days, no duration."
+                  : "A day-by-day trip with a logical route flow between days."}
+              </p>
+            </div>
+
+            {!isGuide && (
               <div>
                 <Label>Duration</Label>
                 <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
@@ -2184,10 +2215,51 @@ const CatalogShopManager = () => {
               </div>
             </div>
             <div className="md:col-span-2">
-              <Label>Day overview (subpage)</Label>
+              <Label>{isGuide ? "Guide sections (subpage)" : "Day overview (subpage)"}</Label>
               <p className="text-[0.7rem] text-voyage-muted mb-2">
-                Add one row per day. Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.
+                {isGuide
+                  ? 'Add one row per themed section (Attractions, Getting around, Food, Safety…). Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.'
+                  : 'Add one row per day. Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.'}
               </p>
+              {overviewWarning && (
+                <div className="mb-2 flex flex-wrap items-center gap-2 text-[0.7rem] text-amber-700 bg-amber-50 border border-amber-200 rounded-sm px-2.5 py-1.5">
+                  <span>{overviewWarning}</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={autoMeta || !state.content.trim()}
+                    onClick={() =>
+                      runAutoMetadata(state.content)
+                        .then(() => toast.success("Overview regenerated"))
+                        .catch((err: any) => toast.error(err?.message || "Could not regenerate overview"))
+                    }
+                  >
+                    Regenerate overview
+                  </Button>
+                </div>
+              )}
+              {isGuide && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {GUIDE_SECTION_SUGGESTIONS.filter(
+                    (label) => !state.subpageDayOverview.some((d) => d.label.trim().toLowerCase() === label.toLowerCase()),
+                  ).map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          subpageDayOverview: [...s.subpageDayOverview, { label, description: "" }],
+                        }))
+                      }
+                      className="px-2.5 py-1 rounded-full text-[0.68rem] border border-input bg-background hover:bg-muted"
+                    >
+                      + {label}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="space-y-3">
                 {state.subpageDayOverview.map((day, idx) => (
                   <div key={idx} className="space-y-2 p-3 rounded-sm border border-ink/[0.08] bg-voyage-white">
@@ -2199,7 +2271,7 @@ const CatalogShopManager = () => {
                           next[idx] = { ...next[idx], label: e.target.value };
                           setState({ ...state, subpageDayOverview: next });
                         }}
-                        placeholder='e.g. Day 1 — Bergen - Voss - Flåm Railway'
+                        placeholder={isGuide ? "e.g. Getting around" : `e.g. Day ${idx + 1} — Bergen - Voss - Flåm Railway`}
                       />
                       <Button
                         type="button"
@@ -2361,25 +2433,9 @@ const CatalogShopManager = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background">
-                  {[
-                    { key: "itinerary", label: "Day-by-day Itinerary" },
-                    { key: "guide", label: "Practical Guide" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
-                      className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
-                        state.outputFormat === opt.key
-                          ? "bg-ink text-voyage-white"
-                          : "text-voyage-muted hover:text-ink"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <span className="text-[0.68rem] uppercase tracking-[0.1em] text-voyage-muted">
+                  {isGuide ? "Practical guide" : "Day-by-day itinerary"}
+                </span>
                 <Button
                   onClick={runGenerate}
                   disabled={generating}
