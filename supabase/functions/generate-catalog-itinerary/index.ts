@@ -331,6 +331,7 @@ Deno.serve(async (req) => {
     // for all three languages in a single Anthropic request.
     if (mode === 'metadata') {
       const excerpt = String(existing_content || '').slice(0, 20000);
+      const isGuide = output_format === 'guide';
       // Detect number of days from the itinerary content (e.g. "Day 1", "Day 2", ... "Day 7")
       const dayMatches = excerpt.match(/\bDay\s+(\d+)\b/gi) || [];
       const detectedDayCount = dayMatches.reduce((max, m) => {
@@ -344,6 +345,8 @@ Deno.serve(async (req) => {
       const metaLangName = LANG_NAMES[language] || 'English';
       // "Day" word used in day_overview labels — must match the target language.
       const dayWord = language === 'pt' ? 'Dia' : language === 'no' ? 'Dag' : 'Day';
+      const subpageFields = isGuide ? 'subpage_checklist, subpage_expectations' : 'subpage_checklist, subpage_day_overview, subpage_expectations';
+      const formatLabel = isGuide ? 'Practical Guide' : 'Day-by-day Itinerary';
       const metaSystem = `You are an editorial copywriter for Fjord & Waves Travel, a premium boutique travel atelier.
 You write in a calm, confident, human voice — never generic, never overly poetic, never AI-clichéd.
 STRICTLY AVOID the words: tapestry, nestled, vibrant, bustling, charming, seamlessly, delve, curated, elevate, timeless, unparalleled, testament, journey of discovery, treasure trove, gem, haven, boasts.
