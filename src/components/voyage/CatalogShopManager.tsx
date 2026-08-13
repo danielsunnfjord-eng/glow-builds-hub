@@ -1507,12 +1507,8 @@ const CatalogShopManager = () => {
     },
     {
       key: "price",
-      label: "Prices set for EUR, USD, BRL and NOK (distinct real values)",
-      ok:
-        Number(s.priceEur) > 0 &&
-        Number(s.priceUsd) > 0 && Number(s.priceUsd) !== Number(s.priceEur) &&
-        Number(s.priceBrl) > 0 && Number(s.priceBrl) !== Number(s.priceEur) &&
-        Number(s.priceNok) > 0 && Number(s.priceNok) !== Number(s.priceEur),
+      label: "Price set in NOK (base currency)",
+      ok: Number(s.priceNok) > 0,
     },
     {
       key: "summaries",
