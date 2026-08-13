@@ -198,6 +198,7 @@ const blankEditor: EditorState = {
   experienceType: [],
   season: [],
   duration: "",
+  outputFormat: "itinerary",
 
   language: "en",
   brief: "",
