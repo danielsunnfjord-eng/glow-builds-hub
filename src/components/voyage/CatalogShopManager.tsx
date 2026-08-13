@@ -2059,10 +2059,12 @@ const CatalogShopManager = () => {
               </div>
             </div>
 
-            <div>
-              <Label>Duration</Label>
-              <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
-            </div>
+            {state.outputFormat === "itinerary" && (
+              <div>
+                <Label>Duration</Label>
+                <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
+              </div>
+            )}
             <div>
               <Label>Language</Label>
               <Select value={state.language} onValueChange={(v: Lang) => setState({ ...state, language: v })}>
