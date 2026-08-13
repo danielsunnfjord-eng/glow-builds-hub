@@ -307,6 +307,7 @@ Deno.serve(async (req) => {
       destination = '',
       experience_type = '',
       duration = '',
+      output_format = 'itinerary', // 'itinerary' | 'guide'
       language = 'en',
       brief = '',
       mode = 'full', // 'full' | 'section' | 'metadata'
