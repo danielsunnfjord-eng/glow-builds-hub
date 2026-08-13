@@ -829,6 +829,7 @@ const CatalogShopManager = () => {
       experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: Array.isArray(r.season) ? r.season : r.season ? [r.season] : [],
       duration: r.duration || "",
+      outputFormat: "itinerary",
 
       language: lang,
       brief: "",
