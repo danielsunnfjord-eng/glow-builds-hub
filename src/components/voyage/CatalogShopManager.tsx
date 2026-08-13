@@ -137,6 +137,7 @@ interface EditorState {
   season: string[];
 
   duration: string;
+  outputFormat: "itinerary" | "guide";
   language: Lang;
   brief: string;
   summary: string;
