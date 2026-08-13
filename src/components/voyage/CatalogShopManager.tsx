@@ -1095,6 +1095,7 @@ const CatalogShopManager = () => {
           language: state.language,
           existing_content: baseContent,
           section_instruction: sectionPrompt,
+          output_format: state.outputFormat,
         }),
       });
       if (!res.ok || !res.body) {
