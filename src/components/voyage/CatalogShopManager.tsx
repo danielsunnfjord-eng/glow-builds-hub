@@ -1029,6 +1029,7 @@ const CatalogShopManager = () => {
         destination: state.destination,
         experience_type: state.experienceType.join(", "),
         duration: state.duration,
+        output_format: state.outputFormat,
         language: state.language,
         brief: state.brief,
         client_origin: state.clientOrigin || undefined,
