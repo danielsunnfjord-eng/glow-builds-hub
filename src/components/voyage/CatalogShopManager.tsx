@@ -191,6 +191,17 @@ type ApplySummary = {
   totalItems: number;
 };
 
+const GUIDE_SECTION_SUGGESTIONS = [
+  "Attractions",
+  "Accommodation",
+  "Getting around",
+  "Food & drink",
+  "Safety",
+  "Money & costs",
+  "Best time to visit",
+  "Practical tips",
+];
+
 const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
 const blankEditor: EditorState = {
@@ -1529,6 +1540,26 @@ const CatalogShopManager = () => {
   ];
 
   const checklist = buildChecklist(state);
+
+  const isGuide = state.outputFormat === "guide";
+
+  // Sanity-check the subpage overview rows against the chosen format so the
+  // admin sees straight away when the AI produced too few / the wrong rows.
+  const overviewWarning = (() => {
+    const rows = state.subpageDayOverview.filter((d) => d.label.trim() || d.description.trim());
+    if (rows.length === 0) return null;
+    if (isGuide) {
+      const dayish = rows.filter((d) => /^\s*(day|dia|dag)\s*\d+/i.test(d.label)).length;
+      if (dayish > 0) return `${dayish} row(s) still use "Day N" labels — a practical guide should use themed sections.`;
+      if (rows.length < 4) return "A practical guide usually needs at least 4 themed sections.";
+      return null;
+    }
+    const expectedDays = parseInt((state.duration.match(/\d+/) || [])[0] || "0", 10);
+    if (expectedDays > 0 && rows.length !== expectedDays) {
+      return `Duration says ${expectedDays} days but there ${rows.length === 1 ? "is" : "are"} ${rows.length} overview row(s).`;
+    }
+    return null;
+  })();
   const canPublish = checklist.every((c) => c.ok);
 
   const save = async (publish?: boolean) => {
@@ -2228,7 +2259,7 @@ const CatalogShopManager = () => {
                     type="button"
                     size="sm"
                     variant="outline"
-                    disabled={autoMeta || !state.content.trim()}
+                    disabled={generating || !state.content.trim()}
                     onClick={() =>
                       runAutoMetadata(state.content)
                         .then(() => toast.success("Overview regenerated"))
