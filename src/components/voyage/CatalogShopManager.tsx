@@ -2354,16 +2354,37 @@ const CatalogShopManager = () => {
                   Body copy lives in Google Docs. Edit there freely. The app pulls fresh content each time you preview the PDF — fonts and colours are always set by the brand stylesheet.
                 </p>
               </div>
-              <Button
-                onClick={runGenerate}
-                disabled={generating}
-                variant="outline"
-                size="sm"
-                title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
-              >
-                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
-              </Button>
+              <div className="flex items-center gap-3">
+                <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background">
+                  {[
+                    { key: "itinerary", label: "Day-by-day Itinerary" },
+                    { key: "guide", label: "Practical Guide" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
+                      className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
+                        state.outputFormat === opt.key
+                          ? "bg-ink text-voyage-white"
+                          : "text-voyage-muted hover:text-ink"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  onClick={runGenerate}
+                  disabled={generating}
+                  variant="outline"
+                  size="sm"
+                  title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
+                >
+                  {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
+                </Button>
+              </div>
             </div>
 
             {/* Audit Itinerary toolbar + checklist */}
