@@ -355,14 +355,19 @@ Name specific places, landscapes or experiences from the itinerary excerpt to gr
 You write natively in each requested language — never translate word-for-word from English. Brazilian Portuguese should read like a Brazilian wrote it; Norwegian should read like a Norwegian (Bokmål) wrote it.
 The primary language for the subpage fields (${subpageFields}) is: ${metaLangName}. Write ALL strings in those fields natively in ${metaLangName}, never in English (unless the primary language is English).
 You must output STRICT JSON only — no markdown fences, no preamble, no commentary.`;
+      const dayOverviewKey = isGuide ? '' : `
+  "subpage_day_overview": [{"label": "${dayWord} 1 — <concise route or theme drawn from the actual day in the excerpt, in ${metaLangName}>", "description": "1–2 sentence preview of that day, grounded in real places/experiences from the excerpt. Written natively in ${metaLangName}."}],`;
+      const dayOverviewRule = isGuide ? '' : `
+- "subpage_day_overview": MUST contain EXACTLY ${expectedDayCount} entries — one per day of this ${expectedDayCount}-day itinerary, in order from day 1 through day ${expectedDayCount}. Do NOT stop early, do NOT merge days, do NOT skip any day. Every day from 1 to ${expectedDayCount} must appear exactly once. Each "label" must start with "${dayWord} N — " (where N is the day number) and reflect that day's actual route/theme from the excerpt, in ${metaLangName}. Descriptions must also be in ${metaLangName}. If the excerpt does not fully describe a later day, still produce an entry inferred from the surrounding context and destination — never omit it.`;
       const metaUser = `Trip metadata:
 — Title: ${title || '(untitled)'}
 — Destination: ${destination || '(unspecified)'}
 — Duration: ${duration || '(unspecified)'}
+— Format: ${formatLabel}
 — Experience type: ${experience_type || '(unspecified)'}
 — Editor brief: ${brief || '(none)'}
 
-Itinerary excerpt (markdown, may be partial):
+${isGuide ? 'Guide' : 'Itinerary'} excerpt (markdown, may be partial):
 """
 ${excerpt}
 """
@@ -376,15 +381,13 @@ Write the following pieces of copy and return them as a single JSON object with 
   "summary_en": "2–3 sentence catalogue teaser in English — suitable for catalogue cards and listings. Tight, inviting, specific. No markdown, no quotes.",
   "summary_pt": "Same as summary_en but written natively in Brazilian Portuguese (pt-BR).",
   "summary_no": "Same as summary_en but written natively in Norwegian (Bokmål).",
-  "subpage_checklist": ["Exactly 4 short strings (max ~10 words each) describing what the customer specifically gets from THIS itinerary — grounded in the actual places, experiences and themes in the excerpt. Not generic. Written natively in ${metaLangName}."],
-  "subpage_day_overview": [{"label": "${dayWord} 1 — <concise route or theme drawn from the actual day in the excerpt, in ${metaLangName}>", "description": "1–2 sentence preview of that day, grounded in real places/experiences from the excerpt. Written natively in ${metaLangName}."}],
-  "subpage_expectations": [{"title": "Short evocative title (2–4 words) in ${metaLangName}", "description": "1–2 sentence card based on the tone and content of this itinerary. Written natively in ${metaLangName}."}]
+  "subpage_checklist": ["Exactly 4 short strings (max ~10 words each) describing what the customer specifically gets from THIS ${isGuide ? 'guide' : 'itinerary'} — grounded in the actual places, experiences and themes in the excerpt. Not generic. Written natively in ${metaLangName}."],${dayOverviewKey}
+  "subpage_expectations": [{"title": "Short evocative title (2–4 words) in ${metaLangName}", "description": "1–2 sentence card based on the tone and content of this ${isGuide ? 'guide' : 'itinerary'}. Written natively in ${metaLangName}."}]
 }
 
 Rules for the new arrays:
-- "subpage_checklist": EXACTLY 4 items, each a single short line, specific to this itinerary. Write every item natively in ${metaLangName}.
-- "subpage_day_overview": MUST contain EXACTLY ${expectedDayCount} entries — one per day of this ${expectedDayCount}-day itinerary, in order from day 1 through day ${expectedDayCount}. Do NOT stop early, do NOT merge days, do NOT skip any day. Every day from 1 to ${expectedDayCount} must appear exactly once. Each "label" must start with "${dayWord} N — " (where N is the day number) and reflect that day's actual route/theme from the excerpt, in ${metaLangName}. Descriptions must also be in ${metaLangName}. If the excerpt does not fully describe a later day, still produce an entry inferred from the surrounding context and destination — never omit it.
-- "subpage_expectations": EXACTLY 4 cards capturing the distinctive feel of THIS trip (not boilerplate). Titles and descriptions must be short, evocative and written natively in ${metaLangName}.
+- "subpage_checklist": EXACTLY 4 items, each a single short line, specific to this ${isGuide ? 'guide' : 'itinerary'}. Write every item natively in ${metaLangName}.${dayOverviewRule}
+- "subpage_expectations": EXACTLY 4 cards capturing the distinctive feel of THIS ${isGuide ? 'guide' : 'trip'} (not boilerplate). Titles and descriptions must be short, evocative and written natively in ${metaLangName}.
 
 Return ONLY the JSON object. No code fences, no explanation.`;
 
