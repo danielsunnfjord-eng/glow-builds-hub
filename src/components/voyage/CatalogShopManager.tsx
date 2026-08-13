@@ -608,7 +608,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, output_format, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -831,7 +831,7 @@ const CatalogShopManager = () => {
       experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: Array.isArray(r.season) ? r.season : r.season ? [r.season] : [],
       duration: r.duration || "",
-      outputFormat: "itinerary",
+      outputFormat: ((r as any).output_format === "guide" ? "guide" : "itinerary") as EditorState["outputFormat"],
 
       language: lang,
       brief: "",
@@ -1581,6 +1581,7 @@ const CatalogShopManager = () => {
           .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
           .filter((e) => e.title.length > 0 || e.description.length > 0),
         subpage_map_url: state.subpageMapUrl.trim() || null,
+        output_format: state.outputFormat,
         primary_language: state.language,
       };
 
