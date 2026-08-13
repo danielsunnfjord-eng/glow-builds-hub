@@ -1507,12 +1507,8 @@ const CatalogShopManager = () => {
     },
     {
       key: "price",
-      label: "Prices set for EUR, USD, BRL and NOK (distinct real values)",
-      ok:
-        Number(s.priceEur) > 0 &&
-        Number(s.priceUsd) > 0 && Number(s.priceUsd) !== Number(s.priceEur) &&
-        Number(s.priceBrl) > 0 && Number(s.priceBrl) !== Number(s.priceEur) &&
-        Number(s.priceNok) > 0 && Number(s.priceNok) !== Number(s.priceEur),
+      label: "Price set in NOK (base currency)",
+      ok: Number(s.priceNok) > 0,
     },
     {
       key: "summaries",
@@ -2076,28 +2072,10 @@ const CatalogShopManager = () => {
               </Select>
             </div>
             <div>
-              <Label>Price (EUR)</Label>
-              <Input type="number" min="0" step="1" value={state.priceEur} onChange={(e) => setState({ ...state, priceEur: e.target.value })} />
-            </div>
-            <div>
-              <Label>Price (USD)</Label>
-              <Input type="number" min="0" step="1" value={state.priceUsd} onChange={(e) => setState({ ...state, priceUsd: e.target.value })} />
-              {(Number(state.priceUsd) === 0 || (Number(state.priceEur) > 0 && Number(state.priceUsd) === Number(state.priceEur))) && (
-                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real USD price</p>
-              )}
-            </div>
-            <div>
-              <Label>Price (BRL)</Label>
-              <Input type="number" min="0" step="1" value={state.priceBrl} onChange={(e) => setState({ ...state, priceBrl: e.target.value })} />
-              {(Number(state.priceBrl) === 0 || (Number(state.priceEur) > 0 && Number(state.priceBrl) === Number(state.priceEur))) && (
-                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real BRL price</p>
-              )}
-            </div>
-            <div>
               <Label>Price (NOK)</Label>
               <Input type="number" min="0" step="1" value={state.priceNok} onChange={(e) => setState({ ...state, priceNok: e.target.value })} />
-              {(Number(state.priceNok) === 0 || (Number(state.priceEur) > 0 && Number(state.priceNok) === Number(state.priceEur))) && (
-                <p className="text-xs text-amber-600 mt-1">Placeholder — set the real NOK price</p>
+              {Number(state.priceNok) === 0 && (
+                <p className="text-xs text-amber-600 mt-1">Set the NOK price — other currencies convert automatically</p>
               )}
             </div>
             <div className="md:col-span-2">
