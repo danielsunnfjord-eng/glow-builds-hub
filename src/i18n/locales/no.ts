@@ -75,6 +75,7 @@ export default {
     intro: "Reisen",
     whatToExpect: "Hva du kan forvente",
     dayOverview: "Dag-for-dag oversikt",
+    guideOverview: "Hva denne guiden dekker",
     bestSeason: "Sesong",
     season: { spring: "Vår", summer: "Sommer", autumn: "Høst", winter: "Vinter" },
     gallery: "Glimt",

@@ -135,6 +135,7 @@ interface CatalogItem {
   subpage_day_overview: { label: string; description: string }[] | null;
   subpage_expectations: { title: string; description: string }[] | null;
   subpage_map_url: string | null;
+  output_format: string | null;
 }
 
 
@@ -230,6 +231,7 @@ const ItineraryShopDetail = () => {
     ? checklistFromDb
     : (wygItems.length > 0 ? wygItems : defaultIncludes);
 
+  const isGuide = (data as any)?.output_format === "guide";
   const dayOverview = Array.isArray(data?.subpage_day_overview)
     ? (data!.subpage_day_overview as { label: string; description: string }[])
         .map((d) => ({
@@ -640,14 +642,16 @@ const ItineraryShopDetail = () => {
                 </div>
               </div>
 
-              {/* Day overview */}
+              {/* Day-by-day overview (itinerary) or themed sections (practical guide) */}
               {dayOverview.length > 0 && (
                 <div className="mb-14">
                   <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
-                    {t("shop.dayOverview", "Day-by-day overview")}
+                    {isGuide
+                      ? t("shop.guideOverview", "What this guide covers")
+                      : t("shop.dayOverview", "Day-by-day overview")}
                   </h2>
                   <div className="h-px w-12 bg-gold mb-7" />
-                  <ol className="space-y-4">
+                  <ol className={isGuide ? "space-y-4 list-none" : "space-y-4"}>
                     {dayOverview.map((d, i) => (
                       <li
                         key={i}

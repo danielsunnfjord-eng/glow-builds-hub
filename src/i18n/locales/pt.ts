@@ -75,6 +75,7 @@ export default {
     intro: "O roteiro",
     whatToExpect: "O que esperar",
     dayOverview: "Visão geral dia a dia",
+    guideOverview: "O que este guia cobre",
     bestSeason: "Estação",
     season: { spring: "Primavera", summer: "Verão", autumn: "Outono", winter: "Inverno" },
     gallery: "Vislumbres",
