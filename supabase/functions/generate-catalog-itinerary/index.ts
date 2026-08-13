@@ -353,7 +353,7 @@ STRICTLY AVOID the words: tapestry, nestled, vibrant, bustling, charming, seamle
 Never open with "Imagine..." or "Welcome to...".
 Name specific places, landscapes or experiences from the itinerary excerpt to ground the writing.
 You write natively in each requested language — never translate word-for-word from English. Brazilian Portuguese should read like a Brazilian wrote it; Norwegian should read like a Norwegian (Bokmål) wrote it.
-The itinerary's primary language for the subpage fields (subpage_checklist, subpage_day_overview, subpage_expectations) is: ${metaLangName}. Write ALL strings in those three fields natively in ${metaLangName}, never in English (unless the primary language is English).
+The primary language for the subpage fields (${subpageFields}) is: ${metaLangName}. Write ALL strings in those fields natively in ${metaLangName}, never in English (unless the primary language is English).
 You must output STRICT JSON only — no markdown fences, no preamble, no commentary.`;
       const metaUser = `Trip metadata:
 — Title: ${title || '(untitled)'}
