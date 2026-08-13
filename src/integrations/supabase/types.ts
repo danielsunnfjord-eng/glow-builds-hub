@@ -45,6 +45,7 @@ export type Database = {
           itinerary_content_en: string | null
           itinerary_content_no: string | null
           itinerary_content_pt: string | null
+          output_format: string
           pdf_drive_file_id: string | null
           pdf_path: string | null
           price_brl: number
@@ -106,6 +107,7 @@ export type Database = {
           itinerary_content_en?: string | null
           itinerary_content_no?: string | null
           itinerary_content_pt?: string | null
+          output_format?: string
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_brl?: number
@@ -167,6 +169,7 @@ export type Database = {
           itinerary_content_en?: string | null
           itinerary_content_no?: string | null
           itinerary_content_pt?: string | null
+          output_format?: string
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
           price_brl?: number

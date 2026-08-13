@@ -76,6 +76,7 @@ export default {
     intro: "The journey",
     whatToExpect: "What to expect",
     dayOverview: "Day-by-day overview",
+    guideOverview: "What this guide covers",
     bestSeason: "Season",
     season: { spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter" },
     gallery: "Glimpses",

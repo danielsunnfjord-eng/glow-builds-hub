@@ -91,6 +91,8 @@ interface CatalogRow {
   subpage_checklist?: string[] | null;
   subpage_day_overview?: { label: string; description: string }[] | null;
   subpage_expectations?: { title: string; description: string }[] | null;
+  subpage_map_url?: string | null;
+  output_format?: string | null;
   stripe_product_id_sandbox?: string | null;
   stripe_product_id_live?: string | null;
   stripe_synced_at?: string | null;
@@ -188,6 +190,17 @@ type ApplySummary = {
   failedItems: SelectableAuditItem[];
   totalItems: number;
 };
+
+const GUIDE_SECTION_SUGGESTIONS = [
+  "Attractions",
+  "Accommodation",
+  "Getting around",
+  "Food & drink",
+  "Safety",
+  "Money & costs",
+  "Best time to visit",
+  "Practical tips",
+];
 
 const CATALOG_AUDIT_TIMEOUT_MS = 120_000;
 
@@ -606,7 +619,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, output_format, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -829,7 +842,7 @@ const CatalogShopManager = () => {
       experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: Array.isArray(r.season) ? r.season : r.season ? [r.season] : [],
       duration: r.duration || "",
-      outputFormat: "itinerary",
+      outputFormat: ((r as any).output_format === "guide" ? "guide" : "itinerary") as EditorState["outputFormat"],
 
       language: lang,
       brief: "",
@@ -1516,6 +1529,9 @@ const CatalogShopManager = () => {
       label: "Price set in NOK (base currency)",
       ok: Number(s.priceNok) > 0,
     },
+    ...(s.outputFormat === "guide"
+      ? []
+      : [{ key: "duration", label: "Duration set (day-by-day itinerary)", ok: !!s.duration.trim() }]),
     {
       key: "summaries",
       label: "Short description filled in for EN / PT / NO",
@@ -1524,6 +1540,26 @@ const CatalogShopManager = () => {
   ];
 
   const checklist = buildChecklist(state);
+
+  const isGuide = state.outputFormat === "guide";
+
+  // Sanity-check the subpage overview rows against the chosen format so the
+  // admin sees straight away when the AI produced too few / the wrong rows.
+  const overviewWarning = (() => {
+    const rows = state.subpageDayOverview.filter((d) => d.label.trim() || d.description.trim());
+    if (rows.length === 0) return null;
+    if (isGuide) {
+      const dayish = rows.filter((d) => /^\s*(day|dia|dag)\s*\d+/i.test(d.label)).length;
+      if (dayish > 0) return `${dayish} row(s) still use "Day N" labels — a practical guide should use themed sections.`;
+      if (rows.length < 4) return "A practical guide usually needs at least 4 themed sections.";
+      return null;
+    }
+    const expectedDays = parseInt((state.duration.match(/\d+/) || [])[0] || "0", 10);
+    if (expectedDays > 0 && rows.length !== expectedDays) {
+      return `Duration says ${expectedDays} days but there ${rows.length === 1 ? "is" : "are"} ${rows.length} overview row(s).`;
+    }
+    return null;
+  })();
   const canPublish = checklist.every((c) => c.ok);
 
   const save = async (publish?: boolean) => {
@@ -1579,6 +1615,7 @@ const CatalogShopManager = () => {
           .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
           .filter((e) => e.title.length > 0 || e.description.length > 0),
         subpage_map_url: state.subpageMapUrl.trim() || null,
+        output_format: state.outputFormat,
         primary_language: state.language,
       };
 
@@ -2062,7 +2099,35 @@ const CatalogShopManager = () => {
               </div>
             </div>
 
-            {state.outputFormat === "itinerary" && (
+            <div className="md:col-span-2">
+              <Label>Output format</Label>
+              <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background mt-1.5">
+                {[
+                  { key: "itinerary", label: "Day-by-day Itinerary" },
+                  { key: "guide", label: "Practical Guide" },
+                ].map((opt) => (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
+                    className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
+                      state.outputFormat === opt.key
+                        ? "bg-ink text-voyage-white"
+                        : "text-voyage-muted hover:text-ink"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[0.68rem] text-voyage-muted mt-1">
+                {isGuide
+                  ? "A themed practical guide (attractions, transport, food, safety…). No days, no duration."
+                  : "A day-by-day trip with a logical route flow between days."}
+              </p>
+            </div>
+
+            {!isGuide && (
               <div>
                 <Label>Duration</Label>
                 <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
@@ -2181,10 +2246,51 @@ const CatalogShopManager = () => {
               </div>
             </div>
             <div className="md:col-span-2">
-              <Label>Day overview (subpage)</Label>
+              <Label>{isGuide ? "Guide sections (subpage)" : "Day overview (subpage)"}</Label>
               <p className="text-[0.7rem] text-voyage-muted mb-2">
-                Add one row per day. Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.
+                {isGuide
+                  ? 'Add one row per themed section (Attractions, Getting around, Food, Safety…). Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.'
+                  : 'Add one row per day. Shown on the catalogue subpage below "What to expect". Leave empty to hide the section.'}
               </p>
+              {overviewWarning && (
+                <div className="mb-2 flex flex-wrap items-center gap-2 text-[0.7rem] text-amber-700 bg-amber-50 border border-amber-200 rounded-sm px-2.5 py-1.5">
+                  <span>{overviewWarning}</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={generating || !state.content.trim()}
+                    onClick={() =>
+                      runAutoMetadata(state.content)
+                        .then(() => toast.success("Overview regenerated"))
+                        .catch((err: any) => toast.error(err?.message || "Could not regenerate overview"))
+                    }
+                  >
+                    Regenerate overview
+                  </Button>
+                </div>
+              )}
+              {isGuide && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {GUIDE_SECTION_SUGGESTIONS.filter(
+                    (label) => !state.subpageDayOverview.some((d) => d.label.trim().toLowerCase() === label.toLowerCase()),
+                  ).map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() =>
+                        setState((s) => ({
+                          ...s,
+                          subpageDayOverview: [...s.subpageDayOverview, { label, description: "" }],
+                        }))
+                      }
+                      className="px-2.5 py-1 rounded-full text-[0.68rem] border border-input bg-background hover:bg-muted"
+                    >
+                      + {label}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="space-y-3">
                 {state.subpageDayOverview.map((day, idx) => (
                   <div key={idx} className="space-y-2 p-3 rounded-sm border border-ink/[0.08] bg-voyage-white">
@@ -2196,7 +2302,7 @@ const CatalogShopManager = () => {
                           next[idx] = { ...next[idx], label: e.target.value };
                           setState({ ...state, subpageDayOverview: next });
                         }}
-                        placeholder='e.g. Day 1 — Bergen - Voss - Flåm Railway'
+                        placeholder={isGuide ? "e.g. Getting around" : `e.g. Day ${idx + 1} — Bergen - Voss - Flåm Railway`}
                       />
                       <Button
                         type="button"
@@ -2358,25 +2464,9 @@ const CatalogShopManager = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background">
-                  {[
-                    { key: "itinerary", label: "Day-by-day Itinerary" },
-                    { key: "guide", label: "Practical Guide" },
-                  ].map((opt) => (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
-                      className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
-                        state.outputFormat === opt.key
-                          ? "bg-ink text-voyage-white"
-                          : "text-voyage-muted hover:text-ink"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <span className="text-[0.68rem] uppercase tracking-[0.1em] text-voyage-muted">
+                  {isGuide ? "Practical guide" : "Day-by-day itinerary"}
+                </span>
                 <Button
                   onClick={runGenerate}
                   disabled={generating}
