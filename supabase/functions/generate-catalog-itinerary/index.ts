@@ -459,6 +459,7 @@ Return ONLY the JSON object. No code fences, no explanation.`;
         experience_type,
         duration,
         notes: brief,
+        outputFormat: output_format as 'itinerary' | 'guide',
       });
     const systemPrompt = personaBlock ? personaBlock + baseSystem : baseSystem;
 
