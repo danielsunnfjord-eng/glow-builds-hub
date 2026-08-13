@@ -137,6 +137,7 @@ interface EditorState {
   season: string[];
 
   duration: string;
+  outputFormat: "itinerary" | "guide";
   language: Lang;
   brief: string;
   summary: string;
@@ -197,6 +198,7 @@ const blankEditor: EditorState = {
   experienceType: [],
   season: [],
   duration: "",
+  outputFormat: "itinerary",
 
   language: "en",
   brief: "",
@@ -827,6 +829,7 @@ const CatalogShopManager = () => {
       experienceType: Array.isArray(r.experience_type) ? r.experience_type : r.experience_type ? [r.experience_type] : [],
       season: Array.isArray(r.season) ? r.season : r.season ? [r.season] : [],
       duration: r.duration || "",
+      outputFormat: "itinerary",
 
       language: lang,
       brief: "",
@@ -960,6 +963,7 @@ const CatalogShopManager = () => {
         destination: state.destination,
         experience_type: state.experienceType.join(", "),
         duration: state.duration,
+        output_format: state.outputFormat,
         brief: state.brief,
         language: state.language,
         existing_content: itineraryText,
@@ -1026,6 +1030,7 @@ const CatalogShopManager = () => {
         destination: state.destination,
         experience_type: state.experienceType.join(", "),
         duration: state.duration,
+        output_format: state.outputFormat,
         language: state.language,
         brief: state.brief,
         client_origin: state.clientOrigin || undefined,
@@ -1091,6 +1096,7 @@ const CatalogShopManager = () => {
           language: state.language,
           existing_content: baseContent,
           section_instruction: sectionPrompt,
+          output_format: state.outputFormat,
         }),
       });
       if (!res.ok || !res.body) {
@@ -2056,10 +2062,12 @@ const CatalogShopManager = () => {
               </div>
             </div>
 
-            <div>
-              <Label>Duration</Label>
-              <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
-            </div>
+            {state.outputFormat === "itinerary" && (
+              <div>
+                <Label>Duration</Label>
+                <Input placeholder="e.g. 5 days" value={state.duration} onChange={(e) => setState({ ...state, duration: e.target.value })} />
+              </div>
+            )}
             <div>
               <Label>Language</Label>
               <Select value={state.language} onValueChange={(v: Lang) => setState({ ...state, language: v })}>
@@ -2349,16 +2357,37 @@ const CatalogShopManager = () => {
                   Body copy lives in Google Docs. Edit there freely. The app pulls fresh content each time you preview the PDF — fonts and colours are always set by the brand stylesheet.
                 </p>
               </div>
-              <Button
-                onClick={runGenerate}
-                disabled={generating}
-                variant="outline"
-                size="sm"
-                title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
-              >
-                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
-              </Button>
+              <div className="flex items-center gap-3">
+                <div className="inline-flex rounded-xs border border-parchment-3 p-0.5 bg-background">
+                  {[
+                    { key: "itinerary", label: "Day-by-day Itinerary" },
+                    { key: "guide", label: "Practical Guide" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setState((s) => ({ ...s, outputFormat: opt.key as EditorState["outputFormat"] }))}
+                      className={`px-3 py-1.5 rounded-xs text-[0.72rem] font-medium tracking-[0.06em] transition-colors ${
+                        state.outputFormat === opt.key
+                          ? "bg-ink text-voyage-white"
+                          : "text-voyage-muted hover:text-ink"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  onClick={runGenerate}
+                  disabled={generating}
+                  variant="outline"
+                  size="sm"
+                  title={gdocInfo.id ? "Regenerate AI content (will overwrite the Doc on next save)" : "Generate initial AI content"}
+                >
+                  {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                  {gdocInfo.id ? "Regenerate with AI" : "Generate with AI"}
+                </Button>
+              </div>
             </div>
 
             {/* Audit Itinerary toolbar + checklist */}
