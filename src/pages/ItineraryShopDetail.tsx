@@ -644,6 +644,8 @@ const ItineraryShopDetail = () => {
                   })}
                 </div>
               </div>
+              )}
+
 
               {/* Day-by-day overview (itinerary) or themed sections (practical guide) */}
               {dayOverview.length > 0 && (
