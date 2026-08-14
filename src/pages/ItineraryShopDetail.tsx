@@ -614,6 +614,7 @@ const ItineraryShopDetail = () => {
               </div>
 
               {/* What to expect */}
+              {expectations.length > 0 && (
               <div className="mb-14">
                 <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
                   {t("shop.whatToExpect", "What to expect")}
