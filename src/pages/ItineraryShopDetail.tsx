@@ -359,7 +359,9 @@ const ItineraryShopDetail = () => {
         .filter((e) => e.label.length > 0 || e.text.length > 0)
     : [];
 
-  const expectations = expectationsFromDb.length > 0 ? expectationsFromDb : defaultExpectations;
+  // Only show cards the admin actually added — no silent defaults.
+  const expectations = expectationsFromDb;
+  void defaultExpectations;
 
   const valueProps = [
     {
