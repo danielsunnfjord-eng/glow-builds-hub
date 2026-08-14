@@ -359,7 +359,9 @@ const ItineraryShopDetail = () => {
         .filter((e) => e.label.length > 0 || e.text.length > 0)
     : [];
 
-  const expectations = expectationsFromDb.length > 0 ? expectationsFromDb : defaultExpectations;
+  // Only show cards the admin actually added — no silent defaults.
+  const expectations = expectationsFromDb;
+  void defaultExpectations;
 
   const valueProps = [
     {
@@ -612,6 +614,7 @@ const ItineraryShopDetail = () => {
               </div>
 
               {/* What to expect */}
+              {expectations.length > 0 && (
               <div className="mb-14">
                 <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
                   {t("shop.whatToExpect", "What to expect")}
@@ -641,6 +644,8 @@ const ItineraryShopDetail = () => {
                   })}
                 </div>
               </div>
+              )}
+
 
               {/* Day-by-day overview (itinerary) or themed sections (practical guide) */}
               {dayOverview.length > 0 && (
