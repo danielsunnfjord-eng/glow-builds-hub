@@ -171,7 +171,10 @@ const TranslateItineraryPanel = ({ itineraryId, sourceDefault, onApplied }: Prop
         setSaving(false);
         return;
       }
-      const { error } = await supabase.from("catalog_itineraries").update(payload).eq("id", itineraryId);
+      const { error } = await supabase
+        .from("catalog_itineraries")
+        .update(payload as never)
+        .eq("id", itineraryId);
       if (error) throw error;
       onApplied?.(applied);
       setResult(null);
