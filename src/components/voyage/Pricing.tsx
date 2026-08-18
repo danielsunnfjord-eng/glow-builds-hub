@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import {
   CurrencyPicker,
@@ -29,6 +29,9 @@ const CARDS: CardData[] = [
 ];
 
 const TABLE_ROWS: number[] = [3000, 3650, 4350, 5650];
+
+/** Bespoke planning fee bands (NOK): simple / moderate / complex. */
+const TIER_NOK: number[] = [6000, 9000, 14000];
 
 const Pricing = () => {
   const { t } = useTranslation();
