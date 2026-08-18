@@ -2,7 +2,18 @@
 
 Sim, é possível. Hoje o editor já guarda o conteúdo em três colunas separadas (inglês, português, norueguês), mas o botão de tradução só traduz 4 campos curtos (título, resumo, descrição, "o que você recebe"). O corpo do roteiro, a intro da capa e os blocos da subpágina não são traduzidos — por isso parece que só dá para traduzir "meia página".
 
-## O que vou construir
+## Fase 1 — Teste de prova de conceito (antes de implementar)
+
+Antes de mexer no editor, vou fazer um teste controlado:
+
+1. Escolher um roteiro de teste (pode ser um rascunho não publicado ou um roteiro que você indique).
+2. Chamar a IA diretamente com um pedaço real do HTML do `itinerary_content_*` desse roteiro, usando o prompt de "preservar tags, atributos e links, traduzir apenas texto visível".
+3. Comparar origem vs. resultado: contagem de tags, links, parágrafos e listas deve ser idêntica; só o texto visível muda.
+4. Mostrar o resultado para você aprovar o tom/qualidade.
+
+Se você quiser, posso usar como exemplo um trecho do roteiro de Barcelona ou do Madrid guide que você está criando. Me confirme qual roteiro posso usar, ou se prefere que eu crie um rascunho de teste separado.
+
+## Fase 2 — O que vou construir (depois do teste aprovado)
 
 Um botão **"Traduzir roteiro completo"** no editor do roteiro que:
 
