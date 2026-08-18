@@ -2144,6 +2144,24 @@ const CatalogShopManager = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div className="md:col-span-2">
+              <TranslateItineraryPanel
+                itineraryId={state.id}
+                sourceDefault={state.language}
+                onApplied={(values) => {
+                  setState((s) => ({
+                    ...s,
+                    summary: values["summary_en"] ?? s.summary,
+                    summaryPt: values["summary_pt"] ?? s.summaryPt,
+                    summaryNo: values["summary_no"] ?? s.summaryNo,
+                    coverIntroEn: values["cover_intro_en"] ?? s.coverIntroEn,
+                    coverIntroPt: values["cover_intro_pt"] ?? s.coverIntroPt,
+                    coverIntroNo: values["cover_intro_no"] ?? s.coverIntroNo,
+                  }));
+                  qc.invalidateQueries({ queryKey: ["catalog-shop-list"] });
+                }}
+              />
+            </div>
             <div>
               <Label>Price (NOK)</Label>
               <Input type="number" min="0" step="1" value={state.priceNok} onChange={(e) => setState({ ...state, priceNok: e.target.value })} />
