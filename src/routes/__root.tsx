@@ -203,6 +203,15 @@ const DeferredCalendly = () => {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // The URL is the source of truth for language. Sync i18next during render
+  // (resources are bundled, so changeLanguage resolves synchronously) so the
+  // server and the hydrating client always render the same copy.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const locale = detectLocaleFromPath(pathname);
+  if (i18n.language !== locale) {
+    setServerLocale(locale);
+    void i18n.changeLanguage(locale);
+  }
 
   useEffect(() => {
     // ported from main.tsx — GA only runs in the browser
