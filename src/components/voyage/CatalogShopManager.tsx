@@ -39,6 +39,7 @@ import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 import { sanitizeDocHtml } from "@/lib/sanitizeDocHtml";
+import TranslateItineraryPanel from "@/components/voyage/TranslateItineraryPanel";
 
 type Lang = "en" | "pt" | "no";
 
