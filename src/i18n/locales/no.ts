@@ -775,56 +775,10 @@ export default {
   },
   pricingPage: {
     seoTitle: "Priser og honorar | Fjord & Waves Travel",
-    seoDescription: "Planleggingshonorar og servicehonorar forklart. Faste priser for ferdiglagde reiseguider, r\u00e5dgivning \u00e9n-til-\u00e9n og skreddersydde reiser, med live valutakurs i NOK, EUR, USD og BRL.",
+    seoDescription: "Tydelige priser for ferdiglagde reiseguider, r\u00e5dgivning \u00e9n-til-\u00e9n og skreddersydde reiser. Live valutakurs i NOK, EUR, USD og BRL.",
     badge: "Priser",
     title: "Tydelige, ærlige priser fra første dag.",
     subtitle: "Prisene våre er helt transparente og strukturert som faste forhåndsgebyrer. Du vil alltid vite den nøyaktige investeringen som kreves før vi starter planleggingsprosessen, slik at uventede kostnader elimineres fullstendig.",
-    terms: {
-      eyebrow: "To honorarer, forklart enkelt",
-      heading: "Planleggingshonorar og servicehonorar — hva er forskjellen",
-      planningTitle: "Planleggingshonorar",
-      planningBody: "Et fast honorar som betales før designarbeidet starter. Det dekker research, ruteplanlegging, kontakt med leverandører og den ferdige planen du mottar. Beløpet avtales skriftlig på forhånd, og det refunderes ikke når planleggingen først er i gang.",
-      serviceTitle: "Servicehonorar",
-      serviceBody: "7 % på bestillinger vi gjør for deg — hotell, transport, guider og opplevelser. Det dekker håndtering av bestillingen, endringer og støtte mens du reiser. Du betaler det kun på det vi faktisk booker for deg.",
-      note: "Selve reisen — fly, opphold, transport og opplevelser — betales alltid separat, i tillegg til disse honorarene.",
-    },
-    value: {
-      eyebrow: "Hva du betaler for",
-      heading: "Honoraret kjøper tid, vurderingsevne og tilgang",
-      blocks: [
-        {
-          title: "Ekspertise og tilgang",
-          body: "År med å lære destinasjoner å kjenne, besøke hoteller personlig og bygge relasjoner med lokale guider og operatører. Det åpner dører og priser du ikke finner på et bookingnettsted.",
-        },
-        {
-          title: "Personlig tilpasning",
-          body: "Hver rute formes rundt ditt tempo, din smak og det du ikke vil gi slipp på. Ingenting hentes fra en mal — planen du får er skrevet for din reise, ikke noen andres.",
-        },
-        {
-          title: "Reelle arbeidstimer",
-          body: "En godt planlagt reise er ikke et søkeresultat. Det er sammenligning, verifisering og koordinering, gjort før du reiser hjemmefra — og uavhengig, fordi rådene våre ikke styres av provisjon.",
-        },
-      ],
-      hoursLabel: "En typisk 10-dagers reise — rundt 15 til 20 timer",
-      hours: [
-        "Research på destinasjon og sesong før planleggingen",
-        "Samtaler med deg for å forstå reisen du faktisk ønsker",
-        "Leverandørresearch, tilgjengelighetssjekk og forhandling",
-        "Booking, rekkefølge og koordinering av alle deler",
-        "Utarbeidelse av den skriftlige planen og reisedokumentene",
-      ],
-    },
-    steps: {
-      eyebrow: "Slik fungerer det",
-      heading: "Hva skjer videre",
-      items: [
-        { title: "Gratis konsultasjon", body: "En uformell samtale om hvor du vil reise og hva som betyr noe for deg. Uten kostnad og uten forpliktelser." },
-        { title: "Skriftlig omfang og pris", body: "Du får nøyaktig hva som er inkludert og nøyaktig planleggingshonorar, skriftlig, før noe settes i gang." },
-        { title: "Du godkjenner", body: "Ingenting belastes og ingen jobb starter før du har sagt ja til omfang og pris." },
-        { title: "Planleggingen starter", body: "Design, bestillinger og den ferdige planen din — etterfulgt av støtte mens du reiser." },
-      ],
-      cta: "Start med en gratis konsultasjon",
-    },
     faqEyebrow: "Greit \u00e5 vite",
     faqHeading: "Sp\u00f8rsm\u00e5l om pris",
     faq: {
@@ -833,32 +787,20 @@ export default {
         a: "Ja. Honoraret dekker planlegging, r\u00e5dgivning og hjelp med bestillinger. Fly, hotell, transport og opplevelser betales separat \u2014 vanligvis direkte til leverand\u00f8r eller via byr\u00e5bestilling.",
       },
       "1": {
-        q: "Refunderes planleggingshonoraret, eller trekkes det fra reisen?",
-        a: "Ingen av delene. Honoraret betaler for selve designarbeidet, s\u00e5 n\u00e5r planleggingen er i gang refunderes det ikke, og det trekkes ikke fra bestillingene dine. Nettopp derfor er konsultasjonen gratis og prisen avtales skriftlig f\u00f8rst \u2014 du bestemmer f\u00f8r noe belastes.",
-      },
-      "2": {
         q: "Hvorfor tar dere planleggingshonorar?",
         a: "Honoraret dekker research, ruteplanlegging og tiden som g\u00e5r med til \u00e5 tilpasse reisen til deg. Det gj\u00f8r ogs\u00e5 r\u00e5dene uavhengige \u2014 jeg anbefaler det som passer deg, ikke det som gir mest provisjon.",
       },
-      "3": {
-        q: "Tjener dere ogs\u00e5 provisjon fra hotellene?",
-        a: "P\u00e5 bestillinger gjort gjennom byr\u00e5et betaler leverand\u00f8rene en standard provisjon, ja. Derfor er jeg \u00e5pen om det: planleggingshonoraret holder anbefalingene uavhengige av hvem som betaler best.",
-      },
-      "4": {
-        q: "Hva dekker servicehonoraret p\u00e5 7 %?",
-        a: "H\u00e5ndtering av bestillingene vi gj\u00f8r for deg \u2014 bekreftelser, endringer, spesielle \u00f8nsker og hjelp hvis noe g\u00e5r galt underveis. Det gjelder kun det vi booker p\u00e5 dine vegne.",
-      },
-      "5": {
-        q: "Koster det \u00e5 gj\u00f8re endringer etter at planen er levert?",
-        a: "Sm\u00e5 justeringer er inkludert. Endrer du destinasjon, datoer eller strukturen p\u00e5 reisen etter at planleggingen er ferdig, er det nytt designarbeid og prises separat \u2014 alltid avtalt med deg f\u00f8rst.",
-      },
-      "6": {
-        q: "Hva om jeg bare trenger \u00e9tt hotell eller \u00e9n transport?",
-        a: "Da er det ingen planleggingshonorar. Enkle enkeltbestillinger krever det ikke \u2014 bare ta kontakt, s\u00e5 booker jeg det for deg.",
-      },
-      "7": {
+      "2": {
         q: "Hvilken valuta blir jeg belastet i?",
         a: "Prisene er satt i NOK. Du kan se dem i EUR, USD eller BRL med live valutakurs; bel\u00f8pet du betaler vises f\u00f8r du bekrefter.",
+      },
+      "3": {
+        q: "Kan jeg oppgradere fra ferdig guide til skreddersydd reise?",
+        a: "Ja. Kj\u00f8per du en ferdiglagd reiseguide og senere \u00f8nsker en skreddersydd reise, sier du bare fra \u2014 prisen p\u00e5 guiden tas med i regnestykket.",
+      },
+      "4": {
+        q: "Hva skjer etter at jeg har betalt?",
+        a: "Guider lastes ned umiddelbart. For r\u00e5dgivning og skreddersydde reiser avtaler vi en samtale, og jeg starter planen rett etterp\u00e5.",
       },
     },
   },
@@ -867,17 +809,6 @@ export default {
      "heading": "Vi inviterer deg til å velge din foretrukne reisestil.",
      "subtext": "Enten du velger en av våre kuraterte reiseruter eller en helt skreddersydd reise designet fra bunnen av, er hver opplevelse forankret i ekte ekspertise og enestående omtanke.",
     "currencyLabel": "Valuta",
-    "founding": {
-      "badge": "FØRSTE KUNDER",
-      "heading": "Oppstartspriser mens vi vokser",
-      "body": "Fjord & Waves er et ungt reisebyrå, og de første reisende som stoler på oss er med på å bygge det. Frem til tilbudet revideres betaler våre første kunder redusert planleggingshonorar på skreddersydde reiser.",
-      "points": [
-        "50 % rabatt på planleggingshonoraret for våre første kunder",
-        "25 % rabatt for deg som er anbefalt av en tidligere reisende",
-        "Ferdiglagde guider og konsultasjoner har allerede oppstartspris"
-      ],
-      "note": "Tilbudet revideres 31. desember 2026. Gjelder kun planleggingshonoraret."
-    },
     "card1": {
       "label": "FERDIGLAGET",
       "title": "Ferdiglagde reiseguider",
@@ -911,7 +842,7 @@ export default {
       "label": "SKREDDERSYDD",
       "title": "Skreddersydd reise",
       "description": "Vi designer, planlegger og booker hele reisen din.",
-      "fee_note": "Gratis konsultasjon · Planleggingshonorar*",
+      "fee_note": "Gratis konsultasjon · Designavgift*",
       "price_label": "FRA",
       "features": [
         "Reise designet fra bunnen av",
@@ -922,14 +853,14 @@ export default {
       "button": "BE OM ET TILBUD"
     },
     "explainer": {
-      "heading": "Hvorfor tar vi et planleggingshonorar?",
-      "body": "En helt skreddersydd reise krever mange timer med research, bookingkoordinering og 24/7 støtte under reisen. Planleggingshonoraret lar oss gi hver reise den omsorgen den fortjener — og holder anbefalingene våre uavhengige av provisjon.",
+      "heading": "Hvorfor tar vi en avgift for Skreddersydd reise?",
+      "body": "En helt skreddersydd reise krever mange timer med research, bookingkoordinering og 24/7 støtte under reisen. Avgiften lar oss gi hver skreddersydde reise den omsorgen den fortjener — Ferdiglaget og Konsultasjon forblir avgiftsfrie utover oppgitt pris.",
       "good_news_label": "DE GODE NYHETENE",
       "good_news": [
         "Konsultasjonen din er helt gratis",
-        "Du betaler kun honoraret hvis du ønsker at vi designer reisen din fra bunnen av",
-        "Honoraret og hva det inkluderer avtales skriftlig før arbeidet starter",
-        "Ingen skjulte planleggingsavgifter, og ingen avgift på enkle enkeltbestillinger"
+        "Du betaler kun avgiften hvis du ønsker at vi designer reisen din fra bunnen av",
+        "Hele avgiften trekkes fra din endelige bestilling",
+        "Ingen skjulte planleggingsavgifter"
       ]
     },
     "table": {
@@ -944,66 +875,7 @@ export default {
         { "group": "3–5 personer", "duration": "Uansett varighet" },
         { "group": "6+ personer", "duration": "Uansett varighet" }
       ]
-    },
-    "tiers": {
-      "eyebrow": "Planleggingshonorar, skreddersydd",
-      "heading": "Slik settes planleggingshonoraret",
-      "intro": "Tre nivåer, basert på hvor mye design og koordinering reisen din krever. Du får et eksakt beløp etter den gratis konsultasjonen.",
-      "typeCol": "TYPE REISE",
-      "scopeCol": "HVA DET INNEBÆRER",
-      "feeCol": "PLANLEGGINGSHONORAR",
-      "rows": [
-        {
-          "name": "Enkel",
-          "scope": "Én destinasjon, inntil 7 dager, ukomplisert logistikk",
-          "example": "En lang helg i Lisboa med et par uforglemmelige opplevelser"
-        },
-        {
-          "name": "Moderat",
-          "scope": "To til tre destinasjoner, 8–14 dager, noen krevende elementer",
-          "example": "Ti dager i Norge med private guider og en fjordkryssing"
-        },
-        {
-          "name": "Kompleks",
-          "scope": "Flere destinasjoner, over 14 dager, høye krav til oppfølging",
-          "example": "En måned mellom Brasil og Patagonia med innenlandsfly og lodger"
-        }
-      ]
-    },
-    "groups": {
-      "eyebrow": "Grupper og arrangementer",
-      "heading": "Gruppereiser, bryllup og bedriftsreiser",
-      "intro": "For større selskaper settes planleggingshonoraret som en prosentandel av total reiseverdi i stedet for et fast beløp, fordi arbeidet vokser med gruppen.",
-      "sizeCol": "GRUPPESTØRRELSE",
-      "feeCol": "PLANLEGGINGSHONORAR",
-      "rows": [
-        { "size": "10–20 reisende", "fee": "3 % av total reiseverdi" },
-        { "size": "21–50 reisende", "fee": "4 % av total reiseverdi" },
-        { "size": "51+ reisende", "fee": "5 % av total reiseverdi" }
-      ],
-      "exampleLabel": "REGNEEKSEMPEL",
-      "exampleBody": "Et bryllupsselskap på 40 med romblokk, middager og transport til totalt 1 000 000 NOK: planleggingshonoraret er 4 %, altså 40 000 NOK, avtalt skriftlig før vi starter.",
-      "note": "Hver gruppe prises individuelt etter den gratis konsultasjonen."
-    },
-    "applies": {
-      "eyebrow": "Ærlige rammer",
-      "heading": "Når planleggingshonorar gjelder — og når det ikke gjør det",
-      "yesLabel": "HONORAR GJELDER",
-      "noLabel": "INGEN HONORAR",
-      "yes": [
-        "Ruter med flere stopp og destinasjoner",
-        "Krevende logistikk — innenlandsfly, ferger, avsidesliggende lodger",
-        "Grupper, feiringer og bedriftsreiser",
-        "Flere runder med forslag og revisjoner",
-        "Støtte og problemløsning mens du reiser"
-      ],
-      "no": [
-        "En enkelt hotellbestilling",
-        "En flyplasstransport",
-        "En enkeltstående tur eller opplevelse",
-        "En ukomplisert all inclusive-pakke",
-        "Raske spørsmål før du bestemmer deg for å bruke oss"
-      ]
     }
   },
 };
+

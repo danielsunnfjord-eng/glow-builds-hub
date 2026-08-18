@@ -790,56 +790,10 @@ export default {
   },
   pricingPage: {
     seoTitle: "Pricing & Fees | Fjord & Waves Travel",
-    seoDescription: "Planning fees and service fees explained. Flat prices for ready-made guides, one-to-one consultations and bespoke journeys, with live conversion in NOK, EUR, USD and BRL.",
+    seoDescription: "Clear pricing for pre-made travel guides, one-to-one consultations and fully bespoke journeys. Live currency conversion in NOK, EUR, USD and BRL.",
     badge: "Pricing",
     title: "Clear, honest pricing from day one.",
     subtitle: "Our pricing is fully transparent and structured as flat, upfront fees. You will always know the exact investment required before we begin the planning process, completely eliminating unexpected costs.",
-    terms: {
-      eyebrow: "Two fees, plainly explained",
-      heading: "Planning fee and service fee — what each one means",
-      planningTitle: "Planning fee",
-      planningBody: "A flat, upfront fee paid before design work begins. It covers research, route design, supplier contact and the written plan you receive. It is quoted and approved before anything starts, and it is not refundable once planning is under way.",
-      serviceTitle: "Service fee",
-      serviceBody: "7% on bookings we arrange on your behalf — hotels, transfers, guides and experiences. It covers handling the booking, changes and support while you travel. You only pay it on what we actually book for you.",
-      note: "The trip itself — flights, stays, transfers and experiences — is always paid separately, on top of these fees.",
-    },
-    value: {
-      eyebrow: "What you are paying for",
-      heading: "The fee buys time, judgement and access",
-      blocks: [
-        {
-          title: "Expertise and access",
-          body: "Years spent learning destinations, visiting hotels in person and building relationships with local guides and operators. That opens doors and rates you will not find on a booking site.",
-        },
-        {
-          title: "Personal tailoring",
-          body: "Every route is shaped around your pace, tastes and non-negotiables. Nothing is pulled from a template — the plan you receive was written for your trip and no one else's.",
-        },
-        {
-          title: "Real hours of work",
-          body: "A well-planned journey is not a search result. It is comparison, verification and coordination, done before you ever leave home — and independent, because our advice is not steered by commission.",
-        },
-      ],
-      hoursLabel: "A typical 10-day journey — around 15 to 20 hours",
-      hours: [
-        "Pre-planning research on the destination and season",
-        "Conversations with you to understand the trip you actually want",
-        "Supplier research, availability checks and negotiation",
-        "Booking, sequencing and coordinating every moving part",
-        "Preparing your written plan and travel documents",
-      ],
-    },
-    steps: {
-      eyebrow: "How it works",
-      heading: "What happens next",
-      items: [
-        { title: "Free consultation", body: "A relaxed conversation about where you want to go and what matters to you. No cost, no obligation." },
-        { title: "Written scope and fee quote", body: "You receive exactly what is included and the exact planning fee, in writing, before anything begins." },
-        { title: "You approve", body: "Nothing is charged and no work starts until you say yes to the scope and the price." },
-        { title: "Planning starts", body: "Design, bookings and your finished plan — followed by support while you travel." },
-      ],
-      cta: "Start with a free consultation",
-    },
     faqEyebrow: "Good to know",
     faqHeading: "Questions about pricing",
     faq: {
@@ -848,32 +802,20 @@ export default {
         a: "Yes. The fees here cover planning, advice and booking support. Flights, hotels, transfers and experiences are paid separately \u2014 usually directly to the supplier or through my agency booking.",
       },
       "1": {
-        q: "Is the planning fee refundable, or deducted from my trip?",
-        a: "It is neither. The planning fee pays for the design work itself, so once planning is under way it is not refundable and it is not credited against your bookings. That is exactly why the consultation is free and the fee is quoted in writing first \u2014 you decide before anything is charged.",
-      },
-      "2": {
         q: "Why do you charge a planning fee at all?",
         a: "The fee pays for the research, route design and time spent tailoring the trip to you. It also means my advice is independent \u2014 I recommend what fits you, not what pays the most commission.",
       },
-      "3": {
-        q: "Do you also earn commission from hotels?",
-        a: "On bookings made through the agency, yes, suppliers pay a standard commission. That is why I am upfront about it: the planning fee keeps my recommendations independent of who pays best.",
-      },
-      "4": {
-        q: "What does the 7% service fee cover?",
-        a: "Handling the bookings we make for you \u2014 confirmations, changes, special requests and support if something goes wrong while you are travelling. It applies only to what we book on your behalf.",
-      },
-      "5": {
-        q: "Do you charge for changes after the plan is delivered?",
-        a: "Small adjustments are included. If you change the destination, dates or structure of the trip after planning is finished, that is new design work and is quoted separately \u2014 always agreed with you first.",
-      },
-      "6": {
-        q: "What if I only need one hotel or a single transfer?",
-        a: "Then there is no planning fee. Simple, single bookings do not warrant one \u2014 just get in touch and I will book it for you.",
-      },
-      "7": {
+      "2": {
         q: "Which currency am I charged in?",
         a: "Prices are set in NOK. You can preview them in EUR, USD or BRL using live exchange rates; the amount you are charged at checkout is shown before you confirm.",
+      },
+      "3": {
+        q: "Can I upgrade from a pre-made guide to a bespoke trip?",
+        a: "Yes. If you buy a pre-made travel guide and later want a tailor-made journey, tell me and the guide price is taken into account.",
+      },
+      "4": {
+        q: "What happens after I pay?",
+        a: "For guides, you get an instant download. For consultations and bespoke journeys, we schedule a call, and I start building your plan right after.",
       },
     },
   },
@@ -882,17 +824,6 @@ export default {
      "heading": "We invite you to select your preferred style of travel.",
      "subtext": "Whether you choose one of our curated itineraries or opt for a completely bespoke journey designed from scratch, every experience is rooted in authentic expertise and exceptional care.",
     "currencyLabel": "Currency",
-    "founding": {
-      "badge": "FOUNDING CLIENTS",
-      "heading": "Early-client pricing while we grow",
-      "body": "Fjord & Waves is a young advisory, and the first travellers who trust us help build it. Until the offer is reviewed, founding clients pay a reduced planning fee on bespoke journeys.",
-      "points": [
-        "50% off the bespoke planning fee for our first clients",
-        "25% off for anyone referred by a past traveller",
-        "Ready-made guides and consultations are already at their launch price"
-      ],
-      "note": "Offer reviewed 31 December 2026. Applies to the planning fee only."
-    },
     "card1": {
       "label": "READY-MADE",
       "title": "Pre-made travel guides",
@@ -926,7 +857,7 @@ export default {
       "label": "BESPOKE",
       "title": "Custom Journey",
       "description": "We design, plan and book your entire journey.",
-      "fee_note": "Free consultation · Planning fee*",
+      "fee_note": "Free consultation · Design fee*",
       "price_label": "FROM",
       "features": [
         "Journey designed from scratch",
@@ -937,14 +868,14 @@ export default {
       "button": "REQUEST A QUOTE"
     },
     "explainer": {
-      "heading": "Why do we charge a planning fee?",
-      "body": "A fully bespoke journey takes many hours of research, booking coordination and 24/7 support during travel. The planning fee lets us give every custom journey the care it deserves — and keeps our recommendations independent of commission.",
+      "heading": "Why do we charge a Custom Journey fee?",
+      "body": "A fully bespoke journey takes many hours of research, booking coordination, and 24/7 support during travel. The fee lets us give every custom journey the care it deserves — the Ready-made and Consultation tiers stay fee-free beyond their listed price.",
       "good_news_label": "THE GOOD NEWS",
       "good_news": [
         "Your consultation is completely free",
         "You only pay the fee if you'd like us to design your journey from scratch",
-        "The fee and what it includes are agreed in writing before any work starts",
-        "No hidden planning fees, and no fee at all on simple single bookings"
+        "The full fee is deducted from your final booking",
+        "No hidden planning fees"
       ]
     },
     "table": {
@@ -959,66 +890,7 @@ export default {
         { "group": "3–5 people", "duration": "Any duration" },
         { "group": "6+ people", "duration": "Any duration" }
       ]
-    },
-    "tiers": {
-      "eyebrow": "Bespoke planning fee",
-      "heading": "How the bespoke planning fee is set",
-      "intro": "Three bands, based on how much design and coordination your journey needs. You are quoted an exact figure after the free consultation.",
-      "typeCol": "TRIP TYPE",
-      "scopeCol": "WHAT IT LOOKS LIKE",
-      "feeCol": "PLANNING FEE",
-      "rows": [
-        {
-          "name": "Simple",
-          "scope": "One destination, up to 7 days, straightforward logistics",
-          "example": "A long weekend in Lisbon with a couple of standout experiences"
-        },
-        {
-          "name": "Moderate",
-          "scope": "Two to three destinations, 8–14 days, some complex elements",
-          "example": "Ten days across Norway with private guides and a fjord crossing"
-        },
-        {
-          "name": "Complex",
-          "scope": "Multiple destinations, over 14 days, high-touch requirements",
-          "example": "A month between Brazil and Patagonia with internal flights and lodges"
-        }
-      ]
-    },
-    "groups": {
-      "eyebrow": "Groups & events",
-      "heading": "Group, wedding and corporate travel",
-      "intro": "For larger parties the planning fee is a percentage of the total trip value instead of a flat fee, because the work scales with the group.",
-      "sizeCol": "GROUP SIZE",
-      "feeCol": "PLANNING FEE",
-      "rows": [
-        { "size": "10–20 travellers", "fee": "3% of total trip value" },
-        { "size": "21–50 travellers", "fee": "4% of total trip value" },
-        { "size": "51+ travellers", "fee": "5% of total trip value" }
-      ],
-      "exampleLabel": "WORKED EXAMPLE",
-      "exampleBody": "A wedding party of 40 with a room block, dinners and transfers totalling 1 000 000 NOK: the planning fee is 4%, or 40 000 NOK, agreed in writing before we begin.",
-      "note": "Every group is quoted individually after the free consultation."
-    },
-    "applies": {
-      "eyebrow": "Honest boundaries",
-      "heading": "When a planning fee applies — and when it doesn't",
-      "yesLabel": "A PLANNING FEE APPLIES",
-      "noLabel": "NO PLANNING FEE",
-      "yes": [
-        "Multi-stop routes across several destinations",
-        "Complex logistics — internal flights, ferries, remote lodges",
-        "Groups, celebrations and corporate travel",
-        "Several rounds of proposals and revisions",
-        "Support and troubleshooting while you travel"
-      ],
-      "no": [
-        "A single hotel booking",
-        "An airport transfer",
-        "A one-off tour or experience",
-        "A straightforward all-inclusive package",
-        "Quick questions before you decide to work with us"
-      ]
     }
   },
 };
+

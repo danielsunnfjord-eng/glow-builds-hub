@@ -777,56 +777,10 @@ export default {
   },
   pricingPage: {
     seoTitle: "Pre\u00e7os e taxas | Fjord & Waves Travel",
-    seoDescription: "Taxa de planejamento e taxa de servi\u00e7o explicadas. Pre\u00e7os fixos para guias prontos, consultorias individuais e viagens sob medida, com convers\u00e3o em tempo real em BRL, EUR, USD e NOK.",
+    seoDescription: "Pre\u00e7os claros para guias de viagem prontos, consultorias individuais e viagens sob medida. Convers\u00e3o em tempo real em BRL, EUR, USD e NOK.",
     badge: "Pre\u00e7os",
     title: "Preços claros e honestos desde o primeiro dia.",
     subtitle: "Nossos preços são totalmente transparentes e estruturados como taxas fixas e antecipadas. Você sempre saberá exatamente qual investimento é necessário antes de iniciarmos o processo de planejamento, eliminando completamente custos inesperados.",
-    terms: {
-      eyebrow: "Duas taxas, explicadas sem rodeios",
-      heading: "Taxa de planejamento e taxa de serviço — o que é cada uma",
-      planningTitle: "Taxa de planejamento",
-      planningBody: "Uma taxa fixa paga antes do trabalho de criação começar. Cobre a pesquisa, o desenho do roteiro, o contato com fornecedores e o plano escrito que você recebe. O valor é combinado por escrito antes de tudo, e não é reembolsável depois que o planejamento começa.",
-      serviceTitle: "Taxa de serviço",
-      serviceBody: "7% sobre as reservas que fazemos por você — hotéis, transfers, guias e experiências. Cobre a gestão da reserva, as alterações e o suporte durante a viagem. Você só paga sobre o que realmente reservamos para você.",
-      note: "A viagem em si — voos, hospedagem, transfers e experiências — é sempre paga à parte, além dessas taxas.",
-    },
-    value: {
-      eyebrow: "Pelo que você está pagando",
-      heading: "A taxa compra tempo, critério e acesso",
-      blocks: [
-        {
-          title: "Expertise e acesso",
-          body: "Anos conhecendo destinos, visitando hotéis pessoalmente e construindo relações com guias e operadores locais. Isso abre portas e tarifas que você não encontra em site de reserva.",
-        },
-        {
-          title: "Personalização real",
-          body: "Cada roteiro é moldado ao seu ritmo, ao seu gosto e ao que você não abre mão. Nada sai de um modelo pronto — o plano que você recebe foi escrito para a sua viagem, e só para ela.",
-        },
-        {
-          title: "Horas reais de trabalho",
-          body: "Uma viagem bem planejada não é um resultado de busca. É comparação, verificação e coordenação, feitas antes de você sair de casa — e com independência, porque nossa recomendação não é guiada por comissão.",
-        },
-      ],
-      hoursLabel: "Uma viagem típica de 10 dias — cerca de 15 a 20 horas",
-      hours: [
-        "Pesquisa prévia sobre o destino e a estação do ano",
-        "Conversas com você para entender a viagem que você realmente quer",
-        "Pesquisa de fornecedores, checagem de disponibilidade e negociação",
-        "Reservas, sequência e coordenação de cada peça do quebra-cabeça",
-        "Preparação do plano escrito e dos documentos de viagem",
-      ],
-    },
-    steps: {
-      eyebrow: "Como funciona",
-      heading: "O que acontece a seguir",
-      items: [
-        { title: "Consultoria gratuita", body: "Uma conversa tranquila sobre para onde você quer ir e o que importa para você. Sem custo e sem compromisso." },
-        { title: "Escopo e valor por escrito", body: "Você recebe exatamente o que está incluído e o valor exato da taxa de planejamento, por escrito, antes de qualquer coisa começar." },
-        { title: "Você aprova", body: "Nada é cobrado e nenhum trabalho começa até você dizer sim ao escopo e ao preço." },
-        { title: "O planejamento começa", body: "Criação, reservas e o seu plano finalizado — seguidos de suporte durante a viagem." },
-      ],
-      cta: "Comece com uma consultoria gratuita",
-    },
     faqEyebrow: "Bom saber",
     faqHeading: "D\u00favidas sobre pre\u00e7os",
     faq: {
@@ -835,32 +789,20 @@ export default {
         a: "N\u00e3o. As taxas cobrem planejamento, consultoria e apoio nas reservas. Voos, hot\u00e9is, transfers e experi\u00eancias s\u00e3o pagos \u00e0 parte, normalmente direto ao fornecedor ou pela reserva da ag\u00eancia.",
       },
       "1": {
-        q: "A taxa de planejamento \u00e9 reembols\u00e1vel ou abatida da viagem?",
-        a: "Nenhum dos dois. A taxa paga o pr\u00f3prio trabalho de cria\u00e7\u00e3o, ent\u00e3o, uma vez iniciado o planejamento, ela n\u00e3o \u00e9 reembolsada nem abatida das suas reservas. \u00c9 exatamente por isso que a consultoria inicial \u00e9 gratuita e o valor \u00e9 combinado por escrito antes \u2014 voc\u00ea decide antes de qualquer cobran\u00e7a.",
-      },
-      "2": {
         q: "Por que existe uma taxa de planejamento?",
         a: "Ela paga a pesquisa, o desenho do roteiro e o tempo dedicado a adaptar tudo a voc\u00ea. Tamb\u00e9m garante independ\u00eancia: recomendo o que combina com voc\u00ea, n\u00e3o o que paga mais comiss\u00e3o.",
       },
-      "3": {
-        q: "Voc\u00ea tamb\u00e9m ganha comiss\u00e3o dos hot\u00e9is?",
-        a: "Nas reservas feitas pela ag\u00eancia, sim, os fornecedores pagam uma comiss\u00e3o padr\u00e3o. Por isso sou transparente: a taxa de planejamento mant\u00e9m minhas recomenda\u00e7\u00f5es independentes de quem paga melhor.",
-      },
-      "4": {
-        q: "O que a taxa de servi\u00e7o de 7% cobre?",
-        a: "A gest\u00e3o das reservas que fazemos para voc\u00ea \u2014 confirma\u00e7\u00f5es, altera\u00e7\u00f5es, pedidos especiais e suporte se algo der errado durante a viagem. Ela incide apenas sobre o que reservamos em seu nome.",
-      },
-      "5": {
-        q: "Alterar o roteiro depois de pronto tem custo?",
-        a: "Pequenos ajustes est\u00e3o inclu\u00eddos. Se voc\u00ea mudar destino, datas ou a estrutura da viagem depois do planejamento conclu\u00eddo, isso \u00e9 um novo trabalho de cria\u00e7\u00e3o e \u00e9 or\u00e7ado \u00e0 parte \u2014 sempre combinado com voc\u00ea antes.",
-      },
-      "6": {
-        q: "E se eu precisar s\u00f3 de um hotel ou de um transfer?",
-        a: "A\u00ed n\u00e3o h\u00e1 taxa de planejamento. Reservas simples e avulsas n\u00e3o justificam cobran\u00e7a \u2014 \u00e9 s\u00f3 falar comigo que eu reservo para voc\u00ea.",
-      },
-      "7": {
+      "2": {
         q: "Em qual moeda serei cobrado?",
         a: "Os pre\u00e7os s\u00e3o definidos em NOK. Voc\u00ea pode visualizar em BRL, EUR ou USD com c\u00e2mbio em tempo real; o valor final aparece antes de confirmar o pagamento.",
+      },
+      "3": {
+        q: "Posso migrar de um guia pronto para uma viagem sob medida?",
+        a: "Sim. Se comprar um guia pronto e depois quiser um roteiro sob medida, me avise \u2014 o valor do guia \u00e9 considerado.",
+      },
+      "4": {
+        q: "O que acontece depois do pagamento?",
+        a: "Os guias t\u00eam download imediato. Para consultorias e viagens sob medida, agendamos uma chamada e come\u00e7o a montar seu plano logo em seguida.",
       },
     },
   },
@@ -869,17 +811,6 @@ export default {
      "heading": "Convidamos você a escolher seu estilo de viagem preferido.",
      "subtext": "Seja optando por um de nossos roteiros selecionados ou por uma viagem totalmente personalizada, criada do zero, cada experiência tem como base uma expertise autêntica e um cuidado excepcional.",
     "currencyLabel": "Moeda",
-    "founding": {
-      "badge": "PRIMEIROS CLIENTES",
-      "heading": "Preço de lançamento enquanto crescemos",
-      "body": "A Fjord & Waves é uma consultoria jovem, e os primeiros viajantes que confiam na gente ajudam a construí-la. Até a revisão da oferta, os primeiros clientes pagam uma taxa de planejamento reduzida nas viagens sob medida.",
-      "points": [
-        "50% de desconto na taxa de planejamento sob medida para os primeiros clientes",
-        "25% de desconto para quem chega indicado por um viajante anterior",
-        "Guias prontos e consultorias já estão com preço de lançamento"
-      ],
-      "note": "Oferta revisada em 31 de dezembro de 2026. Vale apenas para a taxa de planejamento."
-    },
     "card1": {
       "label": "PRONTO PARA USAR",
       "title": "Guias de viagem prontos",
@@ -913,7 +844,7 @@ export default {
       "label": "SOB MEDIDA",
       "title": "Viagem personalizada",
       "description": "Nós desenhamos, planejamos e reservamos toda a sua viagem.",
-      "fee_note": "Consultoria gratuita · Taxa de planejamento*",
+      "fee_note": "Consultoria gratuita · Taxa de criação*",
       "price_label": "A PARTIR DE",
       "features": [
         "Viagem desenhada do zero",
@@ -924,14 +855,14 @@ export default {
       "button": "SOLICITAR ORÇAMENTO"
     },
     "explainer": {
-      "heading": "Por que cobramos uma taxa de planejamento?",
-      "body": "Uma viagem totalmente sob medida exige muitas horas de pesquisa, coordenação de reservas e suporte 24/7 durante a viagem. A taxa de planejamento nos permite dedicar a cada viagem o cuidado que ela merece — e mantém nossas recomendações independentes de comissão.",
+      "heading": "Por que cobramos uma taxa para a Viagem personalizada?",
+      "body": "Uma viagem totalmente sob medida exige muitas horas de pesquisa, coordenação de reservas e suporte 24/7 durante a viagem. A taxa nos permite dedicar a cada viagem o cuidado que ela merece — os planos Pronto para usar e Consultoria continuam sem taxas além do preço informado.",
       "good_news_label": "A BOA NOTÍCIA",
       "good_news": [
-        "Sua consultoria inicial é totalmente gratuita",
+        "Sua consultoria é totalmente gratuita",
         "Você só paga a taxa se quiser que desenhemos sua viagem do zero",
-        "A taxa e tudo o que ela inclui são combinados por escrito antes de começar",
-        "Sem taxas ocultas, e sem taxa nenhuma em reservas simples e avulsas"
+        "O valor total da taxa é descontado da sua reserva final",
+        "Sem taxas de planejamento ocultas"
       ]
     },
     "table": {
@@ -946,66 +877,7 @@ export default {
         { "group": "3–5 pessoas", "duration": "Qualquer duração" },
         { "group": "6+ pessoas", "duration": "Qualquer duração" }
       ]
-    },
-    "tiers": {
-      "eyebrow": "Taxa de planejamento sob medida",
-      "heading": "Como definimos a taxa de planejamento",
-      "intro": "Três faixas, conforme a quantidade de criação e coordenação que a sua viagem exige. O valor exato é informado após a consultoria gratuita.",
-      "typeCol": "TIPO DE VIAGEM",
-      "scopeCol": "COMO ELA É",
-      "feeCol": "TAXA DE PLANEJAMENTO",
-      "rows": [
-        {
-          "name": "Simples",
-          "scope": "Um destino, até 7 dias, logística direta",
-          "example": "Um fim de semana prolongado em Lisboa com duas experiências marcantes"
-        },
-        {
-          "name": "Moderada",
-          "scope": "Dois a três destinos, 8–14 dias, alguns elementos complexos",
-          "example": "Dez dias pela Noruega com guias privativos e travessia de fiorde"
-        },
-        {
-          "name": "Complexa",
-          "scope": "Vários destinos, mais de 14 dias, alto nível de acompanhamento",
-          "example": "Um mês entre Brasil e Patagônia com voos internos e lodges"
-        }
-      ]
-    },
-    "groups": {
-      "eyebrow": "Grupos e eventos",
-      "heading": "Grupos, casamentos e viagens corporativas",
-      "intro": "Para grupos maiores, a taxa de planejamento é um percentual do valor total da viagem em vez de um valor fixo, porque o trabalho cresce junto com o grupo.",
-      "sizeCol": "TAMANHO DO GRUPO",
-      "feeCol": "TAXA DE PLANEJAMENTO",
-      "rows": [
-        { "size": "10–20 viajantes", "fee": "3% do valor total da viagem" },
-        { "size": "21–50 viajantes", "fee": "4% do valor total da viagem" },
-        { "size": "51+ viajantes", "fee": "5% do valor total da viagem" }
-      ],
-      "exampleLabel": "EXEMPLO PRÁTICO",
-      "exampleBody": "Um casamento com 40 convidados, bloqueio de quartos, jantares e transfers somando 1 000 000 NOK: a taxa de planejamento é de 4%, ou seja 40 000 NOK, combinada por escrito antes de começarmos.",
-      "note": "Cada grupo recebe um orçamento individual após a consultoria gratuita."
-    },
-    "applies": {
-      "eyebrow": "Limites honestos",
-      "heading": "Quando há taxa de planejamento — e quando não há",
-      "yesLabel": "HÁ TAXA DE PLANEJAMENTO",
-      "noLabel": "SEM TAXA DE PLANEJAMENTO",
-      "yes": [
-        "Roteiros com várias paradas e destinos",
-        "Logística complexa — voos internos, ferries, lodges remotos",
-        "Grupos, celebrações e viagens corporativas",
-        "Várias rodadas de propostas e revisões",
-        "Suporte e resolução de imprevistos durante a viagem"
-      ],
-      "no": [
-        "Uma reserva única de hotel",
-        "Um transfer de aeroporto",
-        "Um passeio ou experiência avulsa",
-        "Um pacote all inclusive simples",
-        "Dúvidas rápidas antes de decidir trabalhar com a gente"
-      ]
     }
   },
 };
+
