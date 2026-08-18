@@ -598,36 +598,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
     <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
@@ -654,6 +624,36 @@
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/paris-para-brasileiros-de-primeira-viagem"/>
     <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/catalogue/o-melhor-de-barcelona"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/catalogue/o-melhor-de-barcelona"/>
+    <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
