@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import { useTranslation } from "react-i18next";
-import { Check } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 import {
   CurrencyPicker,
@@ -29,6 +29,9 @@ const CARDS: CardData[] = [
 ];
 
 const TABLE_ROWS: number[] = [3000, 3650, 4350, 5650];
+
+/** Bespoke planning fee bands (NOK): simple / moderate / complex. */
+const TIER_NOK: number[] = [6000, 9000, 14000];
 
 const Pricing = () => {
   const { t } = useTranslation();
@@ -70,6 +73,39 @@ const Pricing = () => {
             </p>
           </div>
         </ScrollReveal>
+
+        <ScrollReveal>
+          <div className="mb-10 rounded-lg border-2 border-gold/50 bg-[#f0e3cf]/60 p-7 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
+              <div className="md:max-w-md">
+                <span className="inline-flex items-center rounded-full bg-gold px-3 py-1 text-[0.6rem] font-bold tracking-[0.18em] uppercase text-ink mb-4">
+                  {t("pricing.founding.badge")}
+                </span>
+                <h3 className="font-serif text-[1.4rem] font-bold text-ink mb-2">
+                  {t("pricing.founding.heading")}
+                </h3>
+                <p className="text-[0.92rem] text-voyage-muted leading-relaxed">
+                  {t("pricing.founding.body")}
+                </p>
+              </div>
+              <div className="flex-1">
+                <ul className="space-y-2.5">
+                  {[0, 1, 2].map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-[0.88rem] text-ink/85">
+                      <Check className="h-4 w-4 mt-0.5 shrink-0 text-gold" strokeWidth={3} />
+                      <span>{t(`pricing.founding.points.${i}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-[0.7rem] tracking-[0.06em] uppercase text-ink/60">
+                  {t("pricing.founding.note")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {CARDS.map((card) => {
@@ -256,6 +292,148 @@ const Pricing = () => {
             )}
           </div>
         </ScrollReveal>
+
+        {/* Bespoke planning fee tiers */}
+        <ScrollReveal>
+          <div className="mt-14">
+            <div className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {t("pricing.tiers.eyebrow")}
+            </div>
+            <h3 className="font-serif text-[clamp(1.4rem,2.6vw,1.9rem)] font-bold text-ink mb-3 tracking-tight">
+              {t("pricing.tiers.heading")}
+            </h3>
+            <p className="text-[0.92rem] text-voyage-muted leading-relaxed max-w-2xl mb-6">
+              {t("pricing.tiers.intro")}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {TIER_NOK.map((nok, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col rounded-lg border border-ink/[0.08] bg-parchment-2 p-7"
+                >
+                  <div className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-gold mb-3">
+                    {t("pricing.tiers.typeCol")}
+                  </div>
+                  <h4 className="font-serif text-[1.35rem] font-bold text-ink mb-3">
+                    {t(`pricing.tiers.rows.${i}.name`)}
+                  </h4>
+                  <p className="text-[0.88rem] text-ink/85 leading-relaxed mb-3">
+                    {t(`pricing.tiers.rows.${i}.scope`)}
+                  </p>
+                  <p className="text-[0.82rem] italic text-voyage-muted leading-relaxed mb-6 flex-1">
+                    {t(`pricing.tiers.rows.${i}.example`)}
+                  </p>
+                  <div className="text-[0.58rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted mb-1">
+                    {t("pricing.tiers.feeCol")}
+                  </div>
+                  <div className="font-serif text-[1.6rem] font-bold text-gold leading-none">
+                    {i === TIER_NOK.length - 1 ? `${format(nok)}+` : `${t("pricing.card3.price_label")} ${format(nok)}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {rateNote && (
+              <p className="mt-3 text-[0.68rem] text-voyage-muted">{rateNote}</p>
+            )}
+          </div>
+        </ScrollReveal>
+
+        {/* Groups & events */}
+        <ScrollReveal>
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+            <div>
+              <div className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-3 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                {t("pricing.groups.eyebrow")}
+              </div>
+              <h3 className="font-serif text-[clamp(1.4rem,2.6vw,1.9rem)] font-bold text-ink mb-3 tracking-tight">
+                {t("pricing.groups.heading")}
+              </h3>
+              <p className="text-[0.92rem] text-voyage-muted leading-relaxed mb-5">
+                {t("pricing.groups.intro")}
+              </p>
+              <div className="rounded-lg border border-gold/25 bg-[#f0e3cf]/60 p-5">
+                <div className="text-[0.6rem] font-semibold tracking-[0.2em] uppercase text-gold mb-2">
+                  {t("pricing.groups.exampleLabel")}
+                </div>
+                <p className="text-[0.88rem] text-ink/85 leading-relaxed">
+                  {t("pricing.groups.exampleBody")}
+                </p>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-lg border border-ink/[0.08]">
+              <div className="grid grid-cols-2 bg-ink text-voyage-white">
+                <div className="px-5 py-4 text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
+                  {t("pricing.groups.sizeCol")}
+                </div>
+                <div className="px-5 py-4 text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-gold-2">
+                  {t("pricing.groups.feeCol")}
+                </div>
+              </div>
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`grid grid-cols-2 ${i % 2 === 0 ? "bg-parchment-2" : "bg-[#f0e3cf]/40"}`}
+                >
+                  <div className="px-5 py-4 text-[0.9rem] text-ink/85 border-t border-ink/[0.06]">
+                    {t(`pricing.groups.rows.${i}.size`)}
+                  </div>
+                  <div className="px-5 py-4 text-[0.9rem] font-semibold text-gold border-t border-ink/[0.06]">
+                    {t(`pricing.groups.rows.${i}.fee`)}
+                  </div>
+                </div>
+              ))}
+              <p className="px-5 py-4 text-[0.72rem] text-voyage-muted bg-parchment-2 border-t border-ink/[0.06]">
+                {t("pricing.groups.note")}
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* When a fee applies */}
+        <ScrollReveal>
+          <div className="mt-14">
+            <div className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {t("pricing.applies.eyebrow")}
+            </div>
+            <h3 className="font-serif text-[clamp(1.4rem,2.6vw,1.9rem)] font-bold text-ink mb-6 tracking-tight">
+              {t("pricing.applies.heading")}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-lg border border-ink/[0.08] bg-parchment-2 p-7">
+                <div className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
+                  {t("pricing.applies.yesLabel")}
+                </div>
+                <ul className="space-y-2.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-[0.88rem] text-ink/85">
+                      <Check className="h-4 w-4 mt-0.5 shrink-0 text-gold" strokeWidth={3} />
+                      <span>{t(`pricing.applies.yes.${i}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-lg border border-ink/[0.08] bg-parchment-2 p-7">
+                <div className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase text-voyage-muted mb-4">
+                  {t("pricing.applies.noLabel")}
+                </div>
+                <ul className="space-y-2.5">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-[0.88rem] text-ink/70">
+                      <Minus className="h-4 w-4 mt-0.5 shrink-0 text-voyage-muted" strokeWidth={3} />
+                      <span>{t(`pricing.applies.no.${i}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+
 
 
 
