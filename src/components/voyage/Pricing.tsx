@@ -71,6 +71,39 @@ const Pricing = () => {
           </div>
         </ScrollReveal>
 
+        <ScrollReveal>
+          <div className="mb-10 rounded-lg border-2 border-gold/50 bg-[#f0e3cf]/60 p-7 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
+              <div className="md:max-w-md">
+                <span className="inline-flex items-center rounded-full bg-gold px-3 py-1 text-[0.6rem] font-bold tracking-[0.18em] uppercase text-ink mb-4">
+                  {t("pricing.founding.badge")}
+                </span>
+                <h3 className="font-serif text-[1.4rem] font-bold text-ink mb-2">
+                  {t("pricing.founding.heading")}
+                </h3>
+                <p className="text-[0.92rem] text-voyage-muted leading-relaxed">
+                  {t("pricing.founding.body")}
+                </p>
+              </div>
+              <div className="flex-1">
+                <ul className="space-y-2.5">
+                  {[0, 1, 2].map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-[0.88rem] text-ink/85">
+                      <Check className="h-4 w-4 mt-0.5 shrink-0 text-gold" strokeWidth={3} />
+                      <span>{t(`pricing.founding.points.${i}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-[0.7rem] tracking-[0.06em] uppercase text-ink/60">
+                  {t("pricing.founding.note")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {CARDS.map((card) => {
             const base = `pricing.${card.key}`;
