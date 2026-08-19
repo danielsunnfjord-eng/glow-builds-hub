@@ -1031,9 +1031,9 @@ const CatalogShopManager = () => {
       await supabase
         .from("catalog_itineraries")
         .update({
-          subpage_checklist: checklist,
-          subpage_day_overview: dayOverview,
-          subpage_expectations: expectations,
+          subpage_checklist: setLocalizedBlock(state.subpageRaw.checklist, state.language, checklist, state.language),
+          subpage_day_overview: setLocalizedBlock(state.subpageRaw.dayOverview, state.language, dayOverview, state.language),
+          subpage_expectations: setLocalizedBlock(state.subpageRaw.expectations, state.language, expectations, state.language),
         })
         .eq("id", state.id);
     }
