@@ -16,6 +16,7 @@ import { CurrencyToggle } from "@/lib/pricing";
 import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
+import { pickLocalized } from "@/lib/localizedField";
 
 interface CatalogItem {
   id: string;
