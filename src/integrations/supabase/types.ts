@@ -48,6 +48,9 @@ export type Database = {
           output_format: string
           pdf_drive_file_id: string | null
           pdf_path: string | null
+          pdf_path_en: string | null
+          pdf_path_no: string | null
+          pdf_path_pt: string | null
           price_brl: number
           price_eur: number
           price_nok: number
@@ -71,6 +74,7 @@ export type Database = {
           title_en: string
           title_no: string | null
           title_pt: string | null
+          translation_status: Json
           updated_at: string
           view_count: number
           what_you_get_en: string
@@ -110,6 +114,9 @@ export type Database = {
           output_format?: string
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
+          pdf_path_en?: string | null
+          pdf_path_no?: string | null
+          pdf_path_pt?: string | null
           price_brl?: number
           price_eur?: number
           price_nok?: number
@@ -133,6 +140,7 @@ export type Database = {
           title_en: string
           title_no?: string | null
           title_pt?: string | null
+          translation_status?: Json
           updated_at?: string
           view_count?: number
           what_you_get_en?: string
@@ -172,6 +180,9 @@ export type Database = {
           output_format?: string
           pdf_drive_file_id?: string | null
           pdf_path?: string | null
+          pdf_path_en?: string | null
+          pdf_path_no?: string | null
+          pdf_path_pt?: string | null
           price_brl?: number
           price_eur?: number
           price_nok?: number
@@ -195,6 +206,7 @@ export type Database = {
           title_en?: string
           title_no?: string | null
           title_pt?: string | null
+          translation_status?: Json
           updated_at?: string
           view_count?: number
           what_you_get_en?: string

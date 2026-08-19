@@ -16,6 +16,7 @@ import { CurrencyToggle } from "@/lib/pricing";
 import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
+import { pickLocalized } from "@/lib/localizedField";
 
 interface CatalogItem {
   id: string;
@@ -39,6 +40,7 @@ interface CatalogItem {
   created_at: string;
   view_count: number | null;
   primary_language: string | null;
+  translation_status?: Record<string, { state?: string }> | null;
 }
 
 
@@ -47,7 +49,8 @@ const pickLang = <T extends string | null>(
   en: T,
   pt: T,
   no: T,
-): T => ((lang === "pt" && pt) || (lang === "no" && no) || en) as T;
+  primaryLanguage?: string | null,
+): T => pickLocalized(lang, { en, pt, no }, primaryLanguage);
 
 const EXPERIENCE_OPTIONS = [
   "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
@@ -90,12 +93,9 @@ const ItinerariesShop = () => {
       let query = supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language, translation_status",
         )
         .eq("is_published", true);
-      if (lang === "pt") query = query.eq("primary_language", "pt");
-      else if (lang === "en") query = query.eq("primary_language", "en");
-      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
       const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
@@ -342,8 +342,8 @@ const ItinerariesShop = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {filtered.map((trip) => {
-            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no) || trip.title_en;
-            const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no) || trip.summary_en;
+            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no, trip.primary_language) || trip.title_en;
+            const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no, trip.primary_language) || trip.summary_en;
             return (
               <ScrollReveal key={trip.id} className="h-full">
                 <Link
@@ -391,7 +391,9 @@ const ItinerariesShop = () => {
                     )}
                     {(() => {
                       const pl = (trip.primary_language || "en").toLowerCase();
-                      const langKey = pl === "pt" || pl === "no" ? pl : "en";
+                      const primaryKey = pl === "pt" || pl === "no" ? pl : "en";
+                      const translated = trip.translation_status?.[lang]?.state === "ready";
+                      const langKey = lang === primaryKey || translated ? lang : primaryKey;
                       const created = new Date(trip.created_at).toLocaleDateString(
                         lang === "pt" ? "pt-BR" : lang === "no" ? "nb-NO" : "en-GB",
                         { day: "2-digit", month: "short", year: "numeric" },

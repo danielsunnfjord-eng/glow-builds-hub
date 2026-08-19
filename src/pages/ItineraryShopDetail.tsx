@@ -40,6 +40,7 @@ import {
 } from "@/lib/fx";
 import WhatsAppIconButton from "@/components/voyage/WhatsAppIconButton";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
+import { pickLocalized, pickLocalizedBlock } from "@/lib/localizedField";
 
 // --- Day-by-day markdown parser ---------------------------------------------
 // Splits a day-by-day catalogue guide markdown into:
@@ -131,17 +132,23 @@ interface CatalogItem {
   itinerary_content_pt: string | null;
   itinerary_content_no: string | null;
   season: string[] | null;
-  subpage_checklist: string[] | null;
-  subpage_day_overview: { label: string; description: string }[] | null;
-  subpage_expectations: { title: string; description: string }[] | null;
+  subpage_checklist: unknown;
+  subpage_day_overview: unknown;
+  subpage_expectations: unknown;
+  primary_language?: string | null;
   subpage_map_url: string | null;
   output_format: string | null;
 }
 
 
 
-const pick = (lang: string, en: string, pt: string | null, no: string | null) =>
-  (lang === "pt" && pt) || (lang === "no" && no) || en;
+const pick = (
+  lang: string,
+  en: string,
+  pt: string | null,
+  no: string | null,
+  primaryLanguage?: string | null,
+) => pickLocalized(lang, { en, pt, no }, primaryLanguage) || en;
 
 
 const ItineraryShopDetail = () => {
@@ -187,9 +194,6 @@ const ItineraryShopDetail = () => {
         .select("id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, primary_language")
         .eq("is_published", true)
         .neq("slug", slug!);
-      if (lang === "pt") query = query.eq("primary_language", "pt");
-      else if (lang === "en") query = query.eq("primary_language", "en");
-      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
       const { data: res, error } = await query.order("sort_order", { ascending: true }).limit(3);
       if (error) throw error;
       return (res ?? []) as Array<Pick<CatalogItem, "id" | "slug" | "title_en" | "title_pt" | "title_no" | "destination" | "duration" | "hero_image_url" | "price_eur" | "price_usd" | "price_brl" | "price_nok">>;
@@ -198,11 +202,11 @@ const ItineraryShopDetail = () => {
   });
 
 
-  const title = data ? pick(lang, data.title_en, data.title_pt, data.title_no) : "";
-  const summary = data ? pick(lang, data.summary_en, data.summary_pt, data.summary_no) : "";
-  const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no) : "";
-  const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no) : "";
-  const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no) : "";
+  const title = data ? pick(lang, data.title_en, data.title_pt, data.title_no, data.primary_language) : "";
+  const summary = data ? pick(lang, data.summary_en, data.summary_pt, data.summary_no, data.primary_language) : "";
+  const description = data ? pick(lang, data.description_en, data.description_pt, data.description_no, data.primary_language) : "";
+  const whatYouGet = data ? pick(lang, data.what_you_get_en, data.what_you_get_pt, data.what_you_get_no, data.primary_language) : "";
+  const itineraryMd = data ? pick(lang, data.itinerary_content_en || "", data.itinerary_content_pt, data.itinerary_content_no, data.primary_language) : "";
   const journey = useMemo(() => parseDayByDay(itineraryMd), [itineraryMd]);
 
   const wygItems = useMemo(
@@ -224,22 +228,24 @@ const ItineraryShopDetail = () => {
     t("shop.includes.practical", "Practical tips, logistics & best times to visit"),
     t("shop.includes.pdf", "Instant premium PDF download"),
   ];
-  const checklistFromDb = Array.isArray(data?.subpage_checklist)
-    ? (data!.subpage_checklist as string[]).map((s) => String(s ?? "").trim()).filter(Boolean)
-    : [];
+  const checklistFromDb = pickLocalizedBlock<string>(lang, data?.subpage_checklist, data?.primary_language)
+    .map((s) => String(s ?? "").trim())
+    .filter(Boolean);
   const includes = checklistFromDb.length > 0
     ? checklistFromDb
     : (wygItems.length > 0 ? wygItems : defaultIncludes);
 
   const isGuide = (data as any)?.output_format === "guide";
-  const dayOverview = Array.isArray(data?.subpage_day_overview)
-    ? (data!.subpage_day_overview as { label: string; description: string }[])
-        .map((d) => ({
-          label: String(d?.label ?? "").trim(),
-          description: String(d?.description ?? "").trim(),
-        }))
-        .filter((d) => d.label.length > 0 || d.description.length > 0)
-    : [];
+  const dayOverview = pickLocalizedBlock<{ label: string; description: string }>(
+    lang,
+    data?.subpage_day_overview,
+    data?.primary_language,
+  )
+    .map((d) => ({
+      label: String(d?.label ?? "").trim(),
+      description: String(d?.description ?? "").trim(),
+    }))
+    .filter((d) => d.label.length > 0 || d.description.length > 0);
 
 
   useEffect(() => {
@@ -349,15 +355,17 @@ const ItineraryShopDetail = () => {
     },
   ];
 
-  const expectationsFromDb = Array.isArray(data?.subpage_expectations)
-    ? (data!.subpage_expectations as { title: string; description: string }[])
-        .map((e) => ({
-          label: String(e?.title ?? "").trim(),
-          text: String(e?.description ?? "").trim(),
-          icon: Sparkles,
-        }))
-        .filter((e) => e.label.length > 0 || e.text.length > 0)
-    : [];
+  const expectationsFromDb = pickLocalizedBlock<{ title: string; description: string }>(
+    lang,
+    data?.subpage_expectations,
+    data?.primary_language,
+  )
+    .map((e) => ({
+      label: String(e?.title ?? "").trim(),
+      text: String(e?.description ?? "").trim(),
+      icon: Sparkles,
+    }))
+    .filter((e) => e.label.length > 0 || e.text.length > 0);
 
   // Only show cards the admin actually added — no silent defaults.
   const expectations = expectationsFromDb;
@@ -934,7 +942,7 @@ const ItineraryShopDetail = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {related.map((r) => {
-                  const rTitle = pick(lang, r.title_en, r.title_pt, r.title_no);
+                  const rTitle = pick(lang, r.title_en, r.title_pt, r.title_no, (r as { primary_language?: string | null }).primary_language);
                   return (
                     <Link
                       key={r.id}
