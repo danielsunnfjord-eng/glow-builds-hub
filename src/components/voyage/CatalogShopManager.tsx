@@ -1463,6 +1463,56 @@ const CatalogShopManager = () => {
 
   const removeBodyPdf = () => setState((s) => ({ ...s, bodyPdfUrl: "" }));
 
+  // --- Import the uploaded PDF into editable body content -------------------
+  // Extracts headings, paragraphs, bullets, links and images so the itinerary
+  // has a single source of truth that can be auto-translated per language.
+  const [pdfImporting, setPdfImporting] = useState(false);
+  const [pdfImportStatus, setPdfImportStatus] = useState("");
+
+  const importFromPdf = async (file?: File) => {
+    const src = file ?? state.bodyPdfUrl;
+    if (!src) {
+      toast.error("Upload a body content PDF first.");
+      return;
+    }
+    if (
+      state.content.trim() &&
+      !window.confirm("This replaces the current body content with the text extracted from the PDF. Continue?")
+    ) {
+      return;
+    }
+    setPdfImporting(true);
+    setPdfImportStatus("Loading PDF…");
+    try {
+      const { extractPdfToMarkdown } = await import("@/lib/pdfExtract");
+      const data = file ? await file.arrayBuffer() : await (await fetch(src as string)).arrayBuffer();
+      const result = await extractPdfToMarkdown(data, {
+        onProgress: setPdfImportStatus,
+        uploadImage: async (blob, index) => {
+          const path = `pdf-extracts/${state.id || "new"}-${Date.now()}-${index}.jpg`;
+          const { error } = await supabase.storage
+            .from("catalog-images")
+            .upload(path, blob, { cacheControl: "3600", upsert: false, contentType: "image/jpeg" });
+          if (error) return null;
+          return supabase.storage.from("catalog-images").getPublicUrl(path).data.publicUrl;
+        },
+      });
+      if (!result.markdown.trim()) {
+        toast.error("No text could be extracted from this PDF (it may be a scanned image).");
+        return;
+      }
+      setState((s) => ({ ...s, content: result.markdown }));
+      toast.success(
+        `Imported ${result.pages} page(s): ${result.images} image(s), ${result.links} link(s).`,
+      );
+    } catch (e: any) {
+      toast.error(e?.message || "PDF import failed");
+    } finally {
+      setPdfImporting(false);
+      setPdfImportStatus("");
+    }
+  };
+
   const [previewMergedOpen, setPreviewMergedOpen] = useState(false);
 
   const uploadHotelPhoto = async (hotelId: string, slot: number, file: File) => {
