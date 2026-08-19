@@ -39,6 +39,7 @@ import { applyImprovementSectional, chunkAuditItems } from "@/lib/auditApply";
 import { findFirstChangedHeadingText, flashEditorHighlight, scrollEditorIntoView, type ApplyItemStatus } from "@/lib/auditHighlight";
 import { normalizePhotos, type PhotoMeta } from "@/lib/photoMeta";
 import { sanitizeDocHtml } from "@/lib/sanitizeDocHtml";
+import { pickLocalizedBlock, setLocalizedBlock } from "@/lib/localizedField";
 import TranslateItineraryPanel from "@/components/voyage/TranslateItineraryPanel";
 
 type Lang = "en" | "pt" | "no";
@@ -167,6 +168,7 @@ interface EditorState {
   subpageChecklist: string[];
   subpageDayOverview: { label: string; description: string }[];
   subpageExpectations: { title: string; description: string }[];
+  subpageRaw: { checklist: unknown; dayOverview: unknown; expectations: unknown };
   subpageMapUrl: string;
   clientOrigin: string;
   destinationMarket: string;
@@ -240,6 +242,7 @@ const blankEditor: EditorState = {
   subpageChecklist: [],
   subpageDayOverview: [],
   subpageExpectations: [],
+  subpageRaw: { checklist: null, dayOverview: null, expectations: null },
   subpageMapUrl: "",
   clientOrigin: "",
   destinationMarket: "",
@@ -620,7 +623,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, output_format, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -868,23 +871,28 @@ const CatalogShopManager = () => {
       auditItems: parseAuditItems(r.audit_report).map((i) => ({ ...i, selected: true })),
       auditedAt: r.audited_at || null,
       previousContent: null,
-      subpageChecklist: Array.isArray((r as any).subpage_checklist)
-        ? ((r as any).subpage_checklist as any[]).map((s) => String(s ?? "")).filter((s) => s.trim().length > 0)
-        : [],
-      subpageDayOverview: Array.isArray((r as any).subpage_day_overview)
-        ? ((r as any).subpage_day_overview as any[])
-            .map((d) => ({
-              label: String(d?.label ?? ""),
-              description: String(d?.description ?? ""),
-            }))
-        : [],
-      subpageExpectations: Array.isArray((r as any).subpage_expectations)
-        ? ((r as any).subpage_expectations as any[])
-            .map((e) => ({
-              title: String(e?.title ?? ""),
-              description: String(e?.description ?? ""),
-            }))
-        : [],
+      subpageChecklist: pickLocalizedBlock<string>(
+        (r as any).primary_language,
+        (r as any).subpage_checklist,
+        (r as any).primary_language,
+      )
+        .map((s) => String(s ?? ""))
+        .filter((s) => s.trim().length > 0),
+      subpageDayOverview: pickLocalizedBlock<any>(
+        (r as any).primary_language,
+        (r as any).subpage_day_overview,
+        (r as any).primary_language,
+      ).map((d) => ({ label: String(d?.label ?? ""), description: String(d?.description ?? "") })),
+      subpageExpectations: pickLocalizedBlock<any>(
+        (r as any).primary_language,
+        (r as any).subpage_expectations,
+        (r as any).primary_language,
+      ).map((e) => ({ title: String(e?.title ?? ""), description: String(e?.description ?? "") })),
+      subpageRaw: {
+        checklist: (r as any).subpage_checklist ?? null,
+        dayOverview: (r as any).subpage_day_overview ?? null,
+        expectations: (r as any).subpage_expectations ?? null,
+      },
       subpageMapUrl: String((r as any).subpage_map_url || ""),
       clientOrigin: "",
       destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
@@ -1608,13 +1616,28 @@ const CatalogShopManager = () => {
         body_pdf_url: state.bodyPdfUrl || null,
         audit_report: state.auditReport || null,
         audited_at: state.auditedAt,
-        subpage_checklist: state.subpageChecklist.filter((s) => s.trim().length > 0),
-        subpage_day_overview: state.subpageDayOverview
-          .map((d) => ({ label: (d.label || "").trim(), description: (d.description || "").trim() }))
-          .filter((d) => d.label.length > 0 || d.description.length > 0),
-        subpage_expectations: state.subpageExpectations
-          .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
-          .filter((e) => e.title.length > 0 || e.description.length > 0),
+        subpage_checklist: setLocalizedBlock(
+          state.subpageRaw.checklist,
+          state.language,
+          state.subpageChecklist.filter((s) => s.trim().length > 0),
+          state.language,
+        ),
+        subpage_day_overview: setLocalizedBlock(
+          state.subpageRaw.dayOverview,
+          state.language,
+          state.subpageDayOverview
+            .map((d) => ({ label: (d.label || "").trim(), description: (d.description || "").trim() }))
+            .filter((d) => d.label.length > 0 || d.description.length > 0),
+          state.language,
+        ),
+        subpage_expectations: setLocalizedBlock(
+          state.subpageRaw.expectations,
+          state.language,
+          state.subpageExpectations
+            .map((e) => ({ title: (e.title || "").trim(), description: (e.description || "").trim() }))
+            .filter((e) => e.title.length > 0 || e.description.length > 0),
+          state.language,
+        ),
         subpage_map_url: state.subpageMapUrl.trim() || null,
         output_format: state.outputFormat,
         primary_language: state.language,
