@@ -47,7 +47,8 @@ const pickLang = <T extends string | null>(
   en: T,
   pt: T,
   no: T,
-): T => ((lang === "pt" && pt) || (lang === "no" && no) || en) as T;
+  primaryLanguage?: string | null,
+): T => pickLocalized(lang, { en, pt, no }, primaryLanguage);
 
 const EXPERIENCE_OPTIONS = [
   "Adventure", "Culture", "Gastronomy", "Nature", "City Break", "Relaxation",
