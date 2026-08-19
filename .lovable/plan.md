@@ -1,46 +1,85 @@
-# Traduzir também os blocos da subpágina
+# Um documento, três idiomas: tradução automática dos roteiros do Catálogo
 
-## Situação atual (verificada)
+## Como funciona hoje (verificado no código)
 
-O tradutor hoje cobre apenas os campos que existem em três versões no banco:
+- Você sobe um PDF pronto; ele é guardado em `body_pdf_url` e apenas **mesclado**
+  entre a capa e as páginas finais. O sistema nunca lê o conteúdo dele.
+- Existe **um único** `pdf_path` por roteiro — ou seja, um só arquivo de entrega,
+  em uma só língua.
+- A loja filtra por `primary_language`: um roteiro em PT simplesmente **não
+  aparece** para quem navega em inglês (e para norueguês só aparecem EN e NO).
+- O tradutor que já existe cobre título, resumo, descrição, "o que você recebe",
+  intro da capa e o corpo em texto — mas não o PDF que você sobe, nem os blocos
+  da subpágina.
 
-- título, resumo, descrição, "o que você recebe"
-- intro da capa
-- corpo completo do roteiro
+## O que vou construir
 
-Os blocos da subpágina **não são traduzidos**, e não é só um esquecimento do
-tradutor: as colunas `subpage_checklist`, `subpage_day_overview`,
-`subpage_expectations` e `subpage_highlights` guardam **um único texto**, sem
-versão por idioma. Ou seja, hoje a subpágina mostra esses blocos no idioma em
-que foram escritos, independentemente do idioma da página.
+Fluxo novo, do upload à entrega:
 
-Já as vitrines (loja de roteiros e destaques da home) usam título e resumo por
-idioma — essas **já** aparecem traduzidas assim que o tradutor grava.
+```text
+PDF que você sobe  →  extração (texto + imagens + links)  →  conteúdo no idioma
+de origem  →  tradução para os outros 2 idiomas  →  3 PDFs gerados com o layout
+Fjord & Waves  →  1 produto na loja, disponível nas 3 línguas
+```
 
-## O que proponho construir
+1. **Extração do PDF**: ao anexar o documento, o sistema lê o arquivo, separa
+   títulos, parágrafos, listas e **links clicáveis**, extrai as imagens
+   embutidas e monta o conteúdo estruturado no idioma de origem. Você revê e
+   corrige no editor antes de seguir.
+2. **Tradução ao publicar**: ao publicar, o sistema traduz para os outros dois
+   idiomas com o tradutor já validado (mantém títulos, negritos, listas e
+   `[texto](url)` com a URL idêntica), incluindo os blocos da subpágina
+   (destaques, checklist, visão dos dias/seções, "o que esperar").
+   Você aprova numa prévia lado a lado; nada é publicado sem seu OK.
+3. **Um PDF por idioma**: gerado com o template do site (capa, imagens, mesma
+   ordem e mesmos links). Guardados separadamente e prontos para download
+   imediato na compra.
+4. **Loja e subpágina em todas as línguas**: o roteiro passa a aparecer nas três
+   versões do site. Quando um idioma ainda não foi traduzido, o card mostra o
+   idioma original em vez de esconder o roteiro.
+5. **Entrega**: o cliente que comprou em inglês recebe o PDF em inglês; e-mail e
+   link de download seguem o idioma da compra.
+6. **Indicador de estado** no editor: "traduzido / pendente / desatualizado" por
+   idioma, com botão para retraduzir quando você mexe no original.
 
-1. Passar os blocos da subpágina a ter versão por idioma, mantendo o conteúdo
-   atual como versão do idioma principal do roteiro (nada se perde).
-2. Incluir esses blocos no tradutor: ao traduzir PT → EN/NO, também são
-   traduzidos destaques, checklist, visão dos dias/seções e "o que esperar",
-   com prévia e aprovação como nos demais campos.
-3. Subpágina passa a exibir o bloco no idioma da página, com queda para o
-   idioma principal quando aquele idioma ainda não foi traduzido.
-4. Editor mostra os blocos do idioma que está sendo editado (segue o seletor de
-   idioma já existente no formulário).
+### O que muda na prática para você
 
-Itens que continuam sem tradução por natureza: URL do mapa, imagens, preço,
-hotéis e duração.
+Você continua escrevendo e diagramando fora do sistema, sobe **um** arquivo, e o
+resto (idiomas, PDFs, subpáginas, entrega) é automático.
+
+### Limite honesto sobre o layout
+
+Você escolheu o template do site para as versões traduzidas. Isso significa: o
+mesmo conteúdo, as mesmas imagens, os mesmos links e a mesma ordem — mas
+diagramados pelo template Fjord & Waves, não pixel a pixel igual ao seu Canva.
+É o único caminho confiável: texto traduzido muda de comprimento e quebraria um
+layout fixo. Se quiser, o PDF original continua servido como está para o idioma
+de origem.
 
 ## Detalhes técnicos
 
-- Formato dos JSONs passa a ser mapa por idioma:
-  `{"en": [...], "pt": [...], "no": [...]}`. A leitura aceita os dois formatos
-  (array antigo = idioma principal), então nenhuma migração destrutiva é
-  necessária; a gravação já sai no formato novo.
-- `TranslateItineraryPanel.tsx`: novos itens de tradução, um por entrada de
-  bloco (strings curtas, enviadas em lote para `translateCatalogChunks`), com
-  regravação nos JSONs por idioma.
-- `CatalogShopManager.tsx`: leitura/gravação dos blocos indexada pelo idioma em
-  edição.
-- `ItineraryShopDetail.tsx`: seleção do bloco pelo locale da rota, com fallback.
+- **Banco**: novas colunas em `catalog_itineraries` — `pdf_path_en/pt/no`,
+  `translation_status` (jsonb: estado e hash do original por idioma), e os
+  blocos `subpage_*` passam a mapa por idioma (`{"en":[...],"pt":[...]}`),
+  com leitura compatível com o formato atual (array = idioma principal).
+- **Extração**: feita no navegador do admin com o pdf.js já usado em
+  `PdfJsViewer`, produzindo Markdown + imagens enviadas para o storage; uma
+  passada de IA apenas para arrumar títulos/listas, sem reescrever o texto.
+- **Tradução**: reaproveita `translateCatalogChunks`
+  (`src/lib/translateCatalog.functions.ts`) e o painel
+  `TranslateItineraryPanel.tsx`, ampliados para os blocos da subpágina e para
+  disparo no momento de publicar.
+- **PDFs por idioma**: `generate-catalog-pdf` passa a receber o idioma e gravar
+  em `pdf_path_<lang>`; `download-catalog-pdf`, `create-catalog-checkout` e
+  `verify-catalog-purchase` escolhem o arquivo pelo idioma da compra, com
+  fallback para o idioma de origem.
+- **Vitrines**: `ItinerariesShop.tsx` e `FeaturedItineraries.tsx` deixam de
+  filtrar por `primary_language` e passam a escolher o campo do idioma com
+  fallback; `ItineraryShopDetail.tsx` idem, incluindo os blocos da subpágina.
+
+## Ordem de entrega
+
+1. Colunas e leitura por idioma com fallback (loja deixa de esconder roteiros).
+2. Extração do PDF para conteúdo estruturado, com revisão no editor.
+3. Tradução ampliada (corpo + blocos da subpágina) com prévia e aprovação.
+4. Geração e entrega do PDF por idioma.
