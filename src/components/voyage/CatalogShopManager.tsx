@@ -2789,6 +2789,20 @@ const CatalogShopManager = () => {
                   </label>
                   <Button
                     size="sm"
+                    variant="outline"
+                    onClick={() => void importFromPdf()}
+                    disabled={!state.bodyPdfUrl || pdfImporting}
+                    title="Extract text, links and images from the PDF into editable body content"
+                  >
+                    {pdfImporting ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4 mr-2" />
+                    )}
+                    Import text & images
+                  </Button>
+                  <Button
+                    size="sm"
                     onClick={() => setPreviewMergedOpen(true)}
                     disabled={!state.bodyPdfUrl}
                     className="bg-ink text-voyage-white hover:bg-gold hover:text-ink"
@@ -2819,6 +2833,9 @@ const CatalogShopManager = () => {
               ) : (
                 <div className="text-[0.78rem] text-voyage-muted italic">No body PDF uploaded yet.</div>
               )}
+              {pdfImporting && pdfImportStatus ? (
+                <div className="mt-2 text-[0.74rem] text-voyage-muted">{pdfImportStatus}</div>
+              ) : null}
             </div>
           </div>
 
