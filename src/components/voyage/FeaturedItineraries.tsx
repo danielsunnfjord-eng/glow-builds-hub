@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, usePreferredCurrency } from "@/lib/pricing";
 import ScrollReveal from "./ScrollReveal";
+import { pickLocalized } from "@/lib/localizedField";
 
 interface FeaturedItem {
   id: string;
@@ -19,10 +20,16 @@ interface FeaturedItem {
   price_brl: number | null;
   price_nok: number | null;
   created_at: string;
+  primary_language?: string | null;
 }
 
-const pickLang = (lang: string, en: string, pt: string | null, no: string | null) =>
-  (lang === "pt" && pt) || (lang === "no" && no) || en;
+const pickLang = (
+  lang: string,
+  en: string,
+  pt: string | null,
+  no: string | null,
+  primaryLanguage?: string | null,
+) => pickLocalized(lang, { en, pt, no }, primaryLanguage) || en;
 
 const parseDays = (s: string | null): number | null => {
   if (!s) return null;
@@ -44,9 +51,6 @@ const FeaturedItineraries = () => {
           "id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, created_at, primary_language",
         )
         .eq("is_published", true);
-      if (lang === "pt") query = query.eq("primary_language", "pt");
-      else if (lang === "en") query = query.eq("primary_language", "en");
-      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
       const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false })
@@ -83,7 +87,7 @@ const FeaturedItineraries = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {(data ?? []).map((trip) => {
-            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no);
+            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no, trip.primary_language);
             const days = parseDays(trip.duration);
             const durLabel = days
               ? `${days} ${t("catalogue.daysWord", "days")}`

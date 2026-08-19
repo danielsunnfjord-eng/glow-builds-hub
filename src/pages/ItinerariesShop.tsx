@@ -95,9 +95,6 @@ const ItinerariesShop = () => {
           "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language",
         )
         .eq("is_published", true);
-      if (lang === "pt") query = query.eq("primary_language", "pt");
-      else if (lang === "en") query = query.eq("primary_language", "en");
-      else if (lang === "no") query = query.in("primary_language", ["en", "no"]);
       const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
@@ -344,8 +341,8 @@ const ItinerariesShop = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {filtered.map((trip) => {
-            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no) || trip.title_en;
-            const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no) || trip.summary_en;
+            const title = pickLang(lang, trip.title_en, trip.title_pt, trip.title_no, trip.primary_language) || trip.title_en;
+            const summary = pickLang(lang, trip.summary_en, trip.summary_pt, trip.summary_no, trip.primary_language) || trip.summary_en;
             return (
               <ScrollReveal key={trip.id} className="h-full">
                 <Link
