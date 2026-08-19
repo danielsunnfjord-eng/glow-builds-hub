@@ -40,6 +40,7 @@ interface CatalogItem {
   created_at: string;
   view_count: number | null;
   primary_language: string | null;
+  translation_status?: Record<string, { state?: string }> | null;
 }
 
 
@@ -92,7 +93,7 @@ const ItinerariesShop = () => {
       let query = supabase
         .from("catalog_itineraries")
         .select(
-          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language",
+          "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language, translation_status",
         )
         .eq("is_published", true);
       const { data, error } = await query
@@ -390,7 +391,9 @@ const ItinerariesShop = () => {
                     )}
                     {(() => {
                       const pl = (trip.primary_language || "en").toLowerCase();
-                      const langKey = pl === "pt" || pl === "no" ? pl : "en";
+                      const primaryKey = pl === "pt" || pl === "no" ? pl : "en";
+                      const translated = trip.translation_status?.[lang]?.state === "ready";
+                      const langKey = lang === primaryKey || translated ? lang : primaryKey;
                       const created = new Date(trip.created_at).toLocaleDateString(
                         lang === "pt" ? "pt-BR" : lang === "no" ? "nb-NO" : "en-GB",
                         { day: "2-digit", month: "short", year: "numeric" },
