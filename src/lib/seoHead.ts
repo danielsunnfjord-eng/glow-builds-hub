@@ -60,7 +60,7 @@ export function buildHead({
   noindex,
 }: HeadInput) {
   const url = `${SITE_URL}${localePath(path, locale)}`;
-  const img = image || DEFAULT_IMAGE;
+  const img = socialImageUrl(image || DEFAULT_IMAGE);
   const desc = description.length > 158 ? `${description.slice(0, 155).trimEnd()}…` : description;
   const blocks = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
