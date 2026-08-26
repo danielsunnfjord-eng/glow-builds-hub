@@ -844,7 +844,7 @@ export default {
       "label": "SOB MEDIDA",
       "title": "Viagem personalizada",
       "description": "Nós desenhamos, planejamos e reservamos toda a sua viagem.",
-      "fee_note": "Consultoria gratuita · Taxa de criação*",
+      "fee_note": "Consultoria gratuita · Taxa de serviço*",
       "price_label": "A PARTIR DE",
       "features": [
         "Viagem desenhada do zero",
