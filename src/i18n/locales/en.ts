@@ -857,7 +857,7 @@ export default {
       "label": "BESPOKE",
       "title": "Custom Journey",
       "description": "We design, plan and book your entire journey.",
-      "fee_note": "Free consultation · Design fee*",
+      "fee_note": "Free consultation · Service fee*",
       "price_label": "FROM",
       "features": [
         "Journey designed from scratch",

@@ -842,7 +842,7 @@ export default {
       "label": "SKREDDERSYDD",
       "title": "Skreddersydd reise",
       "description": "Vi designer, planlegger og booker hele reisen din.",
-      "fee_note": "Gratis konsultasjon · Designavgift*",
+      "fee_note": "Gratis konsultasjon · Tjenesteavgift*",
       "price_label": "FRA",
       "features": [
         "Reise designet fra bunnen av",
