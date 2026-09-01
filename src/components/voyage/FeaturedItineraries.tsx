@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { formatPrice, usePreferredCurrency } from "@/lib/pricing";
+import { useActiveCurrency, formatFromNok } from "@/lib/fx";
 import ScrollReveal from "./ScrollReveal";
 import { pickLocalized } from "@/lib/localizedField";
 
@@ -40,7 +40,7 @@ const parseDays = (s: string | null): number | null => {
 const FeaturedItineraries = () => {
   const { t, i18n } = useTranslation();
   const lang = (i18n.language?.substring(0, 2) || "en") as "en" | "pt" | "no";
-  const { enPref } = usePreferredCurrency();
+  const { active, rate } = useActiveCurrency();
 
   const { data, isLoading } = useQuery({
     queryKey: ["featured-itineraries", lang],
@@ -50,7 +50,8 @@ const FeaturedItineraries = () => {
         .select(
           "id, slug, title_en, title_pt, title_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, created_at, primary_language",
         )
-        .eq("is_published", true);
+        .eq("is_published", true)
+        .in("primary_language", lang === "pt" ? ["pt"] : lang === "no" ? ["en", "no"] : ["en"]);
       const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false })
@@ -119,7 +120,7 @@ const FeaturedItineraries = () => {
                     </h3>
                     <div className="flex items-center justify-between border-t border-parchment-3 pt-3 mt-auto">
                       <span className="font-serif text-[1.05rem] text-gold font-semibold">
-                        {formatPrice(trip, lang, enPref)}
+                        {Number(trip.price_nok) > 0 ? formatFromNok(Number(trip.price_nok), active, rate) : ""}
                       </span>
                       <span className="text-[0.7rem] tracking-[0.1em] uppercase text-voyage-muted">
                         {t("home.featured.instantPdf")}
