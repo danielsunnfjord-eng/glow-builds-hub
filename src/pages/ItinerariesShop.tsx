@@ -95,7 +95,8 @@ const ItinerariesShop = () => {
         .select(
           "id, slug, title_en, title_pt, title_no, summary_en, summary_pt, summary_no, destination, duration, hero_image_url, price_eur, price_usd, price_brl, price_nok, sort_order, experience_type, season, created_at, view_count, primary_language, translation_status",
         )
-        .eq("is_published", true);
+        .eq("is_published", true)
+        .in("primary_language", lang === "pt" ? ["pt"] : lang === "no" ? ["en", "no"] : ["en"]);
       const { data, error } = await query
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
