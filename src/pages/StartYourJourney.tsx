@@ -42,29 +42,6 @@ const StartYourJourney = () => {
             </button>
           </div>
         </section>
-
-        {/* Intake */}
-        <section className="py-24 px-6 max-md:py-16 bg-background">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
-              <div className="w-[30px] h-px bg-gold" />
-              {t("startJourney.step")}
-              <div className="w-[30px] h-px bg-gold" />
-            </div>
-            <h2 className="font-serif text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight text-foreground mb-3">
-              {t("startJourney.formTitle")}
-            </h2>
-            <p className="text-[0.92rem] text-muted-foreground leading-relaxed mb-8">
-              {t("startJourney.formSubtitle")}
-            </p>
-            <button
-              onClick={openIntake}
-              className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 transition-all"
-            >
-              {t("startJourney.cta")}
-            </button>
-          </div>
-        </section>
       </main>
       <Footer />
     </div>
