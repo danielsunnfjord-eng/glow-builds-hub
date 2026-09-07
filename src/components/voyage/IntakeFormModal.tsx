@@ -92,14 +92,14 @@ export function IntakeFormProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Close form"
+              aria-label={copy.close}
               className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-ink/80 text-white transition-colors hover:bg-ink"
             >
               <X className="h-5 w-5" />
             </button>
             <div className="flex flex-col items-center text-center">
               <p className="font-body text-base leading-relaxed text-ink md:text-lg">
-                To fill out your intake form, please open it in a new tab.
+                {copy.intro}
               </p>
               <a
                 href={INTAKE_URL}
@@ -107,10 +107,10 @@ export function IntakeFormProvider({ children }: { children: ReactNode }) {
                 rel="noopener noreferrer"
                 className="mt-6 inline-flex items-center justify-center rounded-md bg-ink px-8 py-3.5 font-sans text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-ink/90"
               >
-                Open Intake Form
+                {copy.cta}
               </a>
               <p className="mt-5 text-[0.82rem] leading-relaxed text-voyage-muted">
-                Once you&rsquo;ve submitted the form, you can close this window and continue browsing.
+                {copy.after}
               </p>
             </div>
           </div>
