@@ -40,8 +40,32 @@ export function useIntakeCta() {
   return { isEnglish, open: ctx?.open ?? (() => {}), onIntakeClick };
 }
 
+const COPY = {
+  en: {
+    intro: "To fill out your intake form, please open it in a new tab.",
+    cta: "Open intake form",
+    after: "Once you’ve submitted the form, you can close this window and continue browsing.",
+    close: "Close",
+  },
+  pt: {
+    intro: "Para preencher o formulário, abra-o em uma nova aba.",
+    cta: "Abrir formulário",
+    after: "Depois de enviar o formulário, você pode fechar esta janela e continuar navegando.",
+    close: "Fechar",
+  },
+  no: {
+    intro: "For å fylle ut skjemaet, åpne det i en ny fane.",
+    cta: "Åpne skjemaet",
+    after: "Når du har sendt inn skjemaet, kan du lukke dette vinduet og fortsette å utforske.",
+    close: "Lukk",
+  },
+} as const;
+
 export function IntakeFormProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0, 2) ?? "en") as keyof typeof COPY;
+  const copy = COPY[lang] ?? COPY.en;
 
   useEffect(() => {
     if (!open) return;
