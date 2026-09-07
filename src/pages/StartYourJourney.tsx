@@ -1,17 +1,12 @@
-import { useNavigate } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
-import TripRequestForm from "@/components/voyage/TripRequestForm";
+import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import heroImage from "@/assets/start-journey-hero.jpg";
 
-const scrollToForm = () => {
-  document.getElementById("journey-form")?.scrollIntoView({ behavior: "smooth" });
-};
-
 const StartYourJourney = () => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { open: openIntake } = useIntakeCta();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -40,7 +35,7 @@ const StartYourJourney = () => {
               {t("startJourney.subtitle")}
             </p>
             <button
-              onClick={scrollToForm}
+              onClick={openIntake}
               className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(184,135,42,0.3)] transition-all"
             >
               {t("startJourney.cta")}
@@ -48,25 +43,26 @@ const StartYourJourney = () => {
           </div>
         </section>
 
-        {/* Form */}
-        <section id="journey-form" className="py-24 px-6 max-md:py-16 bg-background">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
-                <div className="w-[30px] h-px bg-gold" />
-                {t("startJourney.step")}
-                <div className="w-[30px] h-px bg-gold" />
-              </div>
-              <h2 className="font-serif text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight text-foreground mb-3">
-                {t("startJourney.formTitle")}
-              </h2>
-              <p className="text-[0.92rem] text-muted-foreground leading-relaxed">
-                {t("startJourney.formSubtitle")}
-              </p>
+        {/* Intake */}
+        <section className="py-24 px-6 max-md:py-16 bg-background">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2.5 text-[0.68rem] font-semibold tracking-[0.2em] uppercase text-gold mb-4">
+              <div className="w-[30px] h-px bg-gold" />
+              {t("startJourney.step")}
+              <div className="w-[30px] h-px bg-gold" />
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-xs">
-              <TripRequestForm onSuccess={() => navigate("/thank-you")} />
-            </div>
+            <h2 className="font-serif text-[clamp(1.8rem,3.5vw,2.6rem)] font-bold leading-tight tracking-tight text-foreground mb-3">
+              {t("startJourney.formTitle")}
+            </h2>
+            <p className="text-[0.92rem] text-muted-foreground leading-relaxed mb-8">
+              {t("startJourney.formSubtitle")}
+            </p>
+            <button
+              onClick={openIntake}
+              className="inline-flex items-center gap-2 px-10 py-4 bg-gold text-ink font-semibold text-[0.78rem] tracking-[0.1em] uppercase rounded-xs hover:bg-gold-2 transition-all"
+            >
+              {t("startJourney.cta")}
+            </button>
           </div>
         </section>
       </main>
@@ -76,4 +72,3 @@ const StartYourJourney = () => {
 };
 
 export default StartYourJourney;
-
