@@ -20,18 +20,16 @@ interface IntakeContextValue {
 const IntakeContext = createContext<IntakeContextValue | null>(null);
 
 /**
- * English-only intake behaviour: on the EN site the intake CTAs open the Fora
- * intake form in a modal iframe instead of navigating. PT/NO keep the existing
- * internal form pages untouched.
+ * Intake behaviour (all languages): intake CTAs open the Fora intake form in a
+ * modal instead of navigating to the internal questionnaire.
  */
 export function useIntakeCta() {
   const ctx = useContext(IntakeContext);
-  const { i18n } = useTranslation();
-  const isEnglish = i18n.language === "en";
+  const isEnglish = true;
 
   const onIntakeClick = useCallback(
     (e: MouseEvent) => {
-      if (!isEnglish || !ctx) return;
+      if (!ctx) return;
       e.preventDefault();
       e.stopPropagation();
       ctx.open();
