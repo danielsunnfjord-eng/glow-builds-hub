@@ -2527,6 +2527,23 @@ const CatalogShopManager = () => {
               />
             </div>
             <div className="md:col-span-2">
+              <Label>Viator widget (Book Experiences)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Paste the widget reference (W-…) or the whole embed snippet from Viator. Shown on the catalogue subpage as "Book Experiences for This Trip". Leave empty to hide the section.
+              </p>
+              <Input
+                value={state.viatorWidgetRef}
+                onChange={(e) => setState({ ...state, viatorWidgetRef: e.target.value })}
+                placeholder='W-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+              />
+              <Input
+                className="mt-2"
+                value={state.viatorPartnerId}
+                onChange={(e) => setState({ ...state, viatorPartnerId: e.target.value })}
+                placeholder="Partner ID (optional — defaults to U00778967)"
+              />
+            </div>
+            <div className="md:col-span-2">
               <Label>Cover image</Label>
 
               <div className="flex items-center gap-3">
