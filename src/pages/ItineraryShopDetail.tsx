@@ -138,6 +138,8 @@ interface CatalogItem {
   primary_language?: string | null;
   subpage_map_url: string | null;
   output_format: string | null;
+  viator_widget_ref?: string | null;
+  viator_partner_id?: string | null;
 }
 
 
