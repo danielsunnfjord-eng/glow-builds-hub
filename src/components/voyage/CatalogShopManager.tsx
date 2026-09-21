@@ -94,6 +94,8 @@ interface CatalogRow {
   subpage_day_overview?: { label: string; description: string }[] | null;
   subpage_expectations?: { title: string; description: string }[] | null;
   subpage_map_url?: string | null;
+  viator_widget_ref?: string | null;
+  viator_partner_id?: string | null;
   output_format?: string | null;
   stripe_product_id_sandbox?: string | null;
   stripe_product_id_live?: string | null;
@@ -171,6 +173,7 @@ interface EditorState {
   subpageRaw: { checklist: unknown; dayOverview: unknown; expectations: unknown };
   subpageMapUrl: string;
   viatorWidgetRef: string;
+  // Accepts either a raw W-… ref or the full embed snippet copied from Viator.
   viatorPartnerId: string;
   clientOrigin: string;
   destinationMarket: string;
