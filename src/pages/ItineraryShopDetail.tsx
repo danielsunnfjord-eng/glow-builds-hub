@@ -141,6 +141,8 @@ interface CatalogItem {
   output_format: string | null;
   viator_widget_ref?: string | null;
   viator_partner_id?: string | null;
+  viator_trip_url?: string | null;
+
 }
 
 
