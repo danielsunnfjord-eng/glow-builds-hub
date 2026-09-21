@@ -246,6 +246,8 @@ const blankEditor: EditorState = {
   subpageExpectations: [],
   subpageRaw: { checklist: null, dayOverview: null, expectations: null },
   subpageMapUrl: "",
+  viatorWidgetRef: "",
+  viatorPartnerId: "",
   clientOrigin: "",
   destinationMarket: "",
 };
@@ -896,6 +898,8 @@ const CatalogShopManager = () => {
         expectations: (r as any).subpage_expectations ?? null,
       },
       subpageMapUrl: String((r as any).subpage_map_url || ""),
+      viatorWidgetRef: String((r as any).viator_widget_ref || ""),
+      viatorPartnerId: String((r as any).viator_partner_id || ""),
       clientOrigin: "",
       destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
     };
@@ -1691,6 +1695,8 @@ const CatalogShopManager = () => {
           state.language,
         ),
         subpage_map_url: state.subpageMapUrl.trim() || null,
+        viator_widget_ref: extractViatorRef(state.viatorWidgetRef),
+        viator_partner_id: state.viatorPartnerId.trim() || null,
         output_format: state.outputFormat,
         primary_language: state.language,
       };
