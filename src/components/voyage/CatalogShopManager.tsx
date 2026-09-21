@@ -95,6 +95,7 @@ interface CatalogRow {
   subpage_expectations?: { title: string; description: string }[] | null;
   subpage_map_url?: string | null;
   viator_widget_ref?: string | null;
+  // helper hoisted below the interfaces
   viator_partner_id?: string | null;
   output_format?: string | null;
   stripe_product_id_sandbox?: string | null;
