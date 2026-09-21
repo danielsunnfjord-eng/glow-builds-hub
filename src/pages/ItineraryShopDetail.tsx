@@ -806,24 +806,6 @@ const ItineraryShopDetail = () => {
                       className="w-full min-w-0"
                     />
                   )}
-                  {data.viator_trip_url && (
-                    <div className="mt-4 flex flex-col items-start gap-3 border-t border-ink/[0.06] pt-5 first:mt-0 first:border-0 first:pt-0">
-                      <p className="text-sm text-voyage-muted">
-                        {t(
-                          "shop.viatorCuratedIntro",
-                          "See the hand-picked tours and activities we recommend for this trip.",
-                        )}
-                      </p>
-                      <a
-                        href={data.viator_trip_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-medium tracking-wide text-ink transition-opacity hover:opacity-90"
-                      >
-                        {t("shop.viatorCuratedCta", "View curated experiences")}
-                      </a>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
