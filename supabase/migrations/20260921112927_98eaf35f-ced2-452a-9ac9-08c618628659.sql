@@ -1,0 +1,2 @@
+ALTER TABLE public.catalog_itineraries ADD COLUMN IF NOT EXISTS viator_trip_url text;
+UPDATE public.catalog_itineraries SET viator_widget_ref = 'W-d907b1c2-fc92-48c5-babf-0bc8bec65e6c', viator_trip_url = 'https://www.viator.com/agent-trip-suggestions/W-166354a7-cd86-44cb-b7a2-a719d4506e64?currency=USD&allowNativeApp=false' WHERE slug = 'experience-the-northern-lights';

@@ -141,6 +141,8 @@ interface CatalogItem {
   output_format: string | null;
   viator_widget_ref?: string | null;
   viator_partner_id?: string | null;
+  viator_trip_url?: string | null;
+
 }
 
 
@@ -790,21 +792,42 @@ const ItineraryShopDetail = () => {
             )}
 
             {/* Book Experiences — Viator affiliate widget */}
-            {data.viator_widget_ref && (
+            {(data.viator_widget_ref || data.viator_trip_url) && (
               <div className="mb-14">
                 <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
                   {t("shop.bookExperiences", "Book Experiences for This Trip")}
                 </h2>
                 <div className="h-px w-12 bg-gold mb-7" />
                 <div className="rounded-lg border border-ink/[0.06] bg-voyage-white shadow-xs p-4 md:p-6 overflow-x-auto">
-                  <ViatorWidget
-                    partnerId={data.viator_partner_id || "U00778967"}
-                    widgetRef={data.viator_widget_ref}
-                    className="w-full min-w-0"
-                  />
+                  {data.viator_widget_ref && (
+                    <ViatorWidget
+                      partnerId={data.viator_partner_id || "U00778967"}
+                      widgetRef={data.viator_widget_ref}
+                      className="w-full min-w-0"
+                    />
+                  )}
+                  {data.viator_trip_url && (
+                    <div className="mt-4 flex flex-col items-start gap-3 border-t border-ink/[0.06] pt-5 first:mt-0 first:border-0 first:pt-0">
+                      <p className="text-sm text-voyage-muted">
+                        {t(
+                          "shop.viatorCuratedIntro",
+                          "See the hand-picked tours and activities we recommend for this trip.",
+                        )}
+                      </p>
+                      <a
+                        href={data.viator_trip_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-medium tracking-wide text-ink transition-opacity hover:opacity-90"
+                      >
+                        {t("shop.viatorCuratedCta", "View curated experiences")}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
+
 
             {/* Buy & Download */}
             <div className="max-w-4xl">
