@@ -24,6 +24,7 @@ import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
+import ViatorWidget from "@/components/ViatorWidget";
 import {
   CurrencyToggle,
   currencyForLang,
