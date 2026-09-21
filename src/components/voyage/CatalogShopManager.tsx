@@ -170,6 +170,8 @@ interface EditorState {
   subpageExpectations: { title: string; description: string }[];
   subpageRaw: { checklist: unknown; dayOverview: unknown; expectations: unknown };
   subpageMapUrl: string;
+  viatorWidgetRef: string;
+  viatorPartnerId: string;
   clientOrigin: string;
   destinationMarket: string;
 }
