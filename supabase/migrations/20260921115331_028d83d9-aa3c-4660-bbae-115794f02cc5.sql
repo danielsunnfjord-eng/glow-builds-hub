@@ -1,0 +1,1 @@
+UPDATE public.catalog_itineraries SET viator_widget_ref = 'W-d907b1c2-fc92-48c5-babf-0bc8bec65e6c', viator_partner_id = 'U00778967' WHERE slug = 'destino-aurora-boreal-na-noruega';
