@@ -178,6 +178,15 @@ interface EditorState {
   destinationMarket: string;
 }
 
+// Accepts a raw "W-…" reference or the full embed snippet copied from Viator.
+const extractViatorRef = (input: string): string | null => {
+  const raw = (input || "").trim();
+  if (!raw) return null;
+  const match = raw.match(/data-vi-widget-ref\s*=\s*["']([^"']+)["']/i);
+  return (match ? match[1] : raw).trim() || null;
+};
+
+
 
 type AuditActionState = {
   status: "idle" | "running" | "error";
