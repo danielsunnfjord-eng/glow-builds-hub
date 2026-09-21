@@ -788,6 +788,23 @@ const ItineraryShopDetail = () => {
               </div>
             )}
 
+            {/* Book Experiences — Viator affiliate widget */}
+            {data.viator_widget_ref && (
+              <div className="mb-14">
+                <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                  {t("shop.bookExperiences", "Book Experiences for This Trip")}
+                </h2>
+                <div className="h-px w-12 bg-gold mb-7" />
+                <div className="rounded-lg border border-ink/[0.06] bg-voyage-white shadow-xs p-4 md:p-6 overflow-x-auto">
+                  <ViatorWidget
+                    partnerId={data.viator_partner_id || "U00778967"}
+                    widgetRef={data.viator_widget_ref}
+                    className="w-full min-w-0"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Buy & Download */}
             <div className="max-w-4xl">
               <div id="buy" className="grid grid-cols-1 gap-6">
