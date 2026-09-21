@@ -94,6 +94,8 @@ interface CatalogRow {
   subpage_day_overview?: { label: string; description: string }[] | null;
   subpage_expectations?: { title: string; description: string }[] | null;
   subpage_map_url?: string | null;
+  viator_widget_ref?: string | null;
+  viator_partner_id?: string | null;
   output_format?: string | null;
   stripe_product_id_sandbox?: string | null;
   stripe_product_id_live?: string | null;
@@ -170,9 +172,20 @@ interface EditorState {
   subpageExpectations: { title: string; description: string }[];
   subpageRaw: { checklist: unknown; dayOverview: unknown; expectations: unknown };
   subpageMapUrl: string;
+  viatorWidgetRef: string;
+  viatorPartnerId: string;
   clientOrigin: string;
   destinationMarket: string;
 }
+
+// Accepts a raw "W-…" reference or the full embed snippet copied from Viator.
+const extractViatorRef = (input: string): string | null => {
+  const raw = (input || "").trim();
+  if (!raw) return null;
+  const match = raw.match(/data-vi-widget-ref\s*=\s*["']([^"']+)["']/i);
+  return (match ? match[1] : raw).trim() || null;
+};
+
 
 
 type AuditActionState = {
@@ -244,6 +257,8 @@ const blankEditor: EditorState = {
   subpageExpectations: [],
   subpageRaw: { checklist: null, dayOverview: null, expectations: null },
   subpageMapUrl: "",
+  viatorWidgetRef: "",
+  viatorPartnerId: "",
   clientOrigin: "",
   destinationMarket: "",
 };
@@ -623,7 +638,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, viator_widget_ref, viator_partner_id, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -894,6 +909,8 @@ const CatalogShopManager = () => {
         expectations: (r as any).subpage_expectations ?? null,
       },
       subpageMapUrl: String((r as any).subpage_map_url || ""),
+      viatorWidgetRef: String((r as any).viator_widget_ref || ""),
+      viatorPartnerId: String((r as any).viator_partner_id || ""),
       clientOrigin: "",
       destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
     };
@@ -1689,6 +1706,8 @@ const CatalogShopManager = () => {
           state.language,
         ),
         subpage_map_url: state.subpageMapUrl.trim() || null,
+        viator_widget_ref: extractViatorRef(state.viatorWidgetRef),
+        viator_partner_id: state.viatorPartnerId.trim() || null,
         output_format: state.outputFormat,
         primary_language: state.language,
       };
@@ -2505,6 +2524,23 @@ const CatalogShopManager = () => {
                 value={state.subpageMapUrl}
                 onChange={(e) => setState({ ...state, subpageMapUrl: e.target.value })}
                 placeholder="https://www.google.com/maps/embed?pb=…"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Viator widget (Book Experiences)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Paste the widget reference (W-…) or the whole embed snippet from Viator. Shown on the catalogue subpage as "Book Experiences for This Trip". Leave empty to hide the section.
+              </p>
+              <Input
+                value={state.viatorWidgetRef}
+                onChange={(e) => setState({ ...state, viatorWidgetRef: e.target.value })}
+                placeholder='W-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+              />
+              <Input
+                className="mt-2"
+                value={state.viatorPartnerId}
+                onChange={(e) => setState({ ...state, viatorPartnerId: e.target.value })}
+                placeholder="Partner ID (optional — defaults to U00778967)"
               />
             </div>
             <div className="md:col-span-2">

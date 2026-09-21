@@ -76,6 +76,8 @@ export type Database = {
           title_pt: string | null
           translation_status: Json
           updated_at: string
+          viator_partner_id: string | null
+          viator_widget_ref: string | null
           view_count: number
           what_you_get_en: string
           what_you_get_no: string | null
@@ -142,6 +144,8 @@ export type Database = {
           title_pt?: string | null
           translation_status?: Json
           updated_at?: string
+          viator_partner_id?: string | null
+          viator_widget_ref?: string | null
           view_count?: number
           what_you_get_en?: string
           what_you_get_no?: string | null
@@ -208,6 +212,8 @@ export type Database = {
           title_pt?: string | null
           translation_status?: Json
           updated_at?: string
+          viator_partner_id?: string | null
+          viator_widget_ref?: string | null
           view_count?: number
           what_you_get_en?: string
           what_you_get_no?: string | null

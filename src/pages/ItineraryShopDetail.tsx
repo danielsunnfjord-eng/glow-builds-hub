@@ -24,6 +24,7 @@ import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
+import ViatorWidget from "@/components/ViatorWidget";
 import {
   CurrencyToggle,
   currencyForLang,
@@ -138,6 +139,8 @@ interface CatalogItem {
   primary_language?: string | null;
   subpage_map_url: string | null;
   output_format: string | null;
+  viator_widget_ref?: string | null;
+  viator_partner_id?: string | null;
 }
 
 
@@ -781,6 +784,23 @@ const ItineraryShopDetail = () => {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Book Experiences — Viator affiliate widget */}
+            {data.viator_widget_ref && (
+              <div className="mb-14">
+                <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
+                  {t("shop.bookExperiences", "Book Experiences for This Trip")}
+                </h2>
+                <div className="h-px w-12 bg-gold mb-7" />
+                <div className="rounded-lg border border-ink/[0.06] bg-voyage-white shadow-xs p-4 md:p-6 overflow-x-auto">
+                  <ViatorWidget
+                    partnerId={data.viator_partner_id || "U00778967"}
+                    widgetRef={data.viator_widget_ref}
+                    className="w-full min-w-0"
                   />
                 </div>
               </div>
