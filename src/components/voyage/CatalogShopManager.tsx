@@ -2542,7 +2542,14 @@ const CatalogShopManager = () => {
                 onChange={(e) => setState({ ...state, viatorPartnerId: e.target.value })}
                 placeholder="Partner ID (optional — defaults to U00778967)"
               />
+              <Input
+                className="mt-2"
+                value={state.viatorTripUrl}
+                onChange={(e) => setState({ ...state, viatorTripUrl: e.target.value })}
+                placeholder="Curated Viator trip link (https://www.viator.com/agent-trip-suggestions/…)"
+              />
             </div>
+
             <div className="md:col-span-2">
               <Label>Cover image</Label>
 
