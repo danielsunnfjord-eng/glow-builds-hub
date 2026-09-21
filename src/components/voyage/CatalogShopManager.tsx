@@ -174,6 +174,7 @@ interface EditorState {
   subpageMapUrl: string;
   viatorWidgetRef: string;
   viatorPartnerId: string;
+  viatorTripUrl: string;
   clientOrigin: string;
   destinationMarket: string;
 }
@@ -259,6 +260,7 @@ const blankEditor: EditorState = {
   subpageMapUrl: "",
   viatorWidgetRef: "",
   viatorPartnerId: "",
+  viatorTripUrl: "",
   clientOrigin: "",
   destinationMarket: "",
 };
@@ -638,7 +640,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, viator_widget_ref, viator_partner_id, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, viator_widget_ref, viator_partner_id, viator_trip_url, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -911,6 +913,7 @@ const CatalogShopManager = () => {
       subpageMapUrl: String((r as any).subpage_map_url || ""),
       viatorWidgetRef: String((r as any).viator_widget_ref || ""),
       viatorPartnerId: String((r as any).viator_partner_id || ""),
+      viatorTripUrl: String((r as any).viator_trip_url || ""),
       clientOrigin: "",
       destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
     };
@@ -1708,6 +1711,7 @@ const CatalogShopManager = () => {
         subpage_map_url: state.subpageMapUrl.trim() || null,
         viator_widget_ref: extractViatorRef(state.viatorWidgetRef),
         viator_partner_id: state.viatorPartnerId.trim() || null,
+        viator_trip_url: state.viatorTripUrl.trim() || null,
         output_format: state.outputFormat,
         primary_language: state.language,
       };
