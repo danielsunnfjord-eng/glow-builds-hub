@@ -175,6 +175,8 @@ interface EditorState {
   viatorWidgetRef: string;
   viatorPartnerId: string;
   viatorTripUrl: string;
+  gygWidgetHtml: string;
+
   clientOrigin: string;
   destinationMarket: string;
 }
@@ -261,6 +263,8 @@ const blankEditor: EditorState = {
   viatorWidgetRef: "",
   viatorPartnerId: "",
   viatorTripUrl: "",
+  gygWidgetHtml: "",
+
   clientOrigin: "",
   destinationMarket: "",
 };
@@ -2552,7 +2556,18 @@ const CatalogShopManager = () => {
                 onChange={(e) => setState({ ...state, viatorTripUrl: e.target.value })}
                 placeholder="Curated Viator trip link (https://www.viator.com/agent-trip-suggestions/…)"
               />
+              <Label className="mt-4 block">GetYourGuide widget (Book Experiences)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Paste the whole GetYourGuide embed snippet (the &lt;div data-gyg-widget…&gt; block). Leave empty to hide it.
+              </p>
+              <Textarea
+                rows={3}
+                value={state.gygWidgetHtml}
+                onChange={(e) => setState({ ...state, gygWidgetHtml: e.target.value })}
+                placeholder='<div data-gyg-widget="city" data-gyg-partner-id="…"></div>'
+              />
             </div>
+
 
             <div className="md:col-span-2">
               <Label>Cover image</Label>
