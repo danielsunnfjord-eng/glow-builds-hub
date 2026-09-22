@@ -80,6 +80,7 @@ export default {
     season: { spring: "Vår", summer: "Sommer", autumn: "Høst", winter: "Vinter" },
     gallery: "Glimt",
     routeMap: "Rutekart",
+    bookExperiences: "Bestill opplevelser for denne reisen",
     designerBadge: "Designet for deg",
     designerTitle: "Designet for deg av Fjord & Waves Travel",
     designerBio: "Jeg er Daniel — en reisedesigner mellom Norge og Brasil, med mange års erfaring i å bygge reiser for de som ønsker dybde fremfor sjekklister. Hver reiserute i denne katalogen startet som en privat reiseplan, foredlet og delt slik at du kan reise med samme omtanke.",

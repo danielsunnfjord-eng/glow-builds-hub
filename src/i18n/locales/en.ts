@@ -81,6 +81,7 @@ export default {
     season: { spring: "Spring", summer: "Summer", autumn: "Autumn", winter: "Winter" },
     gallery: "Glimpses",
     routeMap: "Route map",
+    bookExperiences: "Book Experiences for This Trip",
     designerBadge: "Designed for you",
     designerTitle: "Designed for you by Fjord & Waves Travel",
     designerBio: "I'm Daniel — a travel designer based between Norway and Brazil, with years of building journeys for travellers who want depth over checklists. Each itinerary in this catalogue began as a private trip plan, refined and shared so you can travel with the same care.",
