@@ -1,0 +1,1 @@
+UPDATE public.catalog_itineraries SET viator_widget_ref = 'W-e05ab1ac-4ef4-4675-950e-140b6e1d7f8c', viator_partner_id = 'U00778967' WHERE slug = 'paris-para-brasileiros-de-primeira-viagem';
