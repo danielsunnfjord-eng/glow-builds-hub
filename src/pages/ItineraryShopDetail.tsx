@@ -25,6 +25,8 @@ import Footer from "@/components/voyage/Footer";
 import { markdownToHtml } from "@/components/voyage/editor/markdownHelpers";
 import danielProfile from "@/assets/daniel-profile.webp";
 import ViatorWidget from "@/components/ViatorWidget";
+import GetYourGuideWidget from "@/components/GetYourGuideWidget";
+
 import {
   CurrencyToggle,
   currencyForLang,
@@ -142,6 +144,8 @@ interface CatalogItem {
   viator_widget_ref?: string | null;
   viator_partner_id?: string | null;
   viator_trip_url?: string | null;
+  gyg_widget_html?: string | null;
+
 
 }
 
@@ -791,8 +795,8 @@ const ItineraryShopDetail = () => {
               </div>
             )}
 
-            {/* Book Experiences — Viator affiliate widget */}
-            {(data.viator_widget_ref || data.viator_trip_url) && (
+            {/* Book Experiences — affiliate widgets */}
+            {(data.viator_widget_ref || data.viator_trip_url || data.gyg_widget_html) && (
               <div className="mb-14">
                 <h2 className="font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-bold text-ink mb-2">
                   {t("shop.bookExperiences", "Book Experiences for This Trip")}
@@ -806,9 +810,13 @@ const ItineraryShopDetail = () => {
                       className="w-full min-w-0"
                     />
                   )}
+                  {data.gyg_widget_html && (
+                    <GetYourGuideWidget html={data.gyg_widget_html} className="w-full min-w-0" />
+                  )}
                 </div>
               </div>
             )}
+
 
 
             {/* Buy & Download */}

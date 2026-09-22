@@ -175,6 +175,8 @@ interface EditorState {
   viatorWidgetRef: string;
   viatorPartnerId: string;
   viatorTripUrl: string;
+  gygWidgetHtml: string;
+
   clientOrigin: string;
   destinationMarket: string;
 }
@@ -261,6 +263,8 @@ const blankEditor: EditorState = {
   viatorWidgetRef: "",
   viatorPartnerId: "",
   viatorTripUrl: "",
+  gygWidgetHtml: "",
+
   clientOrigin: "",
   destinationMarket: "",
 };
@@ -640,7 +644,7 @@ const CatalogShopManager = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("catalog_itineraries")
-        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, viator_widget_ref, viator_partner_id, viator_trip_url, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
+        .select("id, slug, title_en, title_pt, title_no, destination, duration, price_eur, price_usd, price_brl, price_nok, hero_image_url, hero_image_credit, hero_image_caption, is_published, updated_at, view_count, summary_en, summary_pt, summary_no, cover_intro_en, cover_intro_pt, cover_intro_no, description_en, itinerary_content_en, itinerary_content_pt, itinerary_content_no, experience_type, season, estimated_trip_budget, hotels, audit_report, audited_at, gdoc_id, gdoc_url, gdoc_last_synced_at, body_pdf_url, pdf_path, subpage_checklist, subpage_day_overview, subpage_expectations, subpage_map_url, viator_widget_ref, viator_partner_id, viator_trip_url, gyg_widget_html, output_format, primary_language, translation_status, pdf_path_en, pdf_path_pt, pdf_path_no, stripe_product_id_sandbox, stripe_product_id_live, stripe_synced_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       return data as unknown as CatalogRow[];
@@ -914,6 +918,7 @@ const CatalogShopManager = () => {
       viatorWidgetRef: String((r as any).viator_widget_ref || ""),
       viatorPartnerId: String((r as any).viator_partner_id || ""),
       viatorTripUrl: String((r as any).viator_trip_url || ""),
+      gygWidgetHtml: String((r as any).gyg_widget_html || ""),
       clientOrigin: "",
       destinationMarket: r.destination ? String(r.destination).toLowerCase() : "",
     };
@@ -1712,6 +1717,7 @@ const CatalogShopManager = () => {
         viator_widget_ref: extractViatorRef(state.viatorWidgetRef),
         viator_partner_id: state.viatorPartnerId.trim() || null,
         viator_trip_url: state.viatorTripUrl.trim() || null,
+        gyg_widget_html: state.gygWidgetHtml.trim() || null,
         output_format: state.outputFormat,
         primary_language: state.language,
       };
@@ -2552,7 +2558,18 @@ const CatalogShopManager = () => {
                 onChange={(e) => setState({ ...state, viatorTripUrl: e.target.value })}
                 placeholder="Curated Viator trip link (https://www.viator.com/agent-trip-suggestions/…)"
               />
+              <Label className="mt-4 block">GetYourGuide widget (Book Experiences)</Label>
+              <p className="text-[0.7rem] text-voyage-muted mb-2">
+                Paste the whole GetYourGuide embed snippet (the &lt;div data-gyg-widget…&gt; block). Leave empty to hide it.
+              </p>
+              <Textarea
+                rows={3}
+                value={state.gygWidgetHtml}
+                onChange={(e) => setState({ ...state, gygWidgetHtml: e.target.value })}
+                placeholder='<div data-gyg-widget="city" data-gyg-partner-id="…"></div>'
+              />
             </div>
+
 
             <div className="md:col-span-2">
               <Label>Cover image</Label>
