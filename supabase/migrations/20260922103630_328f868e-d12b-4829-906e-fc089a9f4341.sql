@@ -1,0 +1,1 @@
+UPDATE public.catalog_itineraries SET viator_widget_ref = 'W-62fb5e0c-2fd5-4c5e-ae38-8da2970cff91', viator_partner_id = 'U00778967' WHERE slug = 'lisboa-para-brasileiros-de-primeira-viagem';
