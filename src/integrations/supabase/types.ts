@@ -36,6 +36,7 @@ export type Database = {
           gdoc_url: string | null
           gdrive_folder_id: string | null
           group_size_label: string | null
+          gyg_widget_html: string | null
           hero_image_caption: string | null
           hero_image_credit: string | null
           hero_image_url: string | null
@@ -105,6 +106,7 @@ export type Database = {
           gdoc_url?: string | null
           gdrive_folder_id?: string | null
           group_size_label?: string | null
+          gyg_widget_html?: string | null
           hero_image_caption?: string | null
           hero_image_credit?: string | null
           hero_image_url?: string | null
@@ -174,6 +176,7 @@ export type Database = {
           gdoc_url?: string | null
           gdrive_folder_id?: string | null
           group_size_label?: string | null
+          gyg_widget_html?: string | null
           hero_image_caption?: string | null
           hero_image_credit?: string | null
           hero_image_url?: string | null
