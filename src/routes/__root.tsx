@@ -9,6 +9,7 @@ import {
   useRouter,
   useRouterState,
 } from "@tanstack/react-router";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -29,12 +30,14 @@ const FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: ({ location }) => {
     // The URL is the single source of truth for language (/, /no/, /pt-br/).
     const locale = detectLocaleFromPath(location.pathname);
     setServerLocale(locale);
     if (i18n.language !== locale) {
-      await i18n.changeLanguage(locale);
+      // Translations are bundled with the app, so the switch applies
+      // synchronously — nothing downstream has to await it.
+      void i18n.changeLanguage(locale);
     }
   },
   head: () => ({
@@ -238,7 +241,7 @@ function RootComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
