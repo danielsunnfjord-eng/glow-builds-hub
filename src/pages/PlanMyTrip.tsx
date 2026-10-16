@@ -3,6 +3,7 @@ import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import { Video } from "lucide-react";
+import ClientPortal from "@/components/voyage/ClientPortal";
 
 const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
@@ -47,6 +48,7 @@ const PlanMyTripPage = () => {
           </div>
         </div>
       </main>
+      <ClientPortal />
       <Footer />
     </div>
   );

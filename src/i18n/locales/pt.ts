@@ -1,4 +1,11 @@
 export default {
+  clientPortal: {
+    badge: "Portal do Cliente",
+    title: "Uma nova forma de planejar e reservar hotéis comigo",
+    p1: "No meu Portal do Cliente você pode explorar hotéis, comparar tarifas e benefícios e reservar quando estiver pronto. Veja opções para uma viagem que estamos planejando juntos e me mande o que chamar sua atenção, ou use o portal para reservar uma estadia simples por conta própria. Continuo sendo seu consultor em cada etapa, como sempre.",
+    p2: "E se não encontrar o que procura, é só me chamar. Estou sempre aqui para ajudar.",
+    cta: "Explorar e reservar hotéis",
+  },
   meetDaniel: {
     badge: "Conheça Seu Consultor",
     title: "Oi, sou Daniel — seu designer de viagens.",
