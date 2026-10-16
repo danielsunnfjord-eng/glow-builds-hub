@@ -1,4 +1,11 @@
 export default {
+  clientPortal: {
+    badge: "Kundeportal",
+    title: "En ny måte å planlegge og bestille hotell med meg på",
+    p1: "I kundeportalen min kan du se på hoteller, sammenligne priser og fordeler, og bestille når du er klar. Utforsk alternativer for en reise vi planlegger sammen og send meg det som fanger interessen din, eller bruk den til å bestille et enkelt opphold på egen hånd. Jeg er fortsatt rådgiveren din hele veien, akkurat som før.",
+    p2: "Og finner du ikke det du leter etter, er det bare å ta kontakt. Jeg er alltid her for å hjelpe.",
+    cta: "Se og bestill hotell",
+  },
   meetDaniel: {
     badge: "Møt Din Reiserådgiver",
     title: "Hei, jeg er Daniel — din reisedesigner.",

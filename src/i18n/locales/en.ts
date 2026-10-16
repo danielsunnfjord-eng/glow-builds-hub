@@ -1,4 +1,11 @@
 export default {
+  clientPortal: {
+    badge: "Client Portal",
+    title: "A new way to plan and book hotels with me",
+    p1: "My Client Portal lets you browse hotels, compare rates and perks, and book when you're ready. Explore options for a trip we're planning together and send me what catches your eye, or use it to book a straightforward stay on your own. I'll still be your advisor every step of the way, just like always.",
+    p2: "And if you don't see what you're looking for, just reach out. I'm always here to help.",
+    cta: "Browse & book hotels",
+  },
   meetDaniel: {
     badge: "Meet Your Advisor",
     title: "Hi, I'm Daniel — your travel designer.",
