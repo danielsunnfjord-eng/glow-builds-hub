@@ -54,8 +54,8 @@ const Index = () => {
         <Suspense fallback={null}>
           <DualPathCards />
           <FeaturedItineraries />
-          <MeetDaniel />
           <ClientPortal />
+          <MeetDaniel />
           <WhyAdvisor />
           <Reviews />
 
