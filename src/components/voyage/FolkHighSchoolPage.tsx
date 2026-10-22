@@ -5,7 +5,8 @@ import LocalPartnerRio from "./LocalPartnerRio";
 import Reviews from "./Reviews";
 import { currentLocale, localePath } from "@/lib/locale";
 import { GROUP_INTAKE_URL, isGroupPageAvailable } from "@/lib/travelNavigation";
-import { HOME_COPY, HOME_TESTIMONIAL_AUTHORS } from "./home/homeCopy";
+import { HOME_COPY, RIO_TESTIMONIAL_AUTHORS, RIO_REVIEWS_LABEL } from "./home/homeCopy";
+import GroupReferences from "./GroupReferences";
 import sup from "@/assets/home/sunrise_sup_copacabana.jpg.asset.json";
 import flamengo from "@/assets/home/praia_do_flamengo.jpg.asset.json";
 import fjord from "@/assets/skala-nordfjord.jpg.asset.json";
@@ -204,8 +205,8 @@ export default function FolkHighSchoolPage() {
         </section>
 
         <LocalPartnerRio />
-        {/* TESTIMONIALS: using the homepage Rio selection until step 9 specifies the final list. */}
-        <Reviews include={HOME_TESTIMONIAL_AUTHORS} />
+        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale() === "no" ? "no" : "en"]} />
+        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og skoler" : "Group and school references"} />
 
         <section className={section}>
           <div className="mx-auto max-w-3xl">
