@@ -1,28 +1,17 @@
-import { useNavigate, useLocation } from "@/lib/router-compat";
+import { Link } from "@/lib/router-compat";
+import { Button } from "@/components/ui/button";
+import { travelNavigation, navigationCopy, GROUP_INTAKE_URL, PRIVATE_INTAKE_URL } from "@/lib/travelNavigation";
 import { openCookieSettings } from "@/components/voyage/CookieConsent";
 import { Mail, Linkedin, Instagram, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo-badge.webp";
-import { currentLocale, localePath } from "@/lib/locale";
-
-const scrollToId = (id: string) => {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-};
-
+import { currentLocale, localizedRoutePath } from "@/lib/locale";
 
 const Footer = () => {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { t } = useTranslation();
-
-  const goToSection = (id: string) => {
-    if (pathname === "/") {
-      scrollToId(id);
-    } else {
-      navigate(`/#${id}`);
-    }
-  };
-
+  const locale = currentLocale();
+  const copy = navigationCopy[locale];
+  const linkClass = "block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left";
 
   return (
     <>
@@ -35,16 +24,17 @@ const Footer = () => {
         </div>
         <div>
           <h5 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-voyage-white/30 mb-5">{t("footer.explore")}</h5>
-          <button onClick={() => navigate("/about")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.about")}</button>
-          <button onClick={() => goToSection("why-advisor")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.whyAdvisor")}</button>
-          <button onClick={() => goToSection("reviews")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.reviews")}</button>
-          <button onClick={() => navigate("/catalogue")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.shop")}</button>
-          <button onClick={() => navigate("/pricing")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left">{t("nav.pricing")}</button>
+          {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
+          <Link to="/private-travel" className={linkClass}>{copy.privateTravel}</Link>
+          <Link to="/catalogue" className={linkClass}>{t("nav.shop")}</Link>
+          <Link to="/pricing" className={linkClass}>{t("nav.pricing")}</Link>
+          <Link to="/start-your-journey" className={linkClass}>{copy.startJourney}</Link>
 
         </div>
         <div>
           <h5 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-voyage-white/30 mb-5">{t("footer.getInTouch")}</h5>
-          <button onClick={() => scrollToId("enquiry")} className="block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5">{t("footer.planMyTrip")}</button>
+          <a href={GROUP_INTAKE_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>{copy.proposal}</a>
+          <a href={PRIVATE_INTAKE_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>{t("footer.planMyTrip")}</a>
           <div className="flex gap-4 mt-4">
             <a href="mailto:daniel.lirafigueiredo@fora.travel" target="_blank" rel="noopener noreferrer" className="text-voyage-white/40 hover:text-gold transition-colors"><Mail size={18} /></a>
             <a href="https://www.foratravel.com/advisor/daniel-lira-figueiredo" target="_blank" rel="noopener noreferrer" className="text-voyage-white/40 hover:text-gold transition-colors"><Globe size={18} /></a>
@@ -56,10 +46,10 @@ const Footer = () => {
       <div className="bg-ink-2 px-16 py-5 flex justify-between items-center border-t border-voyage-white/[0.06] max-md:px-6 max-md:flex-col max-md:gap-2">
         <p className="text-[0.72rem] text-voyage-white/25">{t("footer.rights")}</p>
         <div className="flex items-center gap-5">
-          <a href={localePath("/privacy", currentLocale())} className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Privacy</a>
-          <a href={localePath("/terms", currentLocale())} className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Terms</a>
-          <button onClick={openCookieSettings} className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Cookies</button>
-          <button onClick={() => navigate("/login")} className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">{t("footer.admin")}</button>
+          <Link to="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Privacy</Link>
+          <Link to="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Terms</Link>
+          <Button variant="ghost" onClick={openCookieSettings} className="h-auto p-0 text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 hover:bg-transparent">Cookies</Button>
+          <Link to="/login" className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">{t("footer.admin")}</Link>
         </div>
       </div>
     </>
