@@ -43,8 +43,24 @@ export function stripLocalePrefix(pathname: string): string {
 }
 
 /** Build a full site path for a language, e.g. ("/about", "pt") -> "/pt-br/about". */
+export function localizedRoutePath(path: string, locale: Locale): string {
+  const aliases: Record<string, string> = {
+    "/idrett-og-surf": "/sports-and-surf",
+    "/bedrift": "/corporate",
+    "/trygghet": "/safety",
+  };
+  const canonical = aliases[path] ?? path;
+  if (locale !== "no") return canonical;
+  const norwegian: Record<string, string> = {
+    "/sports-and-surf": "/idrett-og-surf",
+    "/corporate": "/bedrift",
+    "/safety": "/trygghet",
+  };
+  return norwegian[canonical] ?? canonical;
+}
+
 export function localePath(path: string, locale: Locale): string {
-  const clean = path.startsWith("/") ? path : `/${path}`;
+  const clean = localizedRoutePath(path.startsWith("/") ? path : `/${path}`, locale);
   const prefix = LOCALE_PREFIX[locale];
   if (!prefix) return clean;
   return clean === "/" ? `${prefix}/` : `${prefix}${clean}`;
