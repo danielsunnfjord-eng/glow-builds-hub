@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import TravelPlaceholderPage from "@/components/voyage/TravelPlaceholderPage";
-import { travelPageHead } from "@/lib/travelPageHead";
-import { guardGroupPage, withGroupNoindex } from "@/lib/groupPageGuard";
+import SafetyPage from "@/components/voyage/SafetyPage";
+import { safetyHead } from "@/lib/safetyHead";
+import { guardGroupPage } from "@/lib/groupPageGuard";
 
 export const Route = createFileRoute("/{-$locale}/safety")({
   beforeLoad: ({ params }) => guardGroupPage("safety", params.locale),
-  head: ({ params }) => withGroupNoindex("safety", travelPageHead(params.locale, "safety", "/safety")),
-  component: Page,
+  head: ({ params }) => safetyHead(params.locale),
+  component: SafetyPage,
 });
-
-function Page() {
-  return <TravelPlaceholderPage page="safety" />;
-}
