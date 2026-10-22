@@ -5,13 +5,16 @@ import { CALENDLY_URL, GROUP_INTAKE_URL, isGroupPageAvailable } from "@/lib/trav
 import { WHATSAPP_URL } from "@/lib/whatsapp";
 import { HOME_COPY } from "./homeCopy";
 import sup from "@/assets/home/sunrise_sup_copacabana.jpg.asset.json";
-import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
+import stegastein from "@/assets/stegastein.jpg.asset.json";
+import skala from "@/assets/skala-nordfjord.jpg.asset.json";
+import bryggen from "@/assets/bryggen-bergen.jpg.asset.json";
+import oslo from "@/assets/norway-0383.jpg.asset.json";
 import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
 import cristo from "@/assets/home/cristo_redentor.jpg.asset.json";
 import flamengo from "@/assets/home/praia_do_flamengo.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
-const HERO_IMAGES = [sup.url, fjord.url, arpoador.url];
+const HERO_IMAGES = [sup.url, stegastein.url, arpoador.url, skala.url, flamengo.url, bryggen.url, cristo.url, oslo.url];
 const CARD_IMAGES = [cristo.url, flamengo.url, arpoador.url, museu.url];
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 

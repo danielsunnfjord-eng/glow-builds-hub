@@ -5,7 +5,7 @@ import { currentLocale } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
 import rio from "@/assets/home/praia_do_flamengo.jpg.asset.json";
-import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
+import fjord from "@/assets/stegastein.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 const btnGold = "inline-flex items-center justify-center rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2";
