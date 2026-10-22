@@ -8,4 +8,9 @@
 - [x] New group homepage (hero, cards, proof, steps, safety, final CTA) in EN/NO/PT (PT draft).
 - [x] Move portal, advisor, Rome testimonial, private sections to /private-travel.
 - [x] Keep unfinished group pages off the published site.
-- [ ] Local partner block and founder text — waiting on step 4 text.
+- [x] Local partner block and founder text — owner's step 4 text applied.
+- [x] Folk high school page (/folkehogskole, /no/folkehogskole).
+- [x] Sports and surf page (/sports-and-surf, /no/idrett-og-surf, #surf anchor).
+- [x] Corporate page (/corporate, /no/bedrift).
+- [x] Safety page (/safety, /no/trygghet) — facts applied; Health and under-18 sections hidden awaiting owner text.
+- [ ] Portuguese versions of the new group pages — waiting on owner-supplied text.
