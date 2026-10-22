@@ -1,3 +1,4 @@
+import LocalPartnerRio from "@/components/voyage/LocalPartnerRio";
 import { useEffect, useState } from "react";
 import { currentLocale, localePath } from "@/lib/locale";
 import { CALENDLY_URL, GROUP_INTAKE_URL, isGroupPageAvailable } from "@/lib/travelNavigation";
@@ -134,9 +135,7 @@ export function SafetyStrip() {
 }
 
 export function LocalPartnerBlock() {
-  // CONTENT PLACEHOLDER: Local partner block text from step 4 not yet supplied.
-  // Photos ready: src/assets/home/pablo_rst.jpg.asset.json and rst_logo.jpg.asset.json.
-  return null;
+  return <LocalPartnerRio />;
 }
 
 export function FinalCta() {

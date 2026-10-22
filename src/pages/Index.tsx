@@ -50,7 +50,6 @@ const Index = () => {
         <SafetyStrip />
         <LocalPartnerBlock />
         <Suspense fallback={null}>
-          {/* FOUNDER PLACEHOLDER: replace MeetDaniel copy with the step 4 founder text when supplied. */}
           <MeetDaniel />
           <Reviews include={HOME_TESTIMONIAL_AUTHORS} />
         </Suspense>

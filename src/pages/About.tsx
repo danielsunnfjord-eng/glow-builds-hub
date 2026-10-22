@@ -5,6 +5,16 @@ import Navbar from "@/components/voyage/Navbar";
 import Footer from "@/components/voyage/Footer";
 import danielProfile from "@/assets/daniel-profile.webp";
 import { useTranslation } from "react-i18next";
+import LocalPartnerRio from "@/components/voyage/LocalPartnerRio";
+import { currentLocale } from "@/lib/locale";
+
+const CONTRACT_COPY = {
+  en: { title: "Who you contract with", text: "Fjord & Waves Travel (Org.nr 928804860) is the contracting party for group and corporate trips." },
+  no: { title: "Hvem dere inngår avtale med", text: "Fjord & Waves Travel (Org.nr 928804860) er avtaleparten for gruppe- og bedriftsreiser." },
+  // DRAFT – pending review (translated from English)
+  pt: { title: "Com quem você contrata", text: "A Fjord & Waves Travel (Org.nr 928804860) é a parte contratante nas viagens em grupo e corporativas." },
+} as const;
+
 
 const About = () => {
   const navigate = useNavigate();
@@ -42,9 +52,7 @@ const About = () => {
 
       <section className="py-20 px-16 bg-parchment max-md:px-6 max-md:py-14">
         <div className="max-w-3xl mx-auto">
-          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">{t("about.bio1")}</p></ScrollReveal>
-          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted mb-8 font-light">{t("about.bio2")}</p></ScrollReveal>
-          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted font-light">{t("about.bio3")}</p></ScrollReveal>
+          <ScrollReveal><p className="text-lg leading-relaxed text-voyage-muted font-light">{t("meetDaniel.bio")}</p></ScrollReveal>
         </div>
       </section>
 
@@ -63,6 +71,15 @@ const About = () => {
               </div>
             </ScrollReveal>
           ))}
+        </div>
+      </section>
+
+      <LocalPartnerRio />
+
+      <section className="py-16 px-16 bg-parchment max-md:px-6 max-md:py-12">
+        <div className="max-w-3xl mx-auto border-l-2 border-gold pl-6">
+          <h2 className="font-serif text-2xl font-bold text-ink mb-3">{CONTRACT_COPY[currentLocale()].title}</h2>
+          <p className="text-[0.95rem] leading-relaxed text-voyage-muted">{CONTRACT_COPY[currentLocale()].text}</p>
         </div>
       </section>
 

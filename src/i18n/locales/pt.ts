@@ -9,7 +9,8 @@ export default {
   meetDaniel: {
     badge: "Conheça Seu Consultor",
     title: "Oi, sou Daniel — seu designer de viagens.",
-    bio: "Brasileiro radicado na Noruega desde 2010. Trilíngue, consultor Fora Travel e credenciado IATA — desenho viagens sob medida para quem busca essência, não pacotes.",
+    // DRAFT – pending review (translated from English)
+    bio: "Brasileiro, morando na Noruega desde 2010. Trilíngue, credenciado pela IATA e ex-professor de folk high school. Durante seis anos planejei e conduzi viagens de estudo ao Brasil, Espanha, Portugal e Sri Lanka. Hoje desenho viagens para pessoas, grupos escolares, times esportivos e empresas, com parceiros locais de confiança no destino.",
     cta: "Saiba mais sobre Daniel",
   },
   nav: {

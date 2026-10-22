@@ -1,5 +1,6 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import LocalPartnerRio from "./LocalPartnerRio";
 import { currentLocale } from "@/lib/locale";
 import { navigationCopy, type TravelPageKey } from "@/lib/travelNavigation";
 
@@ -13,6 +14,7 @@ export default function TravelPlaceholderPage({ page }: { page: TravelPageKey })
           {/* CONTENT PLACEHOLDER: Await user-supplied page text and uploaded photos. */}
         </div>
       </main>
+      {(page === "folkHighSchools" || page === "sportsAndSurf") && <LocalPartnerRio />}
       <Footer />
     </div>
   );
