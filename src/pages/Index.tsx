@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "@/lib/router-compat";
-import { useTranslation } from "react-i18next";
 import Navbar from "@/components/voyage/Navbar";
-
+import { GroupHero, EntryCards, ProofStrip, HowItWorks, SafetyStrip, LocalPartnerBlock, FinalCta } from "@/components/voyage/home/GroupHome";
+import { HOME_TESTIMONIAL_AUTHORS } from "@/components/voyage/home/homeCopy";
 
 // Retry a dynamic import once, then hard-reload if the chunk hash is stale
 // (happens after a new deploy when the browser still holds the old index.html).
@@ -23,21 +23,14 @@ const lazyWithRetry = <T extends React.ComponentType<any>>(
     }
   });
 
-// Below-the-fold sections are code-split to keep the initial JS small.
 const MeetDaniel = lazyWithRetry(() => import("@/components/voyage/MeetDaniel"));
-const ClientPortal = lazyWithRetry(() => import("@/components/voyage/ClientPortal"));
-const DualPathCards = lazyWithRetry(() => import("@/components/voyage/DualPathCards"));
-const FeaturedItineraries = lazyWithRetry(() => import("@/components/voyage/FeaturedItineraries"));
-const WhyAdvisor = lazyWithRetry(() => import("@/components/voyage/WhyAdvisor"));
-
 const Reviews = lazyWithRetry(() => import("@/components/voyage/Reviews"));
-const PlanMyTrip = lazyWithRetry(() => import("@/components/voyage/PlanMyTrip"));
 const Footer = lazyWithRetry(() => import("@/components/voyage/Footer"));
 
+// Private-travel sections (ClientPortal, WhyAdvisor, DualPathCards, FeaturedItineraries)
+// now live on /private-travel.
 const Index = () => {
   const { hash } = useLocation();
-  const { i18n } = useTranslation();
-  const isPt = i18n.language === "pt";
 
   useEffect(() => {
     if (hash) {
@@ -48,19 +41,20 @@ const Index = () => {
   }, [hash]);
   return (
     <div>
-
       <Navbar />
       <main>
+        <GroupHero />
+        <EntryCards />
+        <ProofStrip />
+        <HowItWorks />
+        <SafetyStrip />
+        <LocalPartnerBlock />
         <Suspense fallback={null}>
-          <DualPathCards />
-          <FeaturedItineraries />
-          <ClientPortal />
+          {/* FOUNDER PLACEHOLDER: replace MeetDaniel copy with the step 4 founder text when supplied. */}
           <MeetDaniel />
-          <WhyAdvisor />
-          <Reviews />
-
-          <PlanMyTrip />
+          <Reviews include={HOME_TESTIMONIAL_AUTHORS} />
         </Suspense>
+        <FinalCta />
       </main>
       <Suspense fallback={null}>
         <Footer />
