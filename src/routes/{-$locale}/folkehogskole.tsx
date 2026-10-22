@@ -4,7 +4,7 @@ import { headFor } from "@/lib/seoHead";
 import { guardGroupPage, withGroupNoindex } from "@/lib/groupPageGuard";
 
 const META = {
-  no: { title: "Studietur til Rio for folkehøgskoler | Fjord & Waves Travel", description: "Trygge og faglig sterke studieturer til Rio for folkehøgskoler, planlagt av en tidligere folkehøgskolelærer sammen med Rio Sport & Tour." },
+  no: { title: "Studietur til Brasil for folkehøgskoler | Fjord & Waves Travel", description: "Trygge og faglig sterke studieturer til Rio for folkehøgskoler, planlagt av en tidligere folkehøgskolelærer sammen med Rio Sport & Tour." },
   en: { title: "Study Trips to Rio for Folk High Schools | Fjord & Waves Travel", description: "Safe, academically strong study trips to Rio for folk high schools, planned by a former folk high school teacher with Rio Sport & Tour." },
 };
 
