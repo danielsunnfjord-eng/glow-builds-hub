@@ -22,7 +22,7 @@ import {
   Outlet as TSOutlet,
 } from "@tanstack/react-router";
 import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode } from "react";
-import { detectLocaleFromPath, stripLocalePrefix, LOCALE_PREFIX } from "@/lib/locale";
+import { detectLocaleFromPath, stripLocalePrefix, LOCALE_PREFIX, localePath } from "@/lib/locale";
 
 // ---------- locale-prefix (basename) emulation ----------
 
@@ -34,10 +34,9 @@ function prefixForPathname(pathname: string): string {
 function withLocalePrefix(pathname: string, currentFullPathname: string): string {
   if (!pathname.startsWith("/")) return pathname; // relative / "." targets untouched
   const prefix = prefixForPathname(currentFullPathname);
-  if (!prefix) return pathname;
   // Never double-prefix a target that already carries a locale prefix.
-  if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return pathname;
-  return pathname === "/" ? `${prefix}/` : `${prefix}${pathname}`;
+  if (prefix && (pathname === prefix || pathname.startsWith(`${prefix}/`))) return pathname;
+  return localePath(pathname, detectLocaleFromPath(currentFullPathname));
 }
 
 // ---------- shared URL parsing ----------
