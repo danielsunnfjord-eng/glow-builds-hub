@@ -11,7 +11,7 @@ export function guardGroupPage(page: GroupPageKey, localeParam: string | undefin
 }
 
 /** Adds noindex to a head() result while the page is not live. */
-export function withGroupNoindex<T extends { meta: Array<Record<string, string>> }>(page: GroupPageKey, head: T): T {
+export function withGroupNoindex<T extends { meta: unknown[] }>(page: GroupPageKey, head: T): T {
   if (isGroupPageAvailable(page, true)) return head;
-  return { ...head, meta: [...head.meta, { name: "robots", content: "noindex, nofollow" }] };
+  return { ...head, meta: [...head.meta, { name: "robots", content: "noindex, nofollow" }] } as T;
 }
