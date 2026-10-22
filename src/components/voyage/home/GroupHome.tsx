@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { currentLocale, localizedRoutePath } from "@/lib/locale";
+import { currentLocale, localePath } from "@/lib/locale";
 import { CALENDLY_URL, GROUP_INTAKE_URL, isGroupPageAvailable } from "@/lib/travelNavigation";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
 import { HOME_COPY } from "./homeCopy";
@@ -67,7 +66,7 @@ export function EntryCards() {
         <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-2 max-sm:grid-cols-1">
           {c.cards.map((card, n) => {
             const live = isGroupPageAvailable(card.page, import.meta.env.PROD);
-            const href = live ? `${localizedRoutePath(card.path, locale)}${card.hash ? `#${card.hash}` : ""}` : GROUP_INTAKE_URL;
+            const href = live ? `${localePath(card.path, locale)}${card.hash ? `#${card.hash}` : ""}` : GROUP_INTAKE_URL;
             return (
               <a key={card.title} href={href} {...(live ? {} : ext)} className="group overflow-hidden rounded-lg border border-parchment-3 bg-voyage-white transition hover:shadow-elegant">
                 <div className="aspect-[4/3] overflow-hidden">
@@ -127,7 +126,7 @@ export function SafetyStrip() {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-l-2 border-gold pl-6">
         <p className="font-serif text-xl text-ink">{c.safety}</p>
         {live && (
-          <a href={localizedRoutePath("/safety", currentLocale())} className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold hover:underline">{c.safetyLink} →</a>
+          <a href={localePath("/safety", currentLocale())} className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold hover:underline">{c.safetyLink} →</a>
         )}
       </div>
     </section>
@@ -150,9 +149,9 @@ export function FinalCta() {
         <a href={GROUP_INTAKE_URL} {...ext} className={btnGold}>{c.proposal}</a>
         <a href={CALENDLY_URL} {...ext} className={btnOutline}>{c.finalCall}</a>
       </div>
-      <Link to={localizedRoutePath("/private-travel", locale) as "/"} className="mt-12 inline-block text-sm text-parchment/75 underline underline-offset-4 hover:text-parchment">
+      <a href={localePath("/private-travel", locale)} className="mt-12 inline-block text-sm text-parchment/75 underline underline-offset-4 hover:text-parchment">
         {c.privateLink}
-      </Link>
+      </a>
     </section>
   );
 }
