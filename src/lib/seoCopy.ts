@@ -18,14 +18,14 @@ type Copy = Record<Locale, PageCopy>;
 export const SEO_COPY = {
   home: {
     en: {
-      title: "Group Journeys to Rio & Norway's Fjords | Fjord & Waves Travel",
+      title: "Group Travel to Rio & Norway's Fjords | Fjord & Waves Travel",
       description:
-        "Group journeys between Rio's waves and Norway's fjords. Planned by a former folk high school teacher. Hosted by local experts.",
+        "Group journeys for folk high schools, sports teams, surf groups and companies. Planned by a former folk high school teacher, hosted by local experts in Rio and Sogn og Fjordane.",
     },
     no: {
       title: "Studieturer til Rio og fjordene | Fjord & Waves Travel",
       description:
-        "Studieturer til Rio og fjordene. Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
+        "Studieturer og gruppereiser for folkehøgskoler, idrettslag, surfgrupper og bedrifter. Planlagt av en tidligere folkehøgskolelærer, med lokale eksperter i Rio og Sogn og Fjordane.",
     },
     // DRAFT – pending review (translated from English)
     pt: {
