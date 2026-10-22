@@ -7,7 +7,9 @@ describe("homepage rules", () => {
     expect(GROUP_INTAKE_URL).toBe("https://secure.foratravel.com/intake/98VwtEFIcy");
   });
   it("no visible homepage text contains square brackets", () => {
-    for (const copy of Object.values(HOME_COPY)) expect(JSON.stringify(copy)).not.toMatch(/[[\]]/);
+    const strings = (v: unknown): string[] =>
+      typeof v === "string" ? [v] : v && typeof v === "object" ? Object.values(v).flatMap(strings) : [];
+    for (const s of strings(HOME_COPY)) expect(s).not.toMatch(/[[\]]/);
   });
   it("final call promises a reply within one business day", () => {
     expect(HOME_COPY.en.finalTitle).toBe("Tell us about your group. I reply within one business day.");
