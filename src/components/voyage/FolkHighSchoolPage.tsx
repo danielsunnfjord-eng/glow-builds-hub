@@ -8,7 +8,7 @@ import { GROUP_INTAKE_URL, isGroupPageAvailable } from "@/lib/travelNavigation";
 import { HOME_COPY, HOME_TESTIMONIAL_AUTHORS } from "./home/homeCopy";
 import sup from "@/assets/home/sunrise_sup_copacabana.jpg.asset.json";
 import flamengo from "@/assets/home/praia_do_flamengo.jpg.asset.json";
-import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
+import fjord from "@/assets/skala-nordfjord.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 const btnGold = "inline-flex items-center justify-center rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2";
