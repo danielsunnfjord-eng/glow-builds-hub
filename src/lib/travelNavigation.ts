@@ -2,6 +2,7 @@ import type { Locale } from "./locale";
 
 export const GROUP_INTAKE_URL = "https://secure.foratravel.com/intake/98VwtEFIcy";
 export const PRIVATE_INTAKE_URL = "https://secure.foratravel.com/intake/uRYFCpSsUZ";
+export const CALENDLY_URL = "https://calendly.com/daniel-lirafigueiredo-fora/reiseplanlegging";
 
 export const travelNavigation = [
   { key: "folkHighSchools", path: "/folkehogskole" },
@@ -19,6 +20,24 @@ export const navigationCopy = {
 } satisfies Record<Locale, Record<string, string>>;
 
 export type TravelPageKey = "folkHighSchools" | "sportsAndSurf" | "corporate" | "destinations" | "safety" | "privateTravel";
+
+export type GroupPageKey = "folkHighSchools" | "sportsAndSurf" | "corporate" | "safety";
+
+/**
+ * Group pages go live one by one as their content steps are finished.
+ * A page set to false stays out of the published site (redirects home, noindex,
+ * left out of the sitemap); it still opens in the preview for review.
+ */
+export const LIVE_GROUP_PAGES: Record<GroupPageKey, boolean> = {
+  folkHighSchools: false,
+  sportsAndSurf: false,
+  corporate: false,
+  safety: false,
+};
+
+export function isGroupPageAvailable(page: GroupPageKey, isProduction: boolean): boolean {
+  return LIVE_GROUP_PAGES[page] || !isProduction;
+}
 
 export function isPrivateTravelPath(path: string): boolean {
   return ["/private-travel", "/catalogue", "/pricing", "/start-your-journey", "/plan-my-trip", "/itineraries-shop", "/routes", "/trip"].some(

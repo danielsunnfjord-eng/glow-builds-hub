@@ -1,15 +1,17 @@
 import { useTranslation } from "react-i18next";
 import ScrollReveal from "./ScrollReveal";
 
-const Reviews = () => {
+type ReviewsProps = { include?: string[]; exclude?: string[] };
+
+const Reviews = ({ include, exclude }: ReviewsProps = {}) => {
   const { t } = useTranslation();
-  const reviews = t("reviews.items", { returnObjects: true }) as Array<{
+  const reviews = (t("reviews.items", { returnObjects: true }) as Array<{
     text: string;
     author: string;
     dest: string;
     bio?: string;
     instagram?: string;
-  }>;
+  }>).filter((r) => (!include || include.includes(r.author)) && (!exclude || !exclude.includes(r.author)));
 
   return (
     <section id="reviews" className="py-28 px-16 bg-parchment-2 max-md:px-6 max-md:py-16">
@@ -26,7 +28,7 @@ const Reviews = () => {
         </h2>
       </ScrollReveal>
       <ScrollReveal>
-        <div className="grid grid-cols-3 max-md:grid-cols-1 gap-6 mt-16 max-w-6xl">
+        <div className={`grid ${reviews.length === 2 ? "grid-cols-2" : reviews.length === 1 ? "grid-cols-1" : "grid-cols-3"} max-md:grid-cols-1 gap-6 mt-16 max-w-6xl`}>
           {reviews.map((r, i) => (
             <div
               key={i}

@@ -18,19 +18,20 @@ type Copy = Record<Locale, PageCopy>;
 export const SEO_COPY = {
   home: {
     en: {
-      title: "Norway Itinerary Planning & Custom Trips | Fjord & Waves Travel",
+      title: "Group Journeys to Rio & Norway's Fjords | Fjord & Waves Travel",
       description:
-        "Plan a Norway itinerary without the tourist traps — custom fjord and Northern Lights trips designed with an IATA-accredited travel advisor.",
+        "Group journeys between Rio's waves and Norway's fjords. Planned by a former folk high school teacher. Hosted by local experts.",
     },
     no: {
-      title: "Reise til Brasil – skreddersydd reiseplanlegging | Fjord & Waves",
+      title: "Studieturer til Rio og fjordene | Fjord & Waves Travel",
       description:
-        "Planlegg reisen til Brasil med en norsktalende reiserådgiver: trygge ruter, lokalkunnskap og en skreddersydd reiseplan fra dag én.",
+        "Studieturer til Rio og fjordene. Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
     },
+    // DRAFT – pending review (translated from English)
     pt: {
-      title: "Roteiro Noruega e viagem sob medida | Fjord & Waves Travel",
+      title: "Viagens em grupo ao Rio e aos fiordes da Noruega | Fjord & Waves",
       description:
-        "Roteiros prontos e consultoria de viagem para a Noruega e Europa, em português, com preços transparentes e planejamento feito por especialista.",
+        "Viagens em grupo entre as ondas do Rio e os fiordes da Noruega. Planejadas por um ex-professor de folk high school. Conduzidas por especialistas locais.",
     },
   } satisfies Copy,
 
