@@ -22,3 +22,17 @@ describe("homepage rules", () => {
     expect(isGroupPageAvailable("folkHighSchools", false)).toBe(true);
   });
 });
+
+import { RIO_TESTIMONIAL_AUTHORS, ROME_TESTIMONIAL_AUTHORS } from "./homeCopy";
+import { GROUP_REFERENCES_ENABLED } from "../GroupReferences";
+describe("testimonial placement", () => {
+  it("group pages show only the Rio reviews", () => {
+    expect(RIO_TESTIMONIAL_AUTHORS).toEqual(["Ingeborg Sol Fure", "Åge Avedal"]);
+  });
+  it("Rome review is kept out of the homepage", () => {
+    expect(HOME_TESTIMONIAL_AUTHORS).not.toContain(ROME_TESTIMONIAL_AUTHORS[0]);
+  });
+  it("group references stay hidden", () => {
+    expect(GROUP_REFERENCES_ENABLED).toBe(false);
+  });
+});

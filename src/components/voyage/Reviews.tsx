@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import ScrollReveal from "./ScrollReveal";
 
-type ReviewsProps = { include?: string[]; exclude?: string[] };
+type ReviewsProps = { include?: string[]; exclude?: string[]; label?: string };
 
-const Reviews = ({ include, exclude }: ReviewsProps = {}) => {
+const Reviews = ({ include, exclude, label }: ReviewsProps = {}) => {
   const { t } = useTranslation();
   const reviews = (t("reviews.items", { returnObjects: true }) as Array<{
     text: string;
@@ -17,16 +17,16 @@ const Reviews = ({ include, exclude }: ReviewsProps = {}) => {
     <section id="reviews" className="py-28 px-16 bg-parchment-2 max-md:px-6 max-md:py-16">
       <ScrollReveal>
         <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
-          {t("reviews.eyebrow")}
+          {label ?? t("reviews.eyebrow")}
         </div>
       </ScrollReveal>
-      <ScrollReveal>
+      {!label && <ScrollReveal>
         <h2 className="font-serif text-[clamp(2rem,3.5vw,3rem)] font-bold leading-[1.05] tracking-tight mb-4">
           {t("reviews.title1")}
           <br />
           <em className="italic font-normal">{t("reviews.title2")}</em>
         </h2>
-      </ScrollReveal>
+      </ScrollReveal>}
       <ScrollReveal>
         <div className={`grid ${reviews.length === 2 ? "grid-cols-2" : reviews.length === 1 ? "grid-cols-1" : "grid-cols-3"} max-md:grid-cols-1 gap-6 mt-16 max-w-6xl`}>
           {reviews.map((r, i) => (

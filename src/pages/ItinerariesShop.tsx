@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import heroImage from "@/assets/catalogue-hero.jpg";
 import { useIntakeCta } from "@/components/voyage/IntakeFormModal";
 import { pickLocalized } from "@/lib/localizedField";
+import Reviews from "@/components/voyage/Reviews";
+import { ROME_TESTIMONIAL_AUTHORS } from "@/components/voyage/home/homeCopy";
 
 interface CatalogItem {
   id: string;
@@ -640,6 +642,7 @@ const ItinerariesShop = () => {
         </div>
       </section>
 
+      <Reviews include={ROME_TESTIMONIAL_AUTHORS} />
       <Footer />
     </div>
   );

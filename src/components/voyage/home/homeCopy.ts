@@ -93,3 +93,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
 
 /** Testimonials shown on the homepage; all others appear on /private-travel. */
 export const HOME_TESTIMONIAL_AUTHORS = ["Ingeborg Sol Fure", "Åge Avedal"];
+/** Rio reviews shown on folk high school and sports pages (never framed as group clients). */
+export const RIO_TESTIMONIAL_AUTHORS = ["Ingeborg Sol Fure", "Åge Avedal"];
+/** Rome review: only /private-travel and /catalogue. */
+export const ROME_TESTIMONIAL_AUTHORS = ["Therese Lothe"];
+export const RIO_REVIEWS_LABEL = { en: "From travelers we hosted in Rio", no: "Fra reisende vi har tatt imot i Rio" } as const;

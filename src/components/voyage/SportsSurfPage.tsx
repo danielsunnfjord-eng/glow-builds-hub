@@ -1,6 +1,9 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import LocalPartnerRio from "./LocalPartnerRio";
+import Reviews from "./Reviews";
+import GroupReferences from "./GroupReferences";
+import { RIO_TESTIMONIAL_AUTHORS, RIO_REVIEWS_LABEL } from "./home/homeCopy";
 import { currentLocale } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
@@ -126,6 +129,8 @@ export default function SportsSurfPage() {
         </section>
 
         <LocalPartnerRio />
+        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale() === "no" ? "no" : "en"]} />
+        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og klubber" : "Group and club references"} />
 
         <section className="px-16 py-20 text-center max-md:px-6">
           <div className="mx-auto max-w-2xl">
