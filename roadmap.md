@@ -13,4 +13,4 @@
 - [x] Sports and surf page (/sports-and-surf, /no/idrett-og-surf, #surf anchor).
 - [x] Corporate page (/corporate, /no/bedrift).
 - [x] Safety page (/safety, /no/trygghet) — facts applied; Health and under-18 sections hidden awaiting owner text.
-- [ ] Portuguese versions of the new group pages — waiting on owner-supplied text.
+- [x] Portuguese versions of homepage and group pages (draft, owner reviews).
