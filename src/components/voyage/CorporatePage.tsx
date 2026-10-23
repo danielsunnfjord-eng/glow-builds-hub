@@ -70,8 +70,32 @@ const NO: Copy = {
   before: "Skriv gjerne i meldingsfeltet: bedriftens navn, din rolle, type arrangement (teambuilding, incentiv, møte eller delegasjon), antall deltakere, reisemål, datoer og budsjettramme. Fakturadetaljer kan komme når vi har avtalt omfanget.",
 };
 
-// CONTENT PLACEHOLDER: Portuguese not supplied — /pt-br/corporate shows English for now.
-const COPY = { en: EN, no: NO, pt: EN };
+// DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
+const PT: Copy = {
+  h1: "Viagens corporativas e experiências de equipe no Rio e nos fiordes da Noruega",
+  sub: "Um parceiro, dois destinos, três idiomas. Planejado e conduzido por quem é local, do primeiro contato à fatura final.",
+  proposal: "Solicite uma proposta",
+  offersTitle: "O que organizamos",
+  offers: [
+    { name: "Team building", text: "Caiaque, trilhas e sessões de surf, com comida local e um facilitador, se desejar." },
+    { name: "Viagens de incentivo", text: "Experiências únicas para equipes e destaques de desempenho no Rio e nos fiordes." },
+    { name: "Reuniões e retiros", text: "Workshops fora do escritório em locais cênicos, para grupos pequenos e médios." },
+    { name: "Delegações e visitas técnicas", text: "Visitas e reuniões na Noruega ou no Brasil, organizadas com contatos locais." },
+  ],
+  whyTitle: "Por que trabalhar conosco",
+  why: [
+    "Consultor trilíngue (português, norueguês, inglês).",
+    "Anfitriões locais no Rio e em Sogn og Fjordane.",
+    "Credenciado pela IATA.",
+    "Suporte 24/7 durante a viagem.",
+    "Um único ponto de contato para todo o projeto.",
+  ],
+  howTitle: "Como funciona",
+  steps: ["Briefing", "Proposta", "Acordo e sinal", "Planejamento", "Evento", "Relatório final"],
+  beforeTitle: "Antes de preencher o formulário",
+  before: "No campo de mensagem, inclua sua empresa, seu cargo, o tipo de evento (team building, incentivo, reunião ou delegação), número de participantes, destino, datas e faixa de orçamento. Os dados de faturamento podem vir depois que definirmos o escopo.",
+};
+const COPY = { en: EN, no: NO, pt: PT };
 
 // HIDDEN SECTION PLACEHOLDERS (render nothing until the owner supplies text):
 // - "Contracts and invoicing": short factual text on invoicing, payment terms, cancellation and insurance.

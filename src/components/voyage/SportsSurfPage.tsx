@@ -68,8 +68,30 @@ const NO: Copy = {
   before: "Skriv gjerne i meldingsfeltet: navn på klubben eller gruppen, idrett, antall spillere og voksne, ønskede datoer, destinasjon (Rio, fjordene eller begge) og budsjettramme.",
 };
 
-// CONTENT PLACEHOLDER: Portuguese version not supplied — /pt-br/sports-and-surf shows the English text for now.
-const COPY = { en: EN, no: NO, pt: EN };
+// DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
+const PT: Copy = {
+  h1: "Camps esportivos e viagens de surf no Rio e nos fiordes da Noruega",
+  intro: "Times de base e amadores, grupos de surf e clubes de atividades ao ar livre. Treinos, amistosos contra clubes locais, dias de surf e natureza, com especialistas locais nos dois países.",
+  proposal: "Solicite uma proposta",
+  sportsTitle: "Camps esportivos",
+  sports: [
+    "Da Noruega para o Rio: fuja do inverno norueguês com treinos, amistosos contra clubes cariocas e esportes de praia.",
+    "Do Brasil para a Noruega: camps de verão com amistosos contra clubes de Sogn og Fjordane.",
+  ],
+  sportsNote: "Nosso foco são times de base e amadores.",
+  surfTitle: "Surf e atividades ao ar livre",
+  surf: [
+    "No Rio: aulas de surf, SUP e esportes de praia.",
+    "Na Noruega: surf em Stad, caiaque nos fiordes e trilhas em montanhas e geleiras com guias locais certificados.",
+    "Surfar em água fria exige preparação. Oferecemos orientação sobre roupa de neoprene e segurança.",
+  ],
+  oceanTitle: "O mesmo oceano, dois mundos",
+  rioAlt: "Praia do Flamengo, Rio de Janeiro",
+  fjordAlt: "Mirante de Stegastein, Noruega",
+  beforeTitle: "Antes de preencher o formulário",
+  before: "No campo de mensagem, inclua o nome do clube ou grupo, o esporte, o número de atletas e adultos, as datas preferidas, o destino (Rio, fiordes ou ambos) e a faixa de orçamento.",
+};
+const COPY = { en: EN, no: NO, pt: PT };
 
 function Cta({ label }: { label: string }) {
   return <a href={GROUP_INTAKE_URL} {...ext} className={btnGold}>{label}</a>;
@@ -129,8 +151,8 @@ export default function SportsSurfPage() {
         </section>
 
         <LocalPartnerRio />
-        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale() === "no" ? "no" : "en"]} />
-        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og klubber" : "Group and club references"} />
+        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale()]} />
+        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og klubber" : currentLocale() === "pt" ? "Referências de grupos e clubes" : "Group and club references"} />
 
         <section className="px-16 py-20 text-center max-md:px-6">
           <div className="mx-auto max-w-2xl">

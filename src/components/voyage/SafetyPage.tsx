@@ -44,8 +44,22 @@ const NO: Copy = {
   ],
 };
 
-// CONTENT PLACEHOLDER: Portuguese not supplied — /pt-br/safety shows the English text for now.
-const COPY = { en: EN, no: NO, pt: EN };
+// DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
+const PT: Copy = {
+  h1: "Segurança e como trabalhamos",
+  proposal: "Solicite uma proposta",
+  sections: [
+    { title: "Responsabilidade e organização", text: "A Fjord & Waves Travel é a parte contratante da viagem." },
+    { title: "Adultos e supervisão", text: "A proporção de supervisão é definida para cada viagem e consta na proposta e no contrato." },
+    { title: "Hospedagem", text: "Usamos hotéis em áreas que nossos parceiros locais consideram seguras. Os endereços são compartilhados com a escola com antecedência." },
+    { title: "Regras da viagem", text: "Regras comuns sobre deslocamento pela cidade, álcool, horários à noite e guarda de objetos de valor são entregues por escrito antes da partida." },
+    { title: "Praia e água", text: "Surf e banho de mar acontecem com instrutor, e somente em condições que o instrutor considera seguras." },
+    { title: "Seguro", text: "Os detalhes do seguro constam na proposta e no contrato." },
+    { title: "Emergência", text: "Uma linha telefônica 24/7 (número informado no contrato) e um plano de emergência por escrito para lesões, doenças, furtos, pessoas desaparecidas e atrasos." },
+    { title: "Comunicação", text: "Uma mensagem diária de status ao professor responsável e um canal de atualizações para os pais, se a escola desejar." },
+  ],
+};
+const COPY = { en: EN, no: NO, pt: PT };
 
 // HIDDEN SECTION PLACEHOLDERS (render nothing until the owner supplies text):
 // - "Health": vaccines and travel advice from FHI.

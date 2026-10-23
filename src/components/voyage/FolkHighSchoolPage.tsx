@@ -96,8 +96,41 @@ const EN: Copy = {
   faq: ["What does it cost?", "How many students do you need?", "What's included?", "How do payment and cancellation work?", "How do you keep students safe?"],
 };
 
-// CONTENT PLACEHOLDER: Portuguese version not supplied — /pt-br/folkehogskole shows the English draft for now.
-const COPY = { no: NO, en: EN, pt: EN };
+// DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
+const PT: Copy = {
+  h1: "Viagens de estudo ao Rio para folk high schools",
+  intro: "Sou ex-professor de folk high school e já planejei e conduzi viagens de estudo ao Brasil, Espanha, Portugal e Sri Lanka. Junto com a Rio Sport & Tour, parceira local com mais de 20 anos de experiência, monto um programa seguro e academicamente sólido para o seu curso.",
+  proposal: "Solicite uma proposta",
+  tracksTitle: "Escolha o seu curso",
+  tracks: [
+    { name: "Esporte e multiesporte", text: "Treinos com clubes brasileiros, jogos contra times locais, vôlei de praia, futevôlei e futebol de areia, capoeira, crossfit e trilhas nas montanhas." },
+    { name: "Surf e atividades ao ar livre", text: "Aulas de surf com instrutores experientes, trilhas em montanhas e florestas com guias locais, snorkel e mergulho em Arraial do Cabo e Ilha Grande." },
+    { name: "Solidariedade e cultura", text: "Encontros com projetos sociais em favelas e ONGs, passeios culturais e históricos, aulas de culinária, samba e cultura afro-brasileira, com reflexão antes, durante e depois da viagem." },
+    { name: "Cursos criativos", text: "Oficinas de música e sessões de estúdio com artistas locais, tours de street art, visitas a ateliês de moda e design, e aulas de samba e dança afro-brasileira." },
+  ],
+  programTitle: "Programa de exemplo: surf, atividades ao ar livre e esporte (11 dias)",
+  dayLabel: "Dia",
+  days: [
+    "Partida", "Chegada ao Rio, transfer, orientação de segurança", "Orientação pela cidade e introdução ao ritmo brasileiro",
+    "Aula de surf parte 1 e vôlei de praia", "Passeio de um dia às montanhas e à natureza", "Aula de surf parte 2, treino com clube local, reflexão",
+    "Dia do curso: jogo, visita a clube ou projeto social", "Arraial do Cabo ou Ilha Grande", "Retorno, dia cultural, jantar de despedida",
+    "Tempo livre com estrutura e avaliação", "Volta para casa",
+  ],
+  programNote: "O programa é adaptado aos objetivos, ao nível e às datas do seu curso.",
+  includedTitle: "O que está incluído",
+  included: "Voos em grupo (mínimo de 10 viajantes), hotéis em áreas seguras, transporte e transfers, atividades, aulas e treinos, guias locais e suporte 24/7.",
+  howTitle: "Como funciona",
+  safetyTitle: "Segurança",
+  safety: "A segurança vem em primeiro lugar. Veja como preparamos, acompanhamos e agimos.",
+  safetyLink: "Leia sobre segurança",
+  fjordsTitle: "Dos fiordes ao Rio, e de volta",
+  fjords: "Temos base em Sogn og Fjordane e no Rio. Também recebemos grupos brasileiros nos fiordes, com surf em Stad, caiaque e visitas a escolas locais.",
+  beforeTitle: "Antes de enviar o formulário",
+  before: "No campo de mensagem, inclua: nome da escola, curso, número de alunos e professores, datas preferidas, destino (Rio, fiordes ou ambos) e orçamento. Assim posso enviar uma proposta concreta rapidamente.",
+  faqTitle: "Perguntas frequentes",
+  faq: ["Quanto custa?", "Quantos alunos são necessários?", "O que está incluído?", "Como funcionam o pagamento e o cancelamento?", "Como vocês garantem a segurança dos alunos?"],
+};
+const COPY = { no: NO, en: EN, pt: PT };
 
 // PRICE PLACEHOLDER (hidden): "Pris: fra kr X per elev ved 25 elever." — show once the owner supplies the number.
 // FAQ ANSWER PLACEHOLDERS (owner will supply): cost, minimum students, inclusions, payment/cancellation, student safety.
@@ -205,8 +238,8 @@ export default function FolkHighSchoolPage() {
         </section>
 
         <LocalPartnerRio />
-        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale() === "no" ? "no" : "en"]} />
-        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og skoler" : "Group and school references"} />
+        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[currentLocale()]} />
+        <GroupReferences label={currentLocale() === "no" ? "Referanser fra grupper og skoler" : currentLocale() === "pt" ? "Referências de grupos e escolas" : "Group and school references"} />
 
         <section className={section}>
           <div className="mx-auto max-w-3xl">
