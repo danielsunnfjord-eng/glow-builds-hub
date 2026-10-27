@@ -5,7 +5,6 @@ import FeaturedItineraries from "@/components/voyage/FeaturedItineraries";
 import ClientPortal from "@/components/voyage/ClientPortal";
 import WhyAdvisor from "@/components/voyage/WhyAdvisor";
 import Reviews from "@/components/voyage/Reviews";
-import { HOME_TESTIMONIAL_AUTHORS } from "@/components/voyage/home/homeCopy";
 import { currentLocale, localePath } from "@/lib/locale";
 
 const GROUP_LINK_COPY: Record<string, string> = {
@@ -35,7 +34,7 @@ export default function PrivateTravel() {
         <FeaturedItineraries />
         <ClientPortal />
         <WhyAdvisor />
-        <Reviews exclude={HOME_TESTIMONIAL_AUTHORS} />
+        <Reviews />
       </main>
       <Footer />
     </div>
