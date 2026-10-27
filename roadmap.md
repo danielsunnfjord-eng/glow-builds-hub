@@ -15,4 +15,4 @@
 - [x] Safety page (/safety, /no/trygghet) — facts applied; Health and under-18 sections hidden awaiting owner text.
 - [x] Portuguese versions of homepage and group pages (draft, owner reviews).
 - [x] Recheck the uploaded homepage brief in all three languages and apply the exact Norwegian one-business-day reply promise.
-- [ ] Verify the uploaded founder/About and Rio partner brief in all languages; add the hidden reusable Norway partner block.
+- [x] Verify the uploaded founder/About and Rio partner brief in all languages; add the hidden reusable Norway partner block.
