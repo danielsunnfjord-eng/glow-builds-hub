@@ -16,3 +16,4 @@
 - [x] Portuguese versions of homepage and group pages (draft, owner reviews).
 - [x] Recheck the uploaded homepage brief in all three languages and apply the exact Norwegian one-business-day reply promise.
 - [x] Verify the uploaded founder/About and Rio partner brief in all languages; add the hidden reusable Norway partner block.
+- [ ] Verify the uploaded school brief, all four course tabs, program and proposal links in Norwegian and English.
