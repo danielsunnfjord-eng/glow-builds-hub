@@ -3,3 +3,4 @@
 - Map translated route slugs through `localizedRoutePath` so menus, language switches and canonical/hreflang links share the same URL mapping.
 - Keep enquiry destinations and audience navigation in the shared travel navigation module to avoid inconsistent links across menus and footers.
 - Keep destination partner blocks reusable; unconfirmed partner blocks render nothing so missing supplier details cannot appear publicly.
+- Always lazy-load components with `lazyWithRetry` from `@/lib/lazyWithRetry`, never React's plain `lazy`: root-level imports (Calendly badge, Admin) sit outside the router's error boundary, so a failed chunk load mid-reload would otherwise unmount the whole app and blank the screen.
