@@ -1,5 +1,6 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { Button } from "@/components/ui/button";
 import { currentLocale } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
@@ -103,7 +104,7 @@ const COPY = { en: EN, no: NO, pt: PT };
 // - "References": only a real company reference or testimonial.
 
 function Cta({ label }: { label: string }) {
-  return <a href={GROUP_INTAKE_URL} {...ext} className={btnGold}>{label}</a>;
+  return <Button asChild className={`h-auto ${btnGold}`}><a href={GROUP_INTAKE_URL} {...ext}>{label}</a></Button>;
 }
 
 export default function CorporatePage() {
@@ -160,7 +161,7 @@ export default function CorporatePage() {
               {c.steps.map((s, n) => (
                 <li key={s} className="border-t-2 border-gold pt-4">
                   <div className="font-serif text-3xl text-gold">{n + 1}</div>
-                  <div className="mt-1 text-sm font-semibold uppercase tracking-[0.1em] text-ink">{s}</div>
+                  <div className="mt-1 text-sm font-semibold uppercase tracking-[0.1em] text-ink [overflow-wrap:anywhere]">{s}</div>
                 </li>
               ))}
             </ol>
