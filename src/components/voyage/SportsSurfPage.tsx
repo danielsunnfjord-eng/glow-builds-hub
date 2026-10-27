@@ -39,7 +39,7 @@ const EN: Copy = {
   ],
   oceanTitle: "Same ocean, two worlds",
   rioAlt: "Praia do Flamengo, Rio de Janeiro",
-  fjordAlt: "Sunset from Sukkertoppen, Norway",
+  fjordAlt: "Stegastein viewpoint above the Aurlandsfjord, Norway",
   beforeTitle: "Before you fill in the form",
   before: "In the message field, please include your club or group name, sport, number of players and adults, preferred dates, destination (Rio, the fjords or both) and budget range.",
 };
@@ -59,11 +59,11 @@ const NO: Copy = {
   surf: [
     "I Rio: surfekurs, SUP og strandidrett.",
     "I Norge: surf på Stad, kajakk på fjorden og fjell- og breturer med sertifiserte lokale guider.",
-    "Surfing i kaldt vann krever forberedelse. Vi sørger for våtdrakt og sikkerhetsveiledning.",
+    "Surfing i kaldt vann krever forberedelse. Vi gir veiledning om våtdrakt og sikkerhet.",
   ],
   oceanTitle: "Samme hav, to verdener",
   rioAlt: "Praia do Flamengo, Rio de Janeiro",
-  fjordAlt: "Solnedgang fra Sukkertoppen",
+  fjordAlt: "Stegastein utsiktspunkt over Aurlandsfjorden, Norge",
   beforeTitle: "Før du fyller ut skjemaet",
   before: "Skriv gjerne i meldingsfeltet: navn på klubben eller gruppen, idrett, antall spillere og voksne, ønskede datoer, destinasjon (Rio, fjordene eller begge) og budsjettramme.",
 };
