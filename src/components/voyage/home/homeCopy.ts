@@ -62,7 +62,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     steps: ["Samtale", "Forslag", "Avtale", "Forberedelser", "Reise", "Evaluering"],
     safety: "Trygghet kommer først. Les hvordan vi forbereder, følger opp og håndterer uforutsette hendelser.",
     safetyLink: "Les om trygghet",
-    finalTitle: "Fortell om gruppen deres. Jeg svarer innen én virkedag.",
+    finalTitle: "Fortell om gruppen deres. Jeg svarer innen én arbeidsdag.",
     finalCall: "Book en samtale",
     privateLink: "Planlegger du en reise for deg selv? Se privatreiser.",
   },
