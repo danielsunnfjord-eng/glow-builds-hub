@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { lazyWithRetry } from "@/lib/lazyWithRetry";
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -179,8 +180,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 // Defer non-critical 3rd-party widget so it doesn't block first paint.
-// ported from src/App.tsx
-const CalendlyBadge = lazy(() => import("@/components/voyage/CalendlyBadge"));
+// ported from src/App.tsx. Retry guard: this import sits outside the router's
+// error boundary, so a mid-reload chunk failure would otherwise blank the app.
+const CalendlyBadge = lazyWithRetry(() => import("@/components/voyage/CalendlyBadge"));
 
 const DeferredCalendly = () => {
   const [show, setShow] = useState(false);

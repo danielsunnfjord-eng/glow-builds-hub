@@ -1,11 +1,12 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { lazyWithRetry } from "@/lib/lazyWithRetry";
 
 // Admin pulls in browser-only libraries (pagedjs, react-pdf/pdfjs) at module
 // scope, so the page is loaded lazily and only after mount — the server never
 // evaluates it. The route is auth-gated; there is nothing to server-render.
-const Admin = lazy(() => import("@/pages/Admin"));
+const Admin = lazyWithRetry(() => import("@/pages/Admin"));
 
 const Fallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-parchment">
