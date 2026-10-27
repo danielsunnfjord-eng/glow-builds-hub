@@ -18,4 +18,4 @@
 - [x] Verify the uploaded founder/About and Rio partner brief in all languages; add the hidden reusable Norway partner block.
 - [x] Verify the uploaded school brief, all four course tabs, program and proposal links in Norwegian and English.
 - [x] Recheck the sports/surf brief, Norwegian translation, photo descriptions, #surf anchor and proposal links.
-- [ ] Check the uploaded corporate brief, English/Norwegian copy, owner photos, proposal links and hidden unfinished sections.
+- [x] Check the uploaded corporate brief, English/Norwegian copy, owner photos, proposal links and hidden unfinished sections; correct the Norwegian follow-up step's phone layout.
