@@ -14,3 +14,4 @@
 - [x] Corporate page (/corporate, /no/bedrift).
 - [x] Safety page (/safety, /no/trygghet) — facts applied; Health and under-18 sections hidden awaiting owner text.
 - [x] Portuguese versions of homepage and group pages (draft, owner reviews).
+- [ ] Recheck the uploaded homepage brief in all three languages and apply the exact Norwegian one-business-day reply promise.
