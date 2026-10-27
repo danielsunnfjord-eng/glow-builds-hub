@@ -17,4 +17,4 @@
 - [x] Recheck the uploaded homepage brief in all three languages and apply the exact Norwegian one-business-day reply promise.
 - [x] Verify the uploaded founder/About and Rio partner brief in all languages; add the hidden reusable Norway partner block.
 - [x] Verify the uploaded school brief, all four course tabs, program and proposal links in Norwegian and English.
-- [ ] Recheck the sports/surf brief, Norwegian translation, photo descriptions, #surf anchor and proposal links.
+- [x] Recheck the sports/surf brief, Norwegian translation, photo descriptions, #surf anchor and proposal links.
