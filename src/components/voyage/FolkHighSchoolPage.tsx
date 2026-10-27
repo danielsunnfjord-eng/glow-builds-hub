@@ -64,7 +64,7 @@ const NO: Copy = {
 // DRAFT – pending review: shorter English version translated from the Norwegian text.
 const EN: Copy = {
   h1: "Study trips to Rio for folk high schools",
-  intro: "I'm a former folk high school teacher and have planned and led study trips to Brazil, Spain, Portugal and Sri Lanka. Together with Rio Sport & Tour, a local partner with over 20 years of experience, I build a safe and academically strong program for your course.",
+  intro: "As a former folk high school teacher, I've led study trips to Brazil, Spain, Portugal and Sri Lanka. With Rio Sport & Tour's 20+ years of local experience, I plan safe, academically strong journeys for your course.",
   proposal: "Request a proposal",
   tracksTitle: "Choose your course",
   tracks: [
