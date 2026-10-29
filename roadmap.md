@@ -1,7 +1,6 @@
-# Concierge homepage restructure
 # Corporate content update
-- [ ] Apply supplied English and Norwegian corporate copy, concierge details, two sample tables and answered FAQ; keep unfinished items code-only.
-- [ ] Verify three proposal buttons, Safety/private links, language switching and mobile tables; preserve other pages and Portuguese content.
+- [x] Apply supplied English and Norwegian corporate copy, concierge details, two sample tables and answered FAQ; keep unfinished items code-only.
+- [x] Verify three proposal buttons, Safety/private links, language switching and mobile tables; preserve other pages and Portuguese content.
 
 # Concierge homepage restructure
 - [x] Update homepage hero, four divisions, concierge section, founder and metadata in EN/NO/PT.
