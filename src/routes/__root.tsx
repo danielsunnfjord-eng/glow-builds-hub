@@ -65,7 +65,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Bespoke journeys designed around you by Daniel Lira Figueiredo — Fora Travel advisor, IATA accredited.",
       },
-      { property: "og:image", content: "https://fjordwavestravel.com/og-image.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -75,7 +74,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Bespoke journeys designed around you by Daniel Lira Figueiredo — Fora Travel advisor, IATA accredited.",
       },
-      { name: "twitter:image", content: "https://fjordwavestravel.com/og-image.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

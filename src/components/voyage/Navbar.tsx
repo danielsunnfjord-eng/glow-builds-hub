@@ -41,13 +41,7 @@ const Navbar = () => {
                 {privateLinks.map((item) => <DropdownMenuItem asChild key={item.path}><Link to={item.path}>{item.label}</Link></DropdownMenuItem>)}
               </DropdownMenuContent>
             </DropdownMenu>
-            <details className="text-ink">
-          <summary className={`${linkClass} cursor-pointer`}>{copy.privateTravel}</summary>
-          <div className="mt-4 border-l border-gold/30 pl-4 flex flex-col gap-4">
-            {privateLinks.map((item) => <Link key={item.path} to={item.path} className={linkClass} onClick={() => setOpen(false)}>{item.label}</Link>)}
-          </div>
-        </details>
-        {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
+            {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
 
           </div>
           <div className="flex items-center gap-4"><LanguageSelector variant="light" />{actions}</div>
@@ -60,6 +54,12 @@ const Navbar = () => {
         </div>
       </div>
       {open && <div id="mobile-navigation" className="xl:hidden max-h-[calc(100dvh-160px)] overflow-y-auto border-t border-gold/15 bg-parchment px-6 py-5 flex flex-col gap-4">
+        <details className="text-ink">
+          <summary className={`${linkClass} cursor-pointer`}>{copy.privateTravel}</summary>
+          <div className="mt-4 border-l border-gold/30 pl-4 flex flex-col gap-4">
+            {privateLinks.map((item) => <Link key={item.path} to={item.path} className={linkClass} onClick={() => setOpen(false)}>{item.label}</Link>)}
+          </div>
+        </details>
         {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass} onClick={() => setOpen(false)}>{copy[item.key]}</Link>)}
 
         <div className="flex flex-wrap gap-3 pt-2">{actions}</div>
