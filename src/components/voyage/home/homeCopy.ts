@@ -1,12 +1,16 @@
 import type { Locale } from "@/lib/locale";
-import type { GroupPageKey } from "@/lib/travelNavigation";
 
-type Card = { title: string; text: string; page: GroupPageKey; path: string; hash?: string };
+type Card = { title: string; text: string; path: string };
 
 export type HomeCopy = {
   headline: string;
   subheadline: string;
   proposal: string;
+  start: string;
+  explore: string;
+  conciergeTitle: string;
+  conciergePoints: string[];
+  founder: string;
   call: string;
   whatsapp: string;
   cardsEyebrow: string;
@@ -23,18 +27,18 @@ export type HomeCopy = {
 
 export const HOME_COPY: Record<Locale, HomeCopy> = {
   en: {
-    headline: "Group journeys between Rio's waves and Norway's fjords",
-    subheadline: "Planned by a former folk high school teacher. Hosted by local experts.",
+    headline: "Your concierge travel agent for Rio and Norway's fjords",
+    subheadline: "Private journeys, group trips and themed departures. Planned by a former folk high school teacher and hosted by local experts.",
     proposal: "Request a proposal",
+    start: "Start planning",
+    explore: "Explore",
+    conciergeTitle: "What a concierge travel agent does",
+    conciergePoints: ["One personal contact from the first idea to the day you are home.", "Planning built around you or your group.", "Local hosts in Rio and in Sogn og Fjordane.", "Support during the trip, with a 24/7 contact line.", "A follow-up after you return."],
+    founder: "Brazilian-born, Norway-based since 2010. Trilingual, IATA accredited, and a former folk high school teacher. I am your concierge travel agent: one personal contact from the first idea to the day you are home. I plan private journeys, school and club trips, corporate programs and themed departures, with trusted local partners in Rio and Sogn og Fjordane.",
     call: "Book a 20-minute call",
     whatsapp: "Or message on WhatsApp",
     cardsEyebrow: "Who we plan for",
-    cards: [
-      { title: "Folk High Schools", text: "Study trips for sport, surf and outdoor, solidarity and culture, and creative lines.", page: "folkHighSchools", path: "/folkehogskole" },
-      { title: "Sports Teams & Clubs", text: "Camps, friendlies and training with local clubs in Rio and the fjords.", page: "sportsAndSurf", path: "/sports-and-surf" },
-      { title: "Surf & Outdoor", text: "Rio's waves, Stad's surf, fjord kayaking and mountain hikes.", page: "sportsAndSurf", path: "/sports-and-surf", hash: "surf" },
-      { title: "Corporate & Teams", text: "Team experiences, incentives and meetings in Rio and Norway's fjords.", page: "corporate", path: "/corporate" },
-    ],
+    cards: [{"title": "Private Trips", "text": "Tailor-made journeys for individuals, couples and families in Rio and Norway.", "path": "/private-travel"}, {"title": "Schools, Sports Teams & Clubs", "text": "Study trips, camps and training trips, planned by a former folk high school teacher.", "path": "/groups"}, {"title": "Corporate & Delegations", "text": "Team experiences, incentives, meetings and delegations in Rio and Norway's fjords.", "path": "/corporate"}, {"title": "Theme Travels", "text": "Surf, beach sports and outdoor departures for small groups. Register your interest.", "path": "/trips"}],
     proof: ["6 years as a folk high school teacher", "20+ years of local partner experience in Rio", "Brazilian-born, Norway-based since 2010", "IATA accredited"],
     howTitle: "How it works",
     steps: ["Talk", "Proposal", "Agreement", "Preparation", "Trip", "Evaluation"],
@@ -45,18 +49,18 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     privateLink: "Planning a trip for yourself? See private travel.",
   },
   no: {
-    headline: "Studieturer til Rio og fjordene",
-    subheadline: "Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
+    headline: "Din concierge-reiserådgiver for Rio og fjordene",
+    subheadline: "Privatreiser, gruppereiser og temareiser. Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
     proposal: "Be om forslag",
+    start: "Kom i gang",
+    explore: "Utforsk",
+    conciergeTitle: "Hva en concierge-reiserådgiver gjør",
+    conciergePoints: ["Én personlig kontakt fra første idé til du er hjemme igjen.", "Planlegging bygget rundt deg eller gruppen din.", "Lokale verter i Rio og Sogn og Fjordane.", "Støtte under reisen, med døgnåpen kontaktlinje.", "Oppfølging etter at du er kommet hjem."],
+    founder: "Brasiliansk-født og bosatt i Norge siden 2010. Trespråklig, IATA-akkreditert og tidligere folkehøgskolelærer. Jeg er din concierge-reiserådgiver: én personlig kontakt fra første idé til du er hjemme igjen. Jeg planlegger privatreiser, skole- og klubbturer, bedriftsprogram og temareiser, sammen med lokale partnere i Rio og Sogn og Fjordane.",
     call: "Book en 20 minutters samtale",
     whatsapp: "Eller send en melding på WhatsApp",
     cardsEyebrow: "Hvem vi planlegger for",
-    cards: [
-      { title: "For folkehøgskoler", text: "Studieturer for idrett, surf og friluftsliv, solidaritet og kultur, og kreative fag.", page: "folkHighSchools", path: "/folkehogskole" },
-      { title: "Idrettslag og klubber", text: "Camper, kamper og trening med lokale klubber i Rio og fjordene.", page: "sportsAndSurf", path: "/sports-and-surf" },
-      { title: "Surf og friluftsliv", text: "Rios bølger, surf på Stad, fjordkajakk og fjellturer.", page: "sportsAndSurf", path: "/sports-and-surf", hash: "surf" },
-      { title: "Bedrift og team", text: "Teamopplevelser, incentivreiser og møter i Rio og fjordene.", page: "corporate", path: "/corporate" },
-    ],
+    cards: [{"title": "Privatreiser", "text": "Skreddersydde reiser for enkeltpersoner, par og familier i Rio og Norge.", "path": "/private-travel"}, {"title": "Skoler, idrettslag og klubber", "text": "Studieturer, camper og treningsreiser. Planlagt av en tidligere folkehøgskolelærer.", "path": "/groups"}, {"title": "Bedrift og delegasjoner", "text": "Teamopplevelser, incentivreiser, møter og delegasjoner i Rio og fjordene.", "path": "/corporate"}, {"title": "Temareiser", "text": "Surf, beach sports og friluftsliv for små grupper. Meld din interesse.", "path": "/trips"}],
     proof: ["6 år som folkehøgskolelærer", "Over 20 års lokal partnererfaring i Rio", "Brasiliansk-født, bosatt i Norge siden 2010", "IATA-akkreditert"],
     howTitle: "Slik fungerer det",
     steps: ["Samtale", "Forslag", "Avtale", "Forberedelser", "Reise", "Evaluering"],
@@ -68,18 +72,18 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
   },
   // DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
   pt: {
-    headline: "Viagens em grupo entre as ondas do Rio e os fiordes da Noruega",
-    subheadline: "Planejadas por um ex-professor de folk high school. Conduzidas por especialistas locais.",
+    headline: "Seu concierge de viagens para o Rio e os fiordes da Noruega",
+    subheadline: "Viagens privadas, viagens em grupo e viagens temáticas. Planejadas por um ex-professor de folkehøgskole e realizadas com especialistas locais.",
     proposal: "Solicite uma proposta",
+    start: "Comece a planejar",
+    explore: "Explore",
+    conciergeTitle: "O que faz um concierge de viagens",
+    conciergePoints: ["Um contato pessoal desde a primeira ideia até o dia em que você volta para casa.", "Planejamento feito para você ou seu grupo.", "Anfitriões locais no Rio e em Sogn og Fjordane.", "Apoio durante a viagem, com uma linha de contato 24 horas por dia.", "Acompanhamento após o seu retorno."],
+    founder: "Brasileiro, morando na Noruega desde 2010. Trilíngue, credenciado pela IATA e ex-professor de folkehøgskole. Sou seu concierge de viagens: um contato pessoal desde a primeira ideia até o dia em que você volta para casa. Planejo viagens privadas, viagens para escolas e clubes, programas corporativos e viagens temáticas, com parceiros locais de confiança no Rio e em Sogn og Fjordane.",
     call: "Agende uma conversa de 20 minutos",
     whatsapp: "Ou envie uma mensagem pelo WhatsApp",
     cardsEyebrow: "Para quem planejamos",
-    cards: [
-      { title: "Escolas e folk high schools", text: "Viagens de estudo para esporte, surf e atividades ao ar livre, solidariedade e cultura, e cursos criativos.", page: "folkHighSchools", path: "/folkehogskole" },
-      { title: "Times e clubes esportivos", text: "Camps, amistosos e treinos com clubes locais no Rio e nos fiordes.", page: "sportsAndSurf", path: "/sports-and-surf" },
-      { title: "Surf e aventura", text: "As ondas do Rio, o surf de Stad, caiaque nos fiordes e trilhas nas montanhas.", page: "sportsAndSurf", path: "/sports-and-surf", hash: "surf" },
-      { title: "Empresas e equipes", text: "Experiências de equipe, viagens de incentivo e reuniões no Rio e nos fiordes da Noruega.", page: "corporate", path: "/corporate" },
-    ],
+    cards: [{"title": "Viagens privadas", "text": "Viagens sob medida para pessoas, casais e famílias no Rio e na Noruega.", "path": "/private-travel"}, {"title": "Escolas, equipes e clubes", "text": "Viagens de estudo, camps e viagens de treinamento, planejadas por um ex-professor de folkehøgskole.", "path": "/groups"}, {"title": "Empresas e delegações", "text": "Experiências de equipe, incentivos, reuniões e delegações no Rio e nos fiordes da Noruega.", "path": "/corporate"}, {"title": "Viagens temáticas", "text": "Surf, esportes de praia e viagens ao ar livre para pequenos grupos. Registre seu interesse.", "path": "/trips"}],
     proof: ["6 anos como professor de folk high school", "Mais de 20 anos de experiência com parceiros locais no Rio", "Brasileiro, morando na Noruega desde 2010", "Credenciado pela IATA"],
     howTitle: "Como funciona",
     steps: ["Conversa", "Proposta", "Acordo", "Preparação", "Viagem", "Avaliação"],

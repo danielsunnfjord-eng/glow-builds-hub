@@ -18,20 +18,20 @@ type Copy = Record<Locale, PageCopy>;
 export const SEO_COPY = {
   home: {
     en: {
-      title: "Group Travel to Rio & Norway's Fjords | Fjord & Waves Travel",
+      title: "Concierge Travel Agent for Rio & Norway's Fjords | Fjord & Waves Travel",
       description:
-        "Group journeys for folk high schools, sports teams, surf groups and companies. Planned by a former folk high school teacher, hosted by local experts in Rio and Sogn og Fjordane.",
+        "Personal concierge travel planning for private journeys, schools, sports teams, companies and themed departures in Rio de Janeiro and Sogn og Fjordane.",
     },
     no: {
-      title: "Studieturer til Rio og fjordene | Fjord & Waves Travel",
+      title: "Concierge-reiserådgiver for Rio og fjordene | Fjord & Waves Travel",
       description:
-        "Studieturer og gruppereiser for folkehøgskoler, idrettslag, surfgrupper og bedrifter. Planlagt av en tidligere folkehøgskolelærer, med lokale eksperter i Rio og Sogn og Fjordane.",
+        "Personlig concierge-planlegging av privatreiser, skoleturer, idrettsreiser, bedriftsreiser og temareiser i Rio de Janeiro og Sogn og Fjordane.",
     },
     // DRAFT – pending review (translated from English)
     pt: {
-      title: "Viagens em grupo ao Rio e aos fiordes da Noruega | Fjord & Waves",
+      title: "Concierge de viagens para o Rio e os fiordes da Noruega | Fjord & Waves Travel",
       description:
-        "Viagens em grupo entre as ondas do Rio e os fiordes da Noruega. Planejadas por um ex-professor de folk high school. Conduzidas por especialistas locais.",
+        "Planejamento pessoal de viagens privadas, escolares, esportivas, corporativas e temáticas no Rio de Janeiro e em Sogn og Fjordane.",
     },
   } satisfies Copy,
 

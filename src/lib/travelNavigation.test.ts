@@ -23,6 +23,9 @@ describe("localized routes", () => {
     ["/sports-and-surf", "/no/idrett-og-surf"],
     ["/corporate", "/no/bedrift"],
     ["/safety", "/no/trygghet"],
+    ["/groups", "/no/grupper"],
+    ["/start", "/no/kom-i-gang"],
+    ["/trips", "/no/reiser"],
   ])("maps %s to %s", (path, norwegian) => {
     expect(localePath(path, "no")).toBe(norwegian);
     const stripped = norwegian.slice(3);

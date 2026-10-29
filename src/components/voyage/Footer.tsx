@@ -24,8 +24,9 @@ const Footer = () => {
         </div>
         <div>
           <h5 className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-voyage-white/30 mb-5">{t("footer.explore")}</h5>
-          {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
           <Link to="/private-travel" className={linkClass}>{copy.privateTravel}</Link>
+          {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
+          <Link to={localizedRoutePath("/start", locale)} className={linkClass}>{copy.start}</Link>
           <Link to="/catalogue" className={linkClass}>{t("nav.shop")}</Link>
           <Link to="/pricing" className={linkClass}>{t("nav.pricing")}</Link>
           <Link to="/start-your-journey" className={linkClass}>{copy.startJourney}</Link>

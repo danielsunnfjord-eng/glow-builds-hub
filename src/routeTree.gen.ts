@@ -16,19 +16,25 @@ import { Route as Char123LocaleChar125AdminRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125BedriftRouteImport } from './routes/{-$locale}/bedrift'
 import { Route as Char123LocaleChar125CorporateRouteImport } from './routes/{-$locale}/corporate'
 import { Route as Char123LocaleChar125FolkehogskoleRouteImport } from './routes/{-$locale}/folkehogskole'
+import { Route as Char123LocaleChar125GroupsRouteImport } from './routes/{-$locale}/groups'
+import { Route as Char123LocaleChar125GrupperRouteImport } from './routes/{-$locale}/grupper'
 import { Route as Char123LocaleChar125IdrettOgSurfRouteImport } from './routes/{-$locale}/idrett-og-surf'
+import { Route as Char123LocaleChar125KomIGangRouteImport } from './routes/{-$locale}/kom-i-gang'
 import { Route as Char123LocaleChar125LegalRouteImport } from './routes/{-$locale}/legal'
 import { Route as Char123LocaleChar125LoginRouteImport } from './routes/{-$locale}/login'
 import { Route as Char123LocaleChar125PlanMyTripRouteImport } from './routes/{-$locale}/plan-my-trip'
 import { Route as Char123LocaleChar125PricingRouteImport } from './routes/{-$locale}/pricing'
 import { Route as Char123LocaleChar125PrivacyRouteImport } from './routes/{-$locale}/privacy'
 import { Route as Char123LocaleChar125PrivateTravelRouteImport } from './routes/{-$locale}/private-travel'
+import { Route as Char123LocaleChar125ReiserRouteImport } from './routes/{-$locale}/reiser'
 import { Route as Char123LocaleChar125ResetPasswordRouteImport } from './routes/{-$locale}/reset-password'
 import { Route as Char123LocaleChar125SafetyRouteImport } from './routes/{-$locale}/safety'
 import { Route as Char123LocaleChar125SportsAndSurfRouteImport } from './routes/{-$locale}/sports-and-surf'
+import { Route as Char123LocaleChar125StartRouteImport } from './routes/{-$locale}/start'
 import { Route as Char123LocaleChar125StartYourJourneyRouteImport } from './routes/{-$locale}/start-your-journey'
 import { Route as Char123LocaleChar125TermsRouteImport } from './routes/{-$locale}/terms'
 import { Route as Char123LocaleChar125ThankYouRouteImport } from './routes/{-$locale}/thank-you'
+import { Route as Char123LocaleChar125TripsRouteImport } from './routes/{-$locale}/trips'
 import { Route as Char123LocaleChar125TrygghetRouteImport } from './routes/{-$locale}/trygghet'
 import { Route as Char123LocaleChar125UnsubscribeRouteImport } from './routes/{-$locale}/unsubscribe'
 import { Route as Char123LocaleChar125CatalogueIndexRouteImport } from './routes/{-$locale}/catalogue/index'
@@ -84,10 +90,28 @@ const Char123LocaleChar125FolkehogskoleRoute =
     path: '/folkehogskole',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const Char123LocaleChar125GroupsRoute =
+  Char123LocaleChar125GroupsRouteImport.update({
+    id: '/groups',
+    path: '/groups',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125GrupperRoute =
+  Char123LocaleChar125GrupperRouteImport.update({
+    id: '/grupper',
+    path: '/grupper',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
 const Char123LocaleChar125IdrettOgSurfRoute =
   Char123LocaleChar125IdrettOgSurfRouteImport.update({
     id: '/idrett-og-surf',
     path: '/idrett-og-surf',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125KomIGangRoute =
+  Char123LocaleChar125KomIGangRouteImport.update({
+    id: '/kom-i-gang',
+    path: '/kom-i-gang',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
 const Char123LocaleChar125LegalRoute =
@@ -126,6 +150,12 @@ const Char123LocaleChar125PrivateTravelRoute =
     path: '/private-travel',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const Char123LocaleChar125ReiserRoute =
+  Char123LocaleChar125ReiserRouteImport.update({
+    id: '/reiser',
+    path: '/reiser',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
 const Char123LocaleChar125ResetPasswordRoute =
   Char123LocaleChar125ResetPasswordRouteImport.update({
     id: '/reset-password',
@@ -144,6 +174,12 @@ const Char123LocaleChar125SportsAndSurfRoute =
     path: '/sports-and-surf',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const Char123LocaleChar125StartRoute =
+  Char123LocaleChar125StartRouteImport.update({
+    id: '/start',
+    path: '/start',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
 const Char123LocaleChar125StartYourJourneyRoute =
   Char123LocaleChar125StartYourJourneyRouteImport.update({
     id: '/start-your-journey',
@@ -160,6 +196,12 @@ const Char123LocaleChar125ThankYouRoute =
   Char123LocaleChar125ThankYouRouteImport.update({
     id: '/thank-you',
     path: '/thank-you',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125TripsRoute =
+  Char123LocaleChar125TripsRouteImport.update({
+    id: '/trips',
+    path: '/trips',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
 const Char123LocaleChar125TrygghetRoute =
@@ -248,19 +290,25 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
+  '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
+  '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
   '/{-$locale}/idrett-og-surf': typeof Char123LocaleChar125IdrettOgSurfRoute
+  '/{-$locale}/kom-i-gang': typeof Char123LocaleChar125KomIGangRoute
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/private-travel': typeof Char123LocaleChar125PrivateTravelRoute
+  '/{-$locale}/reiser': typeof Char123LocaleChar125ReiserRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/safety': typeof Char123LocaleChar125SafetyRoute
   '/{-$locale}/sports-and-surf': typeof Char123LocaleChar125SportsAndSurfRoute
+  '/{-$locale}/start': typeof Char123LocaleChar125StartRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
   '/{-$locale}/terms': typeof Char123LocaleChar125TermsRoute
   '/{-$locale}/thank-you': typeof Char123LocaleChar125ThankYouRoute
+  '/{-$locale}/trips': typeof Char123LocaleChar125TripsRoute
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
@@ -282,19 +330,25 @@ export interface FileRoutesByTo {
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
+  '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
+  '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
   '/{-$locale}/idrett-og-surf': typeof Char123LocaleChar125IdrettOgSurfRoute
+  '/{-$locale}/kom-i-gang': typeof Char123LocaleChar125KomIGangRoute
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/private-travel': typeof Char123LocaleChar125PrivateTravelRoute
+  '/{-$locale}/reiser': typeof Char123LocaleChar125ReiserRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/safety': typeof Char123LocaleChar125SafetyRoute
   '/{-$locale}/sports-and-surf': typeof Char123LocaleChar125SportsAndSurfRoute
+  '/{-$locale}/start': typeof Char123LocaleChar125StartRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
   '/{-$locale}/terms': typeof Char123LocaleChar125TermsRoute
   '/{-$locale}/thank-you': typeof Char123LocaleChar125ThankYouRoute
+  '/{-$locale}/trips': typeof Char123LocaleChar125TripsRoute
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
@@ -318,19 +372,25 @@ export interface FileRoutesById {
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
+  '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
+  '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
   '/{-$locale}/idrett-og-surf': typeof Char123LocaleChar125IdrettOgSurfRoute
+  '/{-$locale}/kom-i-gang': typeof Char123LocaleChar125KomIGangRoute
   '/{-$locale}/legal': typeof Char123LocaleChar125LegalRoute
   '/{-$locale}/login': typeof Char123LocaleChar125LoginRoute
   '/{-$locale}/plan-my-trip': typeof Char123LocaleChar125PlanMyTripRoute
   '/{-$locale}/pricing': typeof Char123LocaleChar125PricingRoute
   '/{-$locale}/privacy': typeof Char123LocaleChar125PrivacyRoute
   '/{-$locale}/private-travel': typeof Char123LocaleChar125PrivateTravelRoute
+  '/{-$locale}/reiser': typeof Char123LocaleChar125ReiserRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125ResetPasswordRoute
   '/{-$locale}/safety': typeof Char123LocaleChar125SafetyRoute
   '/{-$locale}/sports-and-surf': typeof Char123LocaleChar125SportsAndSurfRoute
+  '/{-$locale}/start': typeof Char123LocaleChar125StartRoute
   '/{-$locale}/start-your-journey': typeof Char123LocaleChar125StartYourJourneyRoute
   '/{-$locale}/terms': typeof Char123LocaleChar125TermsRoute
   '/{-$locale}/thank-you': typeof Char123LocaleChar125ThankYouRoute
+  '/{-$locale}/trips': typeof Char123LocaleChar125TripsRoute
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
@@ -355,19 +415,25 @@ export interface FileRouteTypes {
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
     | '/{-$locale}/folkehogskole'
+    | '/{-$locale}/groups'
+    | '/{-$locale}/grupper'
     | '/{-$locale}/idrett-og-surf'
+    | '/{-$locale}/kom-i-gang'
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
     | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/private-travel'
+    | '/{-$locale}/reiser'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/safety'
     | '/{-$locale}/sports-and-surf'
+    | '/{-$locale}/start'
     | '/{-$locale}/start-your-journey'
     | '/{-$locale}/terms'
     | '/{-$locale}/thank-you'
+    | '/{-$locale}/trips'
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
@@ -389,19 +455,25 @@ export interface FileRouteTypes {
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
     | '/{-$locale}/folkehogskole'
+    | '/{-$locale}/groups'
+    | '/{-$locale}/grupper'
     | '/{-$locale}/idrett-og-surf'
+    | '/{-$locale}/kom-i-gang'
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
     | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/private-travel'
+    | '/{-$locale}/reiser'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/safety'
     | '/{-$locale}/sports-and-surf'
+    | '/{-$locale}/start'
     | '/{-$locale}/start-your-journey'
     | '/{-$locale}/terms'
     | '/{-$locale}/thank-you'
+    | '/{-$locale}/trips'
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}'
@@ -424,19 +496,25 @@ export interface FileRouteTypes {
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
     | '/{-$locale}/folkehogskole'
+    | '/{-$locale}/groups'
+    | '/{-$locale}/grupper'
     | '/{-$locale}/idrett-og-surf'
+    | '/{-$locale}/kom-i-gang'
     | '/{-$locale}/legal'
     | '/{-$locale}/login'
     | '/{-$locale}/plan-my-trip'
     | '/{-$locale}/pricing'
     | '/{-$locale}/privacy'
     | '/{-$locale}/private-travel'
+    | '/{-$locale}/reiser'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/safety'
     | '/{-$locale}/sports-and-surf'
+    | '/{-$locale}/start'
     | '/{-$locale}/start-your-journey'
     | '/{-$locale}/terms'
     | '/{-$locale}/thank-you'
+    | '/{-$locale}/trips'
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
@@ -508,11 +586,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125FolkehogskoleRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
+    '/{-$locale}/groups': {
+      id: '/{-$locale}/groups'
+      path: '/groups'
+      fullPath: '/{-$locale}/groups'
+      preLoaderRoute: typeof Char123LocaleChar125GroupsRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/grupper': {
+      id: '/{-$locale}/grupper'
+      path: '/grupper'
+      fullPath: '/{-$locale}/grupper'
+      preLoaderRoute: typeof Char123LocaleChar125GrupperRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
     '/{-$locale}/idrett-og-surf': {
       id: '/{-$locale}/idrett-og-surf'
       path: '/idrett-og-surf'
       fullPath: '/{-$locale}/idrett-og-surf'
       preLoaderRoute: typeof Char123LocaleChar125IdrettOgSurfRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/kom-i-gang': {
+      id: '/{-$locale}/kom-i-gang'
+      path: '/kom-i-gang'
+      fullPath: '/{-$locale}/kom-i-gang'
+      preLoaderRoute: typeof Char123LocaleChar125KomIGangRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
     '/{-$locale}/legal': {
@@ -557,6 +656,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125PrivateTravelRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
+    '/{-$locale}/reiser': {
+      id: '/{-$locale}/reiser'
+      path: '/reiser'
+      fullPath: '/{-$locale}/reiser'
+      preLoaderRoute: typeof Char123LocaleChar125ReiserRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
     '/{-$locale}/reset-password': {
       id: '/{-$locale}/reset-password'
       path: '/reset-password'
@@ -578,6 +684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125SportsAndSurfRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
+    '/{-$locale}/start': {
+      id: '/{-$locale}/start'
+      path: '/start'
+      fullPath: '/{-$locale}/start'
+      preLoaderRoute: typeof Char123LocaleChar125StartRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
     '/{-$locale}/start-your-journey': {
       id: '/{-$locale}/start-your-journey'
       path: '/start-your-journey'
@@ -597,6 +710,13 @@ declare module '@tanstack/react-router' {
       path: '/thank-you'
       fullPath: '/{-$locale}/thank-you'
       preLoaderRoute: typeof Char123LocaleChar125ThankYouRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/trips': {
+      id: '/{-$locale}/trips'
+      path: '/trips'
+      fullPath: '/{-$locale}/trips'
+      preLoaderRoute: typeof Char123LocaleChar125TripsRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
     '/{-$locale}/trygghet': {
@@ -699,19 +819,25 @@ interface Char123LocaleChar125RouteChildren {
   Char123LocaleChar125BedriftRoute: typeof Char123LocaleChar125BedriftRoute
   Char123LocaleChar125CorporateRoute: typeof Char123LocaleChar125CorporateRoute
   Char123LocaleChar125FolkehogskoleRoute: typeof Char123LocaleChar125FolkehogskoleRoute
+  Char123LocaleChar125GroupsRoute: typeof Char123LocaleChar125GroupsRoute
+  Char123LocaleChar125GrupperRoute: typeof Char123LocaleChar125GrupperRoute
   Char123LocaleChar125IdrettOgSurfRoute: typeof Char123LocaleChar125IdrettOgSurfRoute
+  Char123LocaleChar125KomIGangRoute: typeof Char123LocaleChar125KomIGangRoute
   Char123LocaleChar125LegalRoute: typeof Char123LocaleChar125LegalRoute
   Char123LocaleChar125LoginRoute: typeof Char123LocaleChar125LoginRoute
   Char123LocaleChar125PlanMyTripRoute: typeof Char123LocaleChar125PlanMyTripRoute
   Char123LocaleChar125PricingRoute: typeof Char123LocaleChar125PricingRoute
   Char123LocaleChar125PrivacyRoute: typeof Char123LocaleChar125PrivacyRoute
   Char123LocaleChar125PrivateTravelRoute: typeof Char123LocaleChar125PrivateTravelRoute
+  Char123LocaleChar125ReiserRoute: typeof Char123LocaleChar125ReiserRoute
   Char123LocaleChar125ResetPasswordRoute: typeof Char123LocaleChar125ResetPasswordRoute
   Char123LocaleChar125SafetyRoute: typeof Char123LocaleChar125SafetyRoute
   Char123LocaleChar125SportsAndSurfRoute: typeof Char123LocaleChar125SportsAndSurfRoute
+  Char123LocaleChar125StartRoute: typeof Char123LocaleChar125StartRoute
   Char123LocaleChar125StartYourJourneyRoute: typeof Char123LocaleChar125StartYourJourneyRoute
   Char123LocaleChar125TermsRoute: typeof Char123LocaleChar125TermsRoute
   Char123LocaleChar125ThankYouRoute: typeof Char123LocaleChar125ThankYouRoute
+  Char123LocaleChar125TripsRoute: typeof Char123LocaleChar125TripsRoute
   Char123LocaleChar125TrygghetRoute: typeof Char123LocaleChar125TrygghetRoute
   Char123LocaleChar125UnsubscribeRoute: typeof Char123LocaleChar125UnsubscribeRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
@@ -735,7 +861,10 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
   Char123LocaleChar125CorporateRoute: Char123LocaleChar125CorporateRoute,
   Char123LocaleChar125FolkehogskoleRoute:
     Char123LocaleChar125FolkehogskoleRoute,
+  Char123LocaleChar125GroupsRoute: Char123LocaleChar125GroupsRoute,
+  Char123LocaleChar125GrupperRoute: Char123LocaleChar125GrupperRoute,
   Char123LocaleChar125IdrettOgSurfRoute: Char123LocaleChar125IdrettOgSurfRoute,
+  Char123LocaleChar125KomIGangRoute: Char123LocaleChar125KomIGangRoute,
   Char123LocaleChar125LegalRoute: Char123LocaleChar125LegalRoute,
   Char123LocaleChar125LoginRoute: Char123LocaleChar125LoginRoute,
   Char123LocaleChar125PlanMyTripRoute: Char123LocaleChar125PlanMyTripRoute,
@@ -743,15 +872,18 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
   Char123LocaleChar125PrivacyRoute: Char123LocaleChar125PrivacyRoute,
   Char123LocaleChar125PrivateTravelRoute:
     Char123LocaleChar125PrivateTravelRoute,
+  Char123LocaleChar125ReiserRoute: Char123LocaleChar125ReiserRoute,
   Char123LocaleChar125ResetPasswordRoute:
     Char123LocaleChar125ResetPasswordRoute,
   Char123LocaleChar125SafetyRoute: Char123LocaleChar125SafetyRoute,
   Char123LocaleChar125SportsAndSurfRoute:
     Char123LocaleChar125SportsAndSurfRoute,
+  Char123LocaleChar125StartRoute: Char123LocaleChar125StartRoute,
   Char123LocaleChar125StartYourJourneyRoute:
     Char123LocaleChar125StartYourJourneyRoute,
   Char123LocaleChar125TermsRoute: Char123LocaleChar125TermsRoute,
   Char123LocaleChar125ThankYouRoute: Char123LocaleChar125ThankYouRoute,
+  Char123LocaleChar125TripsRoute: Char123LocaleChar125TripsRoute,
   Char123LocaleChar125TrygghetRoute: Char123LocaleChar125TrygghetRoute,
   Char123LocaleChar125UnsubscribeRoute: Char123LocaleChar125UnsubscribeRoute,
   Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,

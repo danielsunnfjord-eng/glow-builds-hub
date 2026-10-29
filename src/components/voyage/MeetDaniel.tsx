@@ -1,9 +1,12 @@
+import { Button } from "@/components/ui/button";
+import { HOME_COPY } from "./home/homeCopy";
+import { currentLocale } from "@/lib/locale";
 import { useNavigate } from "@/lib/router-compat";
 import { useTranslation } from "react-i18next";
 import danielProfile from "@/assets/daniel-profile.webp";
 import ScrollReveal from "./ScrollReveal";
 
-const MeetDaniel = () => {
+const MeetDaniel = ({ concierge = false }: { concierge?: boolean }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -22,14 +25,14 @@ const MeetDaniel = () => {
               {t("meetDaniel.title")}
             </h2>
             <p className="text-[0.95rem] text-voyage-muted leading-relaxed max-w-xl mb-5 max-md:mx-auto">
-              {t("meetDaniel.bio")}
+              {concierge ? HOME_COPY[currentLocale()].founder : t("meetDaniel.bio")}
             </p>
-            <button
+            <Button variant="outline"
               onClick={() => navigate("/about")}
               className="inline-flex items-center gap-2 px-6 py-3 border border-ink/25 text-ink text-[0.72rem] font-medium tracking-[0.12em] uppercase rounded-xs hover:bg-ink hover:text-voyage-white transition-colors"
             >
               {t("meetDaniel.cta")}
-            </button>
+            </Button>
           </div>
         </div>
       </ScrollReveal>

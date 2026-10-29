@@ -48,6 +48,9 @@ export function localizedRoutePath(path: string, locale: Locale): string {
     "/idrett-og-surf": "/sports-and-surf",
     "/bedrift": "/corporate",
     "/trygghet": "/safety",
+    "/grupper": "/groups",
+    "/kom-i-gang": "/start",
+    "/reiser": "/trips",
   };
   const canonical = aliases[path] ?? path;
   if (locale !== "no") return canonical;
@@ -55,6 +58,9 @@ export function localizedRoutePath(path: string, locale: Locale): string {
     "/sports-and-surf": "/idrett-og-surf",
     "/corporate": "/bedrift",
     "/safety": "/trygghet",
+    "/groups": "/grupper",
+    "/start": "/kom-i-gang",
+    "/trips": "/reiser",
   };
   return norwegian[canonical] ?? canonical;
 }

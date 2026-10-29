@@ -7,7 +7,7 @@ import logo from "@/assets/logo-horizontal.webp";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { currentLocale, localizedRoutePath } from "@/lib/locale";
-import { travelNavigation, navigationCopy, GROUP_INTAKE_URL, PRIVATE_INTAKE_URL, isPrivateTravelPath } from "@/lib/travelNavigation";
+import { travelNavigation, navigationCopy, PRIVATE_INTAKE_URL, isPrivateTravelPath } from "@/lib/travelNavigation";
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -24,7 +24,7 @@ const Navbar = () => {
   const linkClass = "text-[0.72rem] font-medium uppercase text-voyage-muted hover:text-ink transition-colors no-underline";
   const actions = <>
     {privatePage && <Button asChild variant="outline" className="rounded-xs border-ink/25 bg-transparent text-ink text-[0.72rem] uppercase"><a href={PRIVATE_INTAKE_URL} target="_blank" rel="noopener noreferrer">{t("nav.planMyTrip")}</a></Button>}
-    <Button asChild className="rounded-xs bg-gold text-ink hover:bg-gold-2 text-[0.72rem] uppercase"><a href={GROUP_INTAKE_URL} target="_blank" rel="noopener noreferrer">{copy.proposal}</a></Button>
+    <Button asChild className="rounded-xs bg-gold text-ink hover:bg-gold-2 text-[0.72rem] uppercase"><Link to={localizedRoutePath("/start", locale)} onClick={() => setOpen(false)}>{copy.start}</Link></Button>
   </>;
 
   return (
@@ -35,13 +35,14 @@ const Navbar = () => {
         </Link>
         <div className="hidden xl:flex flex-col items-end gap-5">
           <div className="flex items-center gap-5">
-            {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
             <DropdownMenu>
               <DropdownMenuTrigger asChild><Button variant="ghost" className={`${linkClass} h-auto p-0 hover:bg-transparent`}>{copy.privateTravel}<ChevronDown /></Button></DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-parchment border-gold/20 text-ink">
                 {privateLinks.map((item) => <DropdownMenuItem asChild key={item.path}><Link to={item.path}>{item.label}</Link></DropdownMenuItem>)}
               </DropdownMenuContent>
             </DropdownMenu>
+            {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass}>{copy[item.key]}</Link>)}
+
           </div>
           <div className="flex items-center gap-4"><LanguageSelector variant="light" />{actions}</div>
         </div>
@@ -53,13 +54,14 @@ const Navbar = () => {
         </div>
       </div>
       {open && <div id="mobile-navigation" className="xl:hidden max-h-[calc(100dvh-160px)] overflow-y-auto border-t border-gold/15 bg-parchment px-6 py-5 flex flex-col gap-4">
-        {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass} onClick={() => setOpen(false)}>{copy[item.key]}</Link>)}
         <details className="text-ink">
           <summary className={`${linkClass} cursor-pointer`}>{copy.privateTravel}</summary>
           <div className="mt-4 border-l border-gold/30 pl-4 flex flex-col gap-4">
             {privateLinks.map((item) => <Link key={item.path} to={item.path} className={linkClass} onClick={() => setOpen(false)}>{item.label}</Link>)}
           </div>
         </details>
+        {travelNavigation.map((item) => <Link key={item.key} to={localizedRoutePath(item.path, locale)} className={linkClass} onClick={() => setOpen(false)}>{copy[item.key]}</Link>)}
+
         <div className="flex flex-wrap gap-3 pt-2">{actions}</div>
       </div>}
     </nav>

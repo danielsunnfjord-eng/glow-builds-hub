@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import LocalPartnerRio from "@/components/voyage/LocalPartnerRio";
 import { useEffect, useState } from "react";
 import { currentLocale, localePath } from "@/lib/locale";
@@ -15,7 +16,7 @@ import flamengo from "@/assets/home/praia_do_flamengo.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
 const HERO_IMAGES = [sup.url, stegastein.url, arpoador.url, skala.url, flamengo.url, bryggen.url, cristo.url, oslo.url];
-const CARD_IMAGES = [cristo.url, flamengo.url, arpoador.url, museu.url];
+const CARD_IMAGES = [stegastein.url, cristo.url, museu.url, arpoador.url];
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 const btnGold = "inline-flex items-center justify-center rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2";
@@ -51,8 +52,8 @@ export function GroupHero() {
         <h1 className="font-serif text-[clamp(2.4rem,5.5vw,4.6rem)] font-bold leading-[1.02] tracking-tight text-parchment">{c.headline}</h1>
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-parchment/85">{c.subheadline}</p>
         <div className="mt-10 flex flex-wrap gap-4">
-          <a href={GROUP_INTAKE_URL} {...ext} className={btnGold}>{c.proposal}</a>
-          <a href={CALENDLY_URL} {...ext} className={btnOutline}>{c.call}</a>
+          <Button asChild className={`${btnGold} h-auto whitespace-normal`}><a href={localePath("/start", currentLocale())}>{c.start}</a></Button>
+          <Button asChild variant="outline" className={`${btnOutline} h-auto bg-transparent whitespace-normal`}><a href={CALENDLY_URL} {...ext}>{c.call}</a></Button>
         </div>
         <a href={WHATSAPP_URL} {...ext} className="mt-5 inline-block text-sm text-parchment/80 underline-offset-4 hover:underline">{c.whatsapp}</a>
       </div>
@@ -69,22 +70,35 @@ export function EntryCards() {
         <div className="mb-10 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-gold">{c.cardsEyebrow}</div>
         <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-2 max-sm:grid-cols-1">
           {c.cards.map((card, n) => {
-            const live = isGroupPageAvailable(card.page, import.meta.env.PROD);
-            const href = live ? `${localePath(card.path, locale)}${card.hash ? `#${card.hash}` : ""}` : GROUP_INTAKE_URL;
+            const href = localePath(card.path, locale);
             return (
-              <a key={card.title} href={href} {...(live ? {} : ext)} className="group overflow-hidden rounded-lg border border-parchment-3 bg-voyage-white transition hover:shadow-elegant">
+              <a key={card.title} href={href} className="group flex h-full flex-col overflow-hidden rounded-lg border border-parchment-3 bg-voyage-white transition hover:shadow-elegant">
                 <div className="aspect-[4/3] overflow-hidden">
                   <img src={CARD_IMAGES[n]} alt={card.title} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
                 </div>
-                <div className="p-6">
+                <div className="flex flex-1 flex-col p-6">
                   <h2 className="font-serif text-2xl font-bold text-ink">{card.title}</h2>
                   <p className="mt-3 text-sm leading-relaxed text-ink-2">{card.text}</p>
-                  <span className="mt-4 inline-block text-gold transition group-hover:translate-x-1">→</span>
+                  <span className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-gold">{c.explore} <span aria-hidden className="transition group-hover:translate-x-1">→</span></span>
                 </div>
               </a>
             );
           })}
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function ConciergeSection() {
+  const c = useCopy();
+  return (
+    <section className="bg-parchment-2 px-16 py-16 max-md:px-6">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="font-serif text-3xl font-bold text-ink">{c.conciergeTitle}</h2>
+        <ul className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {c.conciergePoints.map((point) => <li key={point} className="border-l-2 border-gold pl-5 text-sm leading-relaxed text-ink-2">{point}</li>)}
+        </ul>
       </div>
     </section>
   );
