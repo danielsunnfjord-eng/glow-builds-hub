@@ -1,7 +1,8 @@
 # Concierge homepage restructure
-- [ ] Update homepage hero, four divisions, concierge section, founder and metadata in EN/NO/PT.
-- [ ] Add localized Groups, Start and Theme Travels pages and update navigation without removing existing URLs.
-- [ ] Verify card destinations, language switching, enquiry choices and desktop/mobile layouts.
+- [x] Update homepage hero, four divisions, concierge section, founder and metadata in EN/NO/PT.
+- [x] Add localized Groups, Start and Theme Travels pages and update navigation without removing existing URLs.
+- [x] Verify card destinations, language switching, enquiry choices and desktop/mobile layouts.
+- [ ] Theme Travels departure programs and interest-registration destination — awaiting owner details; only supplied intro and photo appear.
 
 # Navigation update
 - [x] Update localized main navigation and private travel dropdown.
