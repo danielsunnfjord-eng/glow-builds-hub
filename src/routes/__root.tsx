@@ -16,6 +16,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import CookieConsent from "@/components/voyage/CookieConsent";
+import OptionalWidgetBoundary from "@/components/voyage/OptionalWidgetBoundary";
+import { isModuleLoadError, reloadFailedModule } from "@/lib/retryDynamicImport";
 import { IntakeFormProvider } from "@/components/voyage/IntakeFormModal";
 
 import NotFound from "@/pages/NotFound";
@@ -198,9 +200,11 @@ const DeferredCalendly = () => {
   }, []);
   if (!show) return null;
   return (
-    <Suspense fallback={null}>
-      <CalendlyBadge />
-    </Suspense>
+    <OptionalWidgetBoundary>
+      <Suspense fallback={null}>
+        <CalendlyBadge />
+      </Suspense>
+    </OptionalWidgetBoundary>
   );
 };
 
@@ -245,6 +249,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (isModuleLoadError(error) && reloadFailedModule("router")) return;
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
   return (

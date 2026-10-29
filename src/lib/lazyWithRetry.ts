@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import type { ComponentType } from "react";
+import { isModuleLoadError, reloadFailedModule, retryDynamicImport } from "./retryDynamicImport";
 
 // Retry a dynamic import once, then hard-reload if the chunk failed to load.
 // This happens after a new deploy while the browser still holds the old
@@ -14,14 +15,11 @@ export const lazyWithRetry = <T extends ComponentType<any>>(
   lazy(async () => {
     if (typeof window === "undefined") return factory();
     try {
-      const mod = await factory();
-      // Success clears the guard so a *later* failure can still recover.
-      sessionStorage.removeItem("chunk-reloaded");
-      return mod;
+      return await retryDynamicImport(factory);
     } catch (err) {
-      if (!sessionStorage.getItem("chunk-reloaded")) {
-        sessionStorage.setItem("chunk-reloaded", "1");
-        window.location.reload();
+      // Each import has its own guard. Another successful widget cannot clear
+      // it and cause endless reloads while this module is still unavailable.
+      if (isModuleLoadError(err) && reloadFailedModule(factory.toString())) {
         return new Promise<never>(() => {});
       }
       throw err;
