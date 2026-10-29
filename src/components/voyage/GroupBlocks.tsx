@@ -9,12 +9,12 @@ export function ProposalCta({ label }: { label: string }) {
 }
 
 /** Two-column table that stays readable on phones (text wraps, no horizontal scroll). */
-export function TwoColTable({ head, rows }: { head: [string, string]; rows: [string, React.ReactNode][] }) {
+export function TwoColTable({ head, rows, narrow = false }: { head: [string, string]; rows: [string, React.ReactNode][]; narrow?: boolean }) {
   return (
     <table className="w-full table-fixed text-left text-[0.95rem]">
       <thead>
         <tr className="border-b-2 border-gold text-[0.7rem] uppercase tracking-[0.14em] text-voyage-muted">
-          <th scope="col" className="w-[38%] py-3 pr-4 font-semibold sm:w-[30%]">{head[0]}</th>
+          <th scope="col" className={`${narrow ? "w-16" : "w-[38%] sm:w-[30%]"} py-3 pr-4 font-semibold`}>{head[0]}</th>
           <th scope="col" className="py-3 font-semibold">{head[1]}</th>
         </tr>
       </thead>

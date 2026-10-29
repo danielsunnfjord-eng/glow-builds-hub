@@ -202,7 +202,7 @@ export default function FolkHighSchoolPage() {
           <div className="mx-auto max-w-4xl">
             <h2 className={h2}>{c.programTitle}</h2>
             <p className="mb-6 text-sm italic text-voyage-muted">{c.programNote}</p>
-            <TwoColTable head={[c.dayHead, c.programHead]} rows={c.days.map((d, n) => [String(n + 1), d])} />
+            <TwoColTable head={[c.dayHead, c.programHead]} rows={c.days.map((d, n) => [String(n + 1), d])} narrow />
             <div className="mt-10"><ProposalCta label={c.proposal} /></div>
           </div>
         </section>
