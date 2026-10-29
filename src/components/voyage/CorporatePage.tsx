@@ -1,8 +1,11 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Button } from "@/components/ui/button";
-import { currentLocale } from "@/lib/locale";
+import { currentLocale, localePath } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
+import { CORPORATE_PROGRAMS } from "@/lib/corporatePrograms";
+import { TwoColTable } from "./GroupBlocks";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
@@ -16,59 +19,85 @@ interface Copy {
   whyTitle: string; why: string[];
   howTitle: string; steps: string[];
   beforeTitle: string; before: string;
+  conciergeTitle?: string; concierge?: string[];
+  programNote?: string; tableHead?: [string, string];
+  faqTitle?: string; faq?: { question: string; answer: string }[];
+  safety?: string; privateLink?: string;
 }
 
 const EN: Copy = {
-  h1: "Corporate trips and team experiences in Rio and Norway's fjords",
-  sub: "One partner, two destinations, three languages. Planned and hosted by locals, handled from first call to final invoice.",
+  h1: "Corporate trips and delegations in Rio and Norway's fjords",
+  sub: "One partner, two destinations, three languages. Planned and hosted by local experts, from the first call to the final invoice.",
   proposal: "Request a proposal",
-  offersTitle: "What we arrange",
+  offersTitle: "Four ways we can help",
   offers: [
-    { name: "Team building", text: "Kayaking, hikes and surf sessions, with local food and a facilitator if you want one." },
-    { name: "Incentive trips", text: "Unique experiences for teams and top performers in Rio and the fjords." },
-    { name: "Meetings and retreats", text: "Off-site workshops in scenic locations for small and mid-size groups." },
-    // PLACEHOLDER: append sectors once the owner confirms them.
-    { name: "Delegations and site visits", text: "Visits and meetings in Norway or Brazil, arranged with local contacts." },
+    { name: "Team experiences", text: "Kayaking, SUP, mountain hikes and surf, with local food and a facilitator if you want one." },
+    { name: "Incentive trips", text: "Experiences for teams and top performers in Rio and the fjords." },
+    { name: "Meetings and retreats", text: "Off-site workshops in scenic locations, for small and mid-size groups." },
+    { name: "Delegations and visits", text: "Visits and meetings in Norway or Brazil. Tell us what you need and we will see what is possible." },
   ],
-  whyTitle: "Why work with us",
+  whyTitle: "Why us",
   why: [
-    "Trilingual advisor (Portuguese, Norwegian, English).",
-    "Local hosts in Rio and Sogn og Fjordane.",
-    "IATA accredited.",
-    "24/7 support during the trip.",
-    "One point of contact for the whole project.",
+    "A trilingual advisor (Portuguese, Norwegian and English). Local hosts in both countries. IATA accredited. One contact for the whole project.",
   ],
-  howTitle: "How it works",
-  // PLACEHOLDER: step 2 timing ("within 48-72 hours") awaits owner confirmation.
-  steps: ["Brief", "Proposal", "Agreement and deposit", "Planning", "Event", "Follow-up report"],
-  beforeTitle: "Before you fill in the form",
-  before: "In the message field, please include your company, your role, the type of event (team building, incentive, meeting or delegation), number of participants, destination, dates and budget range. Invoicing details can follow once we agree the scope.",
+  howTitle: "", steps: [], beforeTitle: "",
+  before: "In the message field, please include your company and your role, the type of event (team building, incentive, meeting or delegation), number of participants, destination, preferred dates and budget range. Invoicing details can follow once we agree the scope.",
+  conciergeTitle: "How I work as your concierge",
+  concierge: [
+    "One personal contact from the first brief to the final invoice",
+    "A concrete proposal with program, framework and clear terms",
+    "Local hosts in Rio and in Sogn og Fjordane",
+    "All the logistics: travel, accommodation, transport and activities",
+    "A 24/7 contact line during the trip",
+    "A report and follow-up after the event",
+  ],
+  programNote: "A starting point, adapted to your group. Hotels and timing are confirmed in the proposal.",
+  tableHead: ["Day", "Program"],
+  faqTitle: "FAQ",
+  faq: [
+    { question: "Which languages can you work in?", answer: "Portuguese, Norwegian and English." },
+    { question: "Can you combine Rio and the fjords?", answer: "Yes, it is our specialty." },
+  ],
+  safety: "Safety",
+  privateLink: "Booking a trip for yourself? See private trips",
 };
 
-// Norwegian H1 + subheadline supplied by the owner; other sections translated from English.
+// Norwegian is the primary version; English and Norwegian copy supplied by the owner.
 const NO: Copy = {
-  h1: "Bedriftsreiser og teamopplevelser i Rio og fjordene",
+  h1: "Bedriftsreiser og delegasjoner i Rio og fjordene",
   sub: "Én partner, to reisemål, tre språk. Planlagt og gjennomført av lokale eksperter, fra første samtale til siste faktura.",
   proposal: "Be om forslag",
-  offersTitle: "Dette tilbyr vi",
+  offersTitle: "Fire måter vi kan hjelpe på",
   offers: [
-    { name: "Teambuilding", text: "Kajakk, turer og surfeøkter, med lokal mat og fasilitator om dere ønsker det." },
-    { name: "Incentivturer", text: "Unike opplevelser for team og toppytere i Rio og fjordene." },
-    { name: "Møter og samlinger", text: "Workshops utenfor kontoret på naturskjønne steder, for små og mellomstore grupper." },
-    { name: "Delegasjoner og bedriftsbesøk", text: "Besøk og møter i Norge eller Brasil, tilrettelagt gjennom lokale kontakter." },
+    { name: "Teamopplevelser", text: "Kajakk, SUP, fjellturer og surf, med lokal mat og en fasilitator hvis du vil ha det." },
+    { name: "Incentivreiser", text: "Opplevelser for team og toppsellere i Rio og fjordene." },
+    { name: "Møter og retreats", text: "Arbeidsmøter utenfor kontoret i vakre omgivelser, for små og mellomstore grupper." },
+    { name: "Delegasjoner og besøk", text: "Besøk og møter i Norge eller Brasil. Fortell oss hva dere ønsker, så ser vi hva som er mulig." },
   ],
-  whyTitle: "Hvorfor velge oss",
+  whyTitle: "Hvorfor oss",
   why: [
-    "Trespråklig rådgiver (portugisisk, norsk, engelsk).",
-    "Lokale verter i Rio og Sogn og Fjordane.",
-    "IATA-akkreditert.",
-    "Døgnåpen støtte under reisen.",
-    "Én kontaktperson for hele prosjektet.",
+    "Trespråklig rådgiver (portugisisk, norsk og engelsk). Lokale verter i begge land. IATA-akkreditert. Én kontaktperson for hele prosjektet.",
   ],
-  howTitle: "Slik jobber vi",
-  steps: ["Behov", "Forslag", "Avtale og depositum", "Planlegging", "Gjennomføring", "Oppfølgingsrapport"],
-  beforeTitle: "Før du fyller ut skjemaet",
-  before: "Skriv gjerne i meldingsfeltet: bedriftens navn, din rolle, type arrangement (teambuilding, incentiv, møte eller delegasjon), antall deltakere, reisemål, datoer og budsjettramme. Fakturadetaljer kan komme når vi har avtalt omfanget.",
+  howTitle: "", steps: [], beforeTitle: "",
+  before: "Skriv gjerne i meldingsfeltet: bedrift og din rolle, type arrangement (teambuilding, incentiv, møte eller delegasjon), antall deltakere, destinasjon, ønsket tidspunkt og budsjettramme. Faktureringsinformasjon kan komme når omfanget er avklart.",
+  conciergeTitle: "Slik er jeg concierge for bedriften",
+  concierge: [
+    "Én personlig kontakt fra første brief til siste faktura",
+    "Et konkret forslag med program, rammer og tydelige betingelser",
+    "Lokale verter i Rio og i Sogn og Fjordane",
+    "Hele logistikken: reise, overnatting, transport og aktiviteter",
+    "Døgnåpen kontaktlinje under reisen",
+    "Rapport og oppfølging etter arrangementet",
+  ],
+  programNote: "Et utgangspunkt, tilpasset gruppen. Hoteller og tider bekreftes i forslaget.",
+  tableHead: ["Dag", "Program"],
+  faqTitle: "Vanlige spørsmål",
+  faq: [
+    { question: "Hvilke språk kan dere jobbe på?", answer: "Portugisisk, norsk og engelsk." },
+    { question: "Kan dere kombinere Rio og fjordene?", answer: "Ja, det er vår spesialitet." },
+  ],
+  safety: "Trygghet",
+  privateLink: "Booking a trip for yourself? See private trips",
 };
 
 // DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
@@ -99,16 +128,20 @@ const PT: Copy = {
 const COPY = { en: EN, no: NO, pt: PT };
 
 // HIDDEN SECTION PLACEHOLDERS (render nothing until the owner supplies text):
-// - "Contracts and invoicing": short factual text on invoicing, payment terms, cancellation and insurance.
-// - "Sample program": one-day fjord team session OR 4-5 day Rio incentive.
-// - "References": only a real company reference or testimonial.
+// - "Contracts, insurance and invoicing" / "Kontrakt, forsikring og fakturering".
+// - "References" / "Referanser": only real company references when supplied.
+// - "How fast do I get a proposal?" / "Hvor raskt får jeg et forslag?"
+// - "How large groups do you take?" / "Hvor store grupper tar dere?"
+// - "Can you handle invoicing and internal approvals?" / "Kan dere håndtere fakturering og interne godkjenninger?"
 
 function Cta({ label }: { label: string }) {
   return <Button asChild className={`h-auto ${btnGold}`}><a href={GROUP_INTAKE_URL} {...ext}>{label}</a></Button>;
 }
 
 export default function CorporatePage() {
-  const c = COPY[currentLocale()];
+  const locale = currentLocale();
+  const c = COPY[locale];
+  const programs = locale === "pt" ? [] : CORPORATE_PROGRAMS[locale];
   const h2 = "mb-10 font-serif text-[clamp(1.8rem,3vw,2.6rem)] font-bold text-ink";
   const section = "px-16 py-20 max-md:px-6 max-md:py-14";
 
@@ -117,7 +150,7 @@ export default function CorporatePage() {
       <Navbar />
       <main className="flex-1">
         <section className="relative flex min-h-[75vh] items-end overflow-hidden bg-ink px-16 pb-20 pt-48 max-md:px-6 max-md:pb-14">
-          <img src={fjord.url} alt="" aria-hidden fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={(locale === "pt" ? fjord : museu).url} alt="" aria-hidden fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
           <div className="relative max-w-3xl">
             <h1 className="font-serif text-[clamp(2.1rem,4.6vw,3.8rem)] font-bold leading-[1.08] text-parchment">{c.h1}</h1>
@@ -140,7 +173,16 @@ export default function CorporatePage() {
           </div>
         </section>
 
-        <section className={`bg-parchment-2 ${section}`}>
+        {c.concierge && <section className={`bg-parchment-2 ${section}`}>
+          <div className="mx-auto max-w-6xl">
+            <h2 className={h2}>{c.conciergeTitle}</h2>
+            <ul className="grid gap-6 md:grid-cols-2">
+              {c.concierge.map((item) => <li key={item} className="border-l-2 border-gold pl-4 leading-relaxed text-ink-2">{item}</li>)}
+            </ul>
+          </div>
+        </section>}
+
+        <section className={`${locale === "pt" ? "bg-parchment-2" : ""} ${section}`}>
           <div className="mx-auto grid max-w-6xl grid-cols-[1fr_1fr] items-center gap-12 max-lg:grid-cols-1">
             <div>
               <h2 className={h2}>{c.whyTitle}</h2>
@@ -150,11 +192,35 @@ export default function CorporatePage() {
                 ))}
               </ul>
             </div>
-            <img src={museu.url} alt="Museu do Amanhã, Rio de Janeiro" loading="lazy" className="max-h-[520px] w-full rounded-lg object-cover" />
+            <img src={(locale === "pt" ? museu : fjord).url} alt={locale === "pt" ? "Museu do Amanhã, Rio de Janeiro" : locale === "no" ? "Solnedgang over fjordene fra Sukkertoppen i Ålesund" : "Sunset over the fjords from Sukkertoppen in Ålesund"} loading="lazy" className="max-h-[520px] w-full rounded-lg object-cover" />
           </div>
         </section>
 
-        <section className={section}>
+        {programs.length > 0 && c.tableHead && <section className={`bg-parchment-2 ${section}`}>
+          <div className="mx-auto max-w-4xl space-y-16">
+            {programs.map((program) => <div key={program.title}>
+              <h2 className={h2}>{program.title}</h2>
+              <p className="mb-6 leading-relaxed text-ink-2">{c.programNote}</p>
+              <TwoColTable head={c.tableHead ?? ["Day", "Program"]} rows={program.days.map((day, index) => [String(index + 1), day])} narrow />
+            </div>)}
+            <div className="text-center"><Cta label={c.proposal} /></div>
+          </div>
+        </section>}
+
+        {c.faq && <section className={section}>
+          <div className="mx-auto max-w-4xl">
+            <h2 className={h2}>{c.faqTitle}</h2>
+            <Accordion type="single" collapsible>
+              {c.faq.map((item, index) => <AccordionItem key={item.question} value={String(index)} className="border-parchment-3">
+                <AccordionTrigger className="gap-4 text-left leading-relaxed text-ink">{item.question}</AccordionTrigger>
+                <AccordionContent className="leading-relaxed text-ink-2">{item.answer}</AccordionContent>
+              </AccordionItem>)}
+            </Accordion>
+            <a href={localePath("/safety", locale)} className="mt-8 inline-block text-sm text-ink underline underline-offset-4">{c.safety}</a>
+          </div>
+        </section>}
+
+        {c.steps.length > 0 && <section className={section}>
           <div className="mx-auto max-w-6xl">
             <h2 className={h2}>{c.howTitle}</h2>
             <ol className="grid grid-cols-6 gap-4 max-lg:grid-cols-3 max-sm:grid-cols-2">
@@ -166,13 +232,14 @@ export default function CorporatePage() {
               ))}
             </ol>
           </div>
-        </section>
+        </section>}
 
         <section className="bg-parchment-2 px-16 py-20 text-center max-md:px-6">
           <div className="mx-auto max-w-2xl">
-            <h2 className="mb-4 font-serif text-2xl font-bold text-ink">{c.beforeTitle}</h2>
+            {c.beforeTitle && <h2 className="mb-4 font-serif text-2xl font-bold text-ink">{c.beforeTitle}</h2>}
             <p className="mb-8 leading-relaxed text-ink-2">{c.before}</p>
             <Cta label={c.proposal} />
+            {c.privateLink && <p className="mt-8 text-sm"><a href={localePath("/private-travel", locale)} className="text-ink-2 underline underline-offset-4">{c.privateLink}</a></p>}
           </div>
         </section>
       </main>
