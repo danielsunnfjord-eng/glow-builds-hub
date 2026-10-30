@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import ScrollReveal from "./ScrollReveal";
 
-type ReviewsProps = { include?: string[]; exclude?: string[]; label?: string };
+type ReviewsProps = { include?: string[]; exclude?: string[]; label?: string; className?: string };
 
-const Reviews = ({ include, exclude, label }: ReviewsProps = {}) => {
+const Reviews = ({ include, exclude, label, className }: ReviewsProps = {}) => {
   const { t } = useTranslation();
   const reviews = (t("reviews.items", { returnObjects: true }) as Array<{
     text: string;
@@ -14,7 +14,7 @@ const Reviews = ({ include, exclude, label }: ReviewsProps = {}) => {
   }>).filter((r) => (!include || include.includes(r.author)) && (!exclude || !exclude.includes(r.author)));
 
   return (
-    <section id="reviews" className="py-28 px-16 bg-parchment-2 max-md:px-6 max-md:py-16">
+    <section id="reviews" className={`py-28 px-16 max-md:px-6 max-md:py-16 ${className ?? "bg-parchment-2"}`}>
       <ScrollReveal>
         <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
           {label ?? t("reviews.eyebrow")}

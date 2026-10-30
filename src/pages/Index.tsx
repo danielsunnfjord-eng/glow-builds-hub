@@ -33,7 +33,7 @@ const Index = () => {
         </Suspense>
         <HowItWorks />
         <Suspense fallback={null}>
-          <Reviews include={HOME_TESTIMONIAL_AUTHORS} />
+          <Reviews include={HOME_TESTIMONIAL_AUTHORS} className="bg-parchment" />
         </Suspense>
         <LocalPartnerBlock />
         <FinalCta />
