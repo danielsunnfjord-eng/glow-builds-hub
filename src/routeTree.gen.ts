@@ -45,9 +45,11 @@ import { Route as Char123LocaleChar125DestinationsNorwayRouteImport } from './ro
 import { Route as Char123LocaleChar125ItinerariesShopIndexRouteImport } from './routes/{-$locale}/itineraries-shop/index'
 import { Route as Char123LocaleChar125ItinerariesShopSlugRouteImport } from './routes/{-$locale}/itineraries-shop/$slug'
 import { Route as Char123LocaleChar125ItinerariesShopSuccessRouteImport } from './routes/{-$locale}/itineraries-shop/success'
+import { Route as Char123LocaleChar125ReiserSlugRouteImport } from './routes/{-$locale}/reiser_.$slug'
 import { Route as Char123LocaleChar125RoutesIndexRouteImport } from './routes/{-$locale}/routes/index'
 import { Route as Char123LocaleChar125RoutesSlugRouteImport } from './routes/{-$locale}/routes/$slug'
 import { Route as Char123LocaleChar125TripTokenRouteImport } from './routes/{-$locale}/trip.$token'
+import { Route as Char123LocaleChar125TripsSlugRouteImport } from './routes/{-$locale}/trips_.$slug'
 
 const Char123LocaleChar125Route = Char123LocaleChar125RouteImport.update({
   id: '/{-$locale}',
@@ -264,6 +266,12 @@ const Char123LocaleChar125ItinerariesShopSuccessRoute =
     path: '/itineraries-shop/success',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const Char123LocaleChar125ReiserSlugRoute =
+  Char123LocaleChar125ReiserSlugRouteImport.update({
+    id: '/reiser_/$slug',
+    path: '/reiser/$slug',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
 const Char123LocaleChar125RoutesIndexRoute =
   Char123LocaleChar125RoutesIndexRouteImport.update({
     id: '/routes/',
@@ -280,6 +288,12 @@ const Char123LocaleChar125TripTokenRoute =
   Char123LocaleChar125TripTokenRouteImport.update({
     id: '/trip/$token',
     path: '/trip/$token',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125TripsSlugRoute =
+  Char123LocaleChar125TripsSlugRouteImport.update({
+    id: '/trips_/$slug',
+    path: '/trips/$slug',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
 
@@ -317,8 +331,10 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
   '/{-$locale}/itineraries-shop/$slug': typeof Char123LocaleChar125ItinerariesShopSlugRoute
   '/{-$locale}/itineraries-shop/success': typeof Char123LocaleChar125ItinerariesShopSuccessRoute
+  '/{-$locale}/reiser/$slug': typeof Char123LocaleChar125ReiserSlugRoute
   '/{-$locale}/routes/$slug': typeof Char123LocaleChar125RoutesSlugRoute
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
+  '/{-$locale}/trips/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue/': typeof Char123LocaleChar125CatalogueIndexRoute
   '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
@@ -357,8 +373,10 @@ export interface FileRoutesByTo {
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
   '/{-$locale}/itineraries-shop/$slug': typeof Char123LocaleChar125ItinerariesShopSlugRoute
   '/{-$locale}/itineraries-shop/success': typeof Char123LocaleChar125ItinerariesShopSuccessRoute
+  '/{-$locale}/reiser/$slug': typeof Char123LocaleChar125ReiserSlugRoute
   '/{-$locale}/routes/$slug': typeof Char123LocaleChar125RoutesSlugRoute
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
+  '/{-$locale}/trips/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue': typeof Char123LocaleChar125CatalogueIndexRoute
   '/{-$locale}/destinations': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop': typeof Char123LocaleChar125ItinerariesShopIndexRoute
@@ -399,8 +417,10 @@ export interface FileRoutesById {
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
   '/{-$locale}/itineraries-shop/$slug': typeof Char123LocaleChar125ItinerariesShopSlugRoute
   '/{-$locale}/itineraries-shop/success': typeof Char123LocaleChar125ItinerariesShopSuccessRoute
+  '/{-$locale}/reiser_/$slug': typeof Char123LocaleChar125ReiserSlugRoute
   '/{-$locale}/routes/$slug': typeof Char123LocaleChar125RoutesSlugRoute
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
+  '/{-$locale}/trips_/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue/': typeof Char123LocaleChar125CatalogueIndexRoute
   '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
@@ -442,8 +462,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations/norway'
     | '/{-$locale}/itineraries-shop/$slug'
     | '/{-$locale}/itineraries-shop/success'
+    | '/{-$locale}/reiser/$slug'
     | '/{-$locale}/routes/$slug'
     | '/{-$locale}/trip/$token'
+    | '/{-$locale}/trips/$slug'
     | '/{-$locale}/catalogue/'
     | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
@@ -482,8 +504,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations/norway'
     | '/{-$locale}/itineraries-shop/$slug'
     | '/{-$locale}/itineraries-shop/success'
+    | '/{-$locale}/reiser/$slug'
     | '/{-$locale}/routes/$slug'
     | '/{-$locale}/trip/$token'
+    | '/{-$locale}/trips/$slug'
     | '/{-$locale}/catalogue'
     | '/{-$locale}/destinations'
     | '/{-$locale}/itineraries-shop'
@@ -523,8 +547,10 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations/norway'
     | '/{-$locale}/itineraries-shop/$slug'
     | '/{-$locale}/itineraries-shop/success'
+    | '/{-$locale}/reiser_/$slug'
     | '/{-$locale}/routes/$slug'
     | '/{-$locale}/trip/$token'
+    | '/{-$locale}/trips_/$slug'
     | '/{-$locale}/catalogue/'
     | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
@@ -789,6 +815,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125ItinerariesShopSuccessRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
+    '/{-$locale}/reiser_/$slug': {
+      id: '/{-$locale}/reiser_/$slug'
+      path: '/reiser/$slug'
+      fullPath: '/{-$locale}/reiser/$slug'
+      preLoaderRoute: typeof Char123LocaleChar125ReiserSlugRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
     '/{-$locale}/routes/': {
       id: '/{-$locale}/routes/'
       path: '/routes'
@@ -808,6 +841,13 @@ declare module '@tanstack/react-router' {
       path: '/trip/$token'
       fullPath: '/{-$locale}/trip/$token'
       preLoaderRoute: typeof Char123LocaleChar125TripTokenRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/trips_/$slug': {
+      id: '/{-$locale}/trips_/$slug'
+      path: '/trips/$slug'
+      fullPath: '/{-$locale}/trips/$slug'
+      preLoaderRoute: typeof Char123LocaleChar125TripsSlugRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
   }
@@ -846,8 +886,10 @@ interface Char123LocaleChar125RouteChildren {
   Char123LocaleChar125DestinationsNorwayRoute: typeof Char123LocaleChar125DestinationsNorwayRoute
   Char123LocaleChar125ItinerariesShopSlugRoute: typeof Char123LocaleChar125ItinerariesShopSlugRoute
   Char123LocaleChar125ItinerariesShopSuccessRoute: typeof Char123LocaleChar125ItinerariesShopSuccessRoute
+  Char123LocaleChar125ReiserSlugRoute: typeof Char123LocaleChar125ReiserSlugRoute
   Char123LocaleChar125RoutesSlugRoute: typeof Char123LocaleChar125RoutesSlugRoute
   Char123LocaleChar125TripTokenRoute: typeof Char123LocaleChar125TripTokenRoute
+  Char123LocaleChar125TripsSlugRoute: typeof Char123LocaleChar125TripsSlugRoute
   Char123LocaleChar125CatalogueIndexRoute: typeof Char123LocaleChar125CatalogueIndexRoute
   Char123LocaleChar125DestinationsIndexRoute: typeof Char123LocaleChar125DestinationsIndexRoute
   Char123LocaleChar125ItinerariesShopIndexRoute: typeof Char123LocaleChar125ItinerariesShopIndexRoute
@@ -897,8 +939,10 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
     Char123LocaleChar125ItinerariesShopSlugRoute,
   Char123LocaleChar125ItinerariesShopSuccessRoute:
     Char123LocaleChar125ItinerariesShopSuccessRoute,
+  Char123LocaleChar125ReiserSlugRoute: Char123LocaleChar125ReiserSlugRoute,
   Char123LocaleChar125RoutesSlugRoute: Char123LocaleChar125RoutesSlugRoute,
   Char123LocaleChar125TripTokenRoute: Char123LocaleChar125TripTokenRoute,
+  Char123LocaleChar125TripsSlugRoute: Char123LocaleChar125TripsSlugRoute,
   Char123LocaleChar125CatalogueIndexRoute:
     Char123LocaleChar125CatalogueIndexRoute,
   Char123LocaleChar125DestinationsIndexRoute:
