@@ -29,7 +29,6 @@ const Index = () => {
         <EntryCards />
         <ConciergeSection />
         <HowItWorks />
-        <HowItWorks />
         <SafetyStrip />
         <LocalPartnerBlock />
         <Suspense fallback={null}>
