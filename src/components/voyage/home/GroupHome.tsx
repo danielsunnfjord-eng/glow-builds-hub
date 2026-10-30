@@ -104,19 +104,6 @@ export function ConciergeSection() {
   );
 }
 
-export function ProofStrip() {
-  const c = useCopy();
-  return (
-    <section className="bg-ink px-16 py-10 max-md:px-6">
-      <ul className="mx-auto grid max-w-6xl grid-cols-4 gap-6 text-center max-md:grid-cols-2">
-        {c.proof.map((p) => (
-          <li key={p} className="text-[0.78rem] font-medium uppercase tracking-[0.12em] text-parchment/90">{p}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 export function HowItWorks() {
   const c = useCopy();
   return (
