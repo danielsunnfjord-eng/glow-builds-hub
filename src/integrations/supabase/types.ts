@@ -605,6 +605,39 @@ export type Database = {
         }
         Relationships: []
       }
+      interest_signups: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          locale: string
+          message: string | null
+          name: string
+          period: string
+          trip: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          locale?: string
+          message?: string | null
+          name: string
+          period: string
+          trip: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          locale?: string
+          message?: string | null
+          name?: string
+          period?: string
+          trip?: string
+        }
+        Relationships: []
+      }
       itinerary_drafts: {
         Row: {
           chat_history: Json | null
