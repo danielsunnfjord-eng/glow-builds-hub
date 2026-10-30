@@ -73,8 +73,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
   },
   // DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
   pt: {
-    headline: "Seu concierge de viagens para o Rio e os fiordes da Noruega",
-    subheadline: "Viagens privadas, viagens em grupo e viagens temáticas. Planejadas por um ex-professor de folkehøgskole e realizadas com especialistas locais.",
+    headline: "Seus concierges de viagens. Das praias tropicais aos fiordes nórdicos",
+    subheadline: "Viagens privadas, viagens em grupo e viagens temáticas. Planejadas e realizadas por especialistas locais.",
     proposal: "Solicite uma proposta",
     start: "Comece a planejar",
     explore: "Explore",
