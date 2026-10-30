@@ -27,8 +27,8 @@ export type HomeCopy = {
 
 export const HOME_COPY: Record<Locale, HomeCopy> = {
   en: {
-    headline: "Your concierge travel agent for Rio and Norway's fjords",
-    subheadline: "Private journeys, group trips and themed departures. Planned by a former folk high school teacher and hosted by local experts.",
+    headline: "Your Concierge Travel Agents. From Tropical shores to Nordic Fjords",
+    subheadline: "Private journeys, group trips and themed departures. Planned and hosted by local experts.",
     proposal: "Request a proposal",
     start: "Start planning",
     explore: "Explore",
@@ -49,8 +49,9 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     privateLink: "Planning a trip for yourself? See private travel.",
   },
   no: {
-    headline: "Din concierge-reiserådgiver for Rio og fjordene",
-    subheadline: "Privatreiser, gruppereiser og temareiser. Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
+    // DRAFT translation from the English hero text; reviewed before publishing.
+    headline: "Dine concierge-reiserådgivere. Fra tropiske strender til nordiske fjorder",
+    subheadline: "Privatreiser, gruppereiser og temareiser. Planlagt og gjennomført av lokale eksperter.",
     proposal: "Be om forslag",
     start: "Kom i gang",
     explore: "Utforsk",
@@ -72,8 +73,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
   },
   // DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
   pt: {
-    headline: "Seu concierge de viagens para o Rio e os fiordes da Noruega",
-    subheadline: "Viagens privadas, viagens em grupo e viagens temáticas. Planejadas por um ex-professor de folkehøgskole e realizadas com especialistas locais.",
+    headline: "Seus concierges de viagens. Das praias tropicais aos fiordes nórdicos",
+    subheadline: "Viagens privadas, viagens em grupo e viagens temáticas. Planejadas e realizadas por especialistas locais.",
     proposal: "Solicite uma proposta",
     start: "Comece a planejar",
     explore: "Explore",
