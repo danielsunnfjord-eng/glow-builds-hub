@@ -80,8 +80,6 @@ export default function ThemeTripsHub() {
               {c.ownTheme}
             </a>
           </div>
-          {/* Kept for shared navigation copy: proposal label */}
-          <span className="hidden">{navigationCopy[locale].proposal}</span>
         </div>
       </main>
       <Footer />
