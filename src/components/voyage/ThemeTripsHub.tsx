@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import { NumberedSteps } from "./GroupBlocks";
 import { currentLocale, localePath } from "@/lib/locale";
 import { THEME_COPY, THEME_TRIPS } from "@/lib/themeTrips";
-import { CALENDLY_URL, GROUP_INTAKE_URL, navigationCopy } from "@/lib/travelNavigation";
+import { CALENDLY_URL, GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import { HOME_COPY } from "./home/homeCopy";
 import surf from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";

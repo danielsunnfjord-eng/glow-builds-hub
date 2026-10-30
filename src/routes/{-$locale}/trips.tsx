@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ConciergeHubPage from "@/components/voyage/ConciergeHubPage";
-import { conciergeHead } from "@/lib/conciergeHead";
+import ThemeTripsHub from "@/components/voyage/ThemeTripsHub";
+import { themeTripsHubHead } from "@/lib/themeTripsHead";
 
 export const Route = createFileRoute("/{-$locale}/trips")({
-  head: ({ params }) => conciergeHead(params.locale, "trips"),
-  component: () => <ConciergeHubPage page="trips" />,
+  head: ({ params }) => themeTripsHubHead(params.locale),
+  component: ThemeTripsHub,
 });
