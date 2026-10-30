@@ -28,11 +28,13 @@ const Index = () => {
         <GroupHero />
         <EntryCards />
         <ConciergeSection />
+        <Suspense fallback={null}>
+          <MeetDaniel concierge />
+        </Suspense>
         <HowItWorks />
         <SafetyStrip />
         <LocalPartnerBlock />
         <Suspense fallback={null}>
-          <MeetDaniel concierge />
           <Reviews include={HOME_TESTIMONIAL_AUTHORS} />
         </Suspense>
         <FinalCta />
