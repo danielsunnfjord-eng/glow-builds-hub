@@ -14,7 +14,7 @@ const Reviews = ({ include, exclude, label }: ReviewsProps = {}) => {
   }>).filter((r) => (!include || include.includes(r.author)) && (!exclude || !exclude.includes(r.author)));
 
   return (
-    <section id="reviews" className="py-28 px-16 bg-parchment-2 max-md:px-6 max-md:py-16">
+    <section id="reviews" className="py-28 px-16 bg-parchment max-md:px-6 max-md:py-16">
       <ScrollReveal>
         <div className="text-[0.65rem] font-semibold tracking-[0.22em] uppercase text-gold mb-3">
           {label ?? t("reviews.eyebrow")}
