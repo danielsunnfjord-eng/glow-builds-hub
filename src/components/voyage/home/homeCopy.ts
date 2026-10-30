@@ -15,7 +15,6 @@ export type HomeCopy = {
   whatsapp: string;
   cardsEyebrow: string;
   cards: Card[];
-  proof: string[];
   howTitle: string;
   steps: string[];
   safety: string;
@@ -39,7 +38,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     whatsapp: "Or message on WhatsApp",
     cardsEyebrow: "Who we plan for",
     cards: [{"title": "Private Trips", "text": "Tailor-made journeys for individuals, couples and families in Rio and Norway.", "path": "/private-travel"}, {"title": "Schools, Sports Teams & Clubs", "text": "Study trips, camps and training trips.", "path": "/groups"}, {"title": "Corporate & Delegations", "text": "We manage every detail behind the scenes so your people can focus on the main goal of your trip.", "path": "/corporate"}, {"title": "Theme Travels", "text": "From a vibrant Rio Carnaval experience to witnessing the magical Northern Lights in Tromsø, we curate unforgettable custom journeys.", "path": "/trips"}],
-    proof: ["6 years as a folk high school teacher", "20+ years of local partner experience in Rio", "Brazilian-born, Norway-based since 2010", "IATA accredited"],
     howTitle: "How it works",
     steps: ["Talk", "Proposal", "Agreement", "Preparation", "Trip", "Evaluation"],
     safety: "Safety comes first. Read how we prepare, supervise and respond.",
@@ -62,7 +60,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     whatsapp: "Eller send en melding på WhatsApp",
     cardsEyebrow: "Hvem vi planlegger for",
     cards: [{"title": "Privatreiser", "text": "Skreddersydde reiser for enkeltpersoner, par og familier i Rio og Norge.", "path": "/private-travel"}, {"title": "Skoler, idrettslag og klubber", "text": "Studieturer, camper og treningsreiser.", "path": "/groups"}, {"title": "Bedrift og delegasjoner", "text": "Vi håndterer alle detaljer bak kulissene, slik at deltakerne kan fokusere på hovedmålet med reisen.", "path": "/corporate"}, {"title": "Temareiser", "text": "Fra en stemningsfull Carnaval-opplevelse i Rio til det magiske nordlyset i Tromsø – vi kuraterer uforglemmelige, skreddersydde reiser.", "path": "/trips"}],
-    proof: ["6 år som folkehøgskolelærer", "Over 20 års lokal partnererfaring i Rio", "Brasiliansk-født, bosatt i Norge siden 2010", "IATA-akkreditert"],
     howTitle: "Slik fungerer det",
     steps: ["Samtale", "Forslag", "Avtale", "Forberedelser", "Reise", "Evaluering"],
     safety: "Trygghet kommer først. Les hvordan vi forbereder, følger opp og håndterer uforutsette hendelser.",
@@ -85,7 +82,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     whatsapp: "Ou envie uma mensagem pelo WhatsApp",
     cardsEyebrow: "Para quem planejamos",
     cards: [{"title": "Viagens privadas", "text": "Viagens sob medida para pessoas, casais e famílias no Rio e na Noruega.", "path": "/private-travel"}, {"title": "Escolas, equipes e clubes", "text": "Viagens de estudo, camps e viagens de treinamento.", "path": "/groups"}, {"title": "Empresas e delegações", "text": "Gerenciamos cada detalhe nos bastidores para que as pessoas se concentrem no objetivo principal da viagem.", "path": "/corporate"}, {"title": "Viagens temáticas", "text": "De uma vibrante experiência de Carnaval no Rio à mágica aurora boreal em Tromsø, criamos jornadas inesquecíveis sob medida.", "path": "/trips"}],
-    proof: ["6 anos como professor de folk high school", "Mais de 20 anos de experiência com parceiros locais no Rio", "Brasileiro, morando na Noruega desde 2010", "Credenciado pela IATA"],
     howTitle: "Como funciona",
     steps: ["Conversa", "Proposta", "Acordo", "Preparação", "Viagem", "Avaliação"],
     safety: "A segurança vem em primeiro lugar. Veja como preparamos, acompanhamos e agimos.",
