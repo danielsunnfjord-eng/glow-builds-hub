@@ -27,8 +27,8 @@ export type HomeCopy = {
 
 export const HOME_COPY: Record<Locale, HomeCopy> = {
   en: {
-    headline: "Your concierge travel agent for Rio and Norway's fjords",
-    subheadline: "Private journeys, group trips and themed departures. Planned by a former folk high school teacher and hosted by local experts.",
+    headline: "Your Concierge Travel Agents. From Tropical shores to Nordic Fjords",
+    subheadline: "Private journeys, group trips and themed departures. Planned and hosted by local experts.",
     proposal: "Request a proposal",
     start: "Start planning",
     explore: "Explore",
