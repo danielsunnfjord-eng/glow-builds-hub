@@ -29,3 +29,5 @@
 - [x] Verify the uploaded school brief, all four course tabs, program and proposal links in Norwegian and English.
 - [x] Recheck the sports/surf brief, Norwegian translation, photo descriptions, #surf anchor and proposal links.
 - [x] Check the uploaded corporate brief, English/Norwegian copy, owner photos, proposal links and hidden unfinished sections; correct the Norwegian follow-up step's phone layout.
+- [x] Theme Travels hub (/trips, /no/reiser) with three trip cards, how-it-works steps and group/theme links.
+- [x] Trip detail pages (Rio Flow, Norway Surf & Fjord, Beach Sports Camp) in EN and NO with program tables, interest form (interest_signups), status tags and SEO.

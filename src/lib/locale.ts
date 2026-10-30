@@ -62,7 +62,10 @@ export function localizedRoutePath(path: string, locale: Locale): string {
     "/start": "/kom-i-gang",
     "/trips": "/reiser",
   };
-  return norwegian[canonical] ?? canonical;
+  if (norwegian[canonical]) return norwegian[canonical];
+  // Theme trip detail pages keep their slug; only the /trips prefix becomes /reiser.
+  if (canonical.startsWith("/trips/")) return `/reiser/${canonical.slice("/trips/".length)}`;
+  return canonical;
 }
 
 export function localePath(path: string, locale: Locale): string {
