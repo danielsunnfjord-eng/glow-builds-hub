@@ -49,8 +49,9 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     privateLink: "Planning a trip for yourself? See private travel.",
   },
   no: {
-    headline: "Din concierge-reiserådgiver for Rio og fjordene",
-    subheadline: "Privatreiser, gruppereiser og temareiser. Planlagt av en tidligere folkehøgskolelærer, gjennomført sammen med lokale eksperter.",
+    // DRAFT translation from the English hero text; reviewed before publishing.
+    headline: "Dine concierge-reiserådgivere. Fra tropiske strender til nordiske fjorder",
+    subheadline: "Privatreiser, gruppereiser og temareiser. Planlagt og gjennomført av lokale eksperter.",
     proposal: "Be om forslag",
     start: "Kom i gang",
     explore: "Utforsk",
