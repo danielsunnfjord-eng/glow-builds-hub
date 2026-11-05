@@ -189,17 +189,47 @@ const FJORDS_NO: ThemeTripCopy = {
   faqTitle: "Vanlige spørsmål", faq: [],
 };
 
-// Portuguese follows the existing trip fallback convention; English content
-// remains available until a full Portuguese version is reviewed by the owner.
+// DRAFT – pending owner review: Portuguese translated from the English.
+const FJORDS_PT: ThemeTripCopy = {
+  ...FJORDS_EN,
+  title: "Sogn og Fjordane: A alma dos fiordes noruegueses",
+  seoTitle: "Sogn og Fjordane: a alma dos fiordes noruegueses | Fjord & Waves Travel",
+  subtitle: "Uma viagem de sete dias pela região do Sognefjord: Flåm, Nærøyfjord, caminhada em geleira e Balestrand.",
+  overview: "Água azul profunda, montanhas altas, geleiras antigas e vilarejos encantadores. Esta viagem percorre a região do Sognefjord, com visitas a Flåm, Nærøyfjord, Balestrand e às geleiras de Jostedalen, e equilibra experiências culturais com uma viagem calma e sem pressa. É para quem valoriza natureza, autenticidade e experiências com profundidade, incluindo quem visita a Noruega pela primeira vez. Você viaja em uma das ferrovias mais íngremes do mundo, cruza o famoso Nærøyfjord de barco e caminha sobre uma geleira ativa com um guia certificado. Entre os destaques há paradas tranquilas, boa comida local e estradas cênicas até mirantes silenciosos. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription: "Sete dias pela região do Sognefjord: Ferrovia de Flåm, cruzeiro no Nærøyfjord, caminhada guiada em geleira e Balestrand, em ritmo tranquilo.",
+  duration: "7 dias", destination: "Região do Sognefjord, Noruega", periods: ["junho a agosto de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Bergen, Voss e Flåm. Paradas opcionais em Voss (bondinho, desfiladeiro Bordalsgjelet, cachoeira Tvindefossen). Ferrovia de Flåm até Myrdal à tarde, caminhada noturna no porto de Flåm"],
+    ["2", "Saída cedo por Aurlandsfjellet até o mirante Stegastein antes dos ônibus de turismo. Depois Lærdalsøyri com suas casas de madeira antigas e a igreja de madeira de Borgund"],
+    ["3", "Cruzeiro de Flåm a Gudvangen e Viking Valley com arco e flecha, arremesso de machado e jogos vikings. Depois para Gaupne, em Luster (horários confirmados por partida)"],
+    ["4", "Caminhada guiada em geleira azul com guia certificado. Alternativas se o tempo impedir: igreja de madeira de Urnes, cachoeira Feigefossen, passeio ao longo do Lustrafjorden"],
+    ["5", "Viagem até Balestrand. Visita à fazenda Ciderhuset Balholm com degustação e o jantar dos produtores de sidra. Tarde a pé, ou de caiaque no verão"],
+    ["6", "Um dia em Vik: balsa local de Balestrand e a igreja de madeira de Hopperstad. Noite tranquila em Balestrand"],
+    ["7", "Estrada cênica de volta a Bergen. Tempo na Bryggen, depois partida"],
+  ],
+  stayTitle: "Onde você fica (exemplos)",
+  stay: "Flåm (Fretheim Hotel, Flåmsbrygga Hotell ou Hotel Aurlandsfjord), Gaupne ou Luster (Gaupnetunet Hotell and Cabins ou Tørvis Hotell), Balestrand (Kviknes Hotel ou Balestrand Hotel), Bergen (Opus XVI ou Comfort Hotel Bergen Airport). A escolha final é confirmada por partida.",
+  extraSections: [{ title: "Bom saber", text: "Ingressos da Ferrovia de Flåm, cruzeiros pelos fiordes e caminhadas em geleira devem ser reservados cedo no verão, e cuidamos das reservas. As caminhadas em geleira acontecem do final de maio a setembro e dependem do clima, então planejamos alternativas. A estrada de Aurlandsfjellet normalmente abre no início de junho, dependendo da neve. Ferries e algumas estradas têm horários limitados, e planejamos os dias de acordo." }],
+  leadersTitle: "Líderes da viagem",
+  leaders: [{ name: "Daniel Lira Figueiredo", role: "Guias locais da nossa rede acompanham Daniel" }],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "O clima nos fiordes muda rápido. Leve roupas em camadas, jaqueta corta-vento, luvas para a geleira e bons calçados para caminhada, mesmo no verão. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes", faq: [],
+};
+
+// Portuguese is a draft translated from the English, for owner review.
 export const CARNAVAL_TRIP: ThemeTrip = {
   slug: "rio-carnaval-experience", norwegianSlug: "rio-karneval",
   // End of 5 December 2026 / 1 November 2027 in Europe/Oslo (UTC+1).
   registrationClosesAt: ["2026-12-05T23:00:00.000Z", "2027-11-01T23:00:00.000Z"],
-  copy: { en: CARNAVAL_EN, no: CARNAVAL_NO, pt: CARNAVAL_EN },
+  copy: { en: CARNAVAL_EN, no: CARNAVAL_NO, pt: CARNAVAL_PT },
 };
 
-export function fjordsTrip(faq: Record<"en" | "no", ThemeTripCopy["faq"]>): ThemeTrip {
+export function fjordsTrip(faq: Record<Locale, ThemeTripCopy["faq"]>): ThemeTrip {
   const en = { ...FJORDS_EN, faq: [...faq.en, { q: "Is a car needed?", a: "We arrange transport to fit your group size and the activities, so you do not need to rent a car yourself." }] };
   const no = { ...FJORDS_NO, faq: [...faq.no, { q: "Trenger jeg bil?", a: "Vi ordner transport som passer gruppestørrelsen og aktivitetene, så du trenger ikke å leie bil selv." }] };
-  return { slug: "sogn-og-fjordane-fjords", norwegianSlug: "sogn-og-fjordane-fjordene", copy: { en, no, pt: en } };
+  const pt = { ...FJORDS_PT, faq: [...faq.pt, { q: "Preciso de um carro?", a: "Organizamos o transporte conforme o tamanho do grupo e as atividades, então você não precisa alugar um carro." }] };
+  return { slug: "sogn-og-fjordane-fjords", norwegianSlug: "sogn-og-fjordane-fjordene", copy: { en, no, pt } };
 }
