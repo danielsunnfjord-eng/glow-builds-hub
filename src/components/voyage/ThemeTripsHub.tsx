@@ -10,9 +10,17 @@ import { HOME_COPY } from "./home/homeCopy";
 import rioFlowSurf from "@/assets/rio_flow_surf.jpg.asset.json";
 import stadtHoddevik from "@/assets/stadt_hoddevik.jpg.asset.json";
 import beachCamp from "@/assets/beach_sports_camp.jpg.asset.json";
+import rioCity from "@/assets/home/praia_do_flamengo.jpg.asset.json";
+import stegastein from "@/assets/stegastein.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
-const CARD_IMAGES = [rioFlowSurf.url, stadtHoddevik.url, beachCamp.url];
+const CARD_IMAGES: Record<string, string> = {
+  "rio-carnaval-experience": rioCity.url,
+  "rio-flow-experience": rioFlowSurf.url,
+  "norway-surf-fjord-week": stadtHoddevik.url,
+  "sogn-og-fjordane-fjords": stegastein.url,
+  "beach-sports-camp-rio": beachCamp.url,
+};
 
 /** Status tag shown on every trip card and trip page. */
 export function StatusTag({ label }: { label: string }) {
@@ -39,10 +47,11 @@ export default function ThemeTripsHub() {
             <div className="mt-8">
               <NumberedSteps steps={c.howSteps} />
             </div>
+            <p className="mt-6 text-sm leading-relaxed text-ink-2">{c.deadlineNote}</p>
           </section>
 
           <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {THEME_TRIPS.map((trip, n) => {
+            {THEME_TRIPS.map((trip) => {
               const t = trip.copy[locale];
               return (
                 <a
@@ -50,7 +59,7 @@ export default function ThemeTripsHub() {
                   href={localePath(`/trips/${trip.slug}`, locale)}
                   className="group flex h-full flex-col overflow-hidden rounded-lg border border-parchment-3 bg-voyage-white text-ink transition hover:shadow-elegant focus-visible:outline focus-visible:outline-ring"
                 >
-                  <img src={CARD_IMAGES[n]} alt={t.title} className="aspect-[2/1] w-full object-cover" loading="lazy" />
+                  <img src={CARD_IMAGES[trip.slug]} alt={t.title} className="aspect-[2/1] w-full object-cover" loading="lazy" />
                   <div className="flex flex-1 flex-col p-7">
                     <StatusTag label={c.statusTag} />
                     <h2 className="mt-4 font-serif text-2xl font-bold leading-snug">{t.title}</h2>
@@ -59,7 +68,7 @@ export default function ThemeTripsHub() {
                     </p>
                     <p className="mt-4 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-voyage-muted">{c.periodsLabel}</p>
                     <ul className="mt-2 space-y-1 text-sm leading-relaxed text-ink-2">
-                      {t.periods.map((period) => (
+                      {(t.cardPeriods ?? t.periods).map((period) => (
                         <li key={period}>{period}</li>
                       ))}
                     </ul>

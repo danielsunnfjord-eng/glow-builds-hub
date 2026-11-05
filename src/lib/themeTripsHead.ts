@@ -22,9 +22,9 @@ export function themeTripHead(param: string | undefined, slug: string) {
   if (!trip) return buildHead({ path: "/trips", locale, title: THEME_COPY[locale].hubTitle, description: THEME_COPY[locale].hubIntro });
   const c = trip.copy[locale];
   return buildHead({
-    path: `/trips/${slug}`,
+    path: `/trips/${trip.slug}`,
     locale,
-    title: `${c.title} | Fjord & Waves Travel`,
+    title: c.seoTitle ?? `${c.title} | Fjord & Waves Travel`,
     description: c.metaDescription,
   });
 }
