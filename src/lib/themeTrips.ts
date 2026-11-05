@@ -327,6 +327,9 @@ const NORWAY_PT: ThemeTripCopy = {
   faqTitle: "Perguntas frequentes",
   faq: FAQ_PT,
 };
+
+// Owner-supplied Norwegian text (primary version).
+const BEACH_NO: ThemeTripCopy = {
   title: "Beach Sports Camp i Rio de Janeiro",
   subtitle: "To uker med sand, sol og sport i Zona Sul, pluss Arraial do Cabo eller Ilha Grande.",
   overview:
