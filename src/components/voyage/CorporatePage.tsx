@@ -3,9 +3,6 @@ import Footer from "./Footer";
 import { Button } from "@/components/ui/button";
 import { currentLocale, localePath } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
-import { CORPORATE_PROGRAMS } from "@/lib/corporatePrograms";
-import { TwoColTable } from "./GroupBlocks";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
@@ -141,7 +138,7 @@ function Cta({ label }: { label: string }) {
 export default function CorporatePage() {
   const locale = currentLocale();
   const c = COPY[locale];
-  const programs = locale === "pt" ? [] : CORPORATE_PROGRAMS[locale];
+  const c = locale === "pt" ? PT : locale === "no" ? NO : EN;
   const h2 = "mb-10 font-serif text-[clamp(1.8rem,3vw,2.6rem)] font-bold text-ink";
   const section = "px-16 py-20 max-md:px-6 max-md:py-14";
 
