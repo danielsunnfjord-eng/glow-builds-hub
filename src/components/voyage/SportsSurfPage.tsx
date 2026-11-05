@@ -12,15 +12,13 @@ import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
 interface Copy {
   h1: string; intro: string; proposal: string;
   campTitle: string; camp: string[]; campNote: string;
-  rioTitle: string; rioIntro: string; periodHead: string; likeHead: string; periods: [string, string][];
-  weekTitle: string; weekNote: string; dayHead: string; programHead: string; week: string[];
   howTitle: string; steps: string[];
   safetyLinkLabel: string; before: string; refsLabel: string;
 }
 
 const EN: Copy = {
   h1: "Training camps and trips for sports teams and clubs",
-  intro: "Training and matches against local clubs, for youth and amateur teams. Rio Sport & Tour runs its own beach volleyball center in Leme and has hosted teams and groups for over 20 years.",
+  intro: "Training and matches against local clubs, for youth and amateur teams hosted by experienced local DMC with over 20 years experience",
   proposal: "Request a proposal",
   campTitle: "What a camp can include",
   camp: [
