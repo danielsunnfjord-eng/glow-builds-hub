@@ -3,6 +3,61 @@ import { currentLocale, localePath } from "@/lib/locale";
 
 const STORAGE_KEY = "fw_cookie_consent_v1";
 
+// DRAFT – pending owner review: Norwegian and Portuguese translated from the English.
+const COPY = {
+  en: {
+    eyebrow: "Cookies",
+    banner: "I use essential cookies to make this site work and, with your consent, optional cookies to understand how it's used. Read more in the ",
+    privacyLabel: "Privacy Policy",
+    manage: "Manage",
+    rejectOptional: "Reject optional",
+    acceptAll: "Accept all",
+    prefsEyebrow: "Cookie preferences",
+    prefsTitle: "Manage your cookies",
+    essential: "Essential",
+    essentialDesc: "Required for the site to function: language preference, secure sessions and form submissions. Always on.",
+    analytics: "Analytics",
+    analyticsDesc: "Aggregate, anonymous usage data to help me improve the site.",
+    marketing: "Marketing",
+    marketingDesc: "Used to measure newsletter and campaign performance. None active without your consent.",
+    save: "Save preferences",
+  },
+  no: {
+    eyebrow: "Informasjonskapsler",
+    banner: "Jeg bruker nødvendige informasjonskapsler for at nettstedet skal fungere, og med ditt samtykke valgfrie informasjonskapsler for å forstå hvordan det brukes. Les mer i ",
+    privacyLabel: "personvernerklæringen",
+    manage: "Administrer",
+    rejectOptional: "Avslå valgfrie",
+    acceptAll: "Godta alle",
+    prefsEyebrow: "Innstillinger for informasjonskapsler",
+    prefsTitle: "Administrer informasjonskapslene dine",
+    essential: "Nødvendige",
+    essentialDesc: "Nødvendig for at nettstedet skal fungere: språkvalg, sikre økter og innsending av skjemaer. Alltid på.",
+    analytics: "Analyse",
+    analyticsDesc: "Anonyme bruksdata i samlet form som hjelper meg å forbedre nettstedet.",
+    marketing: "Markedsføring",
+    marketingDesc: "Brukes til å måle effekten av nyhetsbrev og kampanjer. Ingen er aktive uten ditt samtykke.",
+    save: "Lagre valg",
+  },
+  pt: {
+    eyebrow: "Cookies",
+    banner: "Uso cookies essenciais para que este site funcione e, com o seu consentimento, cookies opcionais para entender como ele é usado. Leia mais na ",
+    privacyLabel: "Política de Privacidade",
+    manage: "Gerenciar",
+    rejectOptional: "Recusar opcionais",
+    acceptAll: "Aceitar todos",
+    prefsEyebrow: "Preferências de cookies",
+    prefsTitle: "Gerencie seus cookies",
+    essential: "Essenciais",
+    essentialDesc: "Necessários para o site funcionar: preferência de idioma, sessões seguras e envio de formulários. Sempre ativos.",
+    analytics: "Análise",
+    analyticsDesc: "Dados anônimos de uso, agregados, que me ajudam a melhorar o site.",
+    marketing: "Marketing",
+    marketingDesc: "Usados para medir o desempenho de newsletter e campanhas. Nenhum ativo sem o seu consentimento.",
+    save: "Salvar preferências",
+  },
+} as const;
+
 type Prefs = {
   essential: true;
   analytics: boolean;
