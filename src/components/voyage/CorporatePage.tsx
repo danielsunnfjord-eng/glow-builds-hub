@@ -3,9 +3,6 @@ import Footer from "./Footer";
 import { Button } from "@/components/ui/button";
 import { currentLocale, localePath } from "@/lib/locale";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
-import { CORPORATE_PROGRAMS } from "@/lib/corporatePrograms";
-import { TwoColTable } from "./GroupBlocks";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
@@ -141,7 +138,6 @@ function Cta({ label }: { label: string }) {
 export default function CorporatePage() {
   const locale = currentLocale();
   const c = COPY[locale];
-  const programs = locale === "pt" ? [] : CORPORATE_PROGRAMS[locale];
   const h2 = "mb-10 font-serif text-[clamp(1.8rem,3vw,2.6rem)] font-bold text-ink";
   const section = "px-16 py-20 max-md:px-6 max-md:py-14";
 
@@ -196,30 +192,6 @@ export default function CorporatePage() {
           </div>
         </section>
 
-        {programs.length > 0 && c.tableHead && <section className={`bg-parchment-2 ${section}`}>
-          <div className="mx-auto max-w-4xl space-y-16">
-            {programs.map((program) => <div key={program.title}>
-              <h2 className={h2}>{program.title}</h2>
-              <p className="mb-6 leading-relaxed text-ink-2">{c.programNote}</p>
-              <TwoColTable head={c.tableHead ?? ["Day", "Program"]} rows={program.days.map((day, index) => [String(index + 1), day])} narrow />
-            </div>)}
-            <div className="text-center"><Cta label={c.proposal} /></div>
-          </div>
-        </section>}
-
-        {c.faq && <section className={section}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.faqTitle}</h2>
-            <Accordion type="single" collapsible>
-              {c.faq.map((item, index) => <AccordionItem key={item.question} value={String(index)} className="border-parchment-3">
-                <AccordionTrigger className="gap-4 text-left leading-relaxed text-ink">{item.question}</AccordionTrigger>
-                <AccordionContent className="leading-relaxed text-ink-2">{item.answer}</AccordionContent>
-              </AccordionItem>)}
-            </Accordion>
-            <a href={localePath("/safety", locale)} className="mt-8 inline-block text-sm text-ink underline underline-offset-4">{c.safety}</a>
-          </div>
-        </section>}
-
         {c.steps.length > 0 && <section className={section}>
           <div className="mx-auto max-w-6xl">
             <h2 className={h2}>{c.howTitle}</h2>
@@ -239,7 +211,8 @@ export default function CorporatePage() {
             {c.beforeTitle && <h2 className="mb-4 font-serif text-2xl font-bold text-ink">{c.beforeTitle}</h2>}
             <p className="mb-8 leading-relaxed text-ink-2">{c.before}</p>
             <Cta label={c.proposal} />
-            {c.privateLink && <p className="mt-8 text-sm"><a href={localePath("/private-travel", locale)} className="text-ink-2 underline underline-offset-4">{c.privateLink}</a></p>}
+            {c.safety && <p className="mt-8 text-sm"><a href={localePath("/safety", locale)} className="text-ink-2 underline underline-offset-4">{c.safety}</a></p>}
+            {c.privateLink && <p className="mt-4 text-sm"><a href={localePath("/private-travel", locale)} className="text-ink-2 underline underline-offset-4">{c.privateLink}</a></p>}
           </div>
         </section>
       </main>
