@@ -196,30 +196,6 @@ export default function CorporatePage() {
           </div>
         </section>
 
-        {programs.length > 0 && c.tableHead && <section className={`bg-parchment-2 ${section}`}>
-          <div className="mx-auto max-w-4xl space-y-16">
-            {programs.map((program) => <div key={program.title}>
-              <h2 className={h2}>{program.title}</h2>
-              <p className="mb-6 leading-relaxed text-ink-2">{c.programNote}</p>
-              <TwoColTable head={c.tableHead ?? ["Day", "Program"]} rows={program.days.map((day, index) => [String(index + 1), day])} narrow />
-            </div>)}
-            <div className="text-center"><Cta label={c.proposal} /></div>
-          </div>
-        </section>}
-
-        {c.faq && <section className={section}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.faqTitle}</h2>
-            <Accordion type="single" collapsible>
-              {c.faq.map((item, index) => <AccordionItem key={item.question} value={String(index)} className="border-parchment-3">
-                <AccordionTrigger className="gap-4 text-left leading-relaxed text-ink">{item.question}</AccordionTrigger>
-                <AccordionContent className="leading-relaxed text-ink-2">{item.answer}</AccordionContent>
-              </AccordionItem>)}
-            </Accordion>
-            <a href={localePath("/safety", locale)} className="mt-8 inline-block text-sm text-ink underline underline-offset-4">{c.safety}</a>
-          </div>
-        </section>}
-
         {c.steps.length > 0 && <section className={section}>
           <div className="mx-auto max-w-6xl">
             <h2 className={h2}>{c.howTitle}</h2>
