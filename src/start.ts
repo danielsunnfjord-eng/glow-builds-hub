@@ -3,7 +3,13 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const errorMiddleware = createMiddleware().server(async ({ request, next }) => {
+  // Internal email routes (queue processor, send, unsubscribe API) bypass app
+  // middleware — they must never be wrapped in error HTML or CSRF context.
+  const url = new URL(request.url);
+  if (url.pathname.startsWith("/lovable/") || url.pathname === "/email/unsubscribe") {
+    return next();
+  }
   try {
     return await next();
   } catch (error) {
