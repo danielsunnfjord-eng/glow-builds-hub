@@ -46,6 +46,7 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
       setPeriod((selected) => open.includes(selected) ? selected : open[0] ?? "");
     }
     refresh();
+    if (!trip.registrationClosesAt) return;
     const timer = window.setInterval(refresh, 1000);
     return () => window.clearInterval(timer);
   }, [trip, locale]);
