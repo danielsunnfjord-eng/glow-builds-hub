@@ -1,9 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { interestSignupSchema, INTEREST_AUDIENCES } from "./interestSignup";
 
 const valid = { trip: "rio-flow-experience", locale: "en", name: "Test traveler", email: "test@example.com", period: "June to August 2027", number_of_people: 6, audience: "club", consent: true };
 
 describe("trip interest requirements", () => {
+  afterEach(() => vi.useRealTimers());
+  it("rejects expired February 2027 interest on the shared server schema", () => {
+    vi.useFakeTimers();
+    const carnaval = { ...valid, trip: "rio-carnaval-experience", period: "February 2027" };
+    vi.setSystemTime(new Date("2026-12-05T22:59:59.999Z"));
+    expect(interestSignupSchema.safeParse(carnaval).success).toBe(true);
+    vi.setSystemTime(new Date("2026-12-05T23:00:00.000Z"));
+    expect(interestSignupSchema.safeParse(carnaval).success).toBe(false);
+    expect(interestSignupSchema.safeParse({ ...carnaval, period: "February 2028" }).success).toBe(true);
+  });
+  it("rejects all Carnaval interest after the final Oslo deadline", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2027-11-01T23:00:00.000Z"));
+    expect(interestSignupSchema.safeParse({ ...valid, trip: "rio-carnaval-experience", period: "February 2028" }).success).toBe(false);
+  });
+  it("accepts both supplied new trips and their exact Norwegian periods", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-05T12:28:00Z"));
+    expect(interestSignupSchema.safeParse({ ...valid, trip: "rio-carnaval-experience", locale: "no", period: "februar 2027" }).success).toBe(true);
+    expect(interestSignupSchema.safeParse({ ...valid, trip: "sogn-og-fjordane-fjords", locale: "no", period: "juni til august 2027" }).success).toBe(true);
+  });
   it("requires name", () => expect(interestSignupSchema.safeParse({ ...valid, name: " " }).success).toBe(false));
   it("requires valid email", () => expect(interestSignupSchema.safeParse({ ...valid, email: "invalid" }).success).toBe(false));
   it("allows an omitted phone", () => expect(interestSignupSchema.safeParse(valid).success).toBe(true));

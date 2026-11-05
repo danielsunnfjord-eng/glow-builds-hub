@@ -1,4 +1,5 @@
 import type { Locale } from "./locale";
+import { CARNAVAL_TRIP, fjordsTrip } from "./additionalThemeTrips";
 
 /**
  * Theme Travels (/trips, /no/reiser) data module.
@@ -13,6 +14,11 @@ import type { Locale } from "./locale";
  */
 
 export interface ThemeTripCopy {
+  seoTitle?: string;
+  cardPeriods?: string[];
+  periodDeadlines?: string[];
+  deadlineTitle?: string;
+  deadlineText?: string;
   title: string;
   subtitle: string;
   overview: string;
@@ -42,6 +48,8 @@ export interface ThemeTripCopy {
 
 export interface ThemeTrip {
   slug: string;
+  norwegianSlug?: string;
+  registrationClosesAt?: string[];
   copy: Record<Locale, ThemeTripCopy>;
 }
 
@@ -312,13 +320,29 @@ const BEACH_EN: ThemeTripCopy = {
 };
 
 export const THEME_TRIPS: ThemeTrip[] = [
+  CARNAVAL_TRIP,
   { slug: "rio-flow-experience", copy: { en: RIO_FLOW_EN, no: RIO_FLOW_NO, pt: RIO_FLOW_EN } },
   { slug: "norway-surf-fjord-week", copy: { en: NORWAY_EN, no: NORWAY_NO, pt: NORWAY_EN } },
+  fjordsTrip({ en: FAQ_EN, no: FAQ_NO }),
   { slug: "beach-sports-camp-rio", copy: { en: BEACH_EN, no: BEACH_NO, pt: BEACH_NO } },
 ];
 
 export function themeTripBySlug(slug: string): ThemeTrip | undefined {
-  return THEME_TRIPS.find((trip) => trip.slug === slug);
+  return THEME_TRIPS.find((trip) => trip.slug === slug || trip.norwegianSlug === slug);
+}
+
+/** The cutoff is exclusive: registration stays open through the Oslo deadline day. */
+export function availableTripPeriods(trip: ThemeTrip, locale: Locale, now: Date): string[] {
+  return trip.copy[locale].periods.filter((_, index) => {
+    const closesAt = trip.registrationClosesAt?.[index];
+    return !closesAt || now.getTime() < Date.parse(closesAt);
+  });
+}
+
+export function tripPeriodLabel(trip: ThemeTrip, locale: Locale, period: string): string {
+  const c = trip.copy[locale];
+  const deadline = c.periodDeadlines?.[c.periods.indexOf(period)];
+  return `${period} – ${THEME_COPY[locale].statusTag}${deadline ? ` (${deadline})` : ""}`;
 }
 
 /** Shared blocks and labels used on the hub and every trip page. */
@@ -328,6 +352,10 @@ export const THEME_COPY = {
     hubIntro:
       "Small-group departures built around a theme: surf, beach sports and outdoor life. Choose a trip, pick a period and register your interest. No payment, no commitment.",
     howTitle: "How it works",
+    deadlineNote: "Some trips have a registration deadline. It is shown on the trip page.",
+    periodClosed: "Registration is closed for this period.",
+    registrationClosed: "Interest registration is closed. Contact us about future departures.",
+    consultation: "Book a conversation",
     howSteps: [
       "Register your interest for the trip and the period you prefer.",
       "We open registration at least six months before departure.",
@@ -365,6 +393,10 @@ export const THEME_COPY = {
     hubIntro:
       "Små grupper på reiser bygget rundt et tema: surf, beach sports og friluftsliv. Velg en reise, velg en periode og meld din interesse. Ingen betaling, ingen forpliktelse.",
     howTitle: "Slik fungerer det",
+    deadlineNote: "Noen reiser har en påmeldingsfrist. Den vises på reisesiden.",
+    periodClosed: "Interesseregistreringen er stengt for denne perioden.",
+    registrationClosed: "Interesseregistreringen er stengt. Kontakt oss om fremtidige avganger.",
+    consultation: "Bestill en samtale",
     howSteps: [
       "Meld interesse for reisen og perioden du ønsker.",
       "Vi åpner registrering minst seks måneder før avreise.",
@@ -403,6 +435,10 @@ export const THEME_COPY = {
     hubIntro:
       "Pequenos grupos em viagens construídas em torno de um tema: surf, esportes de praia e vida ao ar livre. Escolha uma viagem, escolha um período e registre seu interesse. Sem pagamento, sem compromisso.",
     howTitle: "Como funciona",
+    deadlineNote: "Algumas viagens têm um prazo de inscrição. Ele aparece na página da viagem.",
+    periodClosed: "As inscrições estão encerradas para este período.",
+    registrationClosed: "O registro de interesse está encerrado. Fale conosco sobre futuras partidas.",
+    consultation: "Agende uma conversa",
     howSteps: [
       "Registre seu interesse na viagem e no período que preferir.",
       "Abrimos as inscrições pelo menos seis meses antes da partida.",

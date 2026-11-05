@@ -12,7 +12,8 @@ export function themeTripsHubHead(param: string | undefined) {
       : locale === "pt"
         ? "Viagens temáticas: surf, esportes de praia e ao ar livre | Fjord & Waves Travel"
         : "Theme Travels: Surf, Beach Sports and Outdoor | Fjord & Waves Travel";
-  return buildHead({ path: "/trips", locale, title, description: c.hubIntro });
+  const head = buildHead({ path: "/trips", locale, title, description: c.hubIntro });
+  return { ...head, meta: head.meta.filter((meta) => meta.property !== "og:image" && meta.name !== "twitter:image") };
 }
 
 /** Trip detail head: unique title + description per trip and language. */
@@ -21,10 +22,12 @@ export function themeTripHead(param: string | undefined, slug: string) {
   const trip = themeTripBySlug(slug);
   if (!trip) return buildHead({ path: "/trips", locale, title: THEME_COPY[locale].hubTitle, description: THEME_COPY[locale].hubIntro });
   const c = trip.copy[locale];
-  return buildHead({
-    path: `/trips/${slug}`,
+  const head = buildHead({
+    path: `/trips/${trip.slug}`,
     locale,
-    title: `${c.title} | Fjord & Waves Travel`,
+    title: c.seoTitle ?? `${c.title} | Fjord & Waves Travel`,
     description: c.metaDescription,
   });
+  // Trip pages have no absolute cover image; let hosting supply the preview.
+  return { ...head, meta: head.meta.filter((meta) => meta.property !== "og:image" && meta.name !== "twitter:image") };
 }

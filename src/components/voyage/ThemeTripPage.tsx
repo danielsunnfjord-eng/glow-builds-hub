@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -7,8 +7,8 @@ import { StatusTag } from "./ThemeTripsHub";
 import { TwoColTable } from "./GroupBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { currentLocale, localePath } from "@/lib/locale";
-import { THEME_COPY, type ThemeTrip } from "@/lib/themeTrips";
-import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
+import { THEME_COPY, availableTripPeriods, tripPeriodLabel, type ThemeTrip } from "@/lib/themeTrips";
+import { CALENDLY_URL, GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import daniel from "@/assets/daniel-profile.webp";
 import pablo from "@/assets/home/pablo_rst.jpg.asset.json";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,20 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
   const [invalid, setInvalid] = useState(false);
   const fields = INTEREST_FORM_COPY[locale];
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  // A stable initial render avoids hydration differences; refresh immediately
+  // after mount and at each cutoff so an already-open page closes automatically.
+  const [periods, setPeriods] = useState(t.periods);
+  useEffect(() => {
+    function refresh() {
+      const open = availableTripPeriods(trip, locale, new Date());
+      setPeriods(open);
+      setPeriod((selected) => open.includes(selected) ? selected : open[0] ?? "");
+    }
+    refresh();
+    if (!trip.registrationClosesAt) return;
+    const timer = window.setInterval(refresh, 1000);
+    return () => window.clearInterval(timer);
+  }, [trip, locale]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,7 +78,13 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
     <aside className="h-fit rounded-lg border border-parchment-3 bg-voyage-white p-7 lg:sticky lg:top-28">
       <StatusTag label={c.statusTag} />
       <h2 className="mt-4 font-serif text-2xl font-bold text-ink">{c.registerTitle}</h2>
-      {state === "done" ? (
+      {periods.length < t.periods.length && <p role="status" className="mt-4 text-sm text-ink-2">{c.periodClosed}</p>}
+      {periods.length === 0 ? (
+        <div className="mt-4 space-y-4">
+          <p role="status" className="leading-relaxed text-ink-2">{c.registrationClosed}</p>
+          <Button asChild className="h-auto w-full whitespace-normal"><a href={CALENDLY_URL} {...ext}>{c.consultation}</a></Button>
+        </div>
+      ) : state === "done" ? (
         <p role="status" className="mt-4 leading-relaxed text-ink-2">{c.registerDone}</p>
       ) : (
         <form onSubmit={submit} className="mt-5 space-y-4">
@@ -89,9 +109,9 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
               {c.registerPeriod}
             </label>
             <select id="interest-period" value={period} onChange={(e) => setPeriod(e.target.value)} className={inputCls}>
-              {t.periods.map((p) => (
+              {periods.map((p) => (
                 <option key={p} value={p}>
-                  {p} – {c.statusTag}
+                  {tripPeriodLabel(trip, locale, p)}
                 </option>
               ))}
             </select>
@@ -147,7 +167,7 @@ export default function ThemeTripPage({ trip }: { trip: ThemeTrip }) {
   const t = trip.copy[locale];
   const standardBlocks = [
     { title: c.adaptedTitle, text: c.adapted },
-    { title: c.minimumTitle, text: c.minimum },
+    ...(!t.deadlineText ? [{ title: c.minimumTitle, text: c.minimum }] : []),
     { title: c.languagesTitle, text: c.languages },
   ];
   return (
@@ -168,6 +188,10 @@ export default function ThemeTripPage({ trip }: { trip: ThemeTrip }) {
                 {t.duration} · {t.destination}
               </p>
               <p className="mt-6 max-w-2xl leading-relaxed text-ink-2">{t.overview}</p>
+              {t.deadlineText && <section className="mt-8 border-l-4 border-gold bg-gold/10 p-6">
+                <h2 className="font-serif text-2xl font-bold text-ink">{t.deadlineTitle}</h2>
+                <p className="mt-3 leading-relaxed text-ink-2">{t.deadlineText}</p>
+              </section>}
 
               <section className="mt-12">
                 <h2 className="font-serif text-3xl font-bold text-ink">{c.programTitle}</h2>
@@ -246,7 +270,7 @@ export default function ThemeTripPage({ trip }: { trip: ThemeTrip }) {
               </section>
             </div>
 
-            <InterestCard trip={trip} />
+            <InterestCard key={`${trip.slug}-${locale}`} trip={trip} />
           </div>
         </div>
       </main>

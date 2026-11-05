@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { THEME_TRIPS } from "./themeTrips";
+import { THEME_TRIPS, availableTripPeriods } from "./themeTrips";
 
 export const INTEREST_AUDIENCES = ["individual", "school", "club", "company"] as const;
 
@@ -19,6 +19,8 @@ export const interestSignupSchema = z.object({
   if (!trip) ctx.addIssue({ code: "custom", path: ["trip"], message: "Unknown trip" });
   else if (!trip.copy[data.locale].periods.includes(data.period)) {
     ctx.addIssue({ code: "custom", path: ["period"], message: "Choose a listed period" });
+  } else if (!availableTripPeriods(trip, data.locale, new Date()).includes(data.period)) {
+    ctx.addIssue({ code: "custom", path: ["period"], message: "Registration is closed for this period." });
   }
 });
 

@@ -51,8 +51,10 @@ export function localizedRoutePath(path: string, locale: Locale): string {
     "/grupper": "/groups",
     "/kom-i-gang": "/start",
     "/reiser": "/trips",
+    "/reiser/rio-karneval": "/trips/rio-carnaval-experience",
+    "/reiser/sogn-og-fjordane-fjordene": "/trips/sogn-og-fjordane-fjords",
   };
-  const canonical = aliases[path] ?? path;
+  const canonical = aliases[path] ?? (path.startsWith("/reiser/") ? `/trips/${path.slice("/reiser/".length)}` : path);
   if (locale !== "no") return canonical;
   const norwegian: Record<string, string> = {
     "/sports-and-surf": "/idrett-og-surf",
@@ -61,6 +63,8 @@ export function localizedRoutePath(path: string, locale: Locale): string {
     "/groups": "/grupper",
     "/start": "/kom-i-gang",
     "/trips": "/reiser",
+    "/trips/rio-carnaval-experience": "/reiser/rio-karneval",
+    "/trips/sogn-og-fjordane-fjords": "/reiser/sogn-og-fjordane-fjordene",
   };
   if (norwegian[canonical]) return norwegian[canonical];
   // Theme trip detail pages keep their slug; only the /trips prefix becomes /reiser.
