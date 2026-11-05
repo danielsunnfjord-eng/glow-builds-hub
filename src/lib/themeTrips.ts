@@ -67,6 +67,14 @@ const FAQ_NO = [
   { q: "Hva med fly?", a: "For grupper på minst 10 personer hjelper vi også med flyreservasjon." },
 ];
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const FAQ_PT = [
+  { q: "Quantas pessoas são necessárias?", a: "O tamanho do grupo depende do tema e das atividades. Começamos com uma breve conversa sobre seus objetivos e necessidades." },
+  { q: "O programa pode ser alterado?", a: "Sim. O programa é um exemplo e é adaptado ao seu grupo." },
+  { q: "Quando sei se a viagem acontece?", a: "Avisamos três meses antes da partida." },
+  { q: "E os voos?", a: "Para grupos de pelo menos 10 viajantes, também ajudamos com reservas de voos." },
+];
+
 const RIO_FLOW_EN: ThemeTripCopy = {
   title: "Rio Flow Experience: Surf. Move. Live.",
   subtitle: "A small-group journey through Copacabana, Ilha Grande and Recreio.",
