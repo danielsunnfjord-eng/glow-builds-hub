@@ -36,7 +36,7 @@ export interface ThemeTripCopy {
   before: string;
   faqTitle: string;
   faq: { q: string; a: string }[];
-  /** Show the Rio Sport & Tour partner block (Beach Sports Camp). */
+  /** Show the Rio Sports & Tour partner block (Beach Sports Camp). */
   showRioPartner?: boolean;
 }
 
@@ -87,7 +87,7 @@ const RIO_FLOW_EN: ThemeTripCopy = {
   leadersTitle: "Your leaders",
   leaders: [
     { name: "Daniel Lira Figueiredo", role: "Born in Rio and based in Norway since 2010" },
-    { name: "Pablo Cabral Salles", role: "Rio Sport & Tour" },
+    { name: "Pablo Cabral Salles", role: "Rio Sports & Tour" },
   ],
   leadersNote: "When a theme needs special expertise, we bring in specialists from our network.",
   beforeTitle: "Before you book",
@@ -127,7 +127,7 @@ const RIO_FLOW_NO: ThemeTripCopy = {
   leadersTitle: "Reiseledere",
   leaders: [
     { name: "Daniel Lira Figueiredo", role: "Født i Rio og bosatt i Norge siden 2010" },
-    { name: "Pablo Cabral Salles", role: "Rio Sport & Tour" },
+    { name: "Pablo Cabral Salles", role: "Rio Sports & Tour" },
   ],
   leadersNote: "Når et tema krever spesiell kompetanse, henter vi inn eksperter fra nettverket vårt.",
   beforeTitle: "Før du bestiller",
@@ -259,7 +259,7 @@ const BEACH_NO: ThemeTripCopy = {
   leadersTitle: "Reiseledere",
   leaders: [
     { name: "Daniel Lira Figueiredo", role: "Født i Rio og bosatt i Norge siden 2010" },
-    { name: "Pablo Cabral Salles", role: "Volleyballtrener og grunnlegger av Rio Sport & Tour" },
+    { name: "Pablo Cabral Salles", role: "Volleyballtrener og grunnlegger av Rio Sports & Tour" },
   ],
   leadersNote: "Når et tema krever spesiell kompetanse, henter vi inn eksperter fra nettverket vårt.",
   beforeTitle: "Før du bestiller",
@@ -301,7 +301,7 @@ const BEACH_EN: ThemeTripCopy = {
   leadersTitle: "Your leaders",
   leaders: [
     { name: "Daniel Lira Figueiredo", role: "Born in Rio and based in Norway since 2010" },
-    { name: "Pablo Cabral Salles", role: "Volleyball coach and founder of Rio Sport & Tour" },
+    { name: "Pablo Cabral Salles", role: "Volleyball coach and founder of Rio Sports & Tour" },
   ],
   leadersNote: "When a theme needs special expertise, we bring in specialists from our network.",
   beforeTitle: "Before you book",

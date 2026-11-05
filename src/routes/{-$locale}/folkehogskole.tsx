@@ -4,10 +4,10 @@ import { headFor } from "@/lib/seoHead";
 import { guardGroupPage, withGroupNoindex } from "@/lib/groupPageGuard";
 
 const META = {
-  no: { title: "Studietur til Brasil for folkehøgskoler | Fjord & Waves Travel", description: "Trygge og faglig sterke studieturer til Rio for folkehøgskoler, planlagt av en tidligere folkehøgskolelærer sammen med Rio Sport & Tour." },
-  en: { title: "Study Trips to Rio for Folk High Schools | Fjord & Waves Travel", description: "Safe, academically strong study trips to Rio for folk high schools, planned by a former folk high school teacher with Rio Sport & Tour." },
+  no: { title: "Studietur til Brasil for folkehøgskoler | Fjord & Waves Travel", description: "Trygge og faglig sterke studieturer til Rio for folkehøgskoler, planlagt av en tidligere folkehøgskolelærer sammen med Rio Sports & Tour." },
+  en: { title: "Study Trips to Rio for Folk High Schools | Fjord & Waves Travel", description: "Safe, academically strong study trips to Rio for folk high schools, planned by a former folk high school teacher with Rio Sports & Tour." },
   // DRAFT – pending owner review (translated from English)
-  pt: { title: "Viagens de estudo ao Rio para folk high schools | Fjord & Waves", description: "Viagens de estudo seguras e com conteúdo ao Rio para folk high schools, planejadas por um ex-professor de folk high school com a Rio Sport & Tour." },
+  pt: { title: "Viagens de estudo ao Rio para folk high schools | Fjord & Waves", description: "Viagens de estudo seguras e com conteúdo ao Rio para folk high schools, planejadas por um ex-professor de folk high school com a Rio Sports & Tour." },
 };
 
 export const Route = createFileRoute("/{-$locale}/folkehogskole")({
