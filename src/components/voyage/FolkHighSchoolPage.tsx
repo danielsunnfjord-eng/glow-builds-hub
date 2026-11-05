@@ -27,14 +27,14 @@ interface Copy {
 // Owner-supplied Norwegian text (primary version).
 const NO: Copy = {
   h1: "Studietur til Rio for folkehøgskoler",
-  intro: "Jeg har vært folkehøgskolelærer og har planlagt og gjennomført studieturer til Brasil, Spania, Portugal og Sri Lanka. Sammen med Rio Sports & Tour, en lokal partner med over 20 års erfaring, bygger jeg et opplegg rundt linjens faglige mål, og tar meg av resten.",
+  intro: "Jeg har vært folkehøgskolelærer og har planlagt og gjennomført studieturer til Brasil, Spania, Portugal og Sri Lanka. Sammen med Rio Sport & Tour, en lokal partner med over 20 års erfaring, bygger jeg et opplegg rundt linjens faglige mål, og tar meg av resten.",
   proposal: "Be om forslag",
   heroAlt: "Gruppe ved Kristusstatuen i Rio de Janeiro",
   conciergeTitle: "Slik er jeg concierge for din linje",
   concierge: [
     "Én kontaktperson som kjenner folkehøgskolen innenfra, fra første samtale til du er hjemme igjen",
     "Program bygget rundt linjens mål, ikke en ferdig pakke",
-    "Lokale verter i Rio: Rio Sports & Tour planlegger og gjennomfører alt på bakken",
+    "Lokale verter i Rio: Rio Sport & Tour planlegger og gjennomfører alt på bakken",
     "Dokumentasjon til rektor og foresatte: informasjon om forsikring, beredskap og turregler følger med tilbudet",
     "Døgnåpen kontaktlinje under turen. Det er alltid noen tilgjengelig hvis noe skjer. Vi hjelper med å tilpasse opplegget underveis når det er mulig, og med språk og kulturelle utfordringer",
     "Evaluering etter turen og forslag til neste års reise",
@@ -69,7 +69,7 @@ const NO: Copy = {
     { q: "Kan reisen kombineres med flere reisemål?", a: "Ja, gruppebilletter kan settes opp for flere destinasjoner." },
   ],
   aboutTitle: "Om oss",
-  about: "Daniel Lira Figueiredo, tidligere folkehøgskolelærer, har planlagt og gjennomført studieturer til Brasil, Spania, Portugal og Sri Lanka. Rio Sports & Tour har i over 20 år levert opplegg for norske folkehøgskoler, amerikanske colleges, idrettslag og kulturgrupper. Vi har reist med linjer innen beachvolleyball, volleyball, dans, beach sports og sport adventure. Turene har hatt fra 15 til 70 deltakere (elever og lærere) og har vart fra 10 dager til 4 uker.",
+  about: "Daniel Lira Figueiredo, tidligere folkehøgskolelærer, har planlagt og gjennomført studieturer til Brasil, Spania, Portugal og Sri Lanka. Rio Sport & Tour har i over 20 år levert opplegg for norske folkehøgskoler, amerikanske colleges, idrettslag og kulturgrupper. Vi har reist med linjer innen beachvolleyball, volleyball, dans, beach sports og sport adventure. Turene har hatt fra 15 til 70 deltakere (elever og lærere) og har vart fra 10 dager til 4 uker.",
   // HIDDEN until the owner confirms the schools may be named: "blant annet fra Sunnfjord folkehøgskole og Sogndal folkehøgskole"
   before: "Skriv gjerne i meldingsfeltet: skolens navn, linje, antall elever og lærere, ønsket tidspunkt, destinasjon (Rio, fjordene eller begge) og budsjettramme. Da kan jeg sende et konkret forslag raskt.",
   refsLabel: "Referanser fra grupper og skoler",
@@ -79,14 +79,14 @@ const NO: Copy = {
 // Owner-supplied English text.
 const EN: Copy = {
   h1: "Study trips to Rio for folk high schools",
-  intro: "I am a former folk high school teacher and have planned and led study trips to Brazil, Spain, Portugal and Sri Lanka. Together with Rio Sports & Tour, a local partner with over 20 years of experience, I build the trip around your line's goals and take care of the rest.",
+  intro: "I am a former folk high school teacher and have planned and led study trips to Brazil, Spain, Portugal and Sri Lanka. Together with Rio Sport & Tour, a local partner with over 20 years of experience, I build the trip around your line's goals and take care of the rest.",
   proposal: "Request a proposal",
   heroAlt: "Group at Christ the Redeemer, Rio de Janeiro",
   conciergeTitle: "How I work as your concierge",
   concierge: [
     "One contact person who knows the folk high school from the inside, from the first call until you are home",
     "A program built around your line's goals, not a ready-made package",
-    "Local hosts in Rio: Rio Sports & Tour plans and runs everything on the ground",
+    "Local hosts in Rio: Rio Sport & Tour plans and runs everything on the ground",
     "Documents for the principal and parents: insurance, emergency plan and trip rules come with the proposal",
     "A 24/7 contact line during the trip. There is always someone available if something happens. We help adapt the program on the way when possible, and with language and cultural challenges",
     "Evaluation after the trip and a suggestion for next year",
@@ -121,7 +121,7 @@ const EN: Copy = {
     { q: "Can the trip combine several destinations?", a: "Yes, group tickets can be arranged for several destinations." },
   ],
   aboutTitle: "About us",
-  about: "Daniel Lira Figueiredo is a former folk high school teacher who has planned and led study trips to Brazil, Spain, Portugal and Sri Lanka. Rio Sports & Tour has delivered programs for Norwegian folk high schools, American colleges, sports clubs and cultural groups for over 20 years. We have traveled with lines in beach volleyball, volleyball, dance, beach sports and sport adventure. Our trips have had 15 to 70 participants (students and teachers) and have lasted from 10 days to 4 weeks.",
+  about: "Daniel Lira Figueiredo is a former folk high school teacher who has planned and led study trips to Brazil, Spain, Portugal and Sri Lanka. Rio Sport & Tour has delivered programs for Norwegian folk high schools, American colleges, sports clubs and cultural groups for over 20 years. We have traveled with lines in beach volleyball, volleyball, dance, beach sports and sport adventure. Our trips have had 15 to 70 participants (students and teachers) and have lasted from 10 days to 4 weeks.",
   // HIDDEN until the owner confirms the schools may be named: "among others from Sunnfjord and Sogndal folk high schools"
   before: "In the message field, please include your school, line, number of students and teachers, preferred dates, destination (Rio, the fjords or both) and budget range.",
   refsLabel: "Group and school references",
