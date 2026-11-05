@@ -43,3 +43,6 @@
 - [x] Check the uploaded corporate brief, English/Norwegian copy, owner photos, proposal links and hidden unfinished sections; correct the Norwegian follow-up step's phone layout.
 - [x] Theme Travels hub (/trips, /no/reiser) with three trip cards, how-it-works steps and group/theme links.
 - [x] Trip detail pages (Rio Flow, Norway Surf & Fjord, Beach Sports Camp) in EN and NO with program tables, interest form (interest_signups), status tags and SEO.
+- [x] Reply-time promise changed to "1-3 business days" in EN, NO and PT (homepage final call).
+- [x] Language coverage check: full Portuguese added for all five theme trips, folk high school and sports/surf pages, corporate concierge/FAQ/safety links, cookie banner and footer legal links; Norwegian corporate private link fixed. Translations marked DRAFT for owner review.
+- [ ] Remaining English-only content (owner decision): legal page (privacy/terms), utility pages (thank-you, unsubscribe, reset password, login), catalogue records in the database without Portuguese/Norwegian fields, and admin/editor tools.
