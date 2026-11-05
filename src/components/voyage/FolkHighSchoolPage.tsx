@@ -154,10 +154,10 @@ export default function FolkHighSchoolPage() {
           </div>
         </section>
 
-        <section className={section}>
-          <div className="mx-auto max-w-3xl">
+        <section className={`bg-parchment-2 ${section}`}>
+          <div className="mx-auto max-w-5xl">
             <h2 className={h2}>{c.aboutTitle}</h2>
-            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
+            <p className="max-w-4xl text-lg leading-relaxed text-ink-2">{c.about}</p>
           </div>
         </section>
 
