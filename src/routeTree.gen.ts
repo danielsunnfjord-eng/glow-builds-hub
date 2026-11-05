@@ -44,7 +44,6 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as Char123LocaleChar125CatalogueIndexRouteImport } from './routes/{-$locale}/catalogue/index'
 import { Route as Char123LocaleChar125CatalogueSlugRouteImport } from './routes/{-$locale}/catalogue/$slug'
 import { Route as Char123LocaleChar125CatalogueSuccessRouteImport } from './routes/{-$locale}/catalogue/success'
-import { Route as Char123LocaleChar125DestinationsIndexRouteImport } from './routes/{-$locale}/destinations/index'
 import { Route as Char123LocaleChar125DestinationsNorwayRouteImport } from './routes/{-$locale}/destinations/norway'
 import { Route as Char123LocaleChar125ItinerariesShopIndexRouteImport } from './routes/{-$locale}/itineraries-shop/index'
 import { Route as Char123LocaleChar125ItinerariesShopSlugRouteImport } from './routes/{-$locale}/itineraries-shop/$slug'
@@ -262,12 +261,6 @@ const Char123LocaleChar125CatalogueSuccessRoute =
     path: '/catalogue/success',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
-const Char123LocaleChar125DestinationsIndexRoute =
-  Char123LocaleChar125DestinationsIndexRouteImport.update({
-    id: '/destinations/',
-    path: '/destinations/',
-    getParentRoute: () => Char123LocaleChar125Route,
-  } as any)
 const Char123LocaleChar125DestinationsNorwayRoute =
   Char123LocaleChar125DestinationsNorwayRouteImport.update({
     id: '/destinations/norway',
@@ -378,7 +371,6 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
   '/{-$locale}/trips/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue/': typeof Char123LocaleChar125CatalogueIndexRoute
-  '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes/': typeof Char123LocaleChar125RoutesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -426,7 +418,6 @@ export interface FileRoutesByTo {
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
   '/{-$locale}/trips/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue': typeof Char123LocaleChar125CatalogueIndexRoute
-  '/{-$locale}/destinations': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes': typeof Char123LocaleChar125RoutesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -476,7 +467,6 @@ export interface FileRoutesById {
   '/{-$locale}/trip/$token': typeof Char123LocaleChar125TripTokenRoute
   '/{-$locale}/trips_/$slug': typeof Char123LocaleChar125TripsSlugRoute
   '/{-$locale}/catalogue/': typeof Char123LocaleChar125CatalogueIndexRoute
-  '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes/': typeof Char123LocaleChar125RoutesIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -527,7 +517,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/trip/$token'
     | '/{-$locale}/trips/$slug'
     | '/{-$locale}/catalogue/'
-    | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
     | '/{-$locale}/routes/'
     | '/lovable/email/transactional/preview'
@@ -575,7 +564,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/trip/$token'
     | '/{-$locale}/trips/$slug'
     | '/{-$locale}/catalogue'
-    | '/{-$locale}/destinations'
     | '/{-$locale}/itineraries-shop'
     | '/{-$locale}/routes'
     | '/lovable/email/transactional/preview'
@@ -624,7 +612,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/trip/$token'
     | '/{-$locale}/trips_/$slug'
     | '/{-$locale}/catalogue/'
-    | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
     | '/{-$locale}/routes/'
     | '/lovable/email/transactional/preview'
@@ -888,13 +875,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125CatalogueSuccessRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
-    '/{-$locale}/destinations/': {
-      id: '/{-$locale}/destinations/'
-      path: '/destinations'
-      fullPath: '/{-$locale}/destinations/'
-      preLoaderRoute: typeof Char123LocaleChar125DestinationsIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125Route
-    }
     '/{-$locale}/destinations/norway': {
       id: '/{-$locale}/destinations/norway'
       path: '/destinations/norway'
@@ -1013,7 +993,6 @@ interface Char123LocaleChar125RouteChildren {
   Char123LocaleChar125TripTokenRoute: typeof Char123LocaleChar125TripTokenRoute
   Char123LocaleChar125TripsSlugRoute: typeof Char123LocaleChar125TripsSlugRoute
   Char123LocaleChar125CatalogueIndexRoute: typeof Char123LocaleChar125CatalogueIndexRoute
-  Char123LocaleChar125DestinationsIndexRoute: typeof Char123LocaleChar125DestinationsIndexRoute
   Char123LocaleChar125ItinerariesShopIndexRoute: typeof Char123LocaleChar125ItinerariesShopIndexRoute
   Char123LocaleChar125RoutesIndexRoute: typeof Char123LocaleChar125RoutesIndexRoute
 }
@@ -1067,8 +1046,6 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
   Char123LocaleChar125TripsSlugRoute: Char123LocaleChar125TripsSlugRoute,
   Char123LocaleChar125CatalogueIndexRoute:
     Char123LocaleChar125CatalogueIndexRoute,
-  Char123LocaleChar125DestinationsIndexRoute:
-    Char123LocaleChar125DestinationsIndexRoute,
   Char123LocaleChar125ItinerariesShopIndexRoute:
     Char123LocaleChar125ItinerariesShopIndexRoute,
   Char123LocaleChar125RoutesIndexRoute: Char123LocaleChar125RoutesIndexRoute,
