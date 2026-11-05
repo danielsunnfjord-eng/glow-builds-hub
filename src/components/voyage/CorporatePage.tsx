@@ -138,7 +138,6 @@ function Cta({ label }: { label: string }) {
 export default function CorporatePage() {
   const locale = currentLocale();
   const c = COPY[locale];
-  const c = locale === "pt" ? PT : locale === "no" ? NO : EN;
   const h2 = "mb-10 font-serif text-[clamp(1.8rem,3vw,2.6rem)] font-bold text-ink";
   const section = "px-16 py-20 max-md:px-6 max-md:py-14";
 
@@ -212,7 +211,8 @@ export default function CorporatePage() {
             {c.beforeTitle && <h2 className="mb-4 font-serif text-2xl font-bold text-ink">{c.beforeTitle}</h2>}
             <p className="mb-8 leading-relaxed text-ink-2">{c.before}</p>
             <Cta label={c.proposal} />
-            {c.privateLink && <p className="mt-8 text-sm"><a href={localePath("/private-travel", locale)} className="text-ink-2 underline underline-offset-4">{c.privateLink}</a></p>}
+            {c.safety && <p className="mt-8 text-sm"><a href={localePath("/safety", locale)} className="text-ink-2 underline underline-offset-4">{c.safety}</a></p>}
+            {c.privateLink && <p className="mt-4 text-sm"><a href={localePath("/private-travel", locale)} className="text-ink-2 underline underline-offset-4">{c.privateLink}</a></p>}
           </div>
         </section>
       </main>
