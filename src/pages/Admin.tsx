@@ -18,6 +18,7 @@ import CatalogShopManager from "@/components/voyage/CatalogShopManager";
 import RequestItineraryDialog from "@/components/voyage/RequestItineraryDialog";
 import ProjectItineraryDialog from "@/components/voyage/ProjectItineraryDialog";
 import { Sparkles, FileText } from "lucide-react";
+import ThemeWishesPanel from "@/components/admin/ThemeWishesPanel";
 
 type ItineraryStatus = "new" | "in_progress" | "delivered" | "revision";
 type PaymentStatus = "pending" | "paid" | "refunded";
@@ -668,6 +669,7 @@ const AdminDashboard = () => {
                   })}
                 </div>
               )}
+              <ThemeWishesPanel />
             </div>
           ) : activeTab === "purchases" ? (
             <div>

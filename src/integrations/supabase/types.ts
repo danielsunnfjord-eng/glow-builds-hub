@@ -942,6 +942,39 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_travel_wishes: {
+        Row: {
+          consent: boolean
+          consent_at: string
+          created_at: string
+          email: string
+          id: string
+          locale: string
+          name: string
+          wish: string
+        }
+        Insert: {
+          consent: boolean
+          consent_at?: string
+          created_at?: string
+          email: string
+          id?: string
+          locale: string
+          name: string
+          wish: string
+        }
+        Update: {
+          consent?: boolean
+          consent_at?: string
+          created_at?: string
+          email?: string
+          id?: string
+          locale?: string
+          name?: string
+          wish?: string
+        }
+        Relationships: []
+      }
       traveler_personas: {
         Row: {
           created_at: string
