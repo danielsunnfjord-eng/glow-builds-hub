@@ -28,10 +28,10 @@ export type GroupPageKey = "folkHighSchools" | "sportsAndSurf" | "corporate" | "
  * left out of the sitemap); it still opens in the preview for review.
  */
 export const LIVE_GROUP_PAGES: Record<GroupPageKey, boolean> = {
-  folkHighSchools: false,
-  sportsAndSurf: false,
-  corporate: false,
-  safety: false,
+  folkHighSchools: true,
+  sportsAndSurf: true,
+  corporate: true,
+  safety: true,
 };
 
 export function isGroupPageAvailable(page: GroupPageKey, isProduction: boolean): boolean {
