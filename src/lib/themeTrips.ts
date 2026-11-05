@@ -154,6 +154,46 @@ const RIO_FLOW_NO: ThemeTripCopy = {
   // HIDDEN FAQ (awaiting owner's answers): "Trenger jeg surfeerfaring?" and "Kan jeg reise alene?"
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const RIO_FLOW_PT: ThemeTripCopy = {
+  title: "Rio Flow Experience: Surf. Move. Live.",
+  subtitle: "Uma viagem em pequeno grupo por Copacabana, Ilha Grande e Recreio.",
+  overview:
+    "Esta não é uma viagem típica ao Rio. Você acorda perto do oceano, surfa, se move pela cidade com leveza e entra no ritmo natural do Rio. Sem pressa e sem excesso de planejamento, apenas flow. Com orientação local, você vive a cidade além da superfície: os lugares certos na hora certa. Grupos pequenos, cuidadosamente selecionados. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription:
+    "Uma viagem em pequeno grupo de surf e cidade por Copacabana, Ilha Grande e Recreio, com anfitriões locais. Registre seu interesse – sem pagamento, sem compromisso.",
+  duration: "10 dias",
+  destination: "Rio de Janeiro, Brasil",
+  periods: ["junho a agosto de 2027", "setembro a outubro de 2027", "dezembro de 2027 a janeiro de 2028"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Sessão de surf matinal no Arpoador. Trilha até o Morro da Urca e bondinho até o Pão de Açúcar no pôr do sol"],
+    ["2", "SUP ao nascer do sol em Copacabana (saída cedo). Cristo Redentor, depois Lapa com a Escadaria Selarón e os Arcos da Lapa. Almoço perto do Museu do Amanhã. Tarde livre"],
+    ["3", "Manhã livre com surf ou trilha opcionais. Saída noturna em grupo: petiscos, drinks e música"],
+    ["4", "Dia livre com sugestões: Forte do Leme, trilha do Dois Irmãos, um churrasco tradicional"],
+    ["5", "Último surf no Arpoador, check-out e viagem para Ilha Grande. Caminhada curta no circuito de Abraão e jantar na praia"],
+    ["6", "Ilha Grande, você escolhe: passeio de barco de dia inteiro às lagoas para snorkel, ou a praia de Lopes Mendes"],
+    ["7", "Barco de manhã de volta ao continente e traslado para Recreio. Tarde na praia da Macumba"],
+    ["8", "Praia do Secreto na maré baixa e Mirante do Roncador. Surf no pôr do sol"],
+    ["9", "Surf ou uma atividade de sua escolha. Trilha à tarde até a Pedra do Telégrafo (moderada, cerca de 3,5 km ida e volta, 40 a 60 minutos de subida)"],
+    ["10", "Um dia para você planejar, depois partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Copacabana (por exemplo Ritz Copacabana, Pestana Rio Atlântica ou Grand Mercure Copacabana), Ilha Grande (O Sítio) e Recreio (KS Beach Hotel). Estes são exemplos. A escolha final é confirmada por partida.",
+  leadersTitle: "Líderes da viagem",
+  leaders: [
+    { name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" },
+    { name: "Pablo Cabral Salles", role: "Rio Sport & Tour" },
+  ],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before:
+    "Inícios cedo (SUP ao nascer do sol). Trilhas moderadas. A temperatura do mar fica em torno de 18 a 22 °C no inverno brasileiro (junho a agosto) e mais quente no restante do ano. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+  // HIDDEN FAQ (awaiting owner's answers): "Preciso ter experiência com surf?" and "Posso vir sozinho?"
+};
+
 const NORWAY_EN: ThemeTripCopy = {
   title: "Norway Surf & Fjord Week",
   subtitle: "Surf at Stad and travel through Nordfjord: sea cliffs, Viking history, glacier valleys and quiet fjords. The surf and fjord season runs April to September.",
