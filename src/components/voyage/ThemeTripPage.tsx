@@ -6,7 +6,6 @@ import LocalPartnerRio from "./LocalPartnerRio";
 import { StatusTag } from "./ThemeTripsHub";
 import { TwoColTable } from "./GroupBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { supabase } from "@/integrations/supabase/client";
 import { currentLocale, localePath } from "@/lib/locale";
 import { THEME_COPY, type ThemeTrip } from "@/lib/themeTrips";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
@@ -33,15 +32,23 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setState("sending");
-    const { error } = await supabase.from("interest_signups" as never).insert({
-      trip: trip.slug,
-      period,
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim() || null,
-      locale,
-    } as never);
-    setState(error ? "error" : "done");
+    try {
+      const res = await fetch("/api/public/interest-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trip: trip.slug,
+          period,
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim() || null,
+          locale,
+        }),
+      });
+      setState(res.ok ? "done" : "error");
+    } catch {
+      setState("error");
+    }
   }
 
   const inputCls =

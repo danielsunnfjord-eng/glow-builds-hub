@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 
 // Branded one-click unsubscribe page. The email footer links here with a
@@ -32,17 +32,24 @@ function UnsubscribeInner() {
     token ? "checking" : "invalid",
   );
 
-  useState(() => {
+  useEffect(() => {
     if (!token) return;
+    let cancelled = false;
     fetch(`/email/unsubscribe?token=${encodeURIComponent(token)}`)
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
+        if (cancelled) return;
         if (res.ok && data.valid) setState("confirm");
         else if (data.reason === "already_unsubscribed") setState("already");
         else setState("invalid");
       })
-      .catch(() => setState("error"));
-  });
+      .catch(() => {
+        if (!cancelled) setState("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   async function confirm() {
     try {
