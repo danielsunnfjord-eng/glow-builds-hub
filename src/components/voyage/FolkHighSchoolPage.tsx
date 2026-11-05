@@ -155,6 +155,13 @@ export default function FolkHighSchoolPage() {
         </section>
 
         <section className={section}>
+          <div className="mx-auto max-w-3xl">
+            <h2 className={h2}>{c.aboutTitle}</h2>
+            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
+          </div>
+        </section>
+
+        <section className={section}>
           <div className="mx-auto max-w-5xl">
             <h2 className={h2}>{c.conciergeTitle}</h2>
             <ul className="grid gap-x-10 gap-y-5 md:grid-cols-2">
@@ -198,13 +205,6 @@ export default function FolkHighSchoolPage() {
               <h2 className={h2}>{c.priceTitle}</h2>
               <p className="text-lg leading-relaxed text-ink-2">{c.price}</p>
             </div>
-          </div>
-        </section>
-
-        <section className={section}>
-          <div className="mx-auto max-w-3xl">
-            <h2 className={h2}>{c.aboutTitle}</h2>
-            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
           </div>
         </section>
 
