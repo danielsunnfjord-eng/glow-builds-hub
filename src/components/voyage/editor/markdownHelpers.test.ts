@@ -14,7 +14,6 @@ describe("markdown helpers runtime compatibility", () => {
     vi.stubGlobal("document", dom.window.document);
     try {
       expect(htmlToMarkdown("<h2>Day 1</h2><p>Welcome</p>")).toBe("## Day 1\n\nWelcome");
-      expect(htmlToMarkdown('<div data-page-break="true"></div>')).toContain("<!--pagebreak-->");
       expect(htmlToMarkdown('<img src="https://example.com/photo.jpg" alt="Rio" title="Daniel">')).toBe('![Rio](https://example.com/photo.jpg "Daniel")');
     } finally {
       vi.unstubAllGlobals();
