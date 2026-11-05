@@ -20,7 +20,7 @@ export default function PrivateTravel() {
     <div>
       <Navbar />
       <main>
-        <div className="bg-parchment pt-36 px-6 md:px-16">
+        <div className="bg-parchment pt-28 md:pt-44 px-6 md:px-16">
           <div className="max-w-[1200px] mx-auto">
             <a
               href={localePath("/", locale)}
