@@ -11,6 +11,12 @@ const Footer = () => {
   const { t } = useTranslation();
   const locale = currentLocale();
   const copy = navigationCopy[locale];
+  // Legal link labels per language (Privacy/Terms/Cookies were English-only before).
+  const legal = {
+    en: { privacy: "Privacy", terms: "Terms", cookies: "Cookies" },
+    no: { privacy: "Personvern", terms: "Vilkår", cookies: "Informasjonskapsler" },
+    pt: { privacy: "Privacidade", terms: "Termos", cookies: "Cookies" },
+  }[locale] ?? { privacy: "Privacy", terms: "Terms", cookies: "Cookies" };
   const linkClass = "block text-[0.82rem] text-voyage-white/50 hover:text-voyage-white transition-colors mb-2.5 text-left";
 
   return (
@@ -47,9 +53,9 @@ const Footer = () => {
       <div className="bg-ink-2 px-16 py-5 flex justify-between items-center border-t border-voyage-white/[0.06] max-md:px-6 max-md:flex-col max-md:gap-2">
         <p className="text-[0.72rem] text-voyage-white/25">{t("footer.rights")}</p>
         <div className="flex items-center gap-5">
-          <Link to="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Privacy</Link>
-          <Link to="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Terms</Link>
-          <Button variant="ghost" onClick={openCookieSettings} className="h-auto p-0 text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 hover:bg-transparent">Cookies</Button>
+          <Link to="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">{legal.privacy}</Link>
+          <Link to="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">{legal.terms}</Link>
+          <Button variant="ghost" onClick={openCookieSettings} className="h-auto p-0 text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 hover:bg-transparent">{legal.cookies}</Button>
         </div>
       </div>
     </>

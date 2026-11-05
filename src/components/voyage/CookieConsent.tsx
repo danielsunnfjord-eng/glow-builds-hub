@@ -80,6 +80,7 @@ const savePrefs = (p: Prefs) => {
 };
 
 const CookieConsent = () => {
+  const c = COPY[currentLocale()] ?? COPY.en;
   const [open, setOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -119,11 +120,10 @@ const CookieConsent = () => {
         {!showSettings ? (
           <div className="p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5">
             <div className="flex-1">
-              <p className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-2">Cookies</p>
+              <p className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-2">{c.eyebrow}</p>
               <p className="text-sm text-voyage-white/75 leading-relaxed">
-                I use essential cookies to make this site work and, with your consent, optional
-                cookies to understand how it's used. Read more in the{" "}
-                <a href={localePath("/privacy", currentLocale())} className="text-gold hover:underline">Privacy Policy</a>.
+                {c.banner}
+                <a href={localePath("/privacy", currentLocale())} className="text-gold hover:underline">{c.privacyLabel}</a>.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">
@@ -131,35 +131,34 @@ const CookieConsent = () => {
                 onClick={() => setShowSettings(true)}
                 className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
-                Manage
+                {c.manage}
               </button>
               <button
                 onClick={() => accept(false, false)}
                 className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
-                Reject optional
+                {c.rejectOptional}
               </button>
               <button
                 onClick={() => accept(true, true)}
                 className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-xs transition-colors"
               >
-                Accept all
+                {c.acceptAll}
               </button>
             </div>
           </div>
         ) : (
           <div className="p-6 md:p-7">
-            <p className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-2">Cookie preferences</p>
-            <h3 className="font-serif text-xl text-voyage-white mb-4">Manage your cookies</h3>
+            <p className="text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-gold-2 mb-2">{c.prefsEyebrow}</p>
+            <h3 className="font-serif text-xl text-voyage-white mb-4">{c.prefsTitle}</h3>
 
             <div className="space-y-3 mb-6">
               <label className="flex items-start gap-3 p-4 rounded-xs border border-voyage-white/10 bg-voyage-white/[0.02]">
                 <input type="checkbox" checked readOnly className="mt-1 accent-gold" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-voyage-white">Essential</p>
+                  <p className="text-sm font-medium text-voyage-white">{c.essential}</p>
                   <p className="text-xs text-voyage-white/55 mt-1">
-                    Required for the site to function: language preference, secure sessions and
-                    form submissions. Always on.
+                    {c.essentialDesc}
                   </p>
                 </div>
               </label>
@@ -172,9 +171,9 @@ const CookieConsent = () => {
                   className="mt-1 accent-gold"
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-voyage-white">Analytics</p>
+                  <p className="text-sm font-medium text-voyage-white">{c.analytics}</p>
                   <p className="text-xs text-voyage-white/55 mt-1">
-                    Aggregate, anonymous usage data to help me improve the site.
+                    {c.analyticsDesc}
                   </p>
                 </div>
               </label>
@@ -187,10 +186,9 @@ const CookieConsent = () => {
                   className="mt-1 accent-gold"
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-voyage-white">Marketing</p>
+                  <p className="text-sm font-medium text-voyage-white">{c.marketing}</p>
                   <p className="text-xs text-voyage-white/55 mt-1">
-                    Used to measure newsletter and campaign performance. None active without
-                    your consent.
+                    {c.marketingDesc}
                   </p>
                 </div>
               </label>
@@ -201,13 +199,13 @@ const CookieConsent = () => {
                 onClick={() => accept(false, false)}
                 className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-medium border border-voyage-white/20 text-voyage-white/80 hover:bg-voyage-white/5 rounded-xs transition-colors"
               >
-                Reject optional
+                {c.rejectOptional}
               </button>
               <button
                 onClick={() => accept(analytics, marketing)}
                 className="px-4 py-2.5 text-[0.7rem] tracking-[0.12em] uppercase font-semibold bg-gold text-ink hover:bg-gold-2 rounded-xs transition-colors"
               >
-                Save preferences
+                {c.save}
               </button>
             </div>
           </div>
