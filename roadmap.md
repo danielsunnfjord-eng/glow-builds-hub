@@ -1,3 +1,7 @@
+# Theme travel wishes
+- [ ] Add a simple localized wish form from the existing Tell us link, store wishes and email the owner.
+- [ ] Verify form submission, stored wish and sent email; remove the test wish.
+
 # Corporate content update
 - [x] Apply November fixes: homepage copy, no-JavaScript fallback, Groups sharing details, partner spelling and public footer.
 - [x] Verify all nine requested URLs have their own content and metadata; none missing.
