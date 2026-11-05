@@ -4,7 +4,8 @@ import Footer from "./Footer";
 import { NumberedSteps } from "./GroupBlocks";
 import { currentLocale, localePath } from "@/lib/locale";
 import { THEME_COPY, THEME_TRIPS } from "@/lib/themeTrips";
-import { CALENDLY_URL, GROUP_INTAKE_URL } from "@/lib/travelNavigation";
+import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
+import ThemeWishForm from "./ThemeWishForm";
 import { HOME_COPY } from "./home/homeCopy";
 import rioFlowSurf from "@/assets/rio_flow_surf.jpg.asset.json";
 import stadtHoddevik from "@/assets/stadt_hoddevik.jpg.asset.json";
@@ -76,9 +77,7 @@ export default function ThemeTripsHub() {
             <a href={GROUP_INTAKE_URL} {...ext} className="font-semibold text-gold underline-offset-4 hover:underline">
               {c.ownGroup}
             </a>
-            <a href={CALENDLY_URL} {...ext} className="font-semibold text-gold underline-offset-4 hover:underline">
-              {c.ownTheme}
-            </a>
+            <ThemeWishForm label={c.ownTheme} />
           </div>
         </div>
       </main>
