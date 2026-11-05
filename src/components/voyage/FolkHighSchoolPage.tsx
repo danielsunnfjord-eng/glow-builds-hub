@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import LocalPartnerRio from "./LocalPartnerRio";
 import Reviews from "./Reviews";
 import GroupReferences from "./GroupReferences";
-import { ProposalCta, TwoColTable, NumberedSteps } from "./GroupBlocks";
+import { ProposalCta, NumberedSteps } from "./GroupBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { currentLocale, localePath } from "@/lib/locale";
 import { isGroupPageAvailable } from "@/lib/travelNavigation";
