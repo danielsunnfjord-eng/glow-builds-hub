@@ -1,3 +1,4 @@
+import type { Locale } from "./locale";
 import type { ThemeTripCopy, ThemeTrip } from "./themeTrips";
 
 const CARNAVAL_EN: ThemeTripCopy = {
