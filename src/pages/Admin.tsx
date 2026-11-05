@@ -669,8 +669,8 @@ const AdminDashboard = () => {
                   })}
                 </div>
               )}
-            </div>
               <ThemeWishesPanel />
+            </div>
           ) : activeTab === "purchases" ? (
             <div>
               <div className="flex justify-between items-start mb-8 max-md:flex-col max-md:gap-4">
