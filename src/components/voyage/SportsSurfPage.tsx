@@ -45,7 +45,7 @@ const EN: Copy = {
 
 const NO: Copy = {
   h1: "Treningsreiser og camper for idrettslag og klubber",
-  intro: "Trening og kamper mot lokale klubber, for ungdoms- og breddelag. Rio Sport & Tour driver eget beachvolleysenter i Leme og har vært vert for lag og grupper i over 20 år.",
+  intro: "Trening og kamper mot lokale klubber, for ungdoms- og breddelag, med en erfaren lokal DMC som vert med over 20 års erfaring.", // DRAFT translation
   proposal: "Be om forslag",
   campTitle: "Hva en camp kan inneholde",
   camp: [
