@@ -7,11 +7,11 @@ import { THEME_COPY, THEME_TRIPS } from "@/lib/themeTrips";
 import { CALENDLY_URL, GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import { HOME_COPY } from "./home/homeCopy";
 import surf from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
-import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
+import stadtHoddevik from "@/assets/stadt_hoddevik.jpg.asset.json";
 import beach from "@/assets/home/praia_do_flamengo.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
-const CARD_IMAGES = [surf.url, fjord.url, beach.url];
+const CARD_IMAGES = [surf.url, stadtHoddevik.url, beach.url];
 
 /** Status tag shown on every trip card and trip page. */
 export function StatusTag({ label }: { label: string }) {
