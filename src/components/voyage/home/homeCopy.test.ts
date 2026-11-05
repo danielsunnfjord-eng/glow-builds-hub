@@ -11,8 +11,8 @@ describe("homepage rules", () => {
       typeof v === "string" ? [v] : v && typeof v === "object" ? Object.values(v).flatMap(strings) : [];
     for (const s of strings(HOME_COPY)) expect(s).not.toMatch(/[[\]]/);
   });
-  it("final call promises a reply within one business day", () => {
-    expect(HOME_COPY.en.finalTitle).toBe("Tell us about your group. I reply within one business day.");
+  it("final call promises a reply within 1-3 business days", () => {
+    expect(HOME_COPY.en.finalTitle).toBe("Tell us about your group. I reply within 1-3 business days.");
   });
   it("homepage shows only the two Rio testimonials", () => {
     expect(HOME_TESTIMONIAL_AUTHORS).toEqual(["Ingeborg Sol Fure", "Åge Avedal"]);
