@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as Char123LocaleChar125RouteImport } from './routes/{-$locale}'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as Char123LocaleChar125AboutRouteImport } from './routes/{-$locale}/about'
 import { Route as Char123LocaleChar125AdminRouteImport } from './routes/{-$locale}/admin'
@@ -37,6 +39,8 @@ import { Route as Char123LocaleChar125ThankYouRouteImport } from './routes/{-$lo
 import { Route as Char123LocaleChar125TripsRouteImport } from './routes/{-$locale}/trips'
 import { Route as Char123LocaleChar125TrygghetRouteImport } from './routes/{-$locale}/trygghet'
 import { Route as Char123LocaleChar125UnsubscribeRouteImport } from './routes/{-$locale}/unsubscribe'
+import { Route as ApiPublicInterestSignupRouteImport } from './routes/api/public/interest-signup'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as Char123LocaleChar125CatalogueIndexRouteImport } from './routes/{-$locale}/catalogue/index'
 import { Route as Char123LocaleChar125CatalogueSlugRouteImport } from './routes/{-$locale}/catalogue/$slug'
 import { Route as Char123LocaleChar125CatalogueSuccessRouteImport } from './routes/{-$locale}/catalogue/success'
@@ -50,10 +54,22 @@ import { Route as Char123LocaleChar125RoutesIndexRouteImport } from './routes/{-
 import { Route as Char123LocaleChar125RoutesSlugRouteImport } from './routes/{-$locale}/routes/$slug'
 import { Route as Char123LocaleChar125TripTokenRouteImport } from './routes/{-$locale}/trip.$token'
 import { Route as Char123LocaleChar125TripsSlugRouteImport } from './routes/{-$locale}/trips_.$slug'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125Route = Char123LocaleChar125RouteImport.update({
   id: '/{-$locale}',
   path: '/{-$locale}',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char123LocaleChar125IndexRoute =
@@ -218,6 +234,16 @@ const Char123LocaleChar125UnsubscribeRoute =
     path: '/unsubscribe',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const ApiPublicInterestSignupRoute = ApiPublicInterestSignupRouteImport.update({
+  id: '/api/public/interest-signup',
+  path: '/api/public/interest-signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125CatalogueIndexRoute =
   Char123LocaleChar125CatalogueIndexRouteImport.update({
     id: '/catalogue/',
@@ -296,9 +322,23 @@ const Char123LocaleChar125TripsSlugRoute =
     path: '/trips/$slug',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
+  '/unsubscribe': typeof UnsubscribeRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteWithChildren
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
@@ -326,6 +366,8 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
@@ -339,8 +381,12 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes/': typeof Char123LocaleChar125RoutesIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
+  '/unsubscribe': typeof UnsubscribeRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
@@ -368,6 +414,8 @@ export interface FileRoutesByTo {
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
+  '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
@@ -381,10 +429,14 @@ export interface FileRoutesByTo {
   '/{-$locale}/destinations': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes': typeof Char123LocaleChar125RoutesIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/unsubscribe': typeof UnsubscribeRoute
   '/{-$locale}': typeof Char123LocaleChar125RouteWithChildren
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
@@ -412,6 +464,8 @@ export interface FileRoutesById {
   '/{-$locale}/trygghet': typeof Char123LocaleChar125TrygghetRoute
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
   '/{-$locale}/destinations/norway': typeof Char123LocaleChar125DestinationsNorwayRoute
@@ -425,11 +479,15 @@ export interface FileRoutesById {
   '/{-$locale}/destinations/': typeof Char123LocaleChar125DestinationsIndexRoute
   '/{-$locale}/itineraries-shop/': typeof Char123LocaleChar125ItinerariesShopIndexRoute
   '/{-$locale}/routes/': typeof Char123LocaleChar125RoutesIndexRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/unsubscribe'
     | '/{-$locale}'
+    | '/email/unsubscribe'
     | '/{-$locale}/about'
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
@@ -457,6 +515,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
+    | '/api/public/interest-signup'
+    | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
     | '/{-$locale}/destinations/norway'
@@ -470,8 +530,12 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
     | '/{-$locale}/routes/'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/unsubscribe'
+    | '/email/unsubscribe'
     | '/{-$locale}/about'
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
@@ -499,6 +563,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}'
+    | '/api/public/interest-signup'
+    | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
     | '/{-$locale}/destinations/norway'
@@ -512,9 +578,13 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations'
     | '/{-$locale}/itineraries-shop'
     | '/{-$locale}/routes'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   id:
     | '__root__'
+    | '/unsubscribe'
     | '/{-$locale}'
+    | '/email/unsubscribe'
     | '/{-$locale}/about'
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
@@ -542,6 +612,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/trygghet'
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
+    | '/api/public/interest-signup'
+    | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
     | '/{-$locale}/destinations/norway'
@@ -555,19 +627,41 @@ export interface FileRouteTypes {
     | '/{-$locale}/destinations/'
     | '/{-$locale}/itineraries-shop/'
     | '/{-$locale}/routes/'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  UnsubscribeRoute: typeof UnsubscribeRoute
   Char123LocaleChar125Route: typeof Char123LocaleChar125RouteWithChildren
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  ApiPublicInterestSignupRoute: typeof ApiPublicInterestSignupRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}': {
       id: '/{-$locale}'
       path: '/{-$locale}'
       fullPath: '/{-$locale}'
       preLoaderRoute: typeof Char123LocaleChar125RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/{-$locale}/': {
@@ -759,6 +853,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125UnsubscribeRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
+    '/api/public/interest-signup': {
+      id: '/api/public/interest-signup'
+      path: '/api/public/interest-signup'
+      fullPath: '/api/public/interest-signup'
+      preLoaderRoute: typeof ApiPublicInterestSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}/catalogue/': {
       id: '/{-$locale}/catalogue/'
       path: '/catalogue'
@@ -849,6 +957,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/{-$locale}/trips/$slug'
       preLoaderRoute: typeof Char123LocaleChar125TripsSlugRouteImport
       parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -956,7 +1078,13 @@ const Char123LocaleChar125RouteWithChildren =
   Char123LocaleChar125Route._addFileChildren(Char123LocaleChar125RouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  UnsubscribeRoute: UnsubscribeRoute,
   Char123LocaleChar125Route: Char123LocaleChar125RouteWithChildren,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  ApiPublicInterestSignupRoute: ApiPublicInterestSignupRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
