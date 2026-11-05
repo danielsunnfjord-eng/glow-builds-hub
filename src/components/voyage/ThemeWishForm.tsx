@@ -25,7 +25,7 @@ export default function ThemeWishForm({ label }: { label: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild><Button variant="link" className="h-auto justify-start whitespace-normal p-0 text-left font-semibold text-gold">{label}</Button></DialogTrigger>
-      <DialogContent aria-describedby={undefined} className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg bg-parchment p-6 sm:p-8">
+      <DialogContent aria-describedby={undefined} className="z-[110] max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg bg-parchment p-6 sm:p-8">
         <DialogTitle className="pr-5 font-serif text-3xl leading-tight text-ink tracking-normal">{c.title}</DialogTitle>
         {state === "done" ? <p role="status" className="leading-relaxed text-ink-2">{c.done}</p> : (
           <form onSubmit={submit} className="space-y-4">
