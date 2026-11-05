@@ -1,7 +1,7 @@
 # Corporate content update
-- [ ] Apply November fixes: homepage copy, no-JavaScript fallback, Groups sharing details, partner spelling and public footer.
-- [ ] Verify all nine requested URLs have their own content and metadata.
-- [ ] Expand trip interest forms with phone, group size, audience and mandatory privacy consent; verify storage and owner email.
+- [x] Apply November fixes: homepage copy, no-JavaScript fallback, Groups sharing details, partner spelling and public footer.
+- [x] Verify all nine requested URLs have their own content and metadata; none missing.
+- [x] Expand trip interest forms with phone, group size, audience and mandatory privacy consent; storage and sent owner email verified, test entry removed.
 - [x] Apply supplied English and Norwegian corporate copy, concierge details, two sample tables and answered FAQ; keep unfinished items code-only.
 - [x] Verify three proposal buttons, Safety/private links, language switching and mobile tables; preserve other pages and Portuguese content.
 
