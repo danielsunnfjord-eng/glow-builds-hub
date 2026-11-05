@@ -9,7 +9,7 @@ export default {
   meetDaniel: {
     badge: "Meet Your Advisor",
     title: "Hi, I'm Daniel — your travel designer.",
-    bio: "Brazilian-born, Norway-based since 2010. Trilingual, IATA accredited, and a former folk high school teacher. I spent six years planning and leading study trips to Brazil, Spain, Portugal and Sri Lanka. Today I design journeys for individuals, school groups, sports teams and companies, with trusted local partners on the ground.",
+    bio: "Brazilian-born, Norway-based since 2010. Trilingual, IATA accredited. I have over 10 years experience planning and leading study trips to Brazil, Spain, Portugal and Sri Lanka. Today I design journeys for individuals, school groups, sports teams and companies, with trusted local partners on the ground.",
     cta: "More about Daniel",
   },
   // Navbar

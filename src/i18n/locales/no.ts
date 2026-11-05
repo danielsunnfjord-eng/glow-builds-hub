@@ -9,7 +9,7 @@ export default {
   meetDaniel: {
     badge: "Møt Din Reiserådgiver",
     title: "Hei, jeg er Daniel — din reisedesigner.",
-    bio: "Brasiliansk-født og bosatt i Norge siden 2010. Trespråklig, IATA-akkreditert og tidligere folkehøgskolelærer. I seks år planla og gjennomførte jeg studieturer til Brasil, Spania, Portugal og Sri Lanka. I dag designer jeg reiser for privatpersoner, skoler, idrettslag og bedrifter, sammen med lokale partnere på bakken.",
+    bio: "Brasiliansk-født og bosatt i Norge siden 2010. Trespråklig, IATA-akkreditert. Jeg har over 10 års erfaring med å planlegge og gjennomføre studieturer til Brasil, Spania, Portugal og Sri Lanka. I dag designer jeg reiser for privatpersoner, skoler, idrettslag og bedrifter, sammen med lokale partnere på bakken.",
     cta: "Mer om Daniel",
   },
   nav: {
