@@ -8,10 +8,10 @@ import { CALENDLY_URL, GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import { HOME_COPY } from "./home/homeCopy";
 import rioFlowSurf from "@/assets/rio_flow_surf.jpg.asset.json";
 import stadtHoddevik from "@/assets/stadt_hoddevik.jpg.asset.json";
-import beach from "@/assets/home/praia_do_flamengo.jpg.asset.json";
+import beachCamp from "@/assets/beach_sports_camp.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
-const CARD_IMAGES = [rioFlowSurf.url, stadtHoddevik.url, beach.url];
+const CARD_IMAGES = [rioFlowSurf.url, stadtHoddevik.url, beachCamp.url];
 
 /** Status tag shown on every trip card and trip page. */
 export function StatusTag({ label }: { label: string }) {
