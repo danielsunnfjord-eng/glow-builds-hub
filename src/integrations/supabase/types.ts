@@ -607,33 +607,48 @@ export type Database = {
       }
       interest_signups: {
         Row: {
+          audience: string | null
+          consent: boolean
+          consent_at: string | null
           created_at: string
           email: string
           id: string
           locale: string
           message: string | null
           name: string
+          number_of_people: number | null
           period: string
+          phone: string | null
           trip: string
         }
         Insert: {
+          audience?: string | null
+          consent?: boolean
+          consent_at?: string | null
           created_at?: string
           email: string
           id?: string
           locale?: string
           message?: string | null
           name: string
+          number_of_people?: number | null
           period: string
+          phone?: string | null
           trip: string
         }
         Update: {
+          audience?: string | null
+          consent?: boolean
+          consent_at?: string | null
           created_at?: string
           email?: string
           id?: string
           locale?: string
           message?: string | null
           name?: string
+          number_of_people?: number | null
           period?: string
+          phone?: string | null
           trip?: string
         }
         Relationships: []

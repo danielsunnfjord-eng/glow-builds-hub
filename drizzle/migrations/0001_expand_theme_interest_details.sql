@@ -1,0 +1,3 @@
+ALTER TABLE public.interest_signups ADD COLUMN phone text, ADD COLUMN number_of_people integer, ADD COLUMN audience text, ADD COLUMN consent boolean NOT NULL DEFAULT false, ADD COLUMN consent_at timestamptz;
+ALTER TABLE public.interest_signups ADD CONSTRAINT interest_phone_length CHECK (phone IS NULL OR char_length(phone) <= 40), ADD CONSTRAINT interest_people_positive CHECK (number_of_people IS NULL OR number_of_people > 0), ADD CONSTRAINT interest_audience_valid CHECK (audience IS NULL OR audience IN ('individual','school','club','company')), ADD CONSTRAINT interest_consent_timestamp CHECK (NOT consent OR consent_at IS NOT NULL);
+GRANT ALL ON public.interest_signups TO service_role;
