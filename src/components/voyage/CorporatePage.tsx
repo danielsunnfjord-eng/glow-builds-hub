@@ -9,7 +9,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import fjord from "@/assets/home/sunset_sukkertooppen.jpg.asset.json";
 import museu from "@/assets/home/museu_do_amanha.jpg.asset.json";
 
-// Corporate pages: no Rio Sport & Tour block and no individual traveller testimonials (owner rule).
+// Corporate pages: no Rio Sports & Tour block and no individual traveller testimonials (owner rule).
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 const btnGold = "inline-flex items-center justify-center rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2";
 
