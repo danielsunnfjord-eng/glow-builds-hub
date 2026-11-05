@@ -11,6 +11,8 @@ import { THEME_COPY, type ThemeTrip } from "@/lib/themeTrips";
 import { GROUP_INTAKE_URL } from "@/lib/travelNavigation";
 import daniel from "@/assets/daniel-profile.webp";
 import pablo from "@/assets/home/pablo_rst.jpg.asset.json";
+import { Button } from "@/components/ui/button";
+import { INTEREST_AUDIENCES, INTEREST_FORM_COPY, interestSignupSchema } from "@/lib/interestSignup";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 const LEADER_PHOTOS: Record<string, string> = {
@@ -27,23 +29,28 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
   const [email, setEmail] = useState("");
   const [period, setPeriod] = useState(t.periods[0]);
   const [message, setMessage] = useState("");
+  const [phone, setPhone] = useState("");
+  const [people, setPeople] = useState("1");
+  const [audience, setAudience] = useState<(typeof INTEREST_AUDIENCES)[number]>("individual");
+  const [consent, setConsent] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const fields = INTEREST_FORM_COPY[locale];
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    const parsed = interestSignupSchema.safeParse({
+      trip: trip.slug, period, name, email, phone: phone || null,
+      number_of_people: Number(people), audience, consent, message: message || null, locale,
+    });
+    if (!parsed.success) { setInvalid(true); return; }
+    setInvalid(false);
     setState("sending");
     try {
       const res = await fetch("/api/public/interest-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          trip: trip.slug,
-          period,
-          name: name.trim(),
-          email: email.trim(),
-          message: message.trim() || null,
-          locale,
-        }),
+        body: JSON.stringify(parsed.data),
       });
       setState(res.ok ? "done" : "error");
     } catch {
@@ -58,20 +65,24 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
       <StatusTag label={c.statusTag} />
       <h2 className="mt-4 font-serif text-2xl font-bold text-ink">{c.registerTitle}</h2>
       {state === "done" ? (
-        <p className="mt-4 leading-relaxed text-ink-2">{c.registerDone}</p>
+        <p role="status" className="mt-4 leading-relaxed text-ink-2">{c.registerDone}</p>
       ) : (
         <form onSubmit={submit} className="mt-5 space-y-4">
           <div>
             <label htmlFor="interest-name" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-voyage-muted">
               {c.registerName}
             </label>
-            <input id="interest-name" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
+            <input id="interest-name" autoComplete="name" maxLength={120} required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="interest-email" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-voyage-muted">
               {c.registerEmail}
             </label>
-            <input id="interest-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
+            <input id="interest-email" type="email" autoComplete="email" maxLength={200} required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="interest-phone" className="mb-1 block text-sm font-semibold text-voyage-muted">{fields.phone}</label>
+            <input id="interest-phone" type="tel" autoComplete="tel" maxLength={40} pattern="[+0-9\s().\-]*" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="interest-period" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-voyage-muted">
@@ -86,19 +97,40 @@ function InterestCard({ trip }: { trip: ThemeTrip }) {
             </select>
           </div>
           <div>
+            <label htmlFor="interest-people" className="mb-1 block text-sm font-semibold text-voyage-muted">{fields.people}</label>
+            <input id="interest-people" type="number" min={1} step={1} required value={people} onChange={(e) => setPeople(e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="interest-audience" className="mb-1 block text-sm font-semibold text-voyage-muted">{fields.audience}</label>
+            <select id="interest-audience" required value={audience} onChange={(e) => {
+              const value = INTEREST_AUDIENCES.find((item) => item === e.target.value);
+              if (value) setAudience(value);
+            }} className={inputCls}>
+              {INTEREST_AUDIENCES.map((value) => <option key={value} value={value}>{fields.audiences[value]}</option>)}
+            </select>
+          </div>
+          <div>
             <label htmlFor="interest-message" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-voyage-muted">
               {c.registerMessage}
             </label>
-            <textarea id="interest-message" rows={3} value={message} onChange={(e) => setMessage(e.target.value)} className={inputCls} />
+            <textarea id="interest-message" maxLength={2000} rows={3} value={message} onChange={(e) => setMessage(e.target.value)} className={inputCls} />
           </div>
-          {state === "error" && <p className="text-sm text-red-700">{c.registerError}</p>}
-          <button
+          <div className="flex items-start gap-3">
+            <input id="interest-consent" type="checkbox" required checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-gold" />
+            <div className="text-sm leading-relaxed text-ink-2">
+              <label htmlFor="interest-consent">{fields.consent}</label>{" "}
+              <a href={localePath("/privacy", locale)} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">{fields.privacy}</a>
+            </div>
+          </div>
+          {invalid && <p role="alert" className="text-sm text-destructive">{fields.invalid}</p>}
+          {state === "error" && <p role="alert" className="text-sm text-destructive">{c.registerError}</p>}
+          <Button
             type="submit"
             disabled={state === "sending"}
-            className="w-full rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2 disabled:opacity-60"
+            className="h-auto w-full whitespace-normal rounded-sm bg-gold px-7 py-3.5 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-gold-2 disabled:opacity-60"
           >
             {c.registerSubmit}
-          </button>
+          </Button>
         </form>
       )}
       <p className="mt-4 text-sm text-ink-2">{c.tentativeNote}</p>
