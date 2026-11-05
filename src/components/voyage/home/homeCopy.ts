@@ -33,7 +33,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     explore: "Explore",
     conciergeTitle: "What a concierge travel agent does",
     conciergePoints: ["One personal contact from the first idea to the day you are home.", "Planning built around you or your group.", "Our network with locals guarantee the quality and precision of our services.", "Support during the trip, with a 24/7 contact line.", "A follow-up after you return."],
-    founder: "Brazilian-born, Norway-based since 2010. Trilingual, IATA accredited, and a former folk high school teacher. I am your concierge travel agent: one personal contact from the first idea to the day you are home. I plan private journeys, school and club trips, corporate programs and themed departures, with trusted local partners in Rio and Sogn og Fjordane.",
+    founder: "Born in Brazil and based in Norway since 2010, I combine deep local knowledge of both countries with extensive international travel experience. As an IATA-accredited travel advisor, I serve as your personal concierge from the first idea to the moment you return home. From bespoke leisure travel and premium FIT itineraries to educational, corporate, and special-interest group travel, every journey is carefully designed around your interests, goals, and expectations. My in-depth understanding of Brazilian and Norwegian culture, logistics, and destinations allows me to create authentic experiences with confidence and attention to detail.",
     call: "Book a 20-minute call",
     whatsapp: "Or message on WhatsApp",
     cardsEyebrow: "Who we plan for",
@@ -55,7 +55,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     explore: "Utforsk",
     conciergeTitle: "Hva en concierge-reiserådgiver gjør",
     conciergePoints: ["Én personlig kontakt fra første idé til du er hjemme igjen.", "Planlegging bygget rundt deg eller gruppen din.", "Vårt nettverk med lokale garanterer kvaliteten og presisjonen i tjenestene våre.", "Støtte under reisen, med døgnåpen kontaktlinje.", "Oppfølging etter at du er kommet hjem."],
-    founder: "Brasiliansk-født og bosatt i Norge siden 2010. Trespråklig, IATA-akkreditert og tidligere folkehøgskolelærer. Jeg er din concierge-reiserådgiver: én personlig kontakt fra første idé til du er hjemme igjen. Jeg planlegger privatreiser, skole- og klubbturer, bedriftsprogram og temareiser, sammen med lokale partnere i Rio og Sogn og Fjordane.",
+    // DRAFT translation from the English founder text; reviewed before publishing.
+    founder: "Født i Brasil og bosatt i Norge siden 2010. Jeg kombinerer dyp lokal kunnskap om begge land med omfattende internasjonal reiseerfaring. Som IATA-akkreditert reiserådgiver er jeg din personlige concierge fra første idé til du er hjemme igjen. Fra skreddersydde fritidsreiser og premium FIT-reiser til undervisnings-, bedrifts- og interessegruppereiser – hver reise planlegges nøye rundt dine interesser, mål og forventninger. Min grundige forståelse av brasiliansk og norsk kultur, logistikk og destinasjoner lar meg skape autentiske opplevelser med trygghet og omsorg for detaljene.",
     call: "Book en 20 minutters samtale",
     whatsapp: "Eller send en melding på WhatsApp",
     cardsEyebrow: "Hvem vi planlegger for",
@@ -77,7 +78,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     explore: "Explore",
     conciergeTitle: "O que faz um concierge de viagens",
     conciergePoints: ["Um contato pessoal desde a primeira ideia até o dia em que você volta para casa.", "Planejamento feito para você ou seu grupo.", "Nossa rede com locais garante a qualidade e a precisão dos nossos serviços.", "Apoio durante a viagem, com uma linha de contato 24 horas por dia.", "Acompanhamento após o seu retorno."],
-    founder: "Brasileiro, morando na Noruega desde 2010. Trilíngue, credenciado pela IATA e ex-professor de folkehøgskole. Sou seu concierge de viagens: um contato pessoal desde a primeira ideia até o dia em que você volta para casa. Planejo viagens privadas, viagens para escolas e clubes, programas corporativos e viagens temáticas, com parceiros locais de confiança no Rio e em Sogn og Fjordane.",
+    // DRAFT – pending review: Portuguese translated from the English founder text; the owner reviews before publishing.
+    founder: "Nascido no Brasil e morando na Noruega desde 2010, combino um profundo conhecimento local dos dois países com vasta experiência internacional de viagens. Como consultor de viagens credenciado pela IATA, atuo como seu concierge pessoal desde a primeira ideia até o momento em que você volta para casa. De viagens de lazer sob medida e itinerários FIT premium a viagens em grupo educacionais, corporativas e de interesses especiais, cada jornada é cuidadosamente planejada de acordo com seus interesses, objetivos e expectativas. Minha compreensão aprofundada da cultura, da logística e dos destinos brasileiros e noruegueses me permite criar experiências autênticas com segurança e atenção aos detalhes.",
     call: "Agende uma conversa de 20 minutos",
     whatsapp: "Ou envie uma mensagem pelo WhatsApp",
     cardsEyebrow: "Para quem planejamos",
