@@ -67,6 +67,14 @@ const FAQ_NO = [
   { q: "Hva med fly?", a: "For grupper på minst 10 personer hjelper vi også med flyreservasjon." },
 ];
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const FAQ_PT = [
+  { q: "Quantas pessoas são necessárias?", a: "O tamanho do grupo depende do tema e das atividades. Começamos com uma breve conversa sobre seus objetivos e necessidades." },
+  { q: "O programa pode ser alterado?", a: "Sim. O programa é um exemplo e é adaptado ao seu grupo." },
+  { q: "Quando sei se a viagem acontece?", a: "Avisamos três meses antes da partida." },
+  { q: "E os voos?", a: "Para grupos de pelo menos 10 viajantes, também ajudamos com reservas de voos." },
+];
+
 const RIO_FLOW_EN: ThemeTripCopy = {
   title: "Rio Flow Experience: Surf. Move. Live.",
   subtitle: "A small-group journey through Copacabana, Ilha Grande and Recreio.",
@@ -144,6 +152,46 @@ const RIO_FLOW_NO: ThemeTripCopy = {
   faqTitle: "Vanlige spørsmål",
   faq: FAQ_NO,
   // HIDDEN FAQ (awaiting owner's answers): "Trenger jeg surfeerfaring?" and "Kan jeg reise alene?"
+};
+
+// DRAFT – pending owner review: Portuguese translated from the English.
+const RIO_FLOW_PT: ThemeTripCopy = {
+  title: "Rio Flow Experience: Surf. Move. Live.",
+  subtitle: "Uma viagem em pequeno grupo por Copacabana, Ilha Grande e Recreio.",
+  overview:
+    "Esta não é uma viagem típica ao Rio. Você acorda perto do oceano, surfa, se move pela cidade com leveza e entra no ritmo natural do Rio. Sem pressa e sem excesso de planejamento, apenas flow. Com orientação local, você vive a cidade além da superfície: os lugares certos na hora certa. Grupos pequenos, cuidadosamente selecionados. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription:
+    "Uma viagem em pequeno grupo de surf e cidade por Copacabana, Ilha Grande e Recreio, com anfitriões locais. Registre seu interesse – sem pagamento, sem compromisso.",
+  duration: "10 dias",
+  destination: "Rio de Janeiro, Brasil",
+  periods: ["junho a agosto de 2027", "setembro a outubro de 2027", "dezembro de 2027 a janeiro de 2028"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Sessão de surf matinal no Arpoador. Trilha até o Morro da Urca e bondinho até o Pão de Açúcar no pôr do sol"],
+    ["2", "SUP ao nascer do sol em Copacabana (saída cedo). Cristo Redentor, depois Lapa com a Escadaria Selarón e os Arcos da Lapa. Almoço perto do Museu do Amanhã. Tarde livre"],
+    ["3", "Manhã livre com surf ou trilha opcionais. Saída noturna em grupo: petiscos, drinks e música"],
+    ["4", "Dia livre com sugestões: Forte do Leme, trilha do Dois Irmãos, um churrasco tradicional"],
+    ["5", "Último surf no Arpoador, check-out e viagem para Ilha Grande. Caminhada curta no circuito de Abraão e jantar na praia"],
+    ["6", "Ilha Grande, você escolhe: passeio de barco de dia inteiro às lagoas para snorkel, ou a praia de Lopes Mendes"],
+    ["7", "Barco de manhã de volta ao continente e traslado para Recreio. Tarde na praia da Macumba"],
+    ["8", "Praia do Secreto na maré baixa e Mirante do Roncador. Surf no pôr do sol"],
+    ["9", "Surf ou uma atividade de sua escolha. Trilha à tarde até a Pedra do Telégrafo (moderada, cerca de 3,5 km ida e volta, 40 a 60 minutos de subida)"],
+    ["10", "Um dia para você planejar, depois partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Copacabana (por exemplo Ritz Copacabana, Pestana Rio Atlântica ou Grand Mercure Copacabana), Ilha Grande (O Sítio) e Recreio (KS Beach Hotel). Estes são exemplos. A escolha final é confirmada por partida.",
+  leadersTitle: "Líderes da viagem",
+  leaders: [
+    { name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" },
+    { name: "Pablo Cabral Salles", role: "Rio Sport & Tour" },
+  ],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before:
+    "Inícios cedo (SUP ao nascer do sol). Trilhas moderadas. A temperatura do mar fica em torno de 18 a 22 °C no inverno brasileiro (junho a agosto) e mais quente no restante do ano. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+  // HIDDEN FAQ (awaiting owner's answers): "Preciso ter experiência com surf?" and "Posso vir sozinho?"
 };
 
 const NORWAY_EN: ThemeTripCopy = {
@@ -235,6 +283,51 @@ const NORWAY_NO: ThemeTripCopy = {
   faq: FAQ_NO,
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const NORWAY_PT: ThemeTripCopy = {
+  title: "Norway Surf & Fjord Week",
+  subtitle: "Surf em Stad e viagem pelo Nordfjord: falésias marítimas, história viking, vales de geleiras e fiordes tranquilos. A temporada de surf e fiordes vai de abril a setembro.",
+  overview:
+    "Comece com surf em Hoddevik e Ervik na península de Stadlandet, depois siga uma rota por Selje, Måløy, Loen, Kalvåg e Gloppen. Grupo pequeno, anfitrião local, uma nova paisagem a cada dia. Adaptamos o transporte ao tamanho do grupo e às atividades que você escolher.",
+  metaDescription:
+    "Surf em Stad e viagem pelo Nordfjord – falésias marítimas, história viking, vales de geleiras e fiordes tranquilos em grupo pequeno com anfitrião local. Registre seu interesse.",
+  duration: "8 dias",
+  destination: "Stad e Nordfjord, Noruega",
+  periods: ["junho a agosto de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["Chegada", "Check-in no Stad Hotell e tempo livre"],
+    ["1", "Uma ou duas sessões de surf em Hoddevik ou Ervik. Mirante Vestkapp e Dragseidet. Pôr do sol na praia"],
+    ["2", "Surf. Passeio de barco ao mosteiro de Selje e à caverna de Sunniva. Noite na praia ou surf leve ao pôr do sol"],
+    ["3", "Surf cedo, check-out. Måløy: Kannesteinen, praia de Refviksanden e farol de Kråkenes. Opcional: o centro Måløy Raid"],
+    ["4", "Loen: Skylift até Hoven, geleira Briksdalsbreen, Oldevatnet e Lovatnet. Opcional: Via Ferrata guiada"],
+    ["5", "Bremanger: Grotlesanden, gravuras rupestres de Vingen e Kalvåg. Almoço no Knutholmen. Sauna, caiaque, pesca ou um banho de mar"],
+    ["6", "Nordfjordeid: Sagastad e Eidsgata. Gloppen: e-foil, SUP ou caiaque no Gloppefjord. Jantar no Gloppen Hotell"],
+    ["Partida", "Café da manhã e check-out. Traslado ao aeroporto"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Stad Hotell, Thon Partner Hotel Måløy, Hotel Loenfjord, Knutholmen em Kalvåg e Gloppen Hotell. Estes são exemplos. A escolha final é confirmada por partida.",
+  extraSections: [
+    {
+      title: "Como chegar",
+      text: "Começa em Stadlandet e termina em Sandane. Aeroportos próximos: Sandane, Førde, Sogndal e Florø. Podemos organizar o traslado.",
+    },
+    {
+      title: "Surf",
+      text: "As sessões de surf são lideradas por instrutores locais da nossa rede. O mar é frio. Fazemos uma orientação e damos recomendações sobre wetsuit.",
+      // HIDDEN (awaiting owner): surf school name and wetsuit rental details.
+    },
+  ],
+  leadersTitle: "Líderes da viagem",
+  leaders: [{ name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" }],
+  leadersNote: "Daniel é acompanhado por especialistas locais da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before:
+    "Surfar em água fria exige wetsuit e uma orientação. Alguns lugares e atividades funcionam apenas na temporada, como o café Vestkapp, o Loen Skylift, a Via Ferrata e o barco para Selje. Confirmamos os horários para as suas datas.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+};
+
 // Owner-supplied Norwegian text (primary version).
 const BEACH_NO: ThemeTripCopy = {
   title: "Beach Sports Camp i Rio de Janeiro",
@@ -319,12 +412,54 @@ const BEACH_EN: ThemeTripCopy = {
   showRioPartner: true,
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const BEACH_PT: ThemeTripCopy = {
+  title: "Beach Sports Camp no Rio de Janeiro",
+  subtitle: "Duas semanas de areia, sol e esporte na Zona Sul, além de Arraial do Cabo ou Ilha Grande.",
+  overview:
+    "Comece o dia com o nascer do sol sobre Copacabana, os pés na areia e as ondas balançando você. Escolha entre vôlei de praia, futevôlei, beach tennis, futebol de areia, surf, SUP e yoga. A noite termina com bons amigos e um drink gelado. Você fica perto de Copacabana e Ipanema e treina nas quadras de vôlei de praia do Leme. Entre os treinos, você conhece o Cristo Redentor, o Pão de Açúcar, o Parque Nacional da Tijuca, a Lapa e um jogo de futebol no Maracanã. Os últimos dias são em Arraial do Cabo ou Ilha Grande. Este é um exemplo e é adaptado ao seu grupo.",
+  metaDescription:
+    "Duas semanas de vôlei de praia, futevôlei, beach tennis, surf e SUP no Rio de Janeiro, com treinadores locais e dias em Arraial do Cabo ou Ilha Grande. Registre seu interesse.",
+  duration: "15 dias",
+  destination: "Rio de Janeiro, Brasil",
+  periods: ["junho a agosto de 2027", "setembro a outubro de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["Dia 1", "Chegada e reunião de boas-vindas no hotel"],
+    ["Dias 2 a 9", "Treinos de manhã e à tarde (vôlei de praia, beach tennis, futevôlei, futebol de areia, corrida, força), surf ou SUP, visita ao Cristo Redentor e à Lapa, torneio 2x2 e 4x4, jogo no Maracanã, trilha na Tijuca"],
+    ["Dias 10 a 14", "Ilha Grande ou Arraial do Cabo: mergulho, snorkel, trilhas e passeio de barco"],
+    ["Dia 15", "Partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Você fica perto de Copacabana e Ipanema e treina nas quadras de vôlei de praia do Leme.",
+  activitiesTitle: "Atividades",
+  activities:
+    "Vôlei de praia, futevôlei, beach tennis, futebol de areia, treino de força e circuito, yoga, natação em águas abertas, corrida, trilhas na montanha, SUP, surf, mergulho e snorkel. Você escolhe as atividades ao se inscrever.",
+  extraSections: [
+    {
+      title: "Como funciona",
+      text: "1 Registre seu interesse (sem pagamento). 2 Abrimos as inscrições pelo menos seis meses antes da partida. 3 Avisamos três meses antes da partida se a viagem será realizada. 4 Um plano de pagamento e os termos são enviados na confirmação.",
+    },
+  ],
+  leadersTitle: "Líderes da viagem",
+  leaders: [
+    { name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" },
+    { name: "Pablo Cabral Salles", role: "Treinador de vôlei e fundador da Rio Sport & Tour" },
+  ],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "Este é um exemplo e é adaptado ao seu grupo. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+  showRioPartner: true,
+};
+
 export const THEME_TRIPS: ThemeTrip[] = [
   CARNAVAL_TRIP,
-  { slug: "rio-flow-experience", copy: { en: RIO_FLOW_EN, no: RIO_FLOW_NO, pt: RIO_FLOW_EN } },
-  { slug: "norway-surf-fjord-week", copy: { en: NORWAY_EN, no: NORWAY_NO, pt: NORWAY_EN } },
-  fjordsTrip({ en: FAQ_EN, no: FAQ_NO }),
-  { slug: "beach-sports-camp-rio", copy: { en: BEACH_EN, no: BEACH_NO, pt: BEACH_NO } },
+  { slug: "rio-flow-experience", copy: { en: RIO_FLOW_EN, no: RIO_FLOW_NO, pt: RIO_FLOW_PT } },
+  { slug: "norway-surf-fjord-week", copy: { en: NORWAY_EN, no: NORWAY_NO, pt: NORWAY_PT } },
+  fjordsTrip({ en: FAQ_EN, no: FAQ_NO, pt: FAQ_PT }),
+  { slug: "beach-sports-camp-rio", copy: { en: BEACH_EN, no: BEACH_NO, pt: BEACH_PT } },
 ];
 
 export function themeTripBySlug(slug: string): ThemeTrip | undefined {

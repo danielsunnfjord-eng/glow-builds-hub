@@ -1,3 +1,4 @@
+import type { Locale } from "./locale";
 import type { ThemeTripCopy, ThemeTrip } from "./themeTrips";
 
 const CARNAVAL_EN: ThemeTripCopy = {
@@ -89,6 +90,50 @@ const CARNAVAL_NO: ThemeTripCopy = {
   ],
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const CARNAVAL_PT: ThemeTripCopy = {
+  ...CARNAVAL_EN,
+  seoTitle: "Rio Carnaval Experience 2027 e 2028 | Fjord & Waves Travel",
+  subtitle: "Dez dias no Rio durante a maior festa de rua do mundo: blocos, samba e o Sambódromo, com o Rio de verdade ao redor.",
+  overview: "O Rio se transforma durante o Carnaval. A cidade se torna um espetáculo imersivo em que desconhecidos dançam juntos ao amanhecer, e a linha entre visitantes e locais desaparece nos blocos, as festas de rua com música ao vivo, tambores e dança. O Carnaval no Rio não é apenas assistido: ele convida você a participar. Recomendamos pelo menos dez dias, para viver os blocos, o Sambódromo e as festas de rua e ainda ter tempo para a cidade em um ritmo mais calmo. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription: "Dez dias no Rio no Carnaval: blocos, samba, o Sambódromo e momentos mais tranquilos na cidade. Registre seu interesse para fevereiro de 2027 ou 2028 antes do prazo.",
+  duration: "10 dias", destination: "Rio de Janeiro, Brasil",
+  periods: ["fevereiro de 2027", "fevereiro de 2028"],
+  cardPeriods: ["fevereiro de 2027 (registre-se até 5 de dezembro de 2026)", "fevereiro de 2028 (registre-se até 1º de novembro de 2027)"],
+  periodDeadlines: ["registre-se até 5 de dezembro de 2026", "registre-se até 1º de novembro de 2027"],
+  deadlineTitle: "Prazos de inscrição",
+  deadlineText: "Registre seu interesse até 5 de dezembro de 2026 para fevereiro de 2027, ou até 1º de novembro de 2027 para fevereiro de 2028. Hotéis de Carnaval e ingressos do Sambódromo são garantidos meses antes, e os preços sobem muito durante a semana do Carnaval, por isso precisamos do seu interesse com antecedência. Logo após o prazo, verificamos a disponibilidade com nossos parceiros no Rio e informamos se a viagem acontecerá.",
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Chegada ao Rio e traslado privativo. Primeira noite tranquila"],
+    ["2", "Rio icônico: Cristo Redentor logo cedo, depois o Pão de Açúcar ao pôr do sol"],
+    ["3", "Manhã de praia em Ipanema e Arpoador. Tarde na Lapa, Escadaria Selarón e Santa Teresa. Samba na Lapa à noite"],
+    ["4", "Cultura das escolas de samba (um ensaio, se disponível nas suas datas) e caminhada na natureza na Floresta da Tijuca ou na Pedra Bonita"],
+    ["5", "Sexta de Carnaval: manhã tranquila na praia, um bloco de bairro à tarde em Santa Teresa ou Jardim Botânico, noite cedo"],
+    ["6", "Sábado de Carnaval: um bloco grande com muita gente, com preparação e um plano para o dia"],
+    ["7", "Domingo de Carnaval: noite de desfile no Sambódromo (ingressos sujeitos a disponibilidade), ou Lapa e blocos menores"],
+    ["8", "Segunda de Carnaval: praia, um bloco à tarde no Leblon ou Ipanema, roda de samba à noite no Pedra do Sal"],
+    ["9", "Terça de Carnaval: os maiores blocos, ou um dia mais calmo com passeio de barco ou fuga para uma cidade litorânea"],
+    ["10", "Quarta-feira de Cinzas: tempo tranquilo na praia, depois partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Escolhemos o bairro conforme o seu grupo. Ipanema e Leblon (praia, restaurantes, base mais calma), Copacabana (animada, muita opção de hotéis), Santa Teresa (charme e atmosfera, menos central), Botafogo e Flamengo (clima local, bom acesso ao metrô). A escolha final é confirmada por partida.",
+  activitiesTitle: "Experiências que podemos incluir",
+  activities: "Um guia privativo para os pontos turísticos, trilhas ao nascer do sol com guia local, passeios de barco para Ilha Grande ou Angra dos Reis, camarotes no Sambódromo (sujeitos a disponibilidade).",
+  leadersTitle: "Líderes da viagem",
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "O Carnaval é quente (28 a 35 °C), úmido e cheio de gente, com tempestades curtas à tarde. Programamos momentos de descanso. Crimes de rua, como roubo de celular, podem acontecer em blocos lotados. Fazemos uma orientação, mantemos objetos de valor no mínimo e planejamos o transporte com táxis registrados ou aplicativos. Verifique as vacinas recomendadas, incluindo febre amarela, com seu médico. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: [
+    { q: "Preciso falar português?", a: "Não. Inglês é falado em hotéis e negócios turísticos, e Daniel fala português, norueguês e inglês." },
+    { q: "Por que existe um prazo de inscrição?", a: "Hotéis e ingressos do Sambódromo para o Carnaval são garantidos meses antes, e os preços são muito mais altos que o normal durante a semana do Carnaval." },
+    // HIDDEN: Posso vir sozinho? Awaiting the owner's answer.
+    { q: "Quantas pessoas são necessárias?", a: "O tamanho do grupo depende das atividades. Começamos com uma breve conversa sobre objetivos e necessidades." },
+    { q: "E os voos?", a: "Para grupos de pelo menos 10 viajantes, também ajudamos com reservas de voos." },
+  ],
+};
+
 const FJORDS_EN: ThemeTripCopy = {
   title: "Sogn og Fjordane: The Soul of Norwegian Fjords",
   subtitle: "A seven-day journey through the Sognefjord region: Flåm, the Nærøyfjord, a glacier walk and Balestrand.",
@@ -145,17 +190,47 @@ const FJORDS_NO: ThemeTripCopy = {
   faqTitle: "Vanlige spørsmål", faq: [],
 };
 
-// Portuguese follows the existing trip fallback convention; English content
-// remains available until a full Portuguese version is reviewed by the owner.
+// DRAFT – pending owner review: Portuguese translated from the English.
+const FJORDS_PT: ThemeTripCopy = {
+  ...FJORDS_EN,
+  title: "Sogn og Fjordane: A alma dos fiordes noruegueses",
+  seoTitle: "Sogn og Fjordane: a alma dos fiordes noruegueses | Fjord & Waves Travel",
+  subtitle: "Uma viagem de sete dias pela região do Sognefjord: Flåm, Nærøyfjord, caminhada em geleira e Balestrand.",
+  overview: "Água azul profunda, montanhas altas, geleiras antigas e vilarejos encantadores. Esta viagem percorre a região do Sognefjord, com visitas a Flåm, Nærøyfjord, Balestrand e às geleiras de Jostedalen, e equilibra experiências culturais com uma viagem calma e sem pressa. É para quem valoriza natureza, autenticidade e experiências com profundidade, incluindo quem visita a Noruega pela primeira vez. Você viaja em uma das ferrovias mais íngremes do mundo, cruza o famoso Nærøyfjord de barco e caminha sobre uma geleira ativa com um guia certificado. Entre os destaques há paradas tranquilas, boa comida local e estradas cênicas até mirantes silenciosos. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription: "Sete dias pela região do Sognefjord: Ferrovia de Flåm, cruzeiro no Nærøyfjord, caminhada guiada em geleira e Balestrand, em ritmo tranquilo.",
+  duration: "7 dias", destination: "Região do Sognefjord, Noruega", periods: ["junho a agosto de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Bergen, Voss e Flåm. Paradas opcionais em Voss (bondinho, desfiladeiro Bordalsgjelet, cachoeira Tvindefossen). Ferrovia de Flåm até Myrdal à tarde, caminhada noturna no porto de Flåm"],
+    ["2", "Saída cedo por Aurlandsfjellet até o mirante Stegastein antes dos ônibus de turismo. Depois Lærdalsøyri com suas casas de madeira antigas e a igreja de madeira de Borgund"],
+    ["3", "Cruzeiro de Flåm a Gudvangen e Viking Valley com arco e flecha, arremesso de machado e jogos vikings. Depois para Gaupne, em Luster (horários confirmados por partida)"],
+    ["4", "Caminhada guiada em geleira azul com guia certificado. Alternativas se o tempo impedir: igreja de madeira de Urnes, cachoeira Feigefossen, passeio ao longo do Lustrafjorden"],
+    ["5", "Viagem até Balestrand. Visita à fazenda Ciderhuset Balholm com degustação e o jantar dos produtores de sidra. Tarde a pé, ou de caiaque no verão"],
+    ["6", "Um dia em Vik: balsa local de Balestrand e a igreja de madeira de Hopperstad. Noite tranquila em Balestrand"],
+    ["7", "Estrada cênica de volta a Bergen. Tempo na Bryggen, depois partida"],
+  ],
+  stayTitle: "Onde você fica (exemplos)",
+  stay: "Flåm (Fretheim Hotel, Flåmsbrygga Hotell ou Hotel Aurlandsfjord), Gaupne ou Luster (Gaupnetunet Hotell and Cabins ou Tørvis Hotell), Balestrand (Kviknes Hotel ou Balestrand Hotel), Bergen (Opus XVI ou Comfort Hotel Bergen Airport). A escolha final é confirmada por partida.",
+  extraSections: [{ title: "Bom saber", text: "Ingressos da Ferrovia de Flåm, cruzeiros pelos fiordes e caminhadas em geleira devem ser reservados cedo no verão, e cuidamos das reservas. As caminhadas em geleira acontecem do final de maio a setembro e dependem do clima, então planejamos alternativas. A estrada de Aurlandsfjellet normalmente abre no início de junho, dependendo da neve. Ferries e algumas estradas têm horários limitados, e planejamos os dias de acordo." }],
+  leadersTitle: "Líderes da viagem",
+  leaders: [{ name: "Daniel Lira Figueiredo", role: "Guias locais da nossa rede acompanham Daniel" }],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "O clima nos fiordes muda rápido. Leve roupas em camadas, jaqueta corta-vento, luvas para a geleira e bons calçados para caminhada, mesmo no verão. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes", faq: [],
+};
+
+// Portuguese is a draft translated from the English, for owner review.
 export const CARNAVAL_TRIP: ThemeTrip = {
   slug: "rio-carnaval-experience", norwegianSlug: "rio-karneval",
   // End of 5 December 2026 / 1 November 2027 in Europe/Oslo (UTC+1).
   registrationClosesAt: ["2026-12-05T23:00:00.000Z", "2027-11-01T23:00:00.000Z"],
-  copy: { en: CARNAVAL_EN, no: CARNAVAL_NO, pt: CARNAVAL_EN },
+  copy: { en: CARNAVAL_EN, no: CARNAVAL_NO, pt: CARNAVAL_PT },
 };
 
-export function fjordsTrip(faq: Record<"en" | "no", ThemeTripCopy["faq"]>): ThemeTrip {
+export function fjordsTrip(faq: Record<Locale, ThemeTripCopy["faq"]>): ThemeTrip {
   const en = { ...FJORDS_EN, faq: [...faq.en, { q: "Is a car needed?", a: "We arrange transport to fit your group size and the activities, so you do not need to rent a car yourself." }] };
   const no = { ...FJORDS_NO, faq: [...faq.no, { q: "Trenger jeg bil?", a: "Vi ordner transport som passer gruppestørrelsen og aktivitetene, så du trenger ikke å leie bil selv." }] };
-  return { slug: "sogn-og-fjordane-fjords", norwegianSlug: "sogn-og-fjordane-fjordene", copy: { en, no, pt: en } };
+  const pt = { ...FJORDS_PT, faq: [...faq.pt, { q: "Preciso de um carro?", a: "Organizamos o transporte conforme o tamanho do grupo e as atividades, então você não precisa alugar um carro." }] };
+  return { slug: "sogn-og-fjordane-fjords", norwegianSlug: "sogn-og-fjordane-fjordene", copy: { en, no, pt } };
 }
