@@ -35,10 +35,10 @@ export default function LocalPartnerRio() {
       <div className="mx-auto grid max-w-5xl grid-cols-[auto_1fr] items-center gap-10 max-md:grid-cols-1 max-md:gap-6 max-md:text-center">
         <img src={rstLogo.url} alt="Rio Sports & Tour logo" loading="lazy" className="h-36 w-36 rounded-full border border-gold/30 bg-voyage-white object-contain p-2 max-md:mx-auto" />
         <div>
-          <div className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-gold">{c.eyebrow}</div>
-          <h2 className="mb-3 font-serif text-[clamp(1.6rem,2.6vw,2.2rem)] font-bold text-ink">{c.name}</h2>
-          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-voyage-muted max-md:mx-auto">{c.text}</p>
-          <a href="https://www.riosportsandtour.com/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold hover:underline">
+          <div className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-gold-light">{c.eyebrow}</div>
+          <h2 className="mb-3 font-serif text-[clamp(1.6rem,2.6vw,2.2rem)] font-bold text-parchment">{c.name}</h2>
+          <p className="max-w-2xl text-[0.95rem] leading-relaxed text-parchment/80 max-md:mx-auto">{c.text}</p>
+          <a href="https://www.riosportsandtour.com/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold-light hover:underline">
             {c.websiteLabel} →
           </a>
         </div>
