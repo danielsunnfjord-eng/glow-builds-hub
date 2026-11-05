@@ -11,7 +11,7 @@ import stadtHoddevik from "@/assets/stadt_hoddevik.jpg.asset.json";
 import beach from "@/assets/home/praia_do_flamengo.jpg.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
-const CARD_IMAGES = [surf.url, fjord.url, beach.url];
+const CARD_IMAGES = [surf.url, stadtHoddevik.url, beach.url];
 
 /** Status tag shown on every trip card and trip page. */
 export function StatusTag({ label }: { label: string }) {
