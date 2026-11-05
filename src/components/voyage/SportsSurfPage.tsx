@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import LocalPartnerRio from "./LocalPartnerRio";
 import Reviews from "./Reviews";
 import GroupReferences from "./GroupReferences";
-import { ProposalCta, TwoColTable, NumberedSteps } from "./GroupBlocks";
+import { ProposalCta, NumberedSteps } from "./GroupBlocks";
 import { RIO_TESTIMONIAL_AUTHORS, RIO_REVIEWS_LABEL } from "./home/homeCopy";
 import { currentLocale, localePath } from "@/lib/locale";
 import { isGroupPageAvailable } from "@/lib/travelNavigation";
@@ -12,15 +12,13 @@ import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
 interface Copy {
   h1: string; intro: string; proposal: string;
   campTitle: string; camp: string[]; campNote: string;
-  rioTitle: string; rioIntro: string; periodHead: string; likeHead: string; periods: [string, string][];
-  weekTitle: string; weekNote: string; dayHead: string; programHead: string; week: string[];
   howTitle: string; steps: string[];
   safetyLinkLabel: string; before: string; refsLabel: string;
 }
 
 const EN: Copy = {
   h1: "Training camps and trips for sports teams and clubs",
-  intro: "Training and matches against local clubs, for youth and amateur teams. Rio Sport & Tour runs its own beach volleyball center in Leme and has hosted teams and groups for over 20 years.",
+  intro: "Training and matches against local clubs, for youth and amateur teams hosted by experienced local DMC with over 20 years experience",
   proposal: "Request a proposal",
   campTitle: "What a camp can include",
   camp: [
@@ -31,27 +29,6 @@ const EN: Copy = {
     "Self-organized tournaments, friendlies, sightseeing and cultural experiences, and a football match as a spectator",
   ],
   campNote: "We focus on youth and amateur teams. For elite and professional teams, please contact us directly.",
-  rioTitle: "From Norway to Rio",
-  rioIntro: "A training camp when the Norwegian winter is long. Choose the period by weather and prices in Rio.",
-  periodHead: "Period", likeHead: "What it is like",
-  periods: [
-    ["December to March", "High season: very hot and humid (often above 35 °C), the most rain, the highest prices"],
-    ["April to May and September to November", "Milder weather (24 to 28 °C), fewer tourists, lower prices"],
-    ["June to August", "Rio winter: dry and cooler, evenings around 15 to 18 °C, sea around 18 to 22 °C"],
-  ],
-  weekTitle: "Sample week",
-  weekNote: "An example. The program is adapted to sport, age and level.",
-  dayHead: "Day", programHead: "Program",
-  week: [
-    "Arrival and welcome meeting at the hotel",
-    "Morning session (beach volleyball or strength in the sand), afternoon session (beach volleyball, beach tennis or footvolley) and a run",
-    "Early surf, SUP or open-water swim, sand football and sand running in the afternoon",
-    "Christ the Redeemer, Lapa and Santa Teresa, then training",
-    // HIDDEN until confirmed: "and a friendly against a local team"
-    "Training",
-    "Self-organized tournament (2x2 and 4x4). For youth teams we replace the evening program with our own plan",
-    "Football match at the Maracanã as spectators and farewell",
-  ],
   howTitle: "How it works",
   steps: [
     "A 20-minute call, no obligation: goals, sport, numbers and dates",
@@ -68,7 +45,7 @@ const EN: Copy = {
 
 const NO: Copy = {
   h1: "Treningsreiser og camper for idrettslag og klubber",
-  intro: "Trening og kamper mot lokale klubber, for ungdoms- og breddelag. Rio Sport & Tour driver eget beachvolleysenter i Leme og har vært vert for lag og grupper i over 20 år.",
+  intro: "Trening og kamper mot lokale klubber, for ungdoms- og breddelag, med en erfaren lokal DMC som vert med over 20 års erfaring.", // DRAFT translation
   proposal: "Be om forslag",
   campTitle: "Hva en camp kan inneholde",
   camp: [
@@ -79,27 +56,6 @@ const NO: Copy = {
     "Egenorganiserte turneringer, vennskapskamper, sightseeing og kulturopplevelser, og en fotballkamp som tilskuer",
   ],
   campNote: "Vi fokuserer på ungdoms- og breddelag. Elitelag og profesjonelle ber du om å ta direkte kontakt.",
-  rioTitle: "Fra Norge til Rio",
-  rioIntro: "Treningscamp når vinteren i Norge er lang. Velg tidspunkt ut fra været og prisene i Rio.",
-  periodHead: "Periode", likeHead: "Slik er det",
-  periods: [
-    ["Desember til mars", "Høysesong: veldig varmt og fuktig (ofte over 35 °C), mest regn, høyest priser"],
-    ["April til mai og september til november", "Mildere vær (24 til 28 °C), færre turister, lavere priser"],
-    ["Juni til august", "Rios vinter: tørt og kjøligere, kvelder ned mot 15 til 18 °C, sjøen rundt 18 til 22 °C"],
-  ],
-  weekTitle: "Eksempeluke",
-  weekNote: "Et eksempel. Programmet tilpasses idrett, alder og nivå.",
-  dayHead: "Dag", programHead: "Program",
-  week: [
-    "Ankomst og velkomstmøte på hotellet",
-    "Morgenøkt (beachvolleyball eller styrke i sanden), ettermiddagsøkt (beachvolleyball, beach tennis eller footvolley) og løpetur",
-    "Tidlig surf, SUP eller utesvømming, sandfotball og løping i sand på ettermiddagen",
-    "Tur til Kristusstatuen, Lapa og Santa Teresa, deretter trening",
-    // HIDDEN until confirmed: "og vennskapskamp mot lokalt lag"
-    "Trening",
-    "Egenorganisert turnering (2x2 og 4x4). For ungdomslag erstatter vi kveldsprogrammet med et eget opplegg",
-    "Fotballkamp på Maracanã som tilskuer og avslutning",
-  ],
   howTitle: "Slik fungerer det",
   steps: [
     "Samtale (20 minutter, uforpliktende): mål, idrett, antall og tidspunkt",
@@ -149,23 +105,6 @@ export default function SportsSurfPage() {
               {c.camp.map((p) => <li key={p} className="border-l-2 border-gold pl-4 leading-relaxed text-ink-2">{p}</li>)}
             </ul>
             <p className="mt-8 text-sm italic text-voyage-muted">{c.campNote}</p>
-          </div>
-        </section>
-
-        <section className={`bg-parchment-2 ${section}`}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.rioTitle}</h2>
-            <p className="mb-6 text-lg leading-relaxed text-ink-2">{c.rioIntro}</p>
-            <TwoColTable head={[c.periodHead, c.likeHead]} rows={c.periods} />
-          </div>
-        </section>
-
-        <section className={section}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.weekTitle}</h2>
-            <p className="mb-6 text-sm italic text-voyage-muted">{c.weekNote}</p>
-            <TwoColTable head={[c.dayHead, c.programHead]} rows={c.week.map((d, n) => [String(n + 1), d])} narrow />
-            <div className="mt-10"><ProposalCta label={c.proposal} /></div>
           </div>
         </section>
 
