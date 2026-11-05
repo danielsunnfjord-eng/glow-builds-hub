@@ -16,6 +16,7 @@ interface Copy {
   conciergeTitle: string; concierge: string[];
   tracksTitle: string; tracks: { name: string; text: string }[];
   programTitle: string; programNote: string; dayHead: string; programHead: string; days: string[];
+
   howTitle: string; steps: string[];
   includedTitle: string; included: string;
   priceTitle: string; price: string;
