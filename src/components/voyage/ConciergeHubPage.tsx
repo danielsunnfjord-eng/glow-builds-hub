@@ -9,6 +9,7 @@ import { WHATSAPP_URL } from "@/lib/whatsapp";
 import { HOME_COPY } from "./home/homeCopy";
 import cristo from "@/assets/home/cristo_redentor.jpg.asset.json";
 import surf from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
+import teamPhoto from "@/assets/team_photo.png.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 export default function ConciergeHubPage({ page }: { page: "groups" | "start" | "trips" }) {
