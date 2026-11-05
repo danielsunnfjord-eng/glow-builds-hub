@@ -89,6 +89,50 @@ const CARNAVAL_NO: ThemeTripCopy = {
   ],
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const CARNAVAL_PT: ThemeTripCopy = {
+  ...CARNAVAL_EN,
+  seoTitle: "Rio Carnaval Experience 2027 e 2028 | Fjord & Waves Travel",
+  subtitle: "Dez dias no Rio durante a maior festa de rua do mundo: blocos, samba e o Sambódromo, com o Rio de verdade ao redor.",
+  overview: "O Rio se transforma durante o Carnaval. A cidade se torna um espetáculo imersivo em que desconhecidos dançam juntos ao amanhecer, e a linha entre visitantes e locais desaparece nos blocos, as festas de rua com música ao vivo, tambores e dança. O Carnaval no Rio não é apenas assistido: ele convida você a participar. Recomendamos pelo menos dez dias, para viver os blocos, o Sambódromo e as festas de rua e ainda ter tempo para a cidade em um ritmo mais calmo. Esta é uma viagem exemplo e é adaptada ao seu grupo.",
+  metaDescription: "Dez dias no Rio no Carnaval: blocos, samba, o Sambódromo e momentos mais tranquilos na cidade. Registre seu interesse para fevereiro de 2027 ou 2028 antes do prazo.",
+  duration: "10 dias", destination: "Rio de Janeiro, Brasil",
+  periods: ["fevereiro de 2027", "fevereiro de 2028"],
+  cardPeriods: ["fevereiro de 2027 (registre-se até 5 de dezembro de 2026)", "fevereiro de 2028 (registre-se até 1º de novembro de 2027)"],
+  periodDeadlines: ["registre-se até 5 de dezembro de 2026", "registre-se até 1º de novembro de 2027"],
+  deadlineTitle: "Prazos de inscrição",
+  deadlineText: "Registre seu interesse até 5 de dezembro de 2026 para fevereiro de 2027, ou até 1º de novembro de 2027 para fevereiro de 2028. Hotéis de Carnaval e ingressos do Sambódromo são garantidos meses antes, e os preços sobem muito durante a semana do Carnaval, por isso precisamos do seu interesse com antecedência. Logo após o prazo, verificamos a disponibilidade com nossos parceiros no Rio e informamos se a viagem acontecerá.",
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["1", "Chegada ao Rio e traslado privativo. Primeira noite tranquila"],
+    ["2", "Rio icônico: Cristo Redentor logo cedo, depois o Pão de Açúcar ao pôr do sol"],
+    ["3", "Manhã de praia em Ipanema e Arpoador. Tarde na Lapa, Escadaria Selarón e Santa Teresa. Samba na Lapa à noite"],
+    ["4", "Cultura das escolas de samba (um ensaio, se disponível nas suas datas) e caminhada na natureza na Floresta da Tijuca ou na Pedra Bonita"],
+    ["5", "Sexta de Carnaval: manhã tranquila na praia, um bloco de bairro à tarde em Santa Teresa ou Jardim Botânico, noite cedo"],
+    ["6", "Sábado de Carnaval: um bloco grande com muita gente, com preparação e um plano para o dia"],
+    ["7", "Domingo de Carnaval: noite de desfile no Sambódromo (ingressos sujeitos a disponibilidade), ou Lapa e blocos menores"],
+    ["8", "Segunda de Carnaval: praia, um bloco à tarde no Leblon ou Ipanema, roda de samba à noite no Pedra do Sal"],
+    ["9", "Terça de Carnaval: os maiores blocos, ou um dia mais calmo com passeio de barco ou fuga para uma cidade litorânea"],
+    ["10", "Quarta-feira de Cinzas: tempo tranquilo na praia, depois partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Escolhemos o bairro conforme o seu grupo. Ipanema e Leblon (praia, restaurantes, base mais calma), Copacabana (animada, muita opção de hotéis), Santa Teresa (charme e atmosfera, menos central), Botafogo e Flamengo (clima local, bom acesso ao metrô). A escolha final é confirmada por partida.",
+  activitiesTitle: "Experiências que podemos incluir",
+  activities: "Um guia privativo para os pontos turísticos, trilhas ao nascer do sol com guia local, passeios de barco para Ilha Grande ou Angra dos Reis, camarotes no Sambódromo (sujeitos a disponibilidade).",
+  leadersTitle: "Líderes da viagem",
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "O Carnaval é quente (28 a 35 °C), úmido e cheio de gente, com tempestades curtas à tarde. Programamos momentos de descanso. Crimes de rua, como roubo de celular, podem acontecer em blocos lotados. Fazemos uma orientação, mantemos objetos de valor no mínimo e planejamos o transporte com táxis registrados ou aplicativos. Verifique as vacinas recomendadas, incluindo febre amarela, com seu médico. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: [
+    { q: "Preciso falar português?", a: "Não. Inglês é falado em hotéis e negócios turísticos, e Daniel fala português, norueguês e inglês." },
+    { q: "Por que existe um prazo de inscrição?", a: "Hotéis e ingressos do Sambódromo para o Carnaval são garantidos meses antes, e os preços são muito mais altos que o normal durante a semana do Carnaval." },
+    // HIDDEN: Posso vir sozinho? Awaiting the owner's answer.
+    { q: "Quantas pessoas são necessárias?", a: "O tamanho do grupo depende das atividades. Começamos com uma breve conversa sobre objetivos e necessidades." },
+    { q: "E os voos?", a: "Para grupos de pelo menos 10 viajantes, também ajudamos com reservas de voos." },
+  ],
+};
+
 const FJORDS_EN: ThemeTripCopy = {
   title: "Sogn og Fjordane: The Soul of Norwegian Fjords",
   subtitle: "A seven-day journey through the Sognefjord region: Flåm, the Nærøyfjord, a glacier walk and Balestrand.",
