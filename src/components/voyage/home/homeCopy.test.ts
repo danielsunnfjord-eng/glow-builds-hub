@@ -17,8 +17,8 @@ describe("homepage rules", () => {
   it("homepage shows only the two Rio testimonials", () => {
     expect(HOME_TESTIMONIAL_AUTHORS).toEqual(["Ingeborg Sol Fure", "Åge Avedal"]);
   });
-  it("unfinished group pages are hidden on the published site but open in preview", () => {
-    expect(isGroupPageAvailable("folkHighSchools", true)).toBe(false);
+  it("all group pages are live on the published site", () => {
+    expect(isGroupPageAvailable("folkHighSchools", true)).toBe(true); expect(isGroupPageAvailable("corporate", true)).toBe(true); expect(isGroupPageAvailable("sportsAndSurf", true)).toBe(true);
     expect(isGroupPageAvailable("folkHighSchools", false)).toBe(true);
   });
 });
