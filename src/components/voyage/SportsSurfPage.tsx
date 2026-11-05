@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import LocalPartnerRio from "./LocalPartnerRio";
 import Reviews from "./Reviews";
 import GroupReferences from "./GroupReferences";
-import { ProposalCta, TwoColTable, NumberedSteps } from "./GroupBlocks";
+import { ProposalCta, NumberedSteps } from "./GroupBlocks";
 import { RIO_TESTIMONIAL_AUTHORS, RIO_REVIEWS_LABEL } from "./home/homeCopy";
 import { currentLocale, localePath } from "@/lib/locale";
 import { isGroupPageAvailable } from "@/lib/travelNavigation";
