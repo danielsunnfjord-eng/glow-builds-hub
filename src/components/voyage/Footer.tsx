@@ -50,7 +50,6 @@ const Footer = () => {
           <Link to="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Privacy</Link>
           <Link to="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Terms</Link>
           <Button variant="ghost" onClick={openCookieSettings} className="h-auto p-0 text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 hover:bg-transparent">Cookies</Button>
-          <Link to="/login" className="text-[0.68rem] text-voyage-white/20 hover:text-voyage-white/50 transition-colors">{t("footer.admin")}</Link>
         </div>
       </div>
     </>

@@ -1,0 +1,2 @@
+REVOKE INSERT ON public.interest_signups FROM anon, authenticated;
+COMMENT ON TABLE public.interest_signups IS 'Trip interest submissions are inserted only by the validated public interest-signup handler; visitors have no direct insert access.';

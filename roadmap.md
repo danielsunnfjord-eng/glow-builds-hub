@@ -1,4 +1,7 @@
 # Corporate content update
+- [x] Apply November fixes: homepage copy, no-JavaScript fallback, Groups sharing details, partner spelling and public footer.
+- [x] Verify all nine requested URLs have their own content and metadata; none missing.
+- [x] Expand trip interest forms with phone, group size, audience and mandatory privacy consent; storage and sent owner email verified, test entry removed.
 - [x] Apply supplied English and Norwegian corporate copy, concierge details, two sample tables and answered FAQ; keep unfinished items code-only.
 - [x] Verify three proposal buttons, Safety/private links, language switching and mobile tables; preserve other pages and Portuguese content.
 
@@ -6,7 +9,7 @@
 - [x] Update homepage hero, four divisions, concierge section, founder and metadata in EN/NO/PT.
 - [x] Add localized Groups, Start and Theme Travels pages and update navigation without removing existing URLs.
 - [x] Verify card destinations, language switching, enquiry choices and desktop/mobile layouts.
-- [ ] Theme Travels departure programs and interest-registration destination — awaiting owner details; only supplied intro and photo appear.
+- [x] Theme Travels departure programs and interest-registration destination supplied and implemented with stored signups and owner emails.
 
 # Navigation update
 - [x] Update localized main navigation and private travel dropdown.

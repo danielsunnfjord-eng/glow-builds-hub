@@ -8,6 +8,20 @@
       "when": 1793352414033,
       "tag": "0000_create_interest_signups",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793878565392,
+      "tag": "0001_expand_theme_interest_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793878753050,
+      "tag": "0002_restrict_interest_signup_to_validated_handler",
+      "breakpoints": true
     }
   ]
 }

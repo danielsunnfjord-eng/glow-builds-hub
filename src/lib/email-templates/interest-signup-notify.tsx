@@ -7,6 +7,10 @@ interface Props {
   period?: string;
   name?: string;
   email?: string;
+  phone?: string;
+  number_of_people?: number;
+  audience?: string;
+  consent?: boolean;
   message?: string;
   locale?: string;
 }
@@ -31,7 +35,7 @@ const value: React.CSSProperties = {
   lineHeight: 1.5,
 };
 
-const Email = ({ trip, period, name, email, message, locale }: Props) => (
+const Email = ({ trip, period, name, email, phone, number_of_people, audience, consent, message, locale }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>New interest signup for a themed trip</Preview>
@@ -54,6 +58,14 @@ const Email = ({ trip, period, name, email, message, locale }: Props) => (
           <Text style={value}>{name || "—"}</Text>
           <Text style={label}>Email</Text>
           <Text style={value}>{email || "—"}</Text>
+          <Text style={label}>Phone</Text>
+          <Text style={value}>{phone || "Not supplied"}</Text>
+          <Text style={label}>Number of people</Text>
+          <Text style={value}>{number_of_people ?? "—"}</Text>
+          <Text style={label}>I am</Text>
+          <Text style={value}>{audience ? ({ individual: "Individual", school: "School or line", club: "Club or team", company: "Company" }[audience] ?? audience) : "—"}</Text>
+          <Text style={label}>Privacy consent</Text>
+          <Text style={value}>{consent ? "Agreed" : "Not supplied"}</Text>
           <Text style={label}>Language</Text>
           <Text style={value}>{locale || "en"}</Text>
           {message ? (

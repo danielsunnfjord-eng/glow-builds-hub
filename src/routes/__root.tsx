@@ -136,41 +136,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
         {children}
         <noscript>
           <header>
-            <h1>Fjord &amp; Waves Travel — Bespoke Travel Designed Around You</h1>
-            <p>
-              Bespoke journeys planned by Daniel Lira Figueiredo, a Fora Travel advisor (IATA
-              accredited). Flights, hotels and hidden-gem experiences tailored to you, with a focus
-              on Norway, the Nordics and beyond.
-            </p>
+            <h1>Fjord &amp; Waves Travel — Concierge Travel Agent for Rio and Norway's Fjords</h1>
+            <p>Private journeys, group trips and themed departures in Rio de Janeiro and Sogn og Fjordane, planned by Daniel Lira Figueiredo and hosted by local experts.</p>
             <nav>
               <ul>
-                <li>
-                  <a href="/">Home</a>
-                </li>
-                <li>
-                  <a href="/about">About Daniel</a>
-                </li>
-                <li>
-                  <a href="/destinations/norway">Norway itineraries</a>
-                </li>
-                <li>
-                  <a href="/routes">All routes</a>
-                </li>
-                <li>
-                  <a href="/catalogue">Itinerary shop</a>
-                </li>
-                <li>
-                  <a href="/plan-my-trip">Plan my trip</a>
-                </li>
-                <li>
-                  <a href="/legal">Privacy &amp; terms</a>
-                </li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/private-travel">Private Trips</a></li>
+                <li><a href="/groups">Schools &amp; Clubs</a></li>
+                <li><a href="/corporate">Corporate</a></li>
+                <li><a href="/trips">Theme Travels</a></li>
+                <li><a href="/safety">Safety</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/legal">Privacy &amp; terms</a></li>
               </ul>
             </nav>
-            <p>
-              This site requires JavaScript for the full experience. Please enable JavaScript or
-              contact daniel.lirafigueiredo@fora.travel.
-            </p>
           </header>
         </noscript>
         <Scripts />
