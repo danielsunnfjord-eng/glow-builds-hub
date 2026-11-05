@@ -128,8 +128,59 @@ const EN: Copy = {
   safetyLinkLabel: "Read about safety",
 };
 
-// PORTUGUESE PLACEHOLDER: no Portuguese text supplied yet; /pt-br shows the English version.
-const COPY = { no: NO, en: EN, pt: EN };
+// DRAFT – pending owner review: Portuguese translated from the English.
+const PT: Copy = {
+  h1: "Viagens de estudo ao Rio para folkehøgskoler",
+  intro: "Sou ex-professor de folkehøgskole e já planejei e conduzi viagens de estudo para o Brasil, Espanha, Portugal e Sri Lanka. Juntamente com a Rio Sport & Tour, parceira local com mais de 20 anos de experiência, construo a viagem em torno dos objetivos da sua linha e cuido do resto.",
+  proposal: "Solicite uma proposta",
+  heroAlt: "Grupo no Cristo Redentor, Rio de Janeiro",
+  conciergeTitle: "Como trabalho como seu concierge",
+  concierge: [
+    "Um único contato que conhece a folkehøgskole por dentro, da primeira conversa até o retorno para casa",
+    "Um programa construído em torno dos objetivos da sua linha, não um pacote pronto",
+    "Anfitriões locais no Rio: a Rio Sport & Tour planeja e conduz tudo no local",
+    "Documentos para a direção e os pais: seguro, plano de emergência e regras da viagem acompanham a proposta",
+    "Uma linha de contato 24 horas durante a viagem. Sempre há alguém disponível se algo acontecer. Ajudamos a adaptar o programa durante a viagem quando possível, e com desafios de idioma e cultura",
+    "Avaliação após a viagem e uma sugestão para o próximo ano",
+  ],
+  tracksTitle: "Escolha a sua linha",
+  tracks: [
+    { name: "Esporte e multiesporte", text: "Treinos com clubes brasileiros, jogos contra equipes locais, vôlei de praia, futevôlei, beach tennis e futebol de areia em Copacabana, Flamengo e Ipanema, capoeira, CrossFit e trilhas na montanha." },
+    { name: "Surf e atividades ao ar livre", text: "Aulas de surf, caminhadas na montanha e na floresta com guias locais, snorkel e mergulho em Arraial do Cabo e Ilha Grande." },
+    { name: "Solidariedade e cultura", text: "Encontros com projetos locais em favelas e ONGs, caminhadas culturais e históricas, aulas de culinária, samba e cultura afro-brasileira, e rodas de reflexão antes, durante e depois da viagem." },
+    { name: "Disciplinas criativas", text: "Workshops de música e sessões de estúdio com artistas locais, tours de street art, visitas a ambientes de moda e design, e aulas de dança em samba e ritmos afro-brasileiros." },
+  ],
+  howTitle: "Como funciona",
+  steps: [
+    "Uma conversa de 20 minutos, sem compromisso: objetivos, linha, números e datas",
+    "Uma proposta com programa e preço por aluno para diferentes tamanhos de grupo",
+    "Acordo com condições claras",
+    "Preparação: informações para os pais, regras da viagem, documentos",
+    "A viagem, com anfitriões locais e uma linha de contato 24 horas",
+    "Avaliação e uma sugestão para o próximo ano",
+  ],
+  includedTitle: "O que está incluído",
+  included: "Voos em grupo (mínimo 10 viajantes), hotéis, transporte e traslados, atividades, aulas e treinos, guias locais e suporte 24 horas.",
+  priceTitle: "Preço",
+  price: "Enviamos uma proposta concreta após a conversa, com preço por aluno para diferentes tamanhos de grupo. Conte seu orçamento e adaptamos o programa.",
+  faqTitle: "Perguntas frequentes",
+  faq: [
+    { q: "Quanto custa?", a: "Enviamos uma proposta concreta após a conversa. Veja a seção de preço." },
+    { q: "Quantos alunos são necessários?", a: "Já conduzimos viagens com 15 a 70 participantes (alunos e professores). Voos em grupo exigem no mínimo 10 viajantes." },
+    { q: "Quando devemos começar a planejar?", a: "Recomendamos começar cerca de seis meses antes da partida. Nossas viagens já duraram de 10 dias até 4 semanas." },
+    // HIDDEN FAQ (awaiting owner's terms): "Como funcionam pagamento e cancelamento?"
+    { q: "Como vocês garantem a segurança dos alunos?", a: "Veja a página Segurança.", safetyLink: true },
+    { q: "A viagem pode combinar vários destinos?", a: "Sim, passagens em grupo podem ser organizadas para vários destinos." },
+  ],
+  aboutTitle: "Sobre nós",
+  about: "Daniel Lira Figueiredo é ex-professor de folkehøgskole e já planejou e conduziu viagens de estudo para o Brasil, Espanha, Portugal e Sri Lanka. A Rio Sport & Tour entrega programas para folkehøgskoler norueguesas, colleges americanos, clubes esportivos e grupos culturais há mais de 20 anos. Já viajamos com linhas de vôlei de praia, vôlei, dança, esportes de praia e aventura esportiva. Nossas viagens tiveram 15 a 70 participantes (alunos e professores) e duraram de 10 dias a 4 semanas.",
+  // HIDDEN until the owner confirms the schools may be named: "entre outras, de Sunnfjord folkehøgskole e Sogndal folkehøgskole"
+  before: "No campo de mensagem, inclua sua escola, a linha, o número de alunos e professores, as datas preferidas, o destino (Rio, os fiordes ou ambos) e a faixa de orçamento.",
+  refsLabel: "Referências de grupos e escolas",
+  safetyLinkLabel: "Leia sobre segurança",
+};
+
+const COPY = { no: NO, en: EN, pt: PT };
 
 export default function FolkHighSchoolPage() {
   const locale = currentLocale();

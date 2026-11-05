@@ -94,7 +94,7 @@ const NO: Copy = {
     { question: "Kan dere kombinere Rio og fjordene?", answer: "Ja, det er vår spesialitet." },
   ],
   safety: "Trygghet",
-  privateLink: "Booking a trip for yourself? See private trips",
+  privateLink: "Planlegger du en reise for deg selv? Se privatreiser.",
 };
 
 // DRAFT – pending review: Portuguese translated from the English text; the owner reviews before publishing.
@@ -121,6 +121,24 @@ const PT: Copy = {
   steps: ["Briefing", "Proposta", "Acordo e sinal", "Planejamento", "Evento", "Relatório final"],
   beforeTitle: "Antes de preencher o formulário",
   before: "No campo de mensagem, inclua sua empresa, seu cargo, o tipo de evento (team building, incentivo, reunião ou delegação), número de participantes, destino, datas e faixa de orçamento. Os dados de faturamento podem vir depois que definirmos o escopo.",
+  conciergeTitle: "Como trabalho como seu concierge",
+  concierge: [
+    "Um contato pessoal do primeiro briefing à fatura final",
+    "Uma proposta concreta com programa, estrutura e condições claras",
+    "Anfitriões locais no Rio e em Sogn og Fjordane",
+    "Toda a logística: viagem, hospedagem, transporte e atividades",
+    "Uma linha de contato 24 horas durante a viagem",
+    "Um relatório e acompanhamento após o evento",
+  ],
+  programNote: "Um ponto de partida, adaptado ao seu grupo. Hotéis e horários são confirmados na proposta.",
+  tableHead: ["Dia", "Programa"],
+  faqTitle: "Perguntas frequentes",
+  faq: [
+    { question: "Em quais idiomas vocês trabalham?", answer: "Português, norueguês e inglês." },
+    { question: "Vocês podem combinar Rio e fiordes?", answer: "Sim, é a nossa especialidade." },
+  ],
+  safety: "Segurança",
+  privateLink: "Planejando uma viagem só para você? Veja as viagens privadas.",
 };
 const COPY = { en: EN, no: NO, pt: PT };
 

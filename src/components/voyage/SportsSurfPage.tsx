@@ -70,8 +70,35 @@ const NO: Copy = {
   refsLabel: "Referanser fra grupper og klubber",
 };
 
-// PORTUGUESE PLACEHOLDER: no Portuguese text supplied yet; /pt-br shows the English version.
-const COPY = { en: EN, no: NO, pt: EN };
+// DRAFT – pending owner review: Portuguese translated from the English.
+const PT: Copy = {
+  h1: "Campos de treino e viagens para equipes e clubes esportivos",
+  intro: "Treinos e jogos contra clubes locais, para equipes juvenis e amadoras, com uma DMC local experiente como anfitriã, com mais de 20 anos de experiência.",
+  proposal: "Solicite uma proposta",
+  campTitle: "O que um campo de treino pode incluir",
+  camp: [
+    "Sessões de treino com clubes locais, adaptadas ao nível e ao esporte",
+    "Jogos contra equipes locais",
+    "Vôlei de praia, futevôlei, beach tennis, futebol de areia e handebol de praia",
+    "Futebol, vôlei, beach tennis, SUP, surf, mergulho e capoeira",
+    "Torneios organizados pelo grupo, amistosos, passeios e experiências culturais, e um jogo de futebol como torcedor",
+  ],
+  campNote: "Focamos em equipes juvenis e amadoras. Para equipes de elite e profissionais, entre em contato diretamente.",
+  howTitle: "Como funciona",
+  steps: [
+    "Uma conversa de 20 minutos, sem compromisso: objetivos, esporte, números e datas",
+    "Uma proposta com programa e preço por participante para diferentes tamanhos de grupo",
+    "Acordo com condições claras",
+    "Preparação: informações, regras da viagem, documentos",
+    "A viagem, com anfitriões locais e uma linha de contato 24 horas",
+    "Avaliação e uma sugestão para o próximo ano",
+  ],
+  safetyLinkLabel: "Leia sobre segurança",
+  before: "No campo de mensagem, inclua seu clube, o esporte, a faixa de idade, o número de jogadores e adultos, as datas preferidas, o destino e a faixa de orçamento.",
+  refsLabel: "Referências de grupos e clubes",
+};
+
+const COPY = { en: EN, no: NO, pt: PT };
 
 // HIDDEN SECTION until the owner confirms local clubs and facilities in Sogn og Fjordane:
 // EN "From Brazil and other countries to the fjords" / NO "Fra fjordene".
