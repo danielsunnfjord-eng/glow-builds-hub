@@ -1,3 +1,8 @@
+# Two additional theme travels
+- [ ] Add supplied Carnaval and Sognefjord trips, localized URLs, uploaded photos and ordered hub cards.
+- [ ] Enforce Oslo registration deadlines in the existing form and public signup validation; test both cutoffs.
+- [ ] Verify new pages, mobile tables, language switching, saved signups and owner emails.
+
 # Theme travel wishes
 - [x] Add a simple localized wish form from the existing Tell us link, store wishes and email the owner.
 - [x] Verify form submission, stored wish in Admin Requests and sent email; remove the test wish.
