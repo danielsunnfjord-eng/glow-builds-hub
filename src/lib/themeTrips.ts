@@ -283,8 +283,50 @@ const NORWAY_NO: ThemeTripCopy = {
   faq: FAQ_NO,
 };
 
-// Owner-supplied Norwegian text (primary version).
-const BEACH_NO: ThemeTripCopy = {
+// DRAFT – pending owner review: Portuguese translated from the English.
+const NORWAY_PT: ThemeTripCopy = {
+  title: "Norway Surf & Fjord Week",
+  subtitle: "Surf em Stad e viagem pelo Nordfjord: falésias marítimas, história viking, vales de geleiras e fiordes tranquilos. A temporada de surf e fiordes vai de abril a setembro.",
+  overview:
+    "Comece com surf em Hoddevik e Ervik na península de Stadlandet, depois siga uma rota por Selje, Måløy, Loen, Kalvåg e Gloppen. Grupo pequeno, anfitrião local, uma nova paisagem a cada dia. Adaptamos o transporte ao tamanho do grupo e às atividades que você escolher.",
+  metaDescription:
+    "Surf em Stad e viagem pelo Nordfjord – falésias marítimas, história viking, vales de geleiras e fiordes tranquilos em grupo pequeno com anfitrião local. Registre seu interesse.",
+  duration: "8 dias",
+  destination: "Stad e Nordfjord, Noruega",
+  periods: ["junho a agosto de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["Chegada", "Check-in no Stad Hotell e tempo livre"],
+    ["1", "Uma ou duas sessões de surf em Hoddevik ou Ervik. Mirante Vestkapp e Dragseidet. Pôr do sol na praia"],
+    ["2", "Surf. Passeio de barco ao mosteiro de Selje e à caverna de Sunniva. Noite na praia ou surf leve ao pôr do sol"],
+    ["3", "Surf cedo, check-out. Måløy: Kannesteinen, praia de Refviksanden e farol de Kråkenes. Opcional: o centro Måløy Raid"],
+    ["4", "Loen: Skylift até Hoven, geleira Briksdalsbreen, Oldevatnet e Lovatnet. Opcional: Via Ferrata guiada"],
+    ["5", "Bremanger: Grotlesanden, gravuras rupestres de Vingen e Kalvåg. Almoço no Knutholmen. Sauna, caiaque, pesca ou um banho de mar"],
+    ["6", "Nordfjordeid: Sagastad e Eidsgata. Gloppen: e-foil, SUP ou caiaque no Gloppefjord. Jantar no Gloppen Hotell"],
+    ["Partida", "Café da manhã e check-out. Traslado ao aeroporto"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Stad Hotell, Thon Partner Hotel Måløy, Hotel Loenfjord, Knutholmen em Kalvåg e Gloppen Hotell. Estes são exemplos. A escolha final é confirmada por partida.",
+  extraSections: [
+    {
+      title: "Como chegar",
+      text: "Começa em Stadlandet e termina em Sandane. Aeroportos próximos: Sandane, Førde, Sogndal e Florø. Podemos organizar o traslado.",
+    },
+    {
+      title: "Surf",
+      text: "As sessões de surf são lideradas por instrutores locais da nossa rede. O mar é frio. Fazemos uma orientação e damos recomendações sobre wetsuit.",
+      // HIDDEN (awaiting owner): surf school name and wetsuit rental details.
+    },
+  ],
+  leadersTitle: "Líderes da viagem",
+  leaders: [{ name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" }],
+  leadersNote: "Daniel é acompanhado por especialistas locais da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before:
+    "Surfar em água fria exige wetsuit e uma orientação. Alguns lugares e atividades funcionam apenas na temporada, como o café Vestkapp, o Loen Skylift, a Via Ferrata e o barco para Selje. Confirmamos os horários para as suas datas.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+};
   title: "Beach Sports Camp i Rio de Janeiro",
   subtitle: "To uker med sand, sol og sport i Zona Sul, pluss Arraial do Cabo eller Ilha Grande.",
   overview:
