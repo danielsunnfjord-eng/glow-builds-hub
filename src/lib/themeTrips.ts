@@ -412,12 +412,54 @@ const BEACH_EN: ThemeTripCopy = {
   showRioPartner: true,
 };
 
+// DRAFT – pending owner review: Portuguese translated from the English.
+const BEACH_PT: ThemeTripCopy = {
+  title: "Beach Sports Camp no Rio de Janeiro",
+  subtitle: "Duas semanas de areia, sol e esporte na Zona Sul, além de Arraial do Cabo ou Ilha Grande.",
+  overview:
+    "Comece o dia com o nascer do sol sobre Copacabana, os pés na areia e as ondas balançando você. Escolha entre vôlei de praia, futevôlei, beach tennis, futebol de areia, surf, SUP e yoga. A noite termina com bons amigos e um drink gelado. Você fica perto de Copacabana e Ipanema e treina nas quadras de vôlei de praia do Leme. Entre os treinos, você conhece o Cristo Redentor, o Pão de Açúcar, o Parque Nacional da Tijuca, a Lapa e um jogo de futebol no Maracanã. Os últimos dias são em Arraial do Cabo ou Ilha Grande. Este é um exemplo e é adaptado ao seu grupo.",
+  metaDescription:
+    "Duas semanas de vôlei de praia, futevôlei, beach tennis, surf e SUP no Rio de Janeiro, com treinadores locais e dias em Arraial do Cabo ou Ilha Grande. Registre seu interesse.",
+  duration: "15 dias",
+  destination: "Rio de Janeiro, Brasil",
+  periods: ["junho a agosto de 2027", "setembro a outubro de 2027"],
+  programHead: ["Dia", "Programa"],
+  program: [
+    ["Dia 1", "Chegada e reunião de boas-vindas no hotel"],
+    ["Dias 2 a 9", "Treinos de manhã e à tarde (vôlei de praia, beach tennis, futevôlei, futebol de areia, corrida, força), surf ou SUP, visita ao Cristo Redentor e à Lapa, torneio 2x2 e 4x4, jogo no Maracanã, trilha na Tijuca"],
+    ["Dias 10 a 14", "Ilha Grande ou Arraial do Cabo: mergulho, snorkel, trilhas e passeio de barco"],
+    ["Dia 15", "Partida"],
+  ],
+  stayTitle: "Onde você fica",
+  stay: "Você fica perto de Copacabana e Ipanema e treina nas quadras de vôlei de praia do Leme.",
+  activitiesTitle: "Atividades",
+  activities:
+    "Vôlei de praia, futevôlei, beach tennis, futebol de areia, treino de força e circuito, yoga, natação em águas abertas, corrida, trilhas na montanha, SUP, surf, mergulho e snorkel. Você escolhe as atividades ao se inscrever.",
+  extraSections: [
+    {
+      title: "Como funciona",
+      text: "1 Registre seu interesse (sem pagamento). 2 Abrimos as inscrições pelo menos seis meses antes da partida. 3 Avisamos três meses antes da partida se a viagem será realizada. 4 Um plano de pagamento e os termos são enviados na confirmação.",
+    },
+  ],
+  leadersTitle: "Líderes da viagem",
+  leaders: [
+    { name: "Daniel Lira Figueiredo", role: "Nascido no Rio e morando na Noruega desde 2010" },
+    { name: "Pablo Cabral Salles", role: "Treinador de vôlei e fundador da Rio Sport & Tour" },
+  ],
+  leadersNote: "Quando um tema exige conhecimento especial, trazemos especialistas da nossa rede.",
+  beforeTitle: "Antes de reservar",
+  before: "Este é um exemplo e é adaptado ao seu grupo. Seguro-viagem é obrigatório. Os requisitos de entrada dependem do seu passaporte.",
+  faqTitle: "Perguntas frequentes",
+  faq: FAQ_PT,
+  showRioPartner: true,
+};
+
 export const THEME_TRIPS: ThemeTrip[] = [
   CARNAVAL_TRIP,
-  { slug: "rio-flow-experience", copy: { en: RIO_FLOW_EN, no: RIO_FLOW_NO, pt: RIO_FLOW_EN } },
-  { slug: "norway-surf-fjord-week", copy: { en: NORWAY_EN, no: NORWAY_NO, pt: NORWAY_EN } },
-  fjordsTrip({ en: FAQ_EN, no: FAQ_NO }),
-  { slug: "beach-sports-camp-rio", copy: { en: BEACH_EN, no: BEACH_NO, pt: BEACH_NO } },
+  { slug: "rio-flow-experience", copy: { en: RIO_FLOW_EN, no: RIO_FLOW_NO, pt: RIO_FLOW_PT } },
+  { slug: "norway-surf-fjord-week", copy: { en: NORWAY_EN, no: NORWAY_NO, pt: NORWAY_PT } },
+  fjordsTrip({ en: FAQ_EN, no: FAQ_NO, pt: FAQ_PT }),
+  { slug: "beach-sports-camp-rio", copy: { en: BEACH_EN, no: BEACH_NO, pt: BEACH_PT } },
 ];
 
 export function themeTripBySlug(slug: string): ThemeTrip | undefined {
