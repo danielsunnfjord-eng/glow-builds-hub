@@ -56,27 +56,6 @@ const NO: Copy = {
     "Egenorganiserte turneringer, vennskapskamper, sightseeing og kulturopplevelser, og en fotballkamp som tilskuer",
   ],
   campNote: "Vi fokuserer på ungdoms- og breddelag. Elitelag og profesjonelle ber du om å ta direkte kontakt.",
-  rioTitle: "Fra Norge til Rio",
-  rioIntro: "Treningscamp når vinteren i Norge er lang. Velg tidspunkt ut fra været og prisene i Rio.",
-  periodHead: "Periode", likeHead: "Slik er det",
-  periods: [
-    ["Desember til mars", "Høysesong: veldig varmt og fuktig (ofte over 35 °C), mest regn, høyest priser"],
-    ["April til mai og september til november", "Mildere vær (24 til 28 °C), færre turister, lavere priser"],
-    ["Juni til august", "Rios vinter: tørt og kjøligere, kvelder ned mot 15 til 18 °C, sjøen rundt 18 til 22 °C"],
-  ],
-  weekTitle: "Eksempeluke",
-  weekNote: "Et eksempel. Programmet tilpasses idrett, alder og nivå.",
-  dayHead: "Dag", programHead: "Program",
-  week: [
-    "Ankomst og velkomstmøte på hotellet",
-    "Morgenøkt (beachvolleyball eller styrke i sanden), ettermiddagsøkt (beachvolleyball, beach tennis eller footvolley) og løpetur",
-    "Tidlig surf, SUP eller utesvømming, sandfotball og løping i sand på ettermiddagen",
-    "Tur til Kristusstatuen, Lapa og Santa Teresa, deretter trening",
-    // HIDDEN until confirmed: "og vennskapskamp mot lokalt lag"
-    "Trening",
-    "Egenorganisert turnering (2x2 og 4x4). For ungdomslag erstatter vi kveldsprogrammet med et eget opplegg",
-    "Fotballkamp på Maracanã som tilskuer og avslutning",
-  ],
   howTitle: "Slik fungerer det",
   steps: [
     "Samtale (20 minutter, uforpliktende): mål, idrett, antall og tidspunkt",
