@@ -212,6 +212,27 @@ export default function FolkHighSchoolPage() {
         <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[locale]} />
         <GroupReferences label={c.refsLabel} />
 
+        <section className={`bg-parchment-2 ${section}`}>
+          <div className="mx-auto max-w-3xl">
+            <h2 className={h2}>{c.faqTitle}</h2>
+            <Accordion type="single" collapsible className="border-t border-parchment-3">
+              {c.faq.map((f) => (
+                <AccordionItem key={f.q} value={f.q} className="border-parchment-3">
+                  <AccordionTrigger className="text-left font-serif text-xl text-ink">{f.q}</AccordionTrigger>
+                  <AccordionContent className="text-base leading-relaxed text-ink-2">
+                    {f.safetyLink && safetyLive
+                      ? <a href={safetyHref} className="text-gold underline">{f.a}</a>
+                      : f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            {safetyLive && (
+              <a href={safetyHref} className="mt-6 inline-block text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gold hover:underline">{c.safetyLinkLabel} →</a>
+            )}
+          </div>
+        </section>
+
         <section className="px-16 py-20 text-center max-md:px-6">
           <div className="mx-auto max-w-2xl">
             <p className="mb-8 text-lg leading-relaxed text-ink-2">{c.before}</p>
