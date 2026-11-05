@@ -7,7 +7,7 @@ import { ProposalCta, NumberedSteps } from "./GroupBlocks";
 import { RIO_TESTIMONIAL_AUTHORS, RIO_REVIEWS_LABEL } from "./home/homeCopy";
 import { currentLocale, localePath } from "@/lib/locale";
 import { isGroupPageAvailable } from "@/lib/travelNavigation";
-import arpoador from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
+import teamPhoto from "@/assets/team_photo.png.asset.json";
 
 interface Copy {
   h1: string; intro: string; proposal: string;
@@ -88,7 +88,7 @@ export default function SportsSurfPage() {
       <Navbar />
       <main className="flex-1">
         <section className="relative flex min-h-[80vh] items-end overflow-hidden bg-ink px-16 pb-20 pt-48 max-md:px-6 max-md:pb-14">
-          <img src={arpoador.url} alt="" aria-hidden fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={teamPhoto.url} alt="Volleyball team group photo in a sports hall in Rio de Janeiro" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20" />
           <div className="relative max-w-3xl">
             <h1 className="font-serif text-[clamp(2.2rem,5vw,4.2rem)] font-bold leading-[1.05] text-parchment">{c.h1}</h1>
