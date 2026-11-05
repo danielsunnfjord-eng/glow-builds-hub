@@ -4,7 +4,7 @@ import Footer from "./Footer";
 import LocalPartnerRio from "./LocalPartnerRio";
 import Reviews from "./Reviews";
 import GroupReferences from "./GroupReferences";
-import { ProposalCta, TwoColTable, NumberedSteps } from "./GroupBlocks";
+import { ProposalCta, NumberedSteps } from "./GroupBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { currentLocale, localePath } from "@/lib/locale";
 import { isGroupPageAvailable } from "@/lib/travelNavigation";
@@ -15,7 +15,7 @@ interface Copy {
   h1: string; intro: string; proposal: string; heroAlt: string;
   conciergeTitle: string; concierge: string[];
   tracksTitle: string; tracks: { name: string; text: string }[];
-  programTitle: string; programNote: string; dayHead: string; programHead: string; days: string[];
+
   howTitle: string; steps: string[];
   includedTitle: string; included: string;
   priceTitle: string; price: string;
@@ -45,15 +45,6 @@ const NO: Copy = {
     { name: "Surf og friluftsliv", text: "Surfkurs med erfarne instruktører, fjell- og skogsturer med lokale guider, snorkling og dykking rundt Arraial do Cabo og Ilha Grande." },
     { name: "Solidaritet og kultur", text: "Møter med lokale favela-prosjekter og frivillige organisasjoner, kulturvandringer og historiske byvandringer, matkurs, samba og afro-brasiliansk kultur, og refleksjonsopplegg før, under og etter reisen." },
     { name: "Kreative fag", text: "Musikkworkshops og studioøkter med lokale artister, street art-turer, besøk hos mote- og designmiljøer og dansetimer i samba og afro-brasiliansk rytmikk." },
-  ],
-  programTitle: "Eksempelprogram: surf, friluftsliv og idrett (11 dager)",
-  programNote: "Programmet er et utgangspunkt og tilpasses linjens mål, nivå og datoer.",
-  dayHead: "Dag", programHead: "Program",
-  days: [
-    "Avreise fra Norge", "Ankomst Rio, transfer, sikkerhetsgjennomgang", "Byorientering og introduksjon til brasiliansk rytme",
-    "Surfkurs del 1 og beachvolleyball", "Dagstur til fjell og natur", "Surfkurs del 2, trening med lokal klubb, refleksjon",
-    "Faglig dag: kamp, klubbesøk eller sosialt prosjekt", "Arraial do Cabo eller Ilha Grande", "Retur til Rio, kulturdag, avslutningsmiddag",
-    "Fritid med rammer og felles evaluering", "Hjemreise",
   ],
   howTitle: "Slik fungerer det",
   steps: [
@@ -106,15 +97,6 @@ const EN: Copy = {
     { name: "Surf and outdoor", text: "Surf lessons, mountain and forest walks with local guides, snorkeling and diving around Arraial do Cabo and Ilha Grande." },
     { name: "Solidarity and culture", text: "Meetings with local favela projects and NGOs, cultural and historical walks, cooking, samba and Afro-Brazilian culture, and reflection sessions before, during and after the trip." },
     { name: "Creative subjects", text: "Music workshops and studio sessions with local artists, street art tours, fashion and design visits, samba and Afro-Brazilian dance classes." },
-  ],
-  programTitle: "Sample program: surf, outdoor and sport (11 days)",
-  programNote: "The program is a starting point and is adapted to your line's goals, level and dates.",
-  dayHead: "Day", programHead: "Program",
-  days: [
-    "Departure from Norway", "Arrival in Rio, transfer, safety briefing", "City orientation and an introduction to Brazilian rhythm",
-    "Surf lesson 1 and beach volleyball", "Mountain and nature day trip", "Surf lesson 2, training with a local club, reflection",
-    "Subject day: match, club visit or social project", "Arraial do Cabo or Ilha Grande", "Return to Rio, culture day, farewell dinner",
-    "Free time within rules and group evaluation", "Travel home",
   ],
   howTitle: "How it works",
   steps: [
@@ -198,15 +180,6 @@ export default function FolkHighSchoolPage() {
           </div>
         </section>
 
-        <section className={section}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.programTitle}</h2>
-            <p className="mb-6 text-sm italic text-voyage-muted">{c.programNote}</p>
-            <TwoColTable head={[c.dayHead, c.programHead]} rows={c.days.map((d, n) => [String(n + 1), d])} narrow />
-            <div className="mt-10"><ProposalCta label={c.proposal} /></div>
-          </div>
-        </section>
-
         <section className={`bg-parchment-2 ${section}`}>
           <div className="mx-auto max-w-6xl">
             <h2 className={h2}>{c.howTitle}</h2>
@@ -228,6 +201,17 @@ export default function FolkHighSchoolPage() {
           </div>
         </section>
 
+        <section className={section}>
+          <div className="mx-auto max-w-3xl">
+            <h2 className={h2}>{c.aboutTitle}</h2>
+            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
+          </div>
+        </section>
+
+        <LocalPartnerRio />
+        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[locale]} />
+        <GroupReferences label={c.refsLabel} />
+
         <section className={`bg-parchment-2 ${section}`}>
           <div className="mx-auto max-w-3xl">
             <h2 className={h2}>{c.faqTitle}</h2>
@@ -248,17 +232,6 @@ export default function FolkHighSchoolPage() {
             )}
           </div>
         </section>
-
-        <section className={section}>
-          <div className="mx-auto max-w-3xl">
-            <h2 className={h2}>{c.aboutTitle}</h2>
-            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
-          </div>
-        </section>
-
-        <LocalPartnerRio />
-        <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[locale]} />
-        <GroupReferences label={c.refsLabel} />
 
         <section className="px-16 py-20 text-center max-md:px-6">
           <div className="mx-auto max-w-2xl">
