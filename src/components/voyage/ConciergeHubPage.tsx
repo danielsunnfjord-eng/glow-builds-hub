@@ -9,6 +9,7 @@ import { WHATSAPP_URL } from "@/lib/whatsapp";
 import { HOME_COPY } from "./home/homeCopy";
 import cristo from "@/assets/home/cristo_redentor.jpg.asset.json";
 import surf from "@/assets/home/pedra_do_arpoador.jpg.asset.json";
+import teamPhoto from "@/assets/team_photo.png.asset.json";
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
 export default function ConciergeHubPage({ page }: { page: "groups" | "start" | "trips" }) {
@@ -26,7 +27,7 @@ export default function ConciergeHubPage({ page }: { page: "groups" | "start" | 
           <div className={`mt-12 grid gap-6 ${page === "start" ? "lg:grid-cols-3" : "md:grid-cols-2"}`}>
             {choices.map((choice, n) => (
               <a key={choice.key} href={choice.external ? choice.href : localePath(choice.href, locale)} {...(choice.external ? ext : {})} className="group flex h-full flex-col overflow-hidden rounded-lg border border-parchment-3 bg-voyage-white text-ink transition hover:shadow-elegant focus-visible:outline focus-visible:outline-ring">
-                {page === "groups" && <img src={n === 0 ? cristo.url : surf.url} alt={c[choice.key]} className="aspect-[2/1] w-full object-cover" loading="lazy" />}
+                {page === "groups" && <img src={n === 0 ? cristo.url : teamPhoto.url} alt={c[choice.key]} className="aspect-[2/1] w-full object-cover" loading="lazy" />}
                 <div className="flex flex-1 flex-col p-8">
                   <h2 className="font-serif text-2xl font-bold leading-snug">{c[choice.key]}</h2>
                   {page === "groups" && <p className="mt-3 leading-relaxed text-ink-2">{c[choice.key === "school" ? "schoolText" : "sportsText"]}</p>}
