@@ -1,4 +1,6 @@
-import TurndownService from "turndown";
+// Use the browser distribution: the default ESM entry invokes CommonJS
+// require() during import and crashes SSR even before any conversion runs.
+import TurndownService from "turndown/lib/turndown.browser.es.js";
 
 export function cleanMarkdown(md: string): string {
   return md
