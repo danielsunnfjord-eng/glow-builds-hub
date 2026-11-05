@@ -1,4 +1,5 @@
 import { buildHead } from "./seoHead";
+import { SITE_URL } from "./locale";
 import { localeFromParam } from "./seoHead";
 import { THEME_COPY, themeTripBySlug } from "./themeTrips";
 
@@ -12,8 +13,8 @@ export function themeTripsHubHead(param: string | undefined) {
       : locale === "pt"
         ? "Viagens temáticas: surf, esportes de praia e ao ar livre | Fjord & Waves Travel"
         : "Theme Travels: Surf, Beach Sports and Outdoor | Fjord & Waves Travel";
-  const head = buildHead({ path: "/trips", locale, title, description: c.hubIntro });
-  return { ...head, meta: head.meta.filter((meta) => meta.property !== "og:image" && meta.name !== "twitter:image") };
+  const head = buildHead({ path: "/trips", locale, title, description: c.hubIntro, image: `${SITE_URL}/og/trips.jpg` });
+  return head;
 }
 
 /** Trip detail head: unique title + description per trip and language. */
@@ -27,7 +28,8 @@ export function themeTripHead(param: string | undefined, slug: string) {
     locale,
     title: c.seoTitle ?? `${c.title} | Fjord & Waves Travel`,
     description: c.metaDescription,
+    image: `${SITE_URL}/og/${trip.slug}.jpg`,
+    type: "article",
   });
-  // Trip pages have no absolute cover image; let hosting supply the preview.
-  return { ...head, meta: head.meta.filter((meta) => meta.property !== "og:image" && meta.name !== "twitter:image") };
+  return head;
 }

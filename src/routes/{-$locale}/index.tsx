@@ -3,7 +3,6 @@ import Index from "@/pages/Index";
 import { headFor, localeFromParam } from "@/lib/seoHead";
 import { copyFor } from "@/lib/seoCopy";
 import { SITE_URL, localePath } from "@/lib/locale";
-import sup from "@/assets/home/sunrise_sup_copacabana.jpg.asset.json";
 
 export const Route = createFileRoute("/{-$locale}/")({
   head: ({ params }) => {
@@ -13,7 +12,7 @@ export const Route = createFileRoute("/{-$locale}/")({
       path: "/",
       title: copy.title,
       description: copy.description,
-      image: sup.url,
+      image: `${SITE_URL}/og/home.jpg`,
       jsonLd: {
         "@context": "https://schema.org",
         "@type": "TravelAgency",
