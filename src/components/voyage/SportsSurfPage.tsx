@@ -109,23 +109,6 @@ export default function SportsSurfPage() {
         </section>
 
         <section className={`bg-parchment-2 ${section}`}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.rioTitle}</h2>
-            <p className="mb-6 text-lg leading-relaxed text-ink-2">{c.rioIntro}</p>
-            <TwoColTable head={[c.periodHead, c.likeHead]} rows={c.periods} />
-          </div>
-        </section>
-
-        <section className={section}>
-          <div className="mx-auto max-w-4xl">
-            <h2 className={h2}>{c.weekTitle}</h2>
-            <p className="mb-6 text-sm italic text-voyage-muted">{c.weekNote}</p>
-            <TwoColTable head={[c.dayHead, c.programHead]} rows={c.week.map((d, n) => [String(n + 1), d])} narrow />
-            <div className="mt-10"><ProposalCta label={c.proposal} /></div>
-          </div>
-        </section>
-
-        <section className={`bg-parchment-2 ${section}`}>
           <div className="mx-auto max-w-6xl">
             <h2 className={h2}>{c.howTitle}</h2>
             <NumberedSteps steps={c.steps} />
