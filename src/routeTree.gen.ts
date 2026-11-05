@@ -40,6 +40,7 @@ import { Route as Char123LocaleChar125TripsRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125TrygghetRouteImport } from './routes/{-$locale}/trygghet'
 import { Route as Char123LocaleChar125UnsubscribeRouteImport } from './routes/{-$locale}/unsubscribe'
 import { Route as ApiPublicInterestSignupRouteImport } from './routes/api/public/interest-signup'
+import { Route as ApiPublicThemeWishRouteImport } from './routes/api/public/theme-wish'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as Char123LocaleChar125CatalogueIndexRouteImport } from './routes/{-$locale}/catalogue/index'
 import { Route as Char123LocaleChar125CatalogueSlugRouteImport } from './routes/{-$locale}/catalogue/$slug'
@@ -238,6 +239,11 @@ const ApiPublicInterestSignupRoute = ApiPublicInterestSignupRouteImport.update({
   path: '/api/public/interest-signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicThemeWishRoute = ApiPublicThemeWishRouteImport.update({
+  id: '/api/public/theme-wish',
+  path: '/api/public/theme-wish',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -360,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/api/public/theme-wish': typeof ApiPublicThemeWishRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
@@ -407,6 +414,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/api/public/theme-wish': typeof ApiPublicThemeWishRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
@@ -456,6 +464,7 @@ export interface FileRoutesById {
   '/{-$locale}/unsubscribe': typeof Char123LocaleChar125UnsubscribeRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/api/public/interest-signup': typeof ApiPublicInterestSignupRoute
+  '/api/public/theme-wish': typeof ApiPublicThemeWishRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/{-$locale}/catalogue/$slug': typeof Char123LocaleChar125CatalogueSlugRoute
   '/{-$locale}/catalogue/success': typeof Char123LocaleChar125CatalogueSuccessRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
     | '/api/public/interest-signup'
+    | '/api/public/theme-wish'
     | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
@@ -553,6 +563,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}'
     | '/api/public/interest-signup'
+    | '/api/public/theme-wish'
     | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
@@ -601,6 +612,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/unsubscribe'
     | '/{-$locale}/'
     | '/api/public/interest-signup'
+    | '/api/public/theme-wish'
     | '/lovable/email/suppression'
     | '/{-$locale}/catalogue/$slug'
     | '/{-$locale}/catalogue/success'
@@ -623,6 +635,7 @@ export interface RootRouteChildren {
   Char123LocaleChar125Route: typeof Char123LocaleChar125RouteWithChildren
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ApiPublicInterestSignupRoute: typeof ApiPublicInterestSignupRoute
+  ApiPublicThemeWishRoute: typeof ApiPublicThemeWishRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -847,6 +860,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicInterestSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/theme-wish': {
+      id: '/api/public/theme-wish'
+      path: '/api/public/theme-wish'
+      fullPath: '/api/public/theme-wish'
+      preLoaderRoute: typeof ApiPublicThemeWishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -1059,6 +1079,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char123LocaleChar125Route: Char123LocaleChar125RouteWithChildren,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ApiPublicInterestSignupRoute: ApiPublicInterestSignupRoute,
+  ApiPublicThemeWishRoute: ApiPublicThemeWishRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
