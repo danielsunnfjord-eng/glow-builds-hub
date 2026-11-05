@@ -208,13 +208,6 @@ export default function FolkHighSchoolPage() {
           </div>
         </section>
 
-        <section className={section}>
-          <div className="mx-auto max-w-3xl">
-            <h2 className={h2}>{c.aboutTitle}</h2>
-            <p className="text-lg leading-relaxed text-ink-2">{c.about}</p>
-          </div>
-        </section>
-
         <LocalPartnerRio />
         <Reviews include={RIO_TESTIMONIAL_AUTHORS} label={RIO_REVIEWS_LABEL[locale]} />
         <GroupReferences label={c.refsLabel} />
