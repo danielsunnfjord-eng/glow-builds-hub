@@ -29,27 +29,6 @@ const EN: Copy = {
     "Self-organized tournaments, friendlies, sightseeing and cultural experiences, and a football match as a spectator",
   ],
   campNote: "We focus on youth and amateur teams. For elite and professional teams, please contact us directly.",
-  rioTitle: "From Norway to Rio",
-  rioIntro: "A training camp when the Norwegian winter is long. Choose the period by weather and prices in Rio.",
-  periodHead: "Period", likeHead: "What it is like",
-  periods: [
-    ["December to March", "High season: very hot and humid (often above 35 °C), the most rain, the highest prices"],
-    ["April to May and September to November", "Milder weather (24 to 28 °C), fewer tourists, lower prices"],
-    ["June to August", "Rio winter: dry and cooler, evenings around 15 to 18 °C, sea around 18 to 22 °C"],
-  ],
-  weekTitle: "Sample week",
-  weekNote: "An example. The program is adapted to sport, age and level.",
-  dayHead: "Day", programHead: "Program",
-  week: [
-    "Arrival and welcome meeting at the hotel",
-    "Morning session (beach volleyball or strength in the sand), afternoon session (beach volleyball, beach tennis or footvolley) and a run",
-    "Early surf, SUP or open-water swim, sand football and sand running in the afternoon",
-    "Christ the Redeemer, Lapa and Santa Teresa, then training",
-    // HIDDEN until confirmed: "and a friendly against a local team"
-    "Training",
-    "Self-organized tournament (2x2 and 4x4). For youth teams we replace the evening program with our own plan",
-    "Football match at the Maracanã as spectators and farewell",
-  ],
   howTitle: "How it works",
   steps: [
     "A 20-minute call, no obligation: goals, sport, numbers and dates",
