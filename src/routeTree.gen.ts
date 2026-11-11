@@ -17,6 +17,9 @@ import { Route as Char123LocaleChar125AboutRouteImport } from './routes/{-$local
 import { Route as Char123LocaleChar125AdminRouteImport } from './routes/{-$locale}/admin'
 import { Route as Char123LocaleChar125BedriftRouteImport } from './routes/{-$locale}/bedrift'
 import { Route as Char123LocaleChar125CorporateRouteImport } from './routes/{-$locale}/corporate'
+import { Route as Char123LocaleChar125CruiseRouteImport } from './routes/{-$locale}/cruise'
+import { Route as Char123LocaleChar125CruisesRouteImport } from './routes/{-$locale}/cruises'
+import { Route as Char123LocaleChar125CruzeirosRouteImport } from './routes/{-$locale}/cruzeiros'
 import { Route as Char123LocaleChar125FolkehogskoleRouteImport } from './routes/{-$locale}/folkehogskole'
 import { Route as Char123LocaleChar125GroupsRouteImport } from './routes/{-$locale}/groups'
 import { Route as Char123LocaleChar125GrupperRouteImport } from './routes/{-$locale}/grupper'
@@ -100,6 +103,24 @@ const Char123LocaleChar125CorporateRoute =
   Char123LocaleChar125CorporateRouteImport.update({
     id: '/corporate',
     path: '/corporate',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125CruiseRoute =
+  Char123LocaleChar125CruiseRouteImport.update({
+    id: '/cruise',
+    path: '/cruise',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125CruisesRoute =
+  Char123LocaleChar125CruisesRouteImport.update({
+    id: '/cruises',
+    path: '/cruises',
+    getParentRoute: () => Char123LocaleChar125Route,
+  } as any)
+const Char123LocaleChar125CruzeirosRoute =
+  Char123LocaleChar125CruzeirosRouteImport.update({
+    id: '/cruzeiros',
+    path: '/cruzeiros',
     getParentRoute: () => Char123LocaleChar125Route,
   } as any)
 const Char123LocaleChar125FolkehogskoleRoute =
@@ -342,6 +363,9 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
+  '/{-$locale}/cruise': typeof Char123LocaleChar125CruiseRoute
+  '/{-$locale}/cruises': typeof Char123LocaleChar125CruisesRoute
+  '/{-$locale}/cruzeiros': typeof Char123LocaleChar125CruzeirosRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
   '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
   '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
@@ -390,6 +414,9 @@ export interface FileRoutesByTo {
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
+  '/{-$locale}/cruise': typeof Char123LocaleChar125CruiseRoute
+  '/{-$locale}/cruises': typeof Char123LocaleChar125CruisesRoute
+  '/{-$locale}/cruzeiros': typeof Char123LocaleChar125CruzeirosRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
   '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
   '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
@@ -440,6 +467,9 @@ export interface FileRoutesById {
   '/{-$locale}/admin': typeof Char123LocaleChar125AdminRoute
   '/{-$locale}/bedrift': typeof Char123LocaleChar125BedriftRoute
   '/{-$locale}/corporate': typeof Char123LocaleChar125CorporateRoute
+  '/{-$locale}/cruise': typeof Char123LocaleChar125CruiseRoute
+  '/{-$locale}/cruises': typeof Char123LocaleChar125CruisesRoute
+  '/{-$locale}/cruzeiros': typeof Char123LocaleChar125CruzeirosRoute
   '/{-$locale}/folkehogskole': typeof Char123LocaleChar125FolkehogskoleRoute
   '/{-$locale}/groups': typeof Char123LocaleChar125GroupsRoute
   '/{-$locale}/grupper': typeof Char123LocaleChar125GrupperRoute
@@ -491,6 +521,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
+    | '/{-$locale}/cruise'
+    | '/{-$locale}/cruises'
+    | '/{-$locale}/cruzeiros'
     | '/{-$locale}/folkehogskole'
     | '/{-$locale}/groups'
     | '/{-$locale}/grupper'
@@ -539,6 +572,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
+    | '/{-$locale}/cruise'
+    | '/{-$locale}/cruises'
+    | '/{-$locale}/cruzeiros'
     | '/{-$locale}/folkehogskole'
     | '/{-$locale}/groups'
     | '/{-$locale}/grupper'
@@ -588,6 +624,9 @@ export interface FileRouteTypes {
     | '/{-$locale}/admin'
     | '/{-$locale}/bedrift'
     | '/{-$locale}/corporate'
+    | '/{-$locale}/cruise'
+    | '/{-$locale}/cruises'
+    | '/{-$locale}/cruzeiros'
     | '/{-$locale}/folkehogskole'
     | '/{-$locale}/groups'
     | '/{-$locale}/grupper'
@@ -697,6 +736,27 @@ declare module '@tanstack/react-router' {
       path: '/corporate'
       fullPath: '/{-$locale}/corporate'
       preLoaderRoute: typeof Char123LocaleChar125CorporateRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/cruise': {
+      id: '/{-$locale}/cruise'
+      path: '/cruise'
+      fullPath: '/{-$locale}/cruise'
+      preLoaderRoute: typeof Char123LocaleChar125CruiseRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/cruises': {
+      id: '/{-$locale}/cruises'
+      path: '/cruises'
+      fullPath: '/{-$locale}/cruises'
+      preLoaderRoute: typeof Char123LocaleChar125CruisesRouteImport
+      parentRoute: typeof Char123LocaleChar125Route
+    }
+    '/{-$locale}/cruzeiros': {
+      id: '/{-$locale}/cruzeiros'
+      path: '/cruzeiros'
+      fullPath: '/{-$locale}/cruzeiros'
+      preLoaderRoute: typeof Char123LocaleChar125CruzeirosRouteImport
       parentRoute: typeof Char123LocaleChar125Route
     }
     '/{-$locale}/folkehogskole': {
@@ -980,6 +1040,9 @@ interface Char123LocaleChar125RouteChildren {
   Char123LocaleChar125AdminRoute: typeof Char123LocaleChar125AdminRoute
   Char123LocaleChar125BedriftRoute: typeof Char123LocaleChar125BedriftRoute
   Char123LocaleChar125CorporateRoute: typeof Char123LocaleChar125CorporateRoute
+  Char123LocaleChar125CruiseRoute: typeof Char123LocaleChar125CruiseRoute
+  Char123LocaleChar125CruisesRoute: typeof Char123LocaleChar125CruisesRoute
+  Char123LocaleChar125CruzeirosRoute: typeof Char123LocaleChar125CruzeirosRoute
   Char123LocaleChar125FolkehogskoleRoute: typeof Char123LocaleChar125FolkehogskoleRoute
   Char123LocaleChar125GroupsRoute: typeof Char123LocaleChar125GroupsRoute
   Char123LocaleChar125GrupperRoute: typeof Char123LocaleChar125GrupperRoute
@@ -1022,6 +1085,9 @@ const Char123LocaleChar125RouteChildren: Char123LocaleChar125RouteChildren = {
   Char123LocaleChar125AdminRoute: Char123LocaleChar125AdminRoute,
   Char123LocaleChar125BedriftRoute: Char123LocaleChar125BedriftRoute,
   Char123LocaleChar125CorporateRoute: Char123LocaleChar125CorporateRoute,
+  Char123LocaleChar125CruiseRoute: Char123LocaleChar125CruiseRoute,
+  Char123LocaleChar125CruisesRoute: Char123LocaleChar125CruisesRoute,
+  Char123LocaleChar125CruzeirosRoute: Char123LocaleChar125CruzeirosRoute,
   Char123LocaleChar125FolkehogskoleRoute:
     Char123LocaleChar125FolkehogskoleRoute,
   Char123LocaleChar125GroupsRoute: Char123LocaleChar125GroupsRoute,

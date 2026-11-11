@@ -1,3 +1,8 @@
+# Cruise pages
+- [x] Add supplied EN/NO and draft Portuguese cruise pages using the uploaded IMG_3807.JPG photo and credits.
+- [x] Add private dropdown, private-travel section and quiet homepage band; preserve existing URLs.
+- [x] Verify localized links, intake buttons, mobile layout, sharing metadata and sitemap.
+
 # Two additional theme travels
 - [x] Add supplied Carnaval and Sognefjord trips, localized URLs, uploaded photos and ordered hub cards.
 - [x] Enforce Oslo registration deadlines in the existing form and public signup validation; test both cutoffs.
