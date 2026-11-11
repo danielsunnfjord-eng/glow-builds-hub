@@ -687,4 +687,31 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://fjordwavestravel.com/cruises</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/cruises"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/cruise"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/cruzeiros"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/cruises"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/no/cruise</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/cruises"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/cruise"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/cruzeiros"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/cruises"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fjordwavestravel.com/pt-br/cruzeiros</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fjordwavestravel.com/cruises"/>
+    <xhtml:link rel="alternate" hreflang="no" href="https://fjordwavestravel.com/no/cruise"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://fjordwavestravel.com/pt-br/cruzeiros"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fjordwavestravel.com/cruises"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
