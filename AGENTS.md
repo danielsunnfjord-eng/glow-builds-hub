@@ -1,4 +1,5 @@
 # Architecture rules
+- Eagerly bundle the shared route error screen and register it as the router default and root fallback so failed page chunks stay contained and manual retries refresh cached imports.
 - Cruise pages and entry bands share locale-keyed copy and the private intake; cruise slugs use the central locale mapping so navigation, flags and sitemap agree.
 - Markdown helpers use Turndown's browser distribution so importing shared itinerary tools cannot invoke CommonJS require during SSR; HTML conversion runs with a browser document.
 - New audience pages use the existing optional-locale route layout and shared navigation/footer; keep their missing content in code comments until supplied.
@@ -8,7 +9,8 @@
 - Concierge hub pages share a locale-aware presentation and choice definitions; keep their destinations explicit and test them so private and group enquiries cannot be mixed.
 - Keep destination partner blocks reusable; unconfirmed partner blocks render nothing so missing supplier details cannot appear publicly.
 - Always lazy-load components with `lazyWithRetry` from `@/lib/lazyWithRetry`, never React's plain `lazy`: root-level imports (Calendly badge, Admin) sit outside the router's error boundary, so a failed chunk load mid-reload would otherwise unmount the whole app and blank the screen.
-- Module recovery retries transient imports and uses per-module time-bounded reload guards; optional widgets have a local error boundary so persistent chunk failures cannot blank the main pages.- Theme Travels pages (/trips, /no/reiser and trip details) share the locale-keyed data module src/lib/themeTrips.ts; keep periods, slugs and the no-price rule explicit and tested so interest signups never mix trips or languages.
+- Module recovery retries transient imports and uses per-module time-bounded reload guards; optional widgets and deferred homepage sections each have a local error boundary so persistent chunk failures cannot remove the main page.
+- Theme Travels pages (/trips, /no/reiser and trip details) share the locale-keyed data module src/lib/themeTrips.ts; keep periods, slugs and the no-price rule explicit and tested so interest signups never mix trips or languages.
 - Theme Travels interest signups insert and send the owner email inside the public /api/public/interest-signup route; forms must never insert directly from the browser or send email with a visitor JWT, and a notification failure must not fail the visitor's signup.
 - Trip interest inputs share a Zod schema between browser and public handler, validating consent and locale-specific periods so saved details and notifications cannot drift.
 - Additional theme-travel content stays in a typed locale-keyed module; shared deadline helpers feed both the form and server validation with exclusive UTC cutoffs derived from Europe/Oslo so closed periods cannot be submitted through stale pages.

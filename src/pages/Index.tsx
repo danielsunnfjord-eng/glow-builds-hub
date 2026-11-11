@@ -5,6 +5,7 @@ import { GroupHero, EntryCards, ConciergeSection, HowItWorks, LocalPartnerBlock,
 import { HOME_TESTIMONIAL_AUTHORS } from "@/components/voyage/home/homeCopy";
 import { lazyWithRetry } from "@/lib/lazyWithRetry";
 import CruiseBand from "@/components/voyage/CruiseBand";
+import OptionalWidgetBoundary from "@/components/voyage/OptionalWidgetBoundary";
 
 const MeetDaniel = lazyWithRetry(() => import("@/components/voyage/MeetDaniel"));
 const Reviews = lazyWithRetry(() => import("@/components/voyage/Reviews"));
@@ -30,19 +31,25 @@ const Index = () => {
         <EntryCards />
         <ConciergeSection />
         <CruiseBand />
-        <Suspense fallback={null}>
-          <MeetDaniel concierge />
-        </Suspense>
+        <OptionalWidgetBoundary>
+          <Suspense fallback={null}>
+            <MeetDaniel concierge />
+          </Suspense>
+        </OptionalWidgetBoundary>
         <HowItWorks />
-        <Suspense fallback={null}>
-          <Reviews include={HOME_TESTIMONIAL_AUTHORS} className="bg-parchment" />
-        </Suspense>
+        <OptionalWidgetBoundary>
+          <Suspense fallback={null}>
+            <Reviews include={HOME_TESTIMONIAL_AUTHORS} className="bg-parchment" />
+          </Suspense>
+        </OptionalWidgetBoundary>
         <LocalPartnerBlock />
         <FinalCta />
       </main>
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <OptionalWidgetBoundary>
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
+      </OptionalWidgetBoundary>
     </div>
   );
 };
