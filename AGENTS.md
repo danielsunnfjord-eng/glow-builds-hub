@@ -1,4 +1,5 @@
 # Architecture rules
+- Eagerly bundle the shared route error screen and register it as the router default and root fallback so failed page chunks stay contained and manual retries refresh cached imports.
 - Cruise pages and entry bands share locale-keyed copy and the private intake; cruise slugs use the central locale mapping so navigation, flags and sitemap agree.
 - Markdown helpers use Turndown's browser distribution so importing shared itinerary tools cannot invoke CommonJS require during SSR; HTML conversion runs with a browser document.
 - New audience pages use the existing optional-locale route layout and shared navigation/footer; keep their missing content in code comments until supplied.

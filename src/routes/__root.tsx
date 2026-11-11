@@ -7,21 +7,18 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
-  useRouter,
   useRouterState,
 } from "@tanstack/react-router";
-import type { ErrorComponentProps } from "@tanstack/react-router";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import CookieConsent from "@/components/voyage/CookieConsent";
 import OptionalWidgetBoundary from "@/components/voyage/OptionalWidgetBoundary";
-import { isModuleLoadError, reloadFailedModule } from "@/lib/retryDynamicImport";
+import RouteLoadError from "@/components/RouteLoadError";
 import { IntakeFormProvider } from "@/components/voyage/IntakeFormModal";
 
 import NotFound from "@/pages/NotFound";
-import { reportLovableError } from "@/lib/lovable-error-reporting";
 import { HTML_LANG, detectLocaleFromPath, setServerLocale } from "@/lib/locale";
 // ported from main.tsx — i18next must initialise before any component renders
 import i18n from "../i18n";
@@ -121,7 +118,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: () => <NotFound />,
-  errorComponent: ErrorComponent,
+  errorComponent: RouteLoadError,
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
@@ -224,38 +221,3 @@ function RootComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
-  console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    if (isModuleLoadError(error) && reloadFailedModule("router")) return;
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-6">
-      <div className="max-w-md w-full text-center space-y-4">
-        <h1 className="text-2xl font-serif-display">This page didn't load</h1>
-        <p className="text-muted-foreground text-sm">
-          Something went wrong on our end. You can try again or head back home.
-        </p>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            className="px-4 py-2 rounded-sm bg-primary text-primary-foreground text-sm"
-            onClick={() => {
-              void router.invalidate();
-              reset();
-            }}
-          >
-            Try again
-          </button>
-          <a
-            className="px-4 py-2 rounded-sm border border-border text-sm"
-            href="/"
-          >
-            Go home
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
