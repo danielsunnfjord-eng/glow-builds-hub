@@ -2,6 +2,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 import { createClient } from "@supabase/supabase-js";
+import { localizedRoutePath } from "../src/lib/locale";
 
 const BASE_URL = "https://fjordwavestravel.com";
 
@@ -15,6 +16,7 @@ interface SitemapEntry {
 const staticEntries: SitemapEntry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/about", changefreq: "monthly", priority: "0.8" },
+  { path: "/cruises", changefreq: "monthly", priority: "0.8" },
   { path: "/plan-my-trip", changefreq: "monthly", priority: "0.9" },
   { path: "/routes", changefreq: "weekly", priority: "0.9" },
   { path: "/pricing", changefreq: "monthly", priority: "0.9" },
@@ -55,6 +57,8 @@ const LOCALES = [
 ] as const;
 
 function localized(prefix: string, path: string) {
+  // Cruise URLs share the site's locale mapping; preserve other existing sitemap URLs.
+  if (path === "/cruises") path = localizedRoutePath(path, prefix === "/no" ? "no" : prefix === "/pt-br" ? "pt" : "en");
   if (!prefix) return path;
   return path === "/" ? `${prefix}/` : `${prefix}${path}`;
 }

@@ -5,6 +5,7 @@ import FeaturedItineraries from "@/components/voyage/FeaturedItineraries";
 import ClientPortal from "@/components/voyage/ClientPortal";
 import WhyAdvisor from "@/components/voyage/WhyAdvisor";
 import Reviews from "@/components/voyage/Reviews";
+import CruiseBand from "@/components/voyage/CruiseBand";
 import { currentLocale, localePath } from "@/lib/locale";
 
 const GROUP_LINK_COPY: Record<string, string> = {
@@ -31,6 +32,7 @@ export default function PrivateTravel() {
           </div>
         </div>
         <DualPathCards />
+        <CruiseBand />
         <FeaturedItineraries />
         <ClientPortal />
         <WhyAdvisor />

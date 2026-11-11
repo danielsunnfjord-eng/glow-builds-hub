@@ -4,6 +4,7 @@ import Navbar from "@/components/voyage/Navbar";
 import { GroupHero, EntryCards, ConciergeSection, HowItWorks, LocalPartnerBlock, FinalCta } from "@/components/voyage/home/GroupHome";
 import { HOME_TESTIMONIAL_AUTHORS } from "@/components/voyage/home/homeCopy";
 import { lazyWithRetry } from "@/lib/lazyWithRetry";
+import CruiseBand from "@/components/voyage/CruiseBand";
 
 const MeetDaniel = lazyWithRetry(() => import("@/components/voyage/MeetDaniel"));
 const Reviews = lazyWithRetry(() => import("@/components/voyage/Reviews"));
@@ -28,6 +29,7 @@ const Index = () => {
         <GroupHero />
         <EntryCards />
         <ConciergeSection />
+        <CruiseBand />
         <Suspense fallback={null}>
           <MeetDaniel concierge />
         </Suspense>

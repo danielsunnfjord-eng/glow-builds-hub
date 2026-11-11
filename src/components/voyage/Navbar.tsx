@@ -7,7 +7,7 @@ import logo from "@/assets/logo-horizontal.webp";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { currentLocale, localizedRoutePath } from "@/lib/locale";
-import { travelNavigation, navigationCopy, PRIVATE_INTAKE_URL, isPrivateTravelPath } from "@/lib/travelNavigation";
+import { travelNavigation, navigationCopy, PRIVATE_INTAKE_URL, PRIVATE_CRUISE_NAV, isPrivateTravelPath } from "@/lib/travelNavigation";
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -20,6 +20,7 @@ const Navbar = () => {
     { path: "/catalogue", label: t("nav.shop") },
     { path: "/pricing", label: t("nav.pricing") },
     { path: "/start-your-journey", label: copy.startJourney },
+    { path: PRIVATE_CRUISE_NAV.path, label: PRIVATE_CRUISE_NAV.labels[locale] },
   ];
   const linkClass = "text-[0.72rem] font-medium uppercase text-voyage-muted hover:text-ink transition-colors no-underline";
   const actions = <>

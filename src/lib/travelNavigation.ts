@@ -18,6 +18,8 @@ export const navigationCopy = {
   pt: { folkHighSchools: "Para escolas e grupos", sportsAndSurf: "Esporte e surf", corporate: "Empresas", safety: "Segurança", about: "Sobre", privateTravel: "Viagens privadas", proposal: "Solicite uma proposta", groups: "Escolas e clubes", trips: "Viagens temáticas", start: "Comece a planejar", startJourney: "Começar a planejar" },
 } satisfies Record<Locale, Record<string, string>>;
 
+export const PRIVATE_CRUISE_NAV = { path: "/cruises", labels: { en: "Cruises", no: "Cruise", pt: "Cruzeiros" } } as const;
+
 export type TravelPageKey = "folkHighSchools" | "sportsAndSurf" | "corporate" | "safety" | "privateTravel";
 
 export type GroupPageKey = "folkHighSchools" | "sportsAndSurf" | "corporate" | "safety";
@@ -39,7 +41,7 @@ export function isGroupPageAvailable(page: GroupPageKey, isProduction: boolean):
 }
 
 export function isPrivateTravelPath(path: string): boolean {
-  return ["/private-travel", "/catalogue", "/pricing", "/start-your-journey", "/plan-my-trip", "/itineraries-shop", "/routes", "/trip"].some(
+  return ["/private-travel", "/cruises", "/cruise", "/cruzeiros", "/catalogue", "/pricing", "/start-your-journey", "/plan-my-trip", "/itineraries-shop", "/routes", "/trip"].some(
     (base) => path === base || path.startsWith(`${base}/`),
   );
 }
