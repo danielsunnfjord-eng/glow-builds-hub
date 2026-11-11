@@ -1,5 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
-import { isModuleLoadError, retryDynamicImport } from "./retryDynamicImport";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { isModuleLoadError, reloadFailedModule, retryDynamicImport } from "./retryDynamicImport";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe("dynamic module recovery", () => {
   it("retries Safari's module loading failure and returns the recovered module", async () => {
@@ -21,5 +26,29 @@ describe("dynamic module recovery", () => {
   it("recognizes Chromium and Firefox module failures", () => {
     expect(isModuleLoadError(new TypeError("Failed to fetch dynamically imported module: /module.js"))).toBe(true);
     expect(isModuleLoadError(new TypeError("error loading dynamically imported module"))).toBe(true);
+  });
+  it("reloads a failed page only once within the recovery window", () => {
+    const values = new Map<string, string>();
+    const reload = vi.fn();
+    vi.stubGlobal("window", {
+      location: { reload },
+      sessionStorage: {
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => values.set(key, value),
+      },
+    });
+    vi.spyOn(Date, "now").mockReturnValue(100_000);
+    expect(reloadFailedModule("router")).toBe(true);
+    expect(reloadFailedModule("router")).toBe(false);
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+  it("keeps the error screen usable when browser storage is blocked", () => {
+    const reload = vi.fn();
+    vi.stubGlobal("window", {
+      location: { reload },
+      sessionStorage: { getItem: () => { throw new Error("Storage blocked"); } },
+    });
+    expect(reloadFailedModule("router")).toBe(false);
+    expect(reload).not.toHaveBeenCalled();
   });
 });
