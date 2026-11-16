@@ -867,7 +867,6 @@ export default {
       "good_news": [
         "Konsultasjonen din er helt gratis",
         "Du betaler kun avgiften hvis du ønsker at vi designer reisen din fra bunnen av",
-        "Hele avgiften trekkes fra din endelige bestilling",
         "Ingen skjulte planleggingsavgifter"
       ]
     },

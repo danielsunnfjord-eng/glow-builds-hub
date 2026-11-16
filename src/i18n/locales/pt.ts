@@ -870,7 +870,6 @@ export default {
       "good_news": [
         "Sua consultoria é totalmente gratuita",
         "Você só paga a taxa se quiser que desenhemos sua viagem do zero",
-        "O valor total da taxa é descontado da sua reserva final",
         "Sem taxas de planejamento ocultas"
       ]
     },

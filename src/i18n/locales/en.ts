@@ -882,7 +882,6 @@ export default {
       "good_news": [
         "Your consultation is completely free",
         "You only pay the fee if you'd like us to design your journey from scratch",
-        "The full fee is deducted from your final booking",
         "No hidden planning fees"
       ]
     },
