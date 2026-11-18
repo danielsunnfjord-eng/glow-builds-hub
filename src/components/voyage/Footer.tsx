@@ -55,6 +55,7 @@ const Footer = () => {
         <div className="flex items-center gap-5">
           <Link to="/privacy" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">{legal.privacy}</Link>
           <Link to="/terms" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">{legal.terms}</Link>
+          <Link to="/login" className="text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 transition-colors">Admin</Link>
           <Button variant="ghost" onClick={openCookieSettings} className="h-auto p-0 text-[0.68rem] text-voyage-white/30 hover:text-voyage-white/60 hover:bg-transparent">{legal.cookies}</Button>
         </div>
       </div>
